@@ -33,7 +33,7 @@
 #define	RADIO_SI4438													//无线开启
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					60								//从固件版本
+#define	SOFTWARESUB					61								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 
@@ -49,8 +49,8 @@
 #define	DNS_SERVER_LOCAL_PORT			5000
 #define	DNS_SERVER_TELE_PORT			53
 
-#define	MQTTSN_SERVER_HOST_NAME			"movebroad.cn"						//MQTTSN服务器默认配置
-#define	MQTTSN_SERVER_HOST_IP			"106.14.142.169"
+#define	MQTTSN_SERVER_HOST_NAME			"mqtt.movebroad.cn"					//MQTTSN服务器默认配置
+#define	MQTTSN_SERVER_HOST_IP			"47.98.140.145"
 #define	MQTTSN_SERVER_LOCAL_PORT			4000
 #define	MQTTSN_SERVER_TELE_PORT			1884
 

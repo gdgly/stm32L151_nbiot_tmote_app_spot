@@ -14,15 +14,12 @@
 #define DNS_HOSTNAME_SIZE				30
 #define DNS_HOSTIP_SIZE					17
 
-#define DNS_ANALYSIS_DATA				3
-#define DNS_ANALYSIS_HOSTNAME1			"movebroad.cn"
-#define DNS_ANALYSIS_HOSTIP1				"106.14.142.169"
+#define DNS_ANALYSIS_DATA				2
+#define DNS_ANALYSIS_HOSTNAME1			"mqtt.movebroad.cn"
+#define DNS_ANALYSIS_HOSTIP1				"47.98.140.145"
 
-#define DNS_ANALYSIS_HOSTNAME2			"mqtt.movebroad.cn"
-#define DNS_ANALYSIS_HOSTIP2				"47.98.140.145"
-
-#define DNS_ANALYSIS_HOSTNAME3			"zhouqinghan.vip"
-#define DNS_ANALYSIS_HOSTIP3				"120.78.66.248"
+#define DNS_ANALYSIS_HOSTNAME2			"movebroad.cn"
+#define DNS_ANALYSIS_HOSTIP2				"106.14.142.169"
 
 typedef struct DNS_SocketNetTypeDef		DNS_SocketNetTypeDef;
 typedef struct DNS_ClientsTypeDef			DNS_ClientsTypeDef;
