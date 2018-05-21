@@ -263,9 +263,6 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 	/* MQTTSN INFO WORK DATA ENQUEUE */
 	else if (NETMqttSNNeedSendCode.InfoWork) {
 		MqttSNInfoWorkStructure.DeviceSN					= TCFG_EEPROM_Get_MAC_SN();
-		MqttSNInfoWorkStructure.Sensitivity				= TCFG_EEPROM_GetSavedSensitivity();
-		MqttSNInfoWorkStructure.WorkMode					= TCFG_EEPROM_GetWorkMode();
-		MqttSNInfoWorkStructure.RfChannel					= TCFG_EEPROM_GetRfChannel();
 		NET_MqttSN_Message_InfoWorkEnqueue(MqttSNInfoWorkStructure);
 		NETMqttSNNeedSendCode.InfoWork = 0;
 		TCFG_Utility_Add_MqttSN_SentCount();
@@ -273,7 +270,6 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 	/* MQTTSN INFO BASIC DATA ENQUEUE */
 	else if (NETMqttSNNeedSendCode.InfoBasic) {
 		MqttSNInfoBasicStructure.DeviceSN					= TCFG_EEPROM_Get_MAC_SN();
-		MqttSNInfoBasicStructure.DeviceType				= TCFG_Utility_Get_Mvb_ModelType();
 		NET_MqttSN_Message_InfoBasicEnqueue(MqttSNInfoBasicStructure);
 		NETMqttSNNeedSendCode.InfoBasic = 0;
 		TCFG_Utility_Add_MqttSN_SentCount();
@@ -281,22 +277,6 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 	/* MQTTSN INFO DYNAMIC DATA ENQUEUE */
 	else if (NETMqttSNNeedSendCode.InfoDynamic) {
 		MqttSNInfoDynamicStructure.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
-		MqttSNInfoDynamicStructure.Runtime					= TCFG_Utility_Get_Run_Time();
-		MqttSNInfoDynamicStructure.NBIotRssi				= TCFG_Utility_Get_Nbiot_Rssi_IntVal();
-		MqttSNInfoDynamicStructure.DeviceBatt				= TCFG_Utility_Get_Device_Batt_ShortVal();
-		MqttSNInfoDynamicStructure.RadarLib				= TCFG_Utility_Get_RadarLibNum();
-		MqttSNInfoDynamicStructure.RadarCount				= TCFG_GetRadarCount();
-		MqttSNInfoDynamicStructure.DeviceTemperature			= TCFG_Utility_Get_Device_Temperature();
-		MqttSNInfoDynamicStructure.RadarDbgMode				= TCFG_EEPROM_GetRadarDbgMode();
-		MqttSNInfoDynamicStructure.NBiotPSMEnable			= TCFG_EEPROM_GetEnableNBiotPSM();
-		MqttSNInfoDynamicStructure.AlgoLib					= TCFG_Utility_Get_AlgoLibNum();
-		MqttSNInfoDynamicStructure.ReInitModuleCount			= TCFG_Utility_Get_ReInitModuleCount();
-		MqttSNInfoDynamicStructure.NBIotBootCount			= TCFG_Utility_Get_Nbiot_BootCount();
-		MqttSNInfoDynamicStructure.NBIotSentCount			= TCFG_Utility_Get_Nbiot_SentCount();
-		MqttSNInfoDynamicStructure.NBIotRecvCount			= TCFG_Utility_Get_Nbiot_RecvCount();
-		MqttSNInfoDynamicStructure.MagMode					= TCFG_EEPROM_GetMagMode();
-		MqttSNInfoDynamicStructure.NbiotHeart				= TCFG_EEPROM_GetNbiotHeart();
-		MqttSNInfoDynamicStructure.DistanceRange			= TCFG_Utility_Get_DistanceRange();
 		NET_MqttSN_Message_InfoDynamicEnqueue(MqttSNInfoDynamicStructure);
 		NETMqttSNNeedSendCode.InfoDynamic = 0;
 		TCFG_Utility_Add_MqttSN_SentCount();

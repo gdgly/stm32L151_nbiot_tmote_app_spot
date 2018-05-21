@@ -152,9 +152,9 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Work(char* outBuffer)
 		"}",
 		
 		dataBuf.DeviceSN,
-		dataBuf.Sensitivity,
+		TCFG_EEPROM_GetSavedSensitivity(),
 		TCFG_EEPROM_Get_WorkMode_String(),
-		dataBuf.RfChannel
+		TCFG_EEPROM_GetRfChannel()
 	);
 	
 	return strlen(outBuffer);
@@ -192,7 +192,7 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Basic(char* outBuffer)
 		"}",
 		
 		dataBuf.DeviceSN,
-		dataBuf.DeviceType,
+		TCFG_Utility_Get_Mvb_ModelType(),
 		TCFG_EEPROM_Get_Vender_String(),
 		TCFG_Utility_Get_Major_Hardnumber(),
 		TCFG_Utility_Get_Major_Softnumber(), TCFG_Utility_Get_Sub_Softnumber(),
@@ -245,22 +245,22 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Dynamic(char* outBuffer)
 		"}",
 		
 		dataBuf.DeviceSN,
-		dataBuf.Runtime,
-		dataBuf.NBIotRssi,
-		dataBuf.DeviceBatt,
-		dataBuf.RadarLib,
-		dataBuf.RadarCount,
-		dataBuf.DeviceTemperature,
-		dataBuf.RadarDbgMode,
-		dataBuf.NBiotPSMEnable,
-		dataBuf.AlgoLib,
-		dataBuf.ReInitModuleCount,
-		dataBuf.NBIotBootCount,
-		dataBuf.NBIotSentCount,
-		dataBuf.NBIotRecvCount,
-		dataBuf.MagMode,
-		dataBuf.NbiotHeart,
-		dataBuf.DistanceRange
+		TCFG_Utility_Get_Run_Time(),
+		TCFG_Utility_Get_Nbiot_Rssi_IntVal(),
+		TCFG_Utility_Get_Device_Batt_ShortVal(),
+		TCFG_Utility_Get_RadarLibNum(),
+		TCFG_GetRadarCount(),
+		TCFG_Utility_Get_Device_Temperature(),
+		TCFG_EEPROM_GetRadarDbgMode(),
+		TCFG_EEPROM_GetEnableNBiotPSM(),
+		TCFG_Utility_Get_AlgoLibNum(),
+		TCFG_Utility_Get_ReInitModuleCount(),
+		TCFG_Utility_Get_Nbiot_BootCount(),
+		TCFG_Utility_Get_Nbiot_SentCount(),
+		TCFG_Utility_Get_Nbiot_RecvCount(),
+		TCFG_EEPROM_GetMagMode(),
+		TCFG_EEPROM_GetNbiotHeart(),
+		TCFG_Utility_Get_DistanceRange()
 	);
 	
 	return strlen(outBuffer);
@@ -657,17 +657,11 @@ void NET_MqttSN_Message_InfoWorkEnqueue(MQTTSN_InfoWorkTypeDef dataBuf)
 	if (NET_MqttSN_Message_InfoWorkisFull() == true) {															//队列已满
 		NETMqttSNMessageParkInfoWork.Rear = (NETMqttSNMessageParkInfoWork.Rear + 1) % MQTTSN_INFO_WORK_PARK_NUM;				//队尾偏移1
 		NETMqttSNMessageParkInfoWork.InfoWork[NETMqttSNMessageParkInfoWork.Rear].DeviceSN = dataBuf.DeviceSN;
-		NETMqttSNMessageParkInfoWork.InfoWork[NETMqttSNMessageParkInfoWork.Rear].Sensitivity = dataBuf.Sensitivity;
-		NETMqttSNMessageParkInfoWork.InfoWork[NETMqttSNMessageParkInfoWork.Rear].WorkMode = dataBuf.WorkMode;
-		NETMqttSNMessageParkInfoWork.InfoWork[NETMqttSNMessageParkInfoWork.Rear].RfChannel = dataBuf.RfChannel;
 		NETMqttSNMessageParkInfoWork.Front = (NETMqttSNMessageParkInfoWork.Front + 1) % MQTTSN_INFO_WORK_PARK_NUM;			//队头偏移1
 	}
 	else {																								//队列未满
 		NETMqttSNMessageParkInfoWork.Rear = (NETMqttSNMessageParkInfoWork.Rear + 1) % MQTTSN_INFO_WORK_PARK_NUM;				//队尾偏移1
 		NETMqttSNMessageParkInfoWork.InfoWork[NETMqttSNMessageParkInfoWork.Rear].DeviceSN = dataBuf.DeviceSN;
-		NETMqttSNMessageParkInfoWork.InfoWork[NETMqttSNMessageParkInfoWork.Rear].Sensitivity = dataBuf.Sensitivity;
-		NETMqttSNMessageParkInfoWork.InfoWork[NETMqttSNMessageParkInfoWork.Rear].WorkMode = dataBuf.WorkMode;
-		NETMqttSNMessageParkInfoWork.InfoWork[NETMqttSNMessageParkInfoWork.Rear].RfChannel = dataBuf.RfChannel;
 	}
 }
 
@@ -682,13 +676,11 @@ void NET_MqttSN_Message_InfoBasicEnqueue(MQTTSN_InfoBasicTypeDef dataBuf)
 	if (NET_MqttSN_Message_InfoBasicisFull() == true) {															//队列已满
 		NETMqttSNMessageParkInfoBasic.Rear = (NETMqttSNMessageParkInfoBasic.Rear + 1) % MQTTSN_INFO_BASIC_PARK_NUM;			//队尾偏移1
 		NETMqttSNMessageParkInfoBasic.InfoBasic[NETMqttSNMessageParkInfoBasic.Rear].DeviceSN = dataBuf.DeviceSN;
-		NETMqttSNMessageParkInfoBasic.InfoBasic[NETMqttSNMessageParkInfoBasic.Rear].DeviceType = dataBuf.DeviceType;
 		NETMqttSNMessageParkInfoBasic.Front = (NETMqttSNMessageParkInfoBasic.Front + 1) % MQTTSN_INFO_BASIC_PARK_NUM;			//队头偏移1
 	}
 	else {																								//队列未满
 		NETMqttSNMessageParkInfoBasic.Rear = (NETMqttSNMessageParkInfoBasic.Rear + 1) % MQTTSN_INFO_BASIC_PARK_NUM;			//队尾偏移1
 		NETMqttSNMessageParkInfoBasic.InfoBasic[NETMqttSNMessageParkInfoBasic.Rear].DeviceSN = dataBuf.DeviceSN;
-		NETMqttSNMessageParkInfoBasic.InfoBasic[NETMqttSNMessageParkInfoBasic.Rear].DeviceType = dataBuf.DeviceType;
 	}
 }
 
@@ -703,43 +695,11 @@ void NET_MqttSN_Message_InfoDynamicEnqueue(MQTTSN_InfoDynamicTypeDef dataBuf)
 	if (NET_MqttSN_Message_InfoDynamicisFull() == true) {															//队列已满
 		NETMqttSNMessageParkInfoDynamic.Rear = (NETMqttSNMessageParkInfoDynamic.Rear + 1) % MQTTSN_INFO_DYNAMIC_PARK_NUM;		//队尾偏移1
 		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].DeviceSN = dataBuf.DeviceSN;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].Runtime = dataBuf.Runtime;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].NBIotRssi = dataBuf.NBIotRssi;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].DeviceBatt = dataBuf.DeviceBatt;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].RadarLib = dataBuf.RadarLib;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].RadarCount = dataBuf.RadarCount;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].DeviceTemperature = dataBuf.DeviceTemperature;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].RadarDbgMode = dataBuf.RadarDbgMode;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].NBiotPSMEnable = dataBuf.NBiotPSMEnable;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].AlgoLib = dataBuf.AlgoLib;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].ReInitModuleCount = dataBuf.ReInitModuleCount;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].NBIotBootCount = dataBuf.NBIotBootCount;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].NBIotSentCount = dataBuf.NBIotSentCount;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].NBIotRecvCount = dataBuf.NBIotRecvCount;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].MagMode = dataBuf.MagMode;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].NbiotHeart = dataBuf.NbiotHeart;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].DistanceRange = dataBuf.DistanceRange;
 		NETMqttSNMessageParkInfoDynamic.Front = (NETMqttSNMessageParkInfoDynamic.Front + 1) % MQTTSN_INFO_DYNAMIC_PARK_NUM;	//队头偏移1
 	}
 	else {																								//队列未满
 		NETMqttSNMessageParkInfoDynamic.Rear = (NETMqttSNMessageParkInfoDynamic.Rear + 1) % MQTTSN_INFO_DYNAMIC_PARK_NUM;		//队尾偏移1
 		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].DeviceSN = dataBuf.DeviceSN;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].Runtime = dataBuf.Runtime;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].NBIotRssi = dataBuf.NBIotRssi;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].DeviceBatt = dataBuf.DeviceBatt;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].RadarLib = dataBuf.RadarLib;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].RadarCount = dataBuf.RadarCount;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].DeviceTemperature = dataBuf.DeviceTemperature;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].RadarDbgMode = dataBuf.RadarDbgMode;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].NBiotPSMEnable = dataBuf.NBiotPSMEnable;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].AlgoLib = dataBuf.AlgoLib;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].ReInitModuleCount = dataBuf.ReInitModuleCount;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].NBIotBootCount = dataBuf.NBIotBootCount;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].NBIotSentCount = dataBuf.NBIotSentCount;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].NBIotRecvCount = dataBuf.NBIotRecvCount;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].MagMode = dataBuf.MagMode;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].NbiotHeart = dataBuf.NbiotHeart;
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].DistanceRange = dataBuf.DistanceRange;
 	}
 }
 
@@ -843,9 +803,6 @@ bool NET_MqttSN_Message_InfoWorkDequeue(MQTTSN_InfoWorkTypeDef* dataBuf)
 	else {																								//队列未空
 		front = (NETMqttSNMessageParkInfoWork.Front + 1) % MQTTSN_INFO_WORK_PARK_NUM;									//队头偏移1
 		dataBuf->DeviceSN = NETMqttSNMessageParkInfoWork.InfoWork[front].DeviceSN;
-		dataBuf->Sensitivity = NETMqttSNMessageParkInfoWork.InfoWork[front].Sensitivity;
-		dataBuf->WorkMode = NETMqttSNMessageParkInfoWork.InfoWork[front].WorkMode;
-		dataBuf->RfChannel = NETMqttSNMessageParkInfoWork.InfoWork[front].RfChannel;
 		MessageState = true;
 	}
 	
@@ -870,7 +827,6 @@ bool NET_MqttSN_Message_InfoBasicDequeue(MQTTSN_InfoBasicTypeDef* dataBuf)
 	else {																								//队列未空
 		front = (NETMqttSNMessageParkInfoBasic.Front + 1) % MQTTSN_INFO_BASIC_PARK_NUM;									//队头偏移1
 		dataBuf->DeviceSN = NETMqttSNMessageParkInfoBasic.InfoBasic[front].DeviceSN;
-		dataBuf->DeviceType = NETMqttSNMessageParkInfoBasic.InfoBasic[front].DeviceType;
 		MessageState = true;
 	}
 	
@@ -895,22 +851,6 @@ bool NET_MqttSN_Message_InfoDynamicDequeue(MQTTSN_InfoDynamicTypeDef* dataBuf)
 	else {																								//队列未空
 		front = (NETMqttSNMessageParkInfoDynamic.Front + 1) % MQTTSN_INFO_DYNAMIC_PARK_NUM;								//队头偏移1
 		dataBuf->DeviceSN = NETMqttSNMessageParkInfoDynamic.InfoDynamic[front].DeviceSN;
-		dataBuf->Runtime = NETMqttSNMessageParkInfoDynamic.InfoDynamic[front].Runtime;
-		dataBuf->NBIotRssi = NETMqttSNMessageParkInfoDynamic.InfoDynamic[front].NBIotRssi;
-		dataBuf->DeviceBatt = NETMqttSNMessageParkInfoDynamic.InfoDynamic[front].DeviceBatt;
-		dataBuf->RadarLib = NETMqttSNMessageParkInfoDynamic.InfoDynamic[front].RadarLib;
-		dataBuf->RadarCount = NETMqttSNMessageParkInfoDynamic.InfoDynamic[front].RadarCount;
-		dataBuf->DeviceTemperature = NETMqttSNMessageParkInfoDynamic.InfoDynamic[front].DeviceTemperature;
-		dataBuf->RadarDbgMode = NETMqttSNMessageParkInfoDynamic.InfoDynamic[front].RadarDbgMode;
-		dataBuf->NBiotPSMEnable = NETMqttSNMessageParkInfoDynamic.InfoDynamic[front].NBiotPSMEnable;
-		dataBuf->AlgoLib = NETMqttSNMessageParkInfoDynamic.InfoDynamic[front].AlgoLib;
-		dataBuf->ReInitModuleCount = NETMqttSNMessageParkInfoDynamic.InfoDynamic[front].ReInitModuleCount;
-		dataBuf->NBIotBootCount = NETMqttSNMessageParkInfoDynamic.InfoDynamic[front].NBIotBootCount;
-		dataBuf->NBIotSentCount = NETMqttSNMessageParkInfoDynamic.InfoDynamic[front].NBIotSentCount;
-		dataBuf->NBIotRecvCount = NETMqttSNMessageParkInfoDynamic.InfoDynamic[front].NBIotRecvCount;
-		dataBuf->MagMode = NETMqttSNMessageParkInfoDynamic.InfoDynamic[front].MagMode;
-		dataBuf->NbiotHeart = NETMqttSNMessageParkInfoDynamic.InfoDynamic[front].NbiotHeart;
-		dataBuf->DistanceRange = NETMqttSNMessageParkInfoDynamic.InfoDynamic[front].DistanceRange;
 		MessageState = true;
 	}
 	

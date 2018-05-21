@@ -93,7 +93,7 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_EEPROM_SetRadarCount(TCFG_SystemData.RadarCount);
 	
 	/* 雷达调试模式 */
-	TCFG_SystemData.RadarDbgMode = 2;
+	TCFG_SystemData.RadarDbgMode = 8;
 	TCFG_EEPROM_SetRadarDbgMode(TCFG_SystemData.RadarDbgMode);
 	
 	/* 雷达检测范围 */

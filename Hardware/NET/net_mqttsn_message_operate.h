@@ -120,9 +120,6 @@ typedef struct
 typedef __packed struct
 {
 	unsigned int						DeviceSN;
-	unsigned char						Sensitivity;
-	unsigned char						WorkMode;
-	unsigned char						RfChannel;
 }MQTTSN_InfoWorkTypeDef;
 
 typedef struct
@@ -136,7 +133,6 @@ typedef struct
 typedef __packed struct
 {
 	unsigned int						DeviceSN;
-	unsigned char						DeviceType;
 }MQTTSN_InfoBasicTypeDef;
 
 typedef struct
@@ -150,22 +146,6 @@ typedef struct
 typedef __packed struct
 {
 	unsigned int						DeviceSN;
-	unsigned int						Runtime;
-	int								NBIotRssi;
-	unsigned short						DeviceBatt;
-	unsigned char						RadarLib;
-	unsigned int						RadarCount;
-	short							DeviceTemperature;
-	unsigned char						RadarDbgMode;
-	unsigned char						NBiotPSMEnable;
-	unsigned char						AlgoLib;
-	unsigned short						ReInitModuleCount;
-	unsigned int						NBIotBootCount;
-	unsigned int						NBIotSentCount;
-	unsigned int 						NBIotRecvCount;
-	unsigned char						MagMode;
-	unsigned char						NbiotHeart;
-	unsigned short						DistanceRange;
 }MQTTSN_InfoDynamicTypeDef;
 
 typedef struct
