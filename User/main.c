@@ -462,6 +462,7 @@ void DeBugMain(void)
 {
 	TCFG_EEPROM_SetBootCount(0);
 	
+	NBIOT_Neul_NBxx_HardwareReboot(MqttSNClientHandler.SocketStack->NBIotStack, 8000);
 	
 	while (1) {
 		
