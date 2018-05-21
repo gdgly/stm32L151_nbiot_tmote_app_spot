@@ -172,6 +172,9 @@ void MainMajorCycle(void)
 	/* 车辆检测 */
 	Inspect_Spot_ExistenceDetect();
 	
+	/* 检测是否需要初始化传感器背景 */
+	RollingOverInitSensorBackground();
+	
 	/* 日常处理 */
 	MainHandleRoutine();
 	
@@ -214,8 +217,8 @@ void MainRollingEnteredUpWork(void)
 {
 	Radio_Trf_Printf("Entered Up Work");
 	BEEP_CtrlRepeat_Extend(3, 30, 70);
-	NETCoapNeedSendCode.WorkInfo = 1;
-	NETMqttSNNeedSendCode.InfoWork = 1;
+	NETCoapNeedSendCode.WorkInfoWait = 3;
+	NETMqttSNNeedSendCode.InfoWorkWait = 3;
 }
 
 /**********************************************************************************************************
@@ -244,8 +247,10 @@ void MainRollingUpwardsActived(void)
 	/* 日常处理 */
 	MainHandleRoutine();
 	
-	/* NBIOT APP Task */
-	NET_NBIOT_App_Task();
+	if (!((NETCoapNeedSendCode.WorkInfoWait > 0) && (NETMqttSNNeedSendCode.InfoWorkWait > 0))) {
+		/* NBIOT APP Task */
+		NET_NBIOT_App_Task();
+	}
 	
 	/* 小无线处理 */
 	Radio_Trf_App_Task();
@@ -290,8 +295,8 @@ void MainRollingEnteredDownSleep(void)
 **********************************************************************************************************/
 void MainRollingEnteredDownWork(void)
 {
-	NETCoapNeedSendCode.WorkInfo = 1;
-	NETMqttSNNeedSendCode.InfoWork = 1;
+	NETCoapNeedSendCode.WorkInfoWait = 3;
+	NETMqttSNNeedSendCode.InfoWorkWait = 3;
 }
 
 /**********************************************************************************************************
@@ -305,8 +310,10 @@ void MainRollingEnteredDownSleepKeepActived(void)
 	/* 日常处理 */
 	MainHandleRoutine();
 	
-	/* NBIOT APP Task */
-	NET_NBIOT_App_Task();
+	if (!((NETCoapNeedSendCode.WorkInfoWait > 0) && (NETMqttSNNeedSendCode.InfoWorkWait > 0))) {
+		/* NBIOT APP Task */
+		NET_NBIOT_App_Task();
+	}
 }
 
 /**********************************************************************************************************
@@ -357,6 +364,30 @@ void MainHandleRoutine(void)
 		SystemRunningTime.seconds = Stm32_GetSecondTick();
 		
 		
+	}
+	/* Every Ten Secound Running */
+	if ((Stm32_GetSecondTick() / 10) != SystemRunningTime.tenseconds) {
+		SystemRunningTime.tenseconds = Stm32_GetSecondTick() / 10;
+		
+		if (NETCoapNeedSendCode.WorkInfoWait > 0) {
+			if (NETCoapNeedSendCode.WorkInfoWait > 1) {
+				__NOP();
+			}
+			else if (NETCoapNeedSendCode.WorkInfoWait > 0) {
+				NETCoapNeedSendCode.WorkInfo = 1;
+			}
+			NETCoapNeedSendCode.WorkInfoWait--;
+		}
+		
+		if (NETMqttSNNeedSendCode.InfoWorkWait > 0) {
+			if (NETMqttSNNeedSendCode.InfoWorkWait > 1) {
+				__NOP();
+			}
+			else if (NETMqttSNNeedSendCode.InfoWorkWait > 0) {
+				NETMqttSNNeedSendCode.InfoWork = 1;
+			}
+			NETMqttSNNeedSendCode.InfoWorkWait--;
+		}
 	}
 	/* Every Minutes Running */
 	if ((Stm32_GetSecondTick() / 60) != SystemRunningTime.minutes) {

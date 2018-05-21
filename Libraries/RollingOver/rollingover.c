@@ -144,10 +144,6 @@ void RollingOverMercuryBreak(void)
 		if (DeviceActivedMode == true) {
 			/* 正置工作 (Idle : false | Active : true) */
 			MainRollingUpwardsActived();													//正放工作
-			if (InitSensorBackgroundCntdown > 0) {
-				RollingOverCheckToInitSensorBackground();
-				InitSensorBackgroundCntdown--;
-			}
 		}
 		else {
 			/* 正置休眠 (Idle : false | Active : false) */
@@ -156,6 +152,9 @@ void RollingOverMercuryBreak(void)
 		
 		TimeBeforeIdle = Stm32_GetSecondTick();
 	}
+	
+	/* 检测是否需要初始化传感器背景 */
+	RollingOverInitSensorBackground();
 }
 
 /**********************************************************************************************************
@@ -209,6 +208,21 @@ void RollingOverMercuryClose(void)
 	}
 	
 	DeviceIdleMode = true;
+}
+
+/**********************************************************************************************************
+ @Function			void RollingOverInitSensorBackground(void)
+ @Description			RollingOverInitSensorBackground
+ @Input				void
+ @Return				void
+ @attention			检查是否需要初始化传感器背景
+**********************************************************************************************************/
+void RollingOverInitSensorBackground(void)
+{
+	if (InitSensorBackgroundCntdown > 0) {
+		RollingOverCheckToInitSensorBackground();
+		InitSensorBackgroundCntdown--;
+	}
 }
 
 /**********************************************************************************************************

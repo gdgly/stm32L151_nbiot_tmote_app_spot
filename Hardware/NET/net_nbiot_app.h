@@ -3,8 +3,8 @@
 
 #include "sys.h"
 
-#define NETCoapNeedSendCode_initializer		{ 0, 0, 1, 1, 1, 0 }
-#define NETMqttSNNeedSendCode_initializer	{ 0, 0, 1, 1, 1, 0 }
+#define NETCoapNeedSendCode_initializer		{ 0, 0, 1, 1, 1, 0, 0 }
+#define NETMqttSNNeedSendCode_initializer	{ 0, 0, 1, 1, 1, 0, 0 }
 
 typedef struct NET_NBIOT_ClientsTypeDef		NET_NBIOT_ClientsTypeDef;
 
@@ -16,6 +16,7 @@ typedef struct
 	char								BasicInfo;
 	char								DynamicInfo;
 	char								RadarInfo;
+	char								WorkInfoWait;
 }NETCoapNeedSendCodeTypeDef;
 
 extern NETCoapNeedSendCodeTypeDef NETCoapNeedSendCode;
@@ -28,6 +29,7 @@ typedef struct
 	char								InfoBasic;
 	char								InfoDynamic;
 	char								InfoRadar;
+	char								InfoWorkWait;
 }NETMqttSNNeedSendCodeTypeDef;
 
 extern NETMqttSNNeedSendCodeTypeDef NETMqttSNNeedSendCode;

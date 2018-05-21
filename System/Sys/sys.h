@@ -52,6 +52,7 @@ typedef struct
 typedef struct
 {
 	unsigned int	seconds;													//秒
+	unsigned int	tenseconds;												//10秒
 	unsigned int	minutes;													//分
 	unsigned int	fifteenMinutes;											//15分钟
 	unsigned int	fortyMinutes;												//40分钟
