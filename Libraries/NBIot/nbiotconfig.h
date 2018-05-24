@@ -113,6 +113,7 @@ struct NBIOT_ParameterTypeDef
 {
 	char								manufacturer[10];
 	char								manufacturermode[20];
+	char								modelversion[30];
 	char								imei[20];
 	char								imeisv[20];
 	char								iccid[25];

@@ -289,7 +289,14 @@ char*		TCFG_Utility_Get_Nbiot_Iccid_String(void);										//读取Nbiot Iccid�
 char*		TCFG_Utility_Get_Nbiot_Imei_String(void);										//读取Nbiot Imei字符串
 int			TCFG_Utility_Get_Nbiot_Rssi_IntVal(void);										//读取Nbiot Rssi值
 unsigned char	TCFG_Utility_Get_Nbiot_Rssi_UnCharVal(void);										//读取Nbiot Rssi值
+int			TCFG_Utility_Get_Nbiot_CellEarfcn(void);										//读取Nbiot CellEarfcn值
+int			TCFG_Utility_Get_Nbiot_CellCellID(void);										//读取Nbiot CellCellID值
+int			TCFG_Utility_Get_Nbiot_CellCell(void);											//读取Nbiot CellCell值
+int			TCFG_Utility_Get_Nbiot_CellRsrp(void);											//读取Nbiot CellRsrp值
+int			TCFG_Utility_Get_Nbiot_CellRsrq(void);											//读取Nbiot CellRsrq值
+int			TCFG_Utility_Get_Nbiot_CellCellrssi(void);										//读取Nbiot CellCellrssi值
 int			TCFG_Utility_Get_Nbiot_CellSnr(void);											//读取Nbiot CellSnr值
+char*		TCFG_Utility_Get_Nbiot_ModelVersion(void);										//读取Nbiot ModelVersion值
 unsigned int	TCFG_Utility_Get_Nbiot_SentCount(void);											//读取Nbiot SentCount值
 unsigned int	TCFG_Utility_Get_Nbiot_RecvCount(void);											//读取Nbiot RecvCount值
 unsigned short	TCFG_Utility_Get_Device_Batt_ShortVal(void);										//读取Device Batt值

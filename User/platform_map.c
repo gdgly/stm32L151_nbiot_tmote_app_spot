@@ -1444,6 +1444,96 @@ unsigned char TCFG_Utility_Get_Nbiot_Rssi_UnCharVal(void)
 }
 
 /**********************************************************************************************************
+ @Function			int TCFG_Utility_Get_Nbiot_CellEarfcn(void)
+ @Description			TCFG_Utility_Get_Nbiot_CellEarfcn				: 读取Nbiot CellEarfcn值
+ @Input				void
+ @Return				CellEarfcn
+**********************************************************************************************************/
+int TCFG_Utility_Get_Nbiot_CellEarfcn(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return NbiotClientHandler.Parameter.statisticsCELL.earfcn;
+#elif NETPROTOCAL == NETMQTTSN
+	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsCELL.earfcn;
+#endif
+}
+
+/**********************************************************************************************************
+ @Function			int TCFG_Utility_Get_Nbiot_CellCellID(void)
+ @Description			TCFG_Utility_Get_Nbiot_CellCellID				: 读取Nbiot CellCellID值
+ @Input				void
+ @Return				CellCellID
+**********************************************************************************************************/
+int TCFG_Utility_Get_Nbiot_CellCellID(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return NbiotClientHandler.Parameter.statisticsCELL.cellID;
+#elif NETPROTOCAL == NETMQTTSN
+	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsCELL.cellID;
+#endif
+}
+
+/**********************************************************************************************************
+ @Function			int TCFG_Utility_Get_Nbiot_CellCell(void)
+ @Description			TCFG_Utility_Get_Nbiot_CellCell				: 读取Nbiot CellCell值
+ @Input				void
+ @Return				CellCell
+**********************************************************************************************************/
+int TCFG_Utility_Get_Nbiot_CellCell(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return NbiotClientHandler.Parameter.statisticsCELL.cell;
+#elif NETPROTOCAL == NETMQTTSN
+	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsCELL.cell;
+#endif
+}
+
+/**********************************************************************************************************
+ @Function			int TCFG_Utility_Get_Nbiot_CellRsrp(void)
+ @Description			TCFG_Utility_Get_Nbiot_CellRsrp				: 读取Nbiot CellRsrp值
+ @Input				void
+ @Return				CellRsrp
+**********************************************************************************************************/
+int TCFG_Utility_Get_Nbiot_CellRsrp(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return NbiotClientHandler.Parameter.statisticsCELL.rsrp;
+#elif NETPROTOCAL == NETMQTTSN
+	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsCELL.rsrp;
+#endif
+}
+
+/**********************************************************************************************************
+ @Function			int TCFG_Utility_Get_Nbiot_CellRsrq(void)
+ @Description			TCFG_Utility_Get_Nbiot_CellRsrq				: 读取Nbiot CellRsrq值
+ @Input				void
+ @Return				CellRsrq
+**********************************************************************************************************/
+int TCFG_Utility_Get_Nbiot_CellRsrq(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return NbiotClientHandler.Parameter.statisticsCELL.rsrq;
+#elif NETPROTOCAL == NETMQTTSN
+	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsCELL.rsrq;
+#endif
+}
+
+/**********************************************************************************************************
+ @Function			int TCFG_Utility_Get_Nbiot_CellCellrssi(void)
+ @Description			TCFG_Utility_Get_Nbiot_CellCellrssi			: 读取Nbiot CellCellrssi值
+ @Input				void
+ @Return				CellCellrssi
+**********************************************************************************************************/
+int TCFG_Utility_Get_Nbiot_CellCellrssi(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return NbiotClientHandler.Parameter.statisticsCELL.cellrssi;
+#elif NETPROTOCAL == NETMQTTSN
+	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsCELL.cellrssi;
+#endif
+}
+
+/**********************************************************************************************************
  @Function			int TCFG_Utility_Get_Nbiot_CellSnr(void)
  @Description			TCFG_Utility_Get_Nbiot_CellSnr				: 读取Nbiot CellSnr值
  @Input				void
@@ -1455,6 +1545,21 @@ int TCFG_Utility_Get_Nbiot_CellSnr(void)
 	return NbiotClientHandler.Parameter.statisticsCELL.snr;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsCELL.snr;
+#endif
+}
+
+/**********************************************************************************************************
+ @Function			char* TCFG_Utility_Get_Nbiot_ModelVersion(void)
+ @Description			TCFG_Utility_Get_Nbiot_ModelVersion			: 读取Nbiot ModelVersion值
+ @Input				void
+ @Return				Nbiot_ModelVersion
+**********************************************************************************************************/
+char* TCFG_Utility_Get_Nbiot_ModelVersion(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return NbiotClientHandler.Parameter.modelversion;
+#elif NETPROTOCAL == NETMQTTSN
+	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.modelversion;
 #endif
 }
 

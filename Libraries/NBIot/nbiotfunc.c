@@ -179,6 +179,34 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadManufacturerModel(NBIOT_ClientsType
 }
 
 /**********************************************************************************************************
+ @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadModelVersion(NBIOT_ClientsTypeDef* pClient)
+ @Description			NBIOT_Neul_NBxx_CheckReadModelVersion		: 检出模组软件版本号
+ @Input				pClient								: NBIOT客户端实例
+ @Return				NBIOT_StatusTypeDef						: NBIOT处理状态
+**********************************************************************************************************/
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadModelVersion(NBIOT_ClientsTypeDef* pClient)
+{
+	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+	
+	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
+	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	
+	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+CGMR\r");
+	pClient->ATCmdStack->ATSendlen = strlen("AT+CGMR\r");
+	pClient->ATCmdStack->ATack = "OK";
+	pClient->ATCmdStack->ATNack = "ERROR";
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
+		memset((void *)pClient->Parameter.modelversion, 0x0, sizeof(pClient->Parameter.modelversion));
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nSECURITY,%*11s%s\r\n", pClient->Parameter.modelversion) <= 0) {
+			NBStatus = NBIOT_ERROR;
+		}
+	}
+	
+	return NBStatus;
+}
+
+/**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadIMEI(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadIMEI				: 检出IMEI号
  @Input				pClient								: NBIOT客户端实例

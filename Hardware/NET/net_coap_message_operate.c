@@ -40,14 +40,18 @@ int NET_COAP_Message_Operate_Creat_Json_Work_Info(char* outBuffer)
 			"{"
 				"\"Sense\":%d,"
 				"\"Mode\":\"%s\","
-				"\"Channel\":%d"
+				"\"Channel\":%d,"
+				"\"range\":%d,"
+				"\"cell\":%d.%d"
 			"}"
 		"}",
 		
 		TCFG_EEPROM_Get_MAC_SN(),
 		TCFG_EEPROM_GetSavedSensitivity(),
 		TCFG_EEPROM_Get_WorkMode_String(),
-		TCFG_EEPROM_GetRfChannel()
+		TCFG_EEPROM_GetRfChannel(),
+		TCFG_Utility_Get_DistanceRange(),
+		TCFG_Utility_Get_Nbiot_CellEarfcn(), TCFG_Utility_Get_Nbiot_CellCellID()
 	);
 	
 	return strlen(outBuffer);
@@ -75,6 +79,7 @@ int NET_COAP_Message_Operate_Creat_Json_Basic_Info(char* outBuffer)
 				"\"Sim\":\"%s\","
 				"\"Imei\":\"%s\","
 				"\"Boot\":\"%d.%d\""
+				"\"Ver\":\"%s\""
 			"}"
 		"}",
 		
@@ -86,7 +91,8 @@ int NET_COAP_Message_Operate_Creat_Json_Basic_Info(char* outBuffer)
 		TCFG_Utility_Get_Build_Time_String(),
 		TCFG_Utility_Get_Nbiot_Iccid_String(),
 		TCFG_Utility_Get_Nbiot_Imei_String(),
-		TCFG_Utility_Get_SoftResetFlag(), TCFG_Utility_Get_Device_BootCount()
+		TCFG_Utility_Get_SoftResetFlag(), TCFG_Utility_Get_Device_BootCount(),
+		TCFG_Utility_Get_Nbiot_ModelVersion()
 	);
 	
 	return strlen(outBuffer);
