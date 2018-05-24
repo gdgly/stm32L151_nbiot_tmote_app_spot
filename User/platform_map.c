@@ -1549,6 +1549,36 @@ int TCFG_Utility_Get_Nbiot_CellSnr(void)
 }
 
 /**********************************************************************************************************
+ @Function			unsigned int TCFG_Utility_Get_Nbiot_NetworkRegistStatusTac(void)
+ @Description			TCFG_Utility_Get_Nbiot_NetworkRegistStatusTac	: 读取Nbiot NetworkRegistStatusTac值
+ @Input				void
+ @Return				Nbiot_NetworkRegistStatusTac
+**********************************************************************************************************/
+unsigned int TCFG_Utility_Get_Nbiot_NetworkRegistStatusTac(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return NbiotClientHandler.Parameter.networkRegStatus.tac;
+#elif NETPROTOCAL == NETMQTTSN
+	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.networkRegStatus.tac;
+#endif
+}
+
+/**********************************************************************************************************
+ @Function			unsigned int TCFG_Utility_Get_Nbiot_NetworkRegistStatusCellID(void)
+ @Description			TCFG_Utility_Get_Nbiot_NetworkRegistStatusCellID	: 读取Nbiot NetworkRegistStatusCellID值
+ @Input				void
+ @Return				Nbiot_NetworkRegistStatusCellID
+**********************************************************************************************************/
+unsigned int TCFG_Utility_Get_Nbiot_NetworkRegistStatusCellID(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return NbiotClientHandler.Parameter.networkRegStatus.cellID;
+#elif NETPROTOCAL == NETMQTTSN
+	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.networkRegStatus.cellID;
+#endif
+}
+
+/**********************************************************************************************************
  @Function			char* TCFG_Utility_Get_Nbiot_ModelVersion(void)
  @Description			TCFG_Utility_Get_Nbiot_ModelVersion			: 读取Nbiot ModelVersion值
  @Input				void

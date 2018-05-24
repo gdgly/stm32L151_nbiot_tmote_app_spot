@@ -122,6 +122,12 @@ struct NBIOT_ParameterTypeDef
 	char								cgdcont[30];
 	int								rssi;
 	
+	struct NetworkRegistrationStatusTypeDef
+	{
+		unsigned short int				tac;
+		unsigned int					cellID;
+	}networkRegStatus;
+	
 	struct StatisticsCELLTypeDef
 	{
 		int							earfcn;

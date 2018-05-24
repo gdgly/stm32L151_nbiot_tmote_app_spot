@@ -325,6 +325,51 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadStatisticsCELL(NBIOT_ClientsTypeDef
 }
 
 /**********************************************************************************************************
+ @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadAreaCode(NBIOT_ClientsTypeDef* pClient)
+ @Description			NBIOT_Neul_NBxx_CheckReadAreaCode			: 检出基站区域码
+ @Input				pClient								: NBIOT客户端实例
+ @Return				NBIOT_StatusTypeDef						: NBIOT处理状态
+**********************************************************************************************************/
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadAreaCode(NBIOT_ClientsTypeDef* pClient)
+{
+	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+	
+	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
+	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	
+	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+CEREG=2\r");
+	pClient->ATCmdStack->ATSendlen = strlen("AT+CEREG=2\r");
+	pClient->ATCmdStack->ATack = "OK";
+	pClient->ATCmdStack->ATNack = "ERROR";
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) != NBIOT_OK) {
+		goto exit;
+	}
+	
+	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+CEREG?\r");
+	pClient->ATCmdStack->ATSendlen = strlen("AT+CEREG?\r");
+	pClient->ATCmdStack->ATack = "OK";
+	pClient->ATCmdStack->ATNack = "ERROR";
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+]+CEREG:%*d,%*d,%hx,%x,%*d\r\n", &pClient->Parameter.networkRegStatus.tac, &pClient->Parameter.networkRegStatus.cellID) <= 0) {
+			NBStatus = NBIOT_ERROR;
+			goto exit;
+		}
+	}
+	
+	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+CEREG=0\r");
+	pClient->ATCmdStack->ATSendlen = strlen("AT+CEREG=0\r");
+	pClient->ATCmdStack->ATack = "OK";
+	pClient->ATCmdStack->ATNack = "ERROR";
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) != NBIOT_OK) {
+		goto exit;
+	}
+	
+exit:
+	return NBStatus;
+}
+
+/**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadICCID(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadICCID			: 检出ICCID卡号
  @Input				pClient								: NBIOT客户端实例

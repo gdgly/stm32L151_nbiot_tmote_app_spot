@@ -42,7 +42,8 @@ int NET_COAP_Message_Operate_Creat_Json_Work_Info(char* outBuffer)
 				"\"Mode\":\"%s\","
 				"\"Channel\":%d,"
 				"\"range\":%d,"
-				"\"cell\":%d.%d"
+				"\"cell\":%d.%d,"
+				"\"tac\":%x.%x"
 			"}"
 		"}",
 		
@@ -51,7 +52,8 @@ int NET_COAP_Message_Operate_Creat_Json_Work_Info(char* outBuffer)
 		TCFG_EEPROM_Get_WorkMode_String(),
 		TCFG_EEPROM_GetRfChannel(),
 		TCFG_Utility_Get_DistanceRange(),
-		TCFG_Utility_Get_Nbiot_CellEarfcn(), TCFG_Utility_Get_Nbiot_CellCellID()
+		TCFG_Utility_Get_Nbiot_CellEarfcn(), TCFG_Utility_Get_Nbiot_CellCellID(),
+		TCFG_Utility_Get_Nbiot_NetworkRegistStatusTac(), TCFG_Utility_Get_Nbiot_NetworkRegistStatusCellID()
 	);
 	
 	return strlen(outBuffer);

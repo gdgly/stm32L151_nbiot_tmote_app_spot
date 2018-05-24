@@ -1210,6 +1210,7 @@ void NET_COAP_NBIOT_Event_PatameterCheckOut(NBIOT_ClientsTypeDef* pClient)
 	    (NBIOT_Neul_NBxx_CheckReadCGDCONT(pClient) == NBIOT_OK) && 
 	    (NBIOT_Neul_NBxx_CheckReadRSSI(pClient) == NBIOT_OK) && 
 	    (NBIOT_Neul_NBxx_CheckReadStatisticsCELL(pClient) == NBIOT_OK) && 
+	    (NBIOT_Neul_NBxx_CheckReadAreaCode(pClient) == NBIOT_OK) && 
 	    (NBIOT_Neul_NBxx_CheckReadDateTime(pClient) == NBIOT_OK)) {
 		/* Dictate execute is Success */
 		pClient->DictateRunCtl.dictateEnable = false;

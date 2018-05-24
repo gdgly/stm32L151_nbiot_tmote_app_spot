@@ -296,6 +296,8 @@ int			TCFG_Utility_Get_Nbiot_CellRsrp(void);											//读取Nbiot CellRsrp值
 int			TCFG_Utility_Get_Nbiot_CellRsrq(void);											//读取Nbiot CellRsrq值
 int			TCFG_Utility_Get_Nbiot_CellCellrssi(void);										//读取Nbiot CellCellrssi值
 int			TCFG_Utility_Get_Nbiot_CellSnr(void);											//读取Nbiot CellSnr值
+unsigned int	TCFG_Utility_Get_Nbiot_NetworkRegistStatusTac(void);								//读取Nbiot NetworkRegistStatusTac值
+unsigned int	TCFG_Utility_Get_Nbiot_NetworkRegistStatusCellID(void);							//读取Nbiot NetworkRegistStatusCellID值
 char*		TCFG_Utility_Get_Nbiot_ModelVersion(void);										//读取Nbiot ModelVersion值
 unsigned int	TCFG_Utility_Get_Nbiot_SentCount(void);											//读取Nbiot SentCount值
 unsigned int	TCFG_Utility_Get_Nbiot_RecvCount(void);											//读取Nbiot RecvCount值
