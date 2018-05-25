@@ -100,6 +100,10 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_SystemData.RadarRange = 0;
 	TCFG_EEPROM_SetRadarRange(TCFG_SystemData.RadarRange);
 	
+	/* 车辆进入延时上报时间 */
+	TCFG_SystemData.CarInDelay = 8;
+	TCFG_EEPROM_SetCarInDelay(TCFG_SystemData.CarInDelay);
+	
 	/* 车位检测车辆次数 */
 	TCFG_SystemData.SpotStatusCount = 0;
 	TCFG_EEPROM_SetStatusCount(TCFG_SystemData.SpotStatusCount);
@@ -183,29 +187,7 @@ void TCFG_EEPROM_ReadConfigData(void)
 	
 	/* 无线通道选择 */
 	TCFG_SystemData.RFChannel = TCFG_EEPROM_GetRfChannel();
-	switch (TCFG_SystemData.RFChannel)
-	{
-	case 36:
-		RF_CHANNEL1 = 36;
-		break;
-	case 4:
-		RF_CHANNEL1 = 4;
-		break;
-	case 6:
-		RF_CHANNEL1 = 6;
-		break;
-	case 16:
-		RF_CHANNEL1 = 16;
-		break;
-	case 26:
-		RF_CHANNEL1 = 26;
-		break;
-	default:
-		RF_CHANNEL1 = 36;
-		TCFG_SystemData.RFChannel = 36;
-		TCFG_EEPROM_SetRfChannel(TCFG_SystemData.RFChannel);
-		break;
-	}
+	RF_CHANNEL1 = TCFG_SystemData.RFChannel;
 	
 	/* 无线心跳间隔 */
 	TCFG_SystemData.Heartinterval = TCFG_EEPROM_GetHeartinterval();
@@ -225,6 +207,9 @@ void TCFG_EEPROM_ReadConfigData(void)
 	
 	/* 雷达检测范围 */
 	TCFG_SystemData.RadarRange = TCFG_EEPROM_GetRadarRange();
+	
+	/* 车辆进入延时上报时间 */
+	TCFG_SystemData.CarInDelay = TCFG_EEPROM_GetCarInDelay();
 	
 	/* 车位检测车辆次数 */
 	TCFG_SystemData.SpotStatusCount = TCFG_EEPROM_GetStatusCount();
@@ -741,7 +726,32 @@ void TCFG_EEPROM_SetRfChannel(unsigned char val)
 **********************************************************************************************************/
 unsigned char TCFG_EEPROM_GetRfChannel(void)
 {
-	return FLASH_EEPROM_ReadByte(TCFG_RFCHANNEL_OFFSET);
+	unsigned char val;
+	
+	val = FLASH_EEPROM_ReadByte(TCFG_RFCHANNEL_OFFSET);
+	switch (val)
+	{
+	case 36:
+		val = 36;
+		break;
+	case 4:
+		val = 4;
+		break;
+	case 6:
+		val = 6;
+		break;
+	case 16:
+		val = 16;
+		break;
+	case 26:
+		val = 26;
+		break;
+	default:
+		val = 36;
+		break;
+	}
+	
+	return val;
 }
 
 /**********************************************************************************************************
@@ -1233,6 +1243,35 @@ void TCFG_EEPROM_SetRadarRange(uint8_t val)
 unsigned char TCFG_EEPROM_GetRadarRange(void)
 {
 	return FLASH_EEPROM_ReadByte(TCFG_RADAR_RANGE_OFFSET);
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetCarInDelay(uint8_t val)
+ @Description			TCFG_EEPROM_SetCarInDelay					: 保存CarInDelay
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetCarInDelay(uint8_t val)
+{
+	FLASH_EEPROM_WriteByte(TCFG_CARIN_DELAY_OFFSET, val);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned char TCFG_EEPROM_GetCarInDelay(void)
+ @Description			TCFG_EEPROM_GetCarInDelay					: 读取CarInDelay
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned char TCFG_EEPROM_GetCarInDelay(void)
+{
+	unsigned char val;
+	
+	val = FLASH_EEPROM_ReadByte(TCFG_CARIN_DELAY_OFFSET);
+	if (val < 8) {
+		val = 8;
+	}
+	
+	return val;
 }
 
 /**********************************************************************************************************

@@ -336,6 +336,20 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					Radio_Trf_Printf("RadarRange : %hu", TCFG_SystemData.RadarRange);
 					__NOP();
 				}
+				/* MagInit */
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "maginit")) {
+					QMC5883L_InitBackgroud();
+					BEEP_CtrlRepeat_Extend(5,30,70);
+					__NOP();
+				}
+				/* CarInDelay */
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "indelay")) {
+					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "indelay:%hu", &uval16);
+					TCFG_EEPROM_SetCarInDelay(uval16);
+					TCFG_SystemData.CarInDelay = TCFG_EEPROM_GetCarInDelay();
+					Radio_Trf_Printf("CarInDelay : %hu", TCFG_SystemData.CarInDelay);
+					__NOP();
+				}
 				/* NetInfo */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "netinfo")) {
 				#if NETPROTOCAL == NETCOAP

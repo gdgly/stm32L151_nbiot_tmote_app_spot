@@ -117,6 +117,8 @@
 #define TCFG_NB_HEART_LENGTH				1												//NBHeart				NB心跳
 #define TCFG_RADAR_RANGE_OFFSET			TCFG_NB_HEART_OFFSET + TCFG_NB_HEART_LENGTH				//0x080804DD
 #define TCFG_RADAR_RANGE_LENGTH			1												//RadarRange			雷达范围
+#define TCFG_CARIN_DELAY_OFFSET			TCFG_RADAR_RANGE_OFFSET + TCFG_RADAR_RANGE_LENGTH			//0x080804DE
+#define TCFG_CARIN_DELAY_LENGTH			1												//CarInDelay			车辆进入延时上报时间
 
 enum TCFG_SENSITIVITY																	//传感器灵敏度
 {
@@ -146,6 +148,7 @@ typedef struct
 	unsigned int						RadarCount;										//雷达次数
 	unsigned char						RadarDbgMode;										//雷达调试模式
 	unsigned char						RadarRange;										//雷达检测范围
+	unsigned char						CarInDelay;										//车辆进入延时上报时间
 	unsigned int						SpotStatusCount;									//车位检测车辆次数
 	unsigned char						NBIotHeart;										//NBIot心跳间隔
 	unsigned int						NBIotBootCount;									//NBIot重启次数
@@ -271,6 +274,9 @@ unsigned char	TCFG_EEPROM_GetNbiotHeart(void);												//读取NbiotHeart
 
 void			TCFG_EEPROM_SetRadarRange(uint8_t val);											//保存RadarRange
 unsigned char	TCFG_EEPROM_GetRadarRange(void);												//读取RadarRange
+
+void			TCFG_EEPROM_SetCarInDelay(uint8_t val);											//保存CarInDelay
+unsigned char	TCFG_EEPROM_GetCarInDelay(void);												//读取CarInDelay
 
 void			TCFG_Utility_Add_Device_BootCount(void);										//Device重启次数累加
 unsigned short TCFG_Utility_Get_Device_BootCount(void);										//Device重启次数获取
