@@ -6,7 +6,7 @@
 #include "net_mqttsn_app.h"
 #include "net_dns_app.h"
 
-//#define	MVB_SUBSN						0x85000001						//设备号
+//#define	MVB_SUBSN						0x850A0008						//设备号
 //#define	MVB_BRAND						"mvb"							//厂牌
 
 #define	MVB_STATICMAGNETIC_MODEL			51
@@ -33,7 +33,7 @@
 #define	RADIO_SI4438													//无线开启
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					69								//从固件版本
+#define	SOFTWARESUB					70								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 

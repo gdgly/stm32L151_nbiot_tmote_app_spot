@@ -149,8 +149,8 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Work(char* outBuffer)
 				"\"Mode\":\"%s\","
 				"\"Channel\":%d,"
 				"\"range\":%d,"
-				"\"cell\":%d.%d,"
-				"\"tac\":%x.%x"
+				"\"cell\":\"%d.%d\","
+				"\"tac\":\"%x.%x\""
 			"}"
 		"}",
 		

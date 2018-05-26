@@ -42,8 +42,8 @@ int NET_COAP_Message_Operate_Creat_Json_Work_Info(char* outBuffer)
 				"\"Mode\":\"%s\","
 				"\"Channel\":%d,"
 				"\"range\":%d,"
-				"\"cell\":%d.%d,"
-				"\"tac\":%x.%x"
+				"\"cell\":\"%d.%d\","
+				"\"tac\":\"%x.%x\""
 			"}"
 		"}",
 		
@@ -80,7 +80,7 @@ int NET_COAP_Message_Operate_Creat_Json_Basic_Info(char* outBuffer)
 				"\"Build\":\"%s\","
 				"\"Sim\":\"%s\","
 				"\"Imei\":\"%s\","
-				"\"Boot\":\"%d.%d\""
+				"\"Boot\":\"%d.%d\","
 				"\"Ver\":\"%s\""
 			"}"
 		"}",
