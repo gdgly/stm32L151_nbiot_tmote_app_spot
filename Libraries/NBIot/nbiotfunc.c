@@ -202,12 +202,12 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadManufacturerModel(NBIOT_ClientsType
 }
 
 /**********************************************************************************************************
- @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadModelVersion(NBIOT_ClientsTypeDef* pClient)
- @Description			NBIOT_Neul_NBxx_CheckReadModelVersion		: 检出模组软件版本号
+ @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadModuleVersion(NBIOT_ClientsTypeDef* pClient)
+ @Description			NBIOT_Neul_NBxx_CheckReadModuleVersion		: 检出模组软件版本号
  @Input				pClient								: NBIOT客户端实例
  @Return				NBIOT_StatusTypeDef						: NBIOT处理状态
 **********************************************************************************************************/
-NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadModelVersion(NBIOT_ClientsTypeDef* pClient)
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadModuleVersion(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;

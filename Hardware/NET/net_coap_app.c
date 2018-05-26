@@ -221,7 +221,7 @@ void NET_COAP_NBIOT_Event_ModuleCheck(NBIOT_ClientsTypeDef* pClient)
 	
 	if ((NBIOT_Neul_NBxx_CheckReadManufacturer(pClient) == NBIOT_OK) && 
 	    (NBIOT_Neul_NBxx_CheckReadManufacturerModel(pClient) == NBIOT_OK) &&
-	    (NBIOT_Neul_NBxx_CheckReadModelVersion(pClient) == NBIOT_OK)) {
+	    (NBIOT_Neul_NBxx_CheckReadModuleVersion(pClient) == NBIOT_OK)) {
 		/* Dictate execute is Success */
 		pClient->DictateRunCtl.dictateEnable = false;
 		pClient->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
