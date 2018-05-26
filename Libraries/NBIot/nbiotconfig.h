@@ -77,6 +77,13 @@ typedef enum
 	NConfigTrue						= 0x01
 }NBIOT_NConfigTypeDef;
 
+/* NBIOT PSM Status */
+typedef enum
+{
+	NormalMode						= 0x00,
+	PowerSavingMode					= 0x01
+}NBIOT_PSMStatusTypeDef;
+
 /* NBIOT Dictate Event */
 typedef enum
 {
@@ -174,6 +181,7 @@ struct NBIOT_ParameterTypeDef
 		NBIOT_NConfigTypeDef			enableBip;
 	}nconfig;
 	
+	NBIOT_PSMStatusTypeDef				psmstate;
 	NBIOT_NetstateTypeDef				netstate;
 	NBIOT_FunctionalityTypeDef			functionality;
 	NBIOT_OpenOrCloseFuncTypeDef			nnmistate;

@@ -1,6 +1,8 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang
 
+* 2018-05-26 : 
+	* NB增加清空频点指令,获取当前PSM状态指令。
 * 2018-05-24 : 
 	* V66版本：增加NB软件版本号获取，基站信息获取。
 	* info信息包中增加NB软件版本号，基站信息。

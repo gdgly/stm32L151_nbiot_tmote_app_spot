@@ -123,6 +123,29 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SoftwareReboot(NBIOT_ClientsTypeDef* pClient
 }
 
 /**********************************************************************************************************
+ @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_ClearStoredEarfcn(NBIOT_ClientsTypeDef* pClient)
+ @Description			NBIOT_Neul_NBxx_ClearStoredEarfcn			: 清除小区频点
+ @Input				pClient								: NBIOT客户端实例
+ @Return				NBIOT_StatusTypeDef						: NBIOT处理状态
+**********************************************************************************************************/
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_ClearStoredEarfcn(NBIOT_ClientsTypeDef* pClient)
+{
+	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+	
+	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
+	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	
+	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+NCSEARFCN\r");
+	pClient->ATCmdStack->ATSendlen = strlen("AT+NCSEARFCN\r");
+	pClient->ATCmdStack->ATack = "OK";
+	pClient->ATCmdStack->ATNack = "ERROR";
+	NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack);
+	
+	return NBStatus;
+}
+
+/**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadManufacturer(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadManufacturer		: 检出制造商标识
  @Input				pClient								: NBIOT客户端实例
@@ -553,6 +576,57 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadDateTime(NBIOT_ClientsTypeDef* pCli
 		}
 	}
 	
+	return NBStatus;
+}
+
+/**********************************************************************************************************
+ @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadPowerSavingModeStatus(NBIOT_ClientsTypeDef* pClient)
+ @Description			NBIOT_Neul_NBxx_CheckReadPowerSavingModeStatus	: 查询终端PSM状态
+ @Input				pClient									: NBIOT客户端实例
+ @Return				NBIOT_StatusTypeDef							: NBIOT处理状态
+**********************************************************************************************************/
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadPowerSavingModeStatus(NBIOT_ClientsTypeDef* pClient)
+{
+	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+	
+	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
+	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	
+	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+NPSMR=1\r");
+	pClient->ATCmdStack->ATSendlen = strlen("AT+NPSMR=1\r");
+	pClient->ATCmdStack->ATack = "OK";
+	pClient->ATCmdStack->ATNack = "ERROR";
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) != NBIOT_OK) {
+		goto exit;
+	}
+	
+	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+NPSMR?\r");
+	pClient->ATCmdStack->ATSendlen = strlen("AT+NPSMR?\r");
+	pClient->ATCmdStack->ATack = "OK";
+	pClient->ATCmdStack->ATNack = "ERROR";
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
+		if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+NPSMR:1,1")) {
+			pClient->Parameter.psmstate = PowerSavingMode;
+		}
+		else if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+NPSMR:1,0")) {
+			pClient->Parameter.psmstate = NormalMode;
+		}
+		else {
+			NBStatus = NBIOT_ERROR;
+			goto exit;
+		}
+	}
+	
+	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+NPSMR=0\r");
+	pClient->ATCmdStack->ATSendlen = strlen("AT+NPSMR=0\r");
+	pClient->ATCmdStack->ATack = "OK";
+	pClient->ATCmdStack->ATNack = "ERROR";
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) != NBIOT_OK) {
+		goto exit;
+	}
+	
+exit:
 	return NBStatus;
 }
 
