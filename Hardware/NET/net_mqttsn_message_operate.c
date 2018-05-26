@@ -246,9 +246,8 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Dynamic(char* outBuffer)
 				"\"nbboot\":%d,"
 				"\"nbsent\":%d,"
 				"\"nbrecv\":%d,"
-				"\"magmod\":%d,"
-				"\"nbheart\":%d,"
-				"\"range\":%d"
+				"\"indelay\":%d,"
+				"\"nbheart\":%d"
 			"}"
 		"}",
 		
@@ -266,9 +265,8 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Dynamic(char* outBuffer)
 		TCFG_Utility_Get_Nbiot_BootCount(),
 		TCFG_Utility_Get_Nbiot_SentCount(),
 		TCFG_Utility_Get_Nbiot_RecvCount(),
-		TCFG_EEPROM_GetMagMode(),
-		TCFG_EEPROM_GetNbiotHeart(),
-		TCFG_Utility_Get_DistanceRange()
+		TCFG_EEPROM_GetCarInDelay(),
+		TCFG_EEPROM_GetNbiotHeart()
 	);
 	
 	return strlen(outBuffer);

@@ -28,6 +28,23 @@
 SpotStatusTypedef				SpotStatusDataBackUp;
 
 /**********************************************************************************************************
+ @Function			char Inspect_Mag_Stable(void)
+ @Description			Inspect_Mag_Stable			: 车位检测算法地磁稳定
+ @Input				void
+ @Return				char
+**********************************************************************************************************/
+char Inspect_Mag_Stable(void)
+{
+	char rt = MAG_NO_CHANGE;
+	
+	if (SpotStatusDataBackUp.spot_status == SPOT_CAR_OCCUPY) {
+		rt = talgo_check_mag_motion_lately(TCFG_EEPROM_GetCarInDelay());
+	}
+	
+	return rt;
+}
+
+/**********************************************************************************************************
  @Function			void Inspect_Spot_Init(void)
  @Description			Inspect_Spot_Init			: 车位检测算法初始化
  @Input				void
@@ -82,6 +99,8 @@ void Inspect_Spot_ExistenceDetect(void)
 	static char noStatusSent = 1;
 	static uint32_t time2send_spot = 0;
 	static uint8_t status_pre = SPOT_CAR_UNKNOWN;
+	static int32_t lasttime2send_radar_at_free = -3600;
+	static uint8_t prepare2send_radar = 0;
 	
 	talgo_set_sensitivity(TCFG_SystemData.Sensitivity - 1);
 	
@@ -173,13 +192,34 @@ void Inspect_Spot_ExistenceDetect(void)
 	
 	/* 数据存于缓存 */
 	if (SpotStatusDataBackUp.timeCounter != 0) {
-		if ((time2send_spot + 8) < Stm32_GetSecondTick()) {
+		
+		if (((MAG_NO_CHANGE == Inspect_Mag_Stable()) && ((time2send_spot+8) < Stm32_GetSecondTick())) || ((SpotStatusDataBackUp.timeCounter+24) < Stm32_GetSecondTick())) {
 			if (status_pre != SpotStatusDataBackUp.spot_status) {
 				Inspect_Message_SpotStatusEnqueue(SpotStatusDataBackUp);
 				status_pre = SpotStatusDataBackUp.spot_status;
 				time2send_spot = Stm32_GetSecondTick();
+				if (SpotStatusDataBackUp.spot_status == SPOT_CAR_FREE) {
+					if ((lasttime2send_radar_at_free + 3600) < Stm32_GetSecondTick()) {
+						lasttime2send_radar_at_free = Stm32_GetSecondTick();
+						NETCoapNeedSendCode.RadarInfo = 1;
+						NETMqttSNNeedSendCode.InfoRadar = 1;
+						prepare2send_radar = 60;
+					}
+				}
+				else {
+					prepare2send_radar = 0;
+				}
 			}
 			SpotStatusDataBackUp.timeCounter = 0;
+		}
+	}
+	
+	if (prepare2send_radar > 0) {
+		prepare2send_radar--;
+		if ((prepare2send_radar == 0) && (SpotStatusDataBackUp.spot_status == 0)) {
+			lasttime2send_radar_at_free = Stm32_GetSecondTick();
+			NETCoapNeedSendCode.RadarInfo = 1;
+			NETMqttSNNeedSendCode.InfoRadar = 1;
 		}
 	}
 }
