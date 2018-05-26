@@ -232,7 +232,7 @@ void NET_MQTTSN_NBIOT_Event_HardwareReboot(MQTTSN_ClientsTypeDef* pClient)
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MODULE_CHECK;
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateRebootFailureCnt = 0;
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("NB HDReboot Ok, Baud : %d", NBIOTBaudRate.Baud);
+		Radio_Trf_Debug_Printf("NB HDRBT Ok, Baud:%d", NBIOTBaudRate.Baud);
 #endif
 	}
 	else {
@@ -252,7 +252,7 @@ void NET_MQTTSN_NBIOT_Event_HardwareReboot(MQTTSN_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
 		}
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("NB HDReboot Fail");
+		Radio_Trf_Debug_Printf("NB HDRBT Fail");
 #endif
 	}
 }
@@ -283,7 +283,7 @@ void NET_MQTTSN_NBIOT_Event_ModuleCheck(MQTTSN_ClientsTypeDef* pClient)
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateModuleCheckFailureCnt = 0;
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("NB ModuleCheck Ok");
+		Radio_Trf_Debug_Printf("NB MduCheck Ok");
 #endif
 	}
 	else {
@@ -303,7 +303,7 @@ void NET_MQTTSN_NBIOT_Event_ModuleCheck(MQTTSN_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MODULE_CHECK;
 		}
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("NB ModuleCheck Fail");
+		Radio_Trf_Debug_Printf("NB MduCheck Fail");
 #endif
 	}
 }
@@ -332,7 +332,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ICCID_CHECK;
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("NB ConfigRead Ok");
+		Radio_Trf_Debug_Printf("NB CfgRd Ok");
 #endif
 	}
 	else {
@@ -352,7 +352,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
 		}
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("NB ConfigRead Fail");
+		Radio_Trf_Debug_Printf("NB CfgRd Fail");
 #endif
 		return;
 	}
@@ -364,7 +364,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ICCID_CHECK;
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("NB AutoConnectSet %d Ok", NConfigTrue);
+			Radio_Trf_Debug_Printf("NB %s %d Ok", AutoConnect, NConfigTrue);
 #endif
 		}
 		else {
@@ -384,7 +384,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
 			}
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("NB AutoConnectSet %d Fail", NConfigTrue);
+			Radio_Trf_Debug_Printf("NB %s %d Fail", AutoConnect, NConfigTrue);
 #endif
 			return;
 		}
@@ -397,7 +397,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ICCID_CHECK;
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("NB CrScramblingSet %d Ok", NConfigTrue);
+			Radio_Trf_Debug_Printf("NB %s %d Ok", CrScrambling, NConfigTrue);
 #endif
 		}
 		else {
@@ -417,7 +417,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
 			}
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("NB CrScramblingSet %d Fail", NConfigTrue);
+			Radio_Trf_Debug_Printf("NB %s %d Fail", CrScrambling, NConfigTrue);
 #endif
 			return;
 		}
@@ -430,7 +430,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ICCID_CHECK;
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("NB CrSiAvoidSet %d Ok", NConfigTrue);
+			Radio_Trf_Debug_Printf("NB %s %d Ok", CrSiAvoid, NConfigTrue);
 #endif
 		}
 		else {
@@ -450,7 +450,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
 			}
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("NB CrSiAvoidSet %d Fail", NConfigTrue);
+			Radio_Trf_Debug_Printf("NB %s %d Fail", CrSiAvoid, NConfigTrue);
 #endif
 			return;
 		}
@@ -463,7 +463,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ICCID_CHECK;
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("NB CombineAttachSet %d Ok", NConfigFalse);
+			Radio_Trf_Debug_Printf("NB %s %d Ok", CombineAttach, NConfigFalse);
 #endif
 		}
 		else {
@@ -483,7 +483,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
 			}
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("NB CombineAttachSet %d Fail", NConfigFalse);
+			Radio_Trf_Debug_Printf("NB %s %d Fail", CombineAttach, NConfigFalse);
 #endif
 			return;
 		}
@@ -496,7 +496,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ICCID_CHECK;
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("NB CellReselectionSet %d Ok", NConfigFalse);
+			Radio_Trf_Debug_Printf("NB %s %d Ok", CellReselection, NConfigFalse);
 #endif
 		}
 		else {
@@ -516,7 +516,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
 			}
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("NB CellReselectionSet %d Fail", NConfigFalse);
+			Radio_Trf_Debug_Printf("NB %s %d Fail", CellReselection, NConfigFalse);
 #endif
 			return;
 		}
@@ -529,7 +529,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ICCID_CHECK;
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("NB EnableBipSet %d Ok", NConfigFalse);
+			Radio_Trf_Debug_Printf("NB %s %d Ok", EnableBip, NConfigFalse);
 #endif
 		}
 		else {
@@ -549,7 +549,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
 			}
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("NB EnableBipSet %d Fail", NConfigFalse);
+			Radio_Trf_Debug_Printf("NB %s %d Fail", EnableBip, NConfigFalse);
 #endif
 			return;
 		}

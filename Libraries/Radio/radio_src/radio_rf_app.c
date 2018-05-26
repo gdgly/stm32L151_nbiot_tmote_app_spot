@@ -268,7 +268,7 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 			else if (pPayload->head.type == TRF_MSG_INITBACKGROUND) {
 				Radar_InitBackground(TO_SAVE_RADAR_BACKGROUND);
 				QMC5883L_InitBackgroud();
-				Radio_Trf_Printf("Inspect Spot Background Init");
+				Radio_Trf_Printf("Inspect Background Init");
 				__NOP();
 			}
 			/* 其他下行指令 */
@@ -355,31 +355,33 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				#if NETPROTOCAL == NETCOAP
 					NETCoapNeedSendCode.BasicInfo = 1;
 					NETCoapNeedSendCode.DynamicInfo = 1;
-					Radio_Trf_Printf("Manufacturer:%s", NbiotClientHandler.Parameter.manufacturer);
-					Radio_Trf_Printf("ManufacturerMode:%s", NbiotClientHandler.Parameter.manufacturermode);
+					Radio_Trf_Printf("Mfact:%s", NbiotClientHandler.Parameter.manufacturer);
+					Radio_Trf_Printf("MfactMd:%s", NbiotClientHandler.Parameter.manufacturermode);
+					Radio_Trf_Printf("MduVer:%s", NbiotClientHandler.Parameter.modelversion);
 					Radio_Trf_Printf("IMEI:%s", NbiotClientHandler.Parameter.imei);
 					Radio_Trf_Printf("ICCID:%s", NbiotClientHandler.Parameter.iccid);
 					Radio_Trf_Printf("IMSI:%s", NbiotClientHandler.Parameter.imsi);
-					Radio_Trf_Printf("CGPADDR:%s", NbiotClientHandler.Parameter.cgpaddr);
-					Radio_Trf_Printf("CGDCONT:%s", NbiotClientHandler.Parameter.cgdcont);
+					Radio_Trf_Printf("CGP:%s", NbiotClientHandler.Parameter.cgpaddr);
+					Radio_Trf_Printf("CGD:%s", NbiotClientHandler.Parameter.cgdcont);
 					Radio_Trf_Printf("RSSI:%d", NbiotClientHandler.Parameter.rssi);
 					Radio_Trf_Printf("SNR:%d", NbiotClientHandler.Parameter.statisticsCELL.snr);
-					Radio_Trf_Printf("CDPServerHost:%s", NbiotClientHandler.Parameter.cdpserver.CDPServerHost);
-					Radio_Trf_Printf("CDPServerPort:%d", NbiotClientHandler.Parameter.cdpserver.CDPServerPort);
+					Radio_Trf_Printf("CDPHost:%s", NbiotClientHandler.Parameter.cdpserver.CDPServerHost);
+					Radio_Trf_Printf("CDPPort:%d", NbiotClientHandler.Parameter.cdpserver.CDPServerPort);
 				#elif NETPROTOCAL == NETMQTTSN
 					NETMqttSNNeedSendCode.InfoBasic = 1;
 					NETMqttSNNeedSendCode.InfoDynamic = 1;
-					Radio_Trf_Printf("Manufacturer:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.manufacturer);
-					Radio_Trf_Printf("ManufacturerMode:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.manufacturermode);
+					Radio_Trf_Printf("Mfact:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.manufacturer);
+					Radio_Trf_Printf("MfactMd:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.manufacturermode);
+					Radio_Trf_Printf("MduVer:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.modelversion);
 					Radio_Trf_Printf("IMEI:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.imei);
 					Radio_Trf_Printf("ICCID:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.iccid);
 					Radio_Trf_Printf("IMSI:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.imsi);
-					Radio_Trf_Printf("CGPADDR:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.cgpaddr);
-					Radio_Trf_Printf("CGDCONT:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.cgdcont);
+					Radio_Trf_Printf("CGP:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.cgpaddr);
+					Radio_Trf_Printf("CGD:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.cgdcont);
 					Radio_Trf_Printf("RSSI:%d", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.rssi);
 					Radio_Trf_Printf("SNR:%d", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsCELL.snr);
-					Radio_Trf_Printf("MqttSN HostName:%s", MQTTSN_SERVER_HOST_NAME);
-					Radio_Trf_Printf("MqttSN HostIP:%s:%d", MqttSNClientHandler.SocketStack->ServerHost, MqttSNClientHandler.SocketStack->ServerPort);
+					Radio_Trf_Printf("MqttSN :%s", MQTTSN_SERVER_HOST_NAME);
+					Radio_Trf_Printf("MqttSN :%s:%d", MqttSNClientHandler.SocketStack->ServerHost, MqttSNClientHandler.SocketStack->ServerPort);
 				#endif
 					__NOP();
 				}
