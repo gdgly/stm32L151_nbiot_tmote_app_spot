@@ -123,7 +123,7 @@ int main(void)
 	Radio_Trf_Printf(" Device Reboot: %d Cause: %d", TCFG_SystemData.DeviceBootCount, SoftResetFlag);	//启动信息
 	Radio_Trf_Printf(" (C) 2018 Movebroad Version:%d.%d", TCFG_Utility_Get_Major_Softnumber(), TCFG_Utility_Get_Sub_Softnumber());
 	
-	while (1) {
+	while (true) {
 		
 #ifdef	DEVICE_DEBUG
 		DeBugMain();
@@ -464,7 +464,7 @@ void DeBugMain(void)
 	
 	NBIOT_Neul_NBxx_HardwareReboot(MqttSNClientHandler.SocketStack->NBIotStack, 8000);
 	
-	while (1) {
+	while (true) {
 		
 		
 		

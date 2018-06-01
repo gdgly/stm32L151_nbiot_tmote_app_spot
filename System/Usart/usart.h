@@ -17,7 +17,7 @@
 #define USART2_RXBUFFERSIZE   	1 										//HAL库使用的串口接收缓存大小
 
 extern u8 USART1_RX_BUF[USART1_REC_LEN];    									//USART1接收缓冲,最大USART1_REC_LEN个字节
-extern u8 USART2_RX_BUF[USART2_REC_LEN];    									//USART2接收缓冲,最大USART1_REC_LEN个字节
+extern u8 USART2_RX_BUF[USART2_REC_LEN];    									//USART2接收缓冲,最大USART2_REC_LEN个字节
 
 extern u16 USART1_RX_STA;												//USART1接收状态标记 bit15,接收完成标志 bit14,接收到0x0d(\n)
 extern u16 USART2_RX_STA;												//USART2接收状态标记 bit15,接收完成标志 bit14,接收到0x0d(\n)
