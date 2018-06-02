@@ -254,7 +254,7 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 			/* 无线心跳间隔时间配置指令 */
 			else if (pPayload->head.type == TRF_MSG_RFHEART_INTERVAL) {
 				TCFG_SystemData.Heartinterval = ((tmote_beat_interval_s*)CFG_P_FRAME_PAYLOAD(inmsg))->seconds;
-				if ((TCFG_SystemData.Heartinterval > 120) || (TCFG_SystemData.Heartinterval < 10)) {
+				if ((TCFG_SystemData.Heartinterval > 120) || (TCFG_SystemData.Heartinterval < 1)) {
 					TCFG_SystemData.Heartinterval = HEART_INTERVAL;
 					TCFG_EEPROM_SetHeartinterval(TCFG_SystemData.Heartinterval);
 				}
