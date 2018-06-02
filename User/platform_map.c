@@ -191,7 +191,7 @@ void TCFG_EEPROM_ReadConfigData(void)
 	
 	/* 无线心跳间隔 */
 	TCFG_SystemData.Heartinterval = TCFG_EEPROM_GetHeartinterval();
-	if ((TCFG_SystemData.Heartinterval > 120) || (TCFG_SystemData.Heartinterval < 10)) {
+	if ((TCFG_SystemData.Heartinterval > 120) || (TCFG_SystemData.Heartinterval < 1)) {
 		TCFG_SystemData.Heartinterval = HEART_INTERVAL;
 		TCFG_EEPROM_SetHeartinterval(TCFG_SystemData.Heartinterval);
 	}
