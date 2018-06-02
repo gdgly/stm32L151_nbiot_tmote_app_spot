@@ -350,6 +350,19 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					Radio_Trf_Printf("CarInDelay : %hu", TCFG_SystemData.CarInDelay);
 					__NOP();
 				}
+				/* WorkInfo */
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "workinfo")) {
+					NETCoapNeedSendCode.WorkInfo = 1;
+					NETMqttSNNeedSendCode.InfoWork = 1;
+					Radio_Trf_Printf("WorkInfo:");
+					Radio_Trf_Printf("Sense:%d", TCFG_EEPROM_GetSavedSensitivity());
+					Radio_Trf_Printf("Mode:%s", TCFG_EEPROM_Get_WorkMode_String());
+					Radio_Trf_Printf("Channel:%d", TCFG_EEPROM_GetRfChannel());
+					Radio_Trf_Printf("range:%d", TCFG_Utility_Get_DistanceRange());
+					Radio_Trf_Printf("cell:%d.%d", TCFG_Utility_Get_Nbiot_CellEarfcn(), TCFG_Utility_Get_Nbiot_CellCellID());
+					Radio_Trf_Printf("tac:%x.%x", TCFG_Utility_Get_Nbiot_NetworkRegistStatusTac(), TCFG_Utility_Get_Nbiot_NetworkRegistStatusCellID());
+					__NOP();
+				}
 				/* NetInfo */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "netinfo")) {
 				#if NETPROTOCAL == NETCOAP
