@@ -313,8 +313,47 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadRSSI(NBIOT_ClientsTypeDef* pClient)
 }
 
 /**********************************************************************************************************
+ @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadStatisticsRADIO(NBIOT_ClientsTypeDef* pClient)
+ @Description			NBIOT_Neul_NBxx_CheckReadStatisticsRADIO	: 检出基站连接参数RADIO
+ @Input				pClient								: NBIOT客户端实例
+ @Return				NBIOT_StatusTypeDef						: NBIOT处理状态
+**********************************************************************************************************/
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadStatisticsRADIO(NBIOT_ClientsTypeDef* pClient)
+{
+	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+	
+	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
+	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	
+	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+NUESTATS\r");
+	pClient->ATCmdStack->ATSendlen = strlen("AT+NUESTATS\r");
+	pClient->ATCmdStack->ATack = "OK";
+	pClient->ATCmdStack->ATNack = "ERROR";
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
+		if ( sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, 
+			"%*[^S]Signal power:%d%*[^T]Total power:%d%*[^T]TX power:%d%*[^T]TX time:%d%*[^R]RX time:%d%*[^C]Cell ID:%d%*[^E]ECL:%d%*[^S]SNR:%d%*[^E]EARFCN:%d%*[^P]PCI:%d%*[^R]RSRQ:%d", 
+			&pClient->Parameter.statisticsRADIO.Signalpower,
+			&pClient->Parameter.statisticsRADIO.Totalpower,
+			&pClient->Parameter.statisticsRADIO.TXpower,
+			&pClient->Parameter.statisticsRADIO.TXtime,
+			&pClient->Parameter.statisticsRADIO.RXtime,
+			&pClient->Parameter.statisticsRADIO.CellID,
+			&pClient->Parameter.statisticsRADIO.ECL,
+			&pClient->Parameter.statisticsRADIO.SNR,
+			&pClient->Parameter.statisticsRADIO.EARFCN,
+			&pClient->Parameter.statisticsRADIO.PCI,
+			&pClient->Parameter.statisticsRADIO.RSRQ) <= 0) {
+			NBStatus = NBIOT_ERROR;
+		}
+	}
+	
+	return NBStatus;
+}
+
+/**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadStatisticsCELL(NBIOT_ClientsTypeDef* pClient)
- @Description			NBIOT_Neul_NBxx_CheckReadStatisticsCELL		: 检出基站连接参数
+ @Description			NBIOT_Neul_NBxx_CheckReadStatisticsCELL		: 检出基站连接参数CELL
  @Input				pClient								: NBIOT客户端实例
  @Return				NBIOT_StatusTypeDef						: NBIOT处理状态
 **********************************************************************************************************/
@@ -334,11 +373,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadStatisticsCELL(NBIOT_ClientsTypeDef
 		if ( sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, 
 			"\r\nNUESTATS:CELL,%d,%d,%d,%d,%d,%d,%d\r", 
 			&pClient->Parameter.statisticsCELL.earfcn, 
-			&pClient->Parameter.statisticsCELL.cellID, 
-			&pClient->Parameter.statisticsCELL.cell, 
+			&pClient->Parameter.statisticsCELL.physicalcellID, 
+			&pClient->Parameter.statisticsCELL.primarycell, 
 			&pClient->Parameter.statisticsCELL.rsrp, 
 			&pClient->Parameter.statisticsCELL.rsrq, 
-			&pClient->Parameter.statisticsCELL.cellrssi, 
+			&pClient->Parameter.statisticsCELL.rssi, 
 			&pClient->Parameter.statisticsCELL.snr) <= 0) {
 			NBStatus = NBIOT_ERROR;
 		}

@@ -1,6 +1,9 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang
 
+* 2018-06-02 : 
+	* 增加NUESTATS=RADIO信息获取，优化上报workinfo中的频点与CellID值。
+	* 增加RF输出WorkInfo信息。
 * 2018-05-26 : 
 	* NB增加清空频点指令,获取当前PSM状态指令。
 * 2018-05-24 : 

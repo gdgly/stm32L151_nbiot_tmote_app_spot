@@ -358,9 +358,9 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					Radio_Trf_Printf("Sense:%d", TCFG_EEPROM_GetSavedSensitivity());
 					Radio_Trf_Printf("Mode:%s", TCFG_EEPROM_Get_WorkMode_String());
 					Radio_Trf_Printf("Channel:%d", TCFG_EEPROM_GetRfChannel());
-					Radio_Trf_Printf("range:%d", TCFG_Utility_Get_DistanceRange());
-					Radio_Trf_Printf("cell:%d.%d", TCFG_Utility_Get_Nbiot_CellEarfcn(), TCFG_Utility_Get_Nbiot_CellCellID());
-					Radio_Trf_Printf("tac:%x.%x", TCFG_Utility_Get_Nbiot_NetworkRegistStatusTac(), TCFG_Utility_Get_Nbiot_NetworkRegistStatusCellID());
+					Radio_Trf_Printf("Range:%d", TCFG_Utility_Get_DistanceRange());
+					Radio_Trf_Printf("Earfcn:%d", TCFG_Utility_Get_Nbiot_RadioEARFCN());
+					Radio_Trf_Printf("CellId:%d", TCFG_Utility_Get_Nbiot_RadioCellID());
 					__NOP();
 				}
 				/* NetInfo */

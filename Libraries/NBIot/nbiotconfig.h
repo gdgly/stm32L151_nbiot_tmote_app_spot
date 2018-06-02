@@ -118,32 +118,47 @@ struct NBIOT_CDPServerTypeDef
 /* NBIOT Parameter */
 struct NBIOT_ParameterTypeDef
 {
-	char								manufacturer[10];
-	char								manufacturermode[20];
-	char								modelversion[30];
-	char								imei[20];
-	char								imeisv[20];
-	char								iccid[25];
-	char								imsi[20];
-	char								cgpaddr[20];
-	char								cgdcont[30];
-	int								rssi;
+	char								manufacturer[10];									//厂商名
+	char								manufacturermode[20];								//厂商型号
+	char								modelversion[30];									//模块软件版本
+	char								imei[20];											//IMEI
+	char								imeisv[20];										//IMEISV
+	char								iccid[25];										//运营商卡号
+	char								imsi[20];											//IMSI
+	char								cgpaddr[20];										//核心网地址
+	char								cgdcont[30];										//核心网名称
+	int								rssi;											//信号质量
 	
 	struct NetworkRegistrationStatusTypeDef
 	{
-		unsigned short int				tac;
-		unsigned int					cellID;
+		unsigned short int				tac;												//跟踪区域代码
+		unsigned int					cellID;											//全球唯一基站标识ID
 	}networkRegStatus;
+	
+	struct StatisticsRADIOTypeDef
+	{
+		int							Signalpower;										//信号功率
+		int							Totalpower;										//总功率
+		int							TXpower;											//发送功率
+		unsigned int					TXtime;											//自上次重启后的总发送时间
+		unsigned int					RXtime;											//自上次重启后的总接收时间
+		unsigned int					CellID;											//全球唯一基站标识ID
+		int							ECL;												//覆盖等级
+		int							SNR;												//信噪比
+		int							EARFCN;											//基站频点
+		int							PCI;												//PCI
+		int							RSRQ;											//参考信号接收质量
+	}statisticsRADIO;
 	
 	struct StatisticsCELLTypeDef
 	{
-		int							earfcn;
-		int							cellID;
-		int							cell;
-		int							rsrp;
-		int							rsrq;
-		int							cellrssi;
-		int							snr;
+		int							earfcn;											//基站频点
+		int							physicalcellID;									//小区物理ID
+		int							primarycell;										//1标识当前服务小区
+		int							rsrp;											//参考信号接收功率
+		int							rsrq;											//参考信号接收质量
+		int							rssi;											//信号质量
+		int							snr;												//信噪比
 	}statisticsCELL;
 	
 	struct DataTimeTypeDef
