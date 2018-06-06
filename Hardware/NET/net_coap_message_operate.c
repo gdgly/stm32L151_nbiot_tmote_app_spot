@@ -207,6 +207,32 @@ int NET_COAP_Message_Operate_Creat_Json_Radar_Info(char* outBuffer)
 }
 
 /**********************************************************************************************************
+ @Function			int NET_COAP_Message_Operate_Creat_Json_Response_Info(char* outBuffer, u16 errcode)
+ @Description			NET_COAP_Message_Operate_Creat_Json_Response_Info
+ @Input				outBuffer
+					errcode
+ @Return				Length
+ @attention			!!<<< MaxLength 240Byte >>>!!
+**********************************************************************************************************/
+int NET_COAP_Message_Operate_Creat_Json_Response_Info(char* outBuffer, u16 errcode)
+{
+	sprintf(outBuffer, 
+		"{"
+			"\"SN\":\"%08x\","
+			"\"ResponseInfo\":"
+			"{"
+				"\"ret\":%d"
+			"}"
+		"}",
+		
+		TCFG_EEPROM_Get_MAC_SN(),
+		errcode
+	);
+	
+	return strlen(outBuffer);
+}
+
+/**********************************************************************************************************
  @Function			static bool NET_Coap_Message_SendDataisFull(void)
  @Description			NET_Coap_Message_SendDataisFull	: 检查发送队列是否已满
  @Input				void

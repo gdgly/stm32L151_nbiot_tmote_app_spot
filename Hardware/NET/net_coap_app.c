@@ -14,13 +14,13 @@
   */
 
 #include "net_coap_app.h"
+#include "platform_config.h"
+#include "platform_map.h"
 #include "hal_rtc.h"
 #include "hal_beep.h"
+#include "radar_api.h"
 #include "string.h"
-
-#ifdef COAP_DEBUG_LOG_RF_PRINT
 #include "radio_rf_app.h"
-#endif
 
 /**********************************************************************************************************
  @Function			void NET_COAP_APP_PollExecution(NBIOT_ClientsTypeDef* pClient)
@@ -1552,13 +1552,133 @@ void NET_COAP_NBIOT_Event_RecvData(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 {
+	u16 recvBufOffset = 0;
+	u16 recvMagicNum = 0;
+	u8 ret = NETIP_OK;
+	
 	if (NET_Coap_Message_RecvDataDequeue(pClient->Recvbuf, (unsigned short*)&pClient->Recvlen) == true) {
+		pClient->Recvbuf[pClient->Recvlen] = '\0';
+		for (int i = 0; i < pClient->Recvlen; i++) {
+			if ((pClient->Recvbuf[i] == 'T') && (pClient->Recvbuf[i+1] == 'C') && (pClient->Recvbuf[i+2] == 'L') && (pClient->Recvbuf[i+3] == 'D')) {
+				recvBufOffset = i;
+			}
+		}
+		
+		if (recvBufOffset != 0) {
+			/* Find "TCLD" */
+			if (pClient->Recvbuf[recvBufOffset + TCLOD_MSGVERSION_OFFSET] == TCLOD_MSGVERSION) {
+				if (pClient->Recvbuf[recvBufOffset + TCLOD_MSGID_OFFSET] == TCLOD_CONFIG_SET) {
+					BEEP_CtrlRepeat_Extend(1, 300, 0);
+					
+					/* 工作模式配置指令 */
+					if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Workmode") != NULL) {
+						u16 mode;
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(Workmode):{(val):%hu,(Magic):%hu}}", &mode, &recvMagicNum);
+						if (recvMagicNum == TCLOD_MAGIC_NUM) {
+							TCFG_SystemData.WorkMode = mode;
+							if ((TCFG_SystemData.WorkMode != DEBUG_WORK) && (TCFG_SystemData.WorkMode != NORMAL_WORK)) {
+								TCFG_SystemData.WorkMode = NORMAL_WORK;
+								TCFG_EEPROM_SetWorkMode(TCFG_SystemData.WorkMode);
+								ret = NETIP_ERRORPARAM;
+							}
+							else {
+								TCFG_EEPROM_SetWorkMode(TCFG_SystemData.WorkMode);
+							}
+						}
+						else {
+							ret = NETIP_UNKNOWNERROR;
+						}
+						__NOP();
+					}
+					/* 传感器灵敏度配置指令 */
+					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Sense") != NULL) {
+						u16 sense;
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(Sense):{(val):%hu,(Magic):%hu}}", &sense, &recvMagicNum);
+						if (recvMagicNum == TCLOD_MAGIC_NUM) {
+							TCFG_SystemData.Sensitivity = sense;
+							if ((TCFG_SystemData.Sensitivity > SENSE_LOWEST) || (TCFG_SystemData.Sensitivity < SENSE_HIGHEST)) {
+								TCFG_SystemData.Sensitivity = SENSE_MIDDLE;
+								TCFG_EEPROM_SetSavedSensitivity(TCFG_SystemData.Sensitivity);
+								ret = NETIP_ERRORPARAM;
+							}
+							else {
+								TCFG_EEPROM_SetSavedSensitivity(TCFG_SystemData.Sensitivity);
+							}
+						}
+						else {
+							ret = NETIP_UNKNOWNERROR;
+						}
+						__NOP();
+					}
+					/* 无线心跳间隔时间配置指令 */
+					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "RFHeart") != NULL) {
+						u16 rfheart;
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(RFHeart):{(val):%hu,(Magic):%hu}}", &rfheart, &recvMagicNum);
+						if (recvMagicNum == TCLOD_MAGIC_NUM) {
+							TCFG_SystemData.Heartinterval = rfheart;
+							if ((TCFG_SystemData.Heartinterval > 120) || (TCFG_SystemData.Heartinterval < 1)) {
+								TCFG_SystemData.Heartinterval = HEART_INTERVAL;
+								TCFG_EEPROM_SetHeartinterval(TCFG_SystemData.Heartinterval);
+								ret = NETIP_ERRORPARAM;
+							}
+							else {
+								TCFG_EEPROM_SetHeartinterval(TCFG_SystemData.Heartinterval);
+							}
+						}
+						else {
+							ret = NETIP_UNKNOWNERROR;
+						}
+						__NOP();
+					}
+					/* 初始化传感器指令 */
+					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Background") != NULL) {
+						u16 backgroundval;
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(Background):{(val):%hu,(Magic):%hu}}", &backgroundval, &recvMagicNum);
+						if (recvMagicNum == TCLOD_MAGIC_NUM) {
+							if (((radar_targetinfo.strenth_total_diff > (backgroundval-5)) && (radar_targetinfo.strenth_total_diff < (backgroundval+5))) || (backgroundval == 0)) {
+								Radar_InitBackground(TO_SAVE_RADAR_BACKGROUND);
+								QMC5883L_InitBackgroud();
+							}
+							else {
+								ret = NETIP_ERRORPARAM;
+							}
+						}
+						else {
+							ret = NETIP_UNKNOWNERROR;
+						}
+						__NOP();
+					}
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+				}
+				else if (pClient->Recvbuf[recvBufOffset + TCLOD_MSGID_OFFSET] == TCLOD_CONFIG_GET) {
+					BEEP_CtrlRepeat_Extend(2, 50, 50);
+					
+					
+					
+					
+				}
+			}
+			else {
+				ret = NETIP_NOTSUPPORT;
+			}
+		}
+		else {
+			/* Not Valid */
+			ret = NETIP_NOTVALID;
+		}
+		
 		NET_Coap_Message_RecvDataOffSet();
-		
-		BEEP_CtrlRepeat_Extend(5, 25, 25);
-		
-		
-		//Todo
 		
 		
 		

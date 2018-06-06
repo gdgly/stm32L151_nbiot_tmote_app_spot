@@ -28,6 +28,7 @@ MQTTSN_SwapInfoWorkTypeDef		NETMqttSNMessageParkInfoWork;
 MQTTSN_SwapInfoBasicTypeDef		NETMqttSNMessageParkInfoBasic;
 MQTTSN_SwapInfoDynamicTypeDef		NETMqttSNMessageParkInfoDynamic;
 MQTTSN_SwapInfoRadarTypeDef		NETMqttSNMessageParkInfoRadar;
+MQTTSN_SwapInfoResponseTypeDef	NETMqttSNMessageParkInfoResponse;
 
 /**********************************************************************************************************
  @Function			int NET_Message_Operate_Creat_Json_MoteStatus_Basic(char* outBuffer)
@@ -331,6 +332,38 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Radar(char* outBuffer)
 	return strlen(outBuffer);
 }
 
+/**********************************************************************************************************
+ @Function			int NET_Message_Operate_Creat_Json_MoteInfo_Response(char* outBuffer)
+ @Description			NET_Message_Operate_Creat_Json_MoteInfo_Response
+ @Input				outBuffer
+					errcode
+ @Return				Length
+ @attention			!!<<< MaxLength 256Byte >>>!!
+**********************************************************************************************************/
+int NET_Message_Operate_Creat_Json_MoteInfo_Response(char* outBuffer)
+{
+	MQTTSN_InfoResponseTypeDef dataBuf;
+	
+	if (NET_MqttSN_Message_InfoResponseDequeue(&dataBuf) != true) {
+		return 0;
+	}
+	
+	sprintf(outBuffer, 
+		"{"
+			"\"SN\":\"%08x\","
+			"\"ResponseInfo\":"
+			"{"
+				"\"ret\":%d"
+			"}"
+		"}",
+		
+		dataBuf.DeviceSN,
+		dataBuf.Errcode
+	);
+	
+	return strlen(outBuffer);
+}
+
 /********************************************Is Full******************************************************/
 /**********************************************************************************************************
  @Function			bool NET_MqttSN_Message_StatusBasicisFull(void)
@@ -458,6 +491,27 @@ bool NET_MqttSN_Message_InfoRadarisFull(void)
 	return MessageState;
 }
 
+/**********************************************************************************************************
+ @Function			bool NET_MqttSN_Message_InfoResponseisFull(void)
+ @Description			NET_MqttSN_Message_InfoResponseisFull
+ @Input				void
+ @Return				true							: 已满
+					false						: 未满
+**********************************************************************************************************/
+bool NET_MqttSN_Message_InfoResponseisFull(void)
+{
+	bool MessageState;
+	
+	if ((NETMqttSNMessageParkInfoResponse.Rear + 1) % MQTTSN_INFO_RESPONSE_PARK_NUM == NETMqttSNMessageParkInfoResponse.Front) {
+		MessageState = true;
+	}
+	else {
+		MessageState = false;
+	}
+	
+	return MessageState;
+}
+
 /********************************************Is Empty*****************************************************/
 /**********************************************************************************************************
  @Function			bool NET_MqttSN_Message_StatusBasicisEmpty(void)
@@ -576,6 +630,27 @@ bool NET_MqttSN_Message_InfoRadarisEmpty(void)
 	bool MessageState;
 	
 	if (NETMqttSNMessageParkInfoRadar.Front == NETMqttSNMessageParkInfoRadar.Rear) {
+		MessageState = true;
+	}
+	else {
+		MessageState = false;
+	}
+	
+	return MessageState;
+}
+
+/**********************************************************************************************************
+ @Function			bool NET_MqttSN_Message_InfoResponseisEmpty(void)
+ @Description			NET_MqttSN_Message_InfoResponseisEmpty
+ @Input				void
+ @Return				true							: 已空
+					false						: 未空
+**********************************************************************************************************/
+bool NET_MqttSN_Message_InfoResponseisEmpty(void)
+{
+	bool MessageState;
+	
+	if (NETMqttSNMessageParkInfoResponse.Front == NETMqttSNMessageParkInfoResponse.Rear) {
 		MessageState = true;
 	}
 	else {
@@ -725,6 +800,27 @@ void NET_MqttSN_Message_InfoRadarEnqueue(MQTTSN_InfoRadarTypeDef dataBuf)
 	else {																								//队列未满
 		NETMqttSNMessageParkInfoRadar.Rear = (NETMqttSNMessageParkInfoRadar.Rear + 1) % MQTTSN_INFO_RADAR_PARK_NUM;			//队尾偏移1
 		NETMqttSNMessageParkInfoRadar.InfoRadar[NETMqttSNMessageParkInfoRadar.Rear].DeviceSN = dataBuf.DeviceSN;
+	}
+}
+
+/**********************************************************************************************************
+ @Function			void NET_MqttSN_Message_InfoResponseEnqueue(MQTTSN_InfoResponseTypeDef dataBuf)
+ @Description			NET_MqttSN_Message_InfoResponseEnqueue
+ @Input				dataBuf	 		 				: 需写入数据
+ @Return				void
+**********************************************************************************************************/
+void NET_MqttSN_Message_InfoResponseEnqueue(MQTTSN_InfoResponseTypeDef dataBuf)
+{
+	if (NET_MqttSN_Message_InfoResponseisFull() == true) {															//队列已满
+		NETMqttSNMessageParkInfoResponse.Rear = (NETMqttSNMessageParkInfoResponse.Rear + 1) % MQTTSN_INFO_RESPONSE_PARK_NUM;	//队尾偏移1
+		NETMqttSNMessageParkInfoResponse.InfoResponse[NETMqttSNMessageParkInfoResponse.Rear].DeviceSN = dataBuf.DeviceSN;
+		NETMqttSNMessageParkInfoResponse.InfoResponse[NETMqttSNMessageParkInfoResponse.Rear].Errcode = dataBuf.Errcode;
+		NETMqttSNMessageParkInfoResponse.Front = (NETMqttSNMessageParkInfoResponse.Front + 1) % MQTTSN_INFO_RESPONSE_PARK_NUM;	//队头偏移1
+	}
+	else {																								//队列未满
+		NETMqttSNMessageParkInfoResponse.Rear = (NETMqttSNMessageParkInfoResponse.Rear + 1) % MQTTSN_INFO_RESPONSE_PARK_NUM;	//队尾偏移1
+		NETMqttSNMessageParkInfoResponse.InfoResponse[NETMqttSNMessageParkInfoResponse.Rear].DeviceSN = dataBuf.DeviceSN;
+		NETMqttSNMessageParkInfoResponse.InfoResponse[NETMqttSNMessageParkInfoResponse.Rear].Errcode = dataBuf.Errcode;
 	}
 }
 
@@ -887,6 +983,31 @@ bool NET_MqttSN_Message_InfoRadarDequeue(MQTTSN_InfoRadarTypeDef* dataBuf)
 	return MessageState;
 }
 
+/**********************************************************************************************************
+ @Function			bool NET_MqttSN_Message_InfoResponseDequeue(MQTTSN_InfoResponseTypeDef* dataBuf)
+ @Description			NET_MqttSN_Message_InfoResponseDequeue
+ @Input				dataBuf	 		 				: 需读出数据地址
+ @Return				true								: 未空
+					false							: 已空
+**********************************************************************************************************/
+bool NET_MqttSN_Message_InfoResponseDequeue(MQTTSN_InfoResponseTypeDef* dataBuf)
+{
+	bool MessageState;
+	unsigned char front;
+	
+	if (NET_MqttSN_Message_InfoResponseisEmpty() == true) {														//队列已空
+		MessageState = false;
+	}
+	else {																								//队列未空
+		front = (NETMqttSNMessageParkInfoResponse.Front + 1) % MQTTSN_INFO_RESPONSE_PARK_NUM;							//队头偏移1
+		dataBuf->DeviceSN = NETMqttSNMessageParkInfoResponse.InfoResponse[front].DeviceSN;
+		dataBuf->Errcode = NETMqttSNMessageParkInfoResponse.InfoResponse[front].Errcode;
+		MessageState = true;
+	}
+	
+	return MessageState;
+}
+
 /********************************************* OffSet ****************************************************/
 /**********************************************************************************************************
  @Function			bool NET_MqttSN_Message_StatusBasicOffSet(void)
@@ -1020,6 +1141,28 @@ bool NET_MqttSN_Message_InfoRadarOffSet(void)
 	return MessageState;
 }
 
+/**********************************************************************************************************
+ @Function			bool NET_MqttSN_Message_InfoResponseOffSet(void)
+ @Description			NET_MqttSN_Message_InfoResponseOffSet
+ @Input				void
+ @Return				true							: 未空
+					false						: 已空
+**********************************************************************************************************/
+bool NET_MqttSN_Message_InfoResponseOffSet(void)
+{
+	bool MessageState;
+	
+	if (NET_MqttSN_Message_InfoResponseisEmpty() == true) {														//队列已空
+		MessageState = false;
+	}
+	else {																								//队列未空
+		NETMqttSNMessageParkInfoResponse.Front = (NETMqttSNMessageParkInfoResponse.Front + 1) % MQTTSN_INFO_RESPONSE_PARK_NUM;
+		MessageState = true;
+	}
+	
+	return MessageState;
+}
+
 /********************************************* Rear *****************************************************/
 /**********************************************************************************************************
  @Function			unsigned char NET_MqttSN_Message_StatusBasicRear(void)
@@ -1085,6 +1228,17 @@ unsigned char NET_MqttSN_Message_InfoDynamicRear(void)
 unsigned char NET_MqttSN_Message_InfoRadarRear(void)
 {
 	return NETMqttSNMessageParkInfoRadar.Rear;
+}
+
+/**********************************************************************************************************
+ @Function			unsigned char NET_MqttSN_Message_InfoResponseRear(void)
+ @Description			NET_MqttSN_Message_InfoResponseRear
+ @Input				void
+ @Return				队尾值
+**********************************************************************************************************/
+unsigned char NET_MqttSN_Message_InfoResponseRear(void)
+{
+	return NETMqttSNMessageParkInfoResponse.Rear;
 }
 
 /********************************************** END OF FLEE **********************************************/

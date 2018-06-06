@@ -95,6 +95,7 @@ int NET_COAP_Message_Operate_Creat_Json_Work_Info(char* outBuffer);
 int NET_COAP_Message_Operate_Creat_Json_Basic_Info(char* outBuffer);
 int NET_COAP_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer);
 int NET_COAP_Message_Operate_Creat_Json_Radar_Info(char* outBuffer);
+int NET_COAP_Message_Operate_Creat_Json_Response_Info(char* outBuffer, u16 errcode);
 
 void NET_Coap_Message_SendDataEnqueue(unsigned char* dataBuf, unsigned short dataLength);							//发送数据写入队列
 void NET_Coap_Message_RecvDataEnqueue(unsigned char* dataBuf, unsigned short dataLength);							//接收数据写入队列

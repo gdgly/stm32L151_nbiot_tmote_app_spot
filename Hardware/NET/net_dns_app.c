@@ -157,6 +157,7 @@ void NET_DNS_NBIOT_Event_StopMode(DNS_ClientsTypeDef* pClient)
 	static unsigned char DNSMqttSNInfoBasicIndex;
 	static unsigned char DNSMqttSNInfoDynamicIndex;
 	static unsigned char DNSMqttSNInfoRadarIndex;
+	static unsigned char DNSMqttSNInfoResponseIndex;
 	
 	/* It is the first time to execute */
 	if (pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable != true) {
@@ -173,6 +174,7 @@ void NET_DNS_NBIOT_Event_StopMode(DNS_ClientsTypeDef* pClient)
 		DNSMqttSNInfoBasicIndex = NET_MqttSN_Message_InfoBasicRear();
 		DNSMqttSNInfoDynamicIndex = NET_MqttSN_Message_InfoDynamicRear();
 		DNSMqttSNInfoRadarIndex = NET_MqttSN_Message_InfoRadarRear();
+		DNSMqttSNInfoResponseIndex = NET_MqttSN_Message_InfoResponseRear();
 	}
 	
 	if (Stm32_Calculagraph_IsExpiredSec(&pClient->SocketStack->NBIotStack->DictateRunCtl.dictateRunTime) == true) {
@@ -189,7 +191,8 @@ void NET_DNS_NBIOT_Event_StopMode(DNS_ClientsTypeDef* pClient)
 			(NET_MqttSN_Message_InfoWorkRear() != DNSMqttSNInfoWorkIndex) ||
 			(NET_MqttSN_Message_InfoBasicRear() != DNSMqttSNInfoBasicIndex) ||
 			(NET_MqttSN_Message_InfoDynamicRear() != DNSMqttSNInfoDynamicIndex) ||
-			(NET_MqttSN_Message_InfoRadarRear() != DNSMqttSNInfoRadarIndex) ) {
+			(NET_MqttSN_Message_InfoRadarRear() != DNSMqttSNInfoRadarIndex) ||
+			(NET_MqttSN_Message_InfoResponseRear() != DNSMqttSNInfoResponseIndex) ) {
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
 			pClient->ProcessState = DNS_PROCESS_CREAT_UDP_SOCKET;

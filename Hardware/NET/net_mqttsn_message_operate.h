@@ -75,6 +75,7 @@ typedef __packed struct
 #define MQTTSN_INFO_BASIC_PARK_NUM			3
 #define MQTTSN_INFO_DYNAMIC_PARK_NUM		3
 #define MQTTSN_INFO_RADAR_PARK_NUM			3
+#define MQTTSN_INFO_RESPONSE_PARK_NUM		3
 
 /* MqttSN Status Basic */
 typedef __packed struct
@@ -168,6 +169,20 @@ typedef struct
 	MQTTSN_InfoRadarTypeDef				InfoRadar[MQTTSN_INFO_RADAR_PARK_NUM];
 }MQTTSN_SwapInfoRadarTypeDef;
 
+/* MqttSN Info Response */
+typedef __packed struct
+{
+	unsigned int						DeviceSN;
+	unsigned short						Errcode;
+}MQTTSN_InfoResponseTypeDef;
+
+typedef struct
+{
+	unsigned char						Front;
+	unsigned char						Rear;
+	MQTTSN_InfoResponseTypeDef			InfoResponse[MQTTSN_INFO_RESPONSE_PARK_NUM];
+}MQTTSN_SwapInfoResponseTypeDef;
+
 
 int NET_Message_Operate_Creat_Json_MoteStatus_Basic(char* outBuffer);
 int NET_Message_Operate_Creat_Json_MoteStatus_Extend(char* outBuffer);
@@ -175,6 +190,7 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Work(char* outBuffer);
 int NET_Message_Operate_Creat_Json_MoteInfo_Basic(char* outBuffer);
 int NET_Message_Operate_Creat_Json_MoteInfo_Dynamic(char* outBuffer);
 int NET_Message_Operate_Creat_Json_MoteInfo_Radar(char* outBuffer);
+int NET_Message_Operate_Creat_Json_MoteInfo_Response(char* outBuffer);
 
 bool NET_MqttSN_Message_StatusBasicisFull(void);
 bool NET_MqttSN_Message_StatusExtendisFull(void);
@@ -182,6 +198,7 @@ bool NET_MqttSN_Message_InfoWorkisFull(void);
 bool NET_MqttSN_Message_InfoBasicisFull(void);
 bool NET_MqttSN_Message_InfoDynamicisFull(void);
 bool NET_MqttSN_Message_InfoRadarisFull(void);
+bool NET_MqttSN_Message_InfoResponseisFull(void);
 
 bool NET_MqttSN_Message_StatusBasicisEmpty(void);
 bool NET_MqttSN_Message_StatusExtendisEmpty(void);
@@ -189,6 +206,7 @@ bool NET_MqttSN_Message_InfoWorkisEmpty(void);
 bool NET_MqttSN_Message_InfoBasicisEmpty(void);
 bool NET_MqttSN_Message_InfoDynamicisEmpty(void);
 bool NET_MqttSN_Message_InfoRadarisEmpty(void);
+bool NET_MqttSN_Message_InfoResponseisEmpty(void);
 
 void NET_MqttSN_Message_StatusBasicEnqueue(MQTTSN_StatusBasicTypeDef dataBuf);
 void NET_MqttSN_Message_StatusExtendEnqueue(MQTTSN_StatusExtendTypeDef dataBuf);
@@ -196,6 +214,7 @@ void NET_MqttSN_Message_InfoWorkEnqueue(MQTTSN_InfoWorkTypeDef dataBuf);
 void NET_MqttSN_Message_InfoBasicEnqueue(MQTTSN_InfoBasicTypeDef dataBuf);
 void NET_MqttSN_Message_InfoDynamicEnqueue(MQTTSN_InfoDynamicTypeDef dataBuf);
 void NET_MqttSN_Message_InfoRadarEnqueue(MQTTSN_InfoRadarTypeDef dataBuf);
+void NET_MqttSN_Message_InfoResponseEnqueue(MQTTSN_InfoResponseTypeDef dataBuf);
 
 bool NET_MqttSN_Message_StatusBasicDequeue(MQTTSN_StatusBasicTypeDef* dataBuf);
 bool NET_MqttSN_Message_StatusExtendDequeue(MQTTSN_StatusExtendTypeDef* dataBuf);
@@ -203,6 +222,7 @@ bool NET_MqttSN_Message_InfoWorkDequeue(MQTTSN_InfoWorkTypeDef* dataBuf);
 bool NET_MqttSN_Message_InfoBasicDequeue(MQTTSN_InfoBasicTypeDef* dataBuf);
 bool NET_MqttSN_Message_InfoDynamicDequeue(MQTTSN_InfoDynamicTypeDef* dataBuf);
 bool NET_MqttSN_Message_InfoRadarDequeue(MQTTSN_InfoRadarTypeDef* dataBuf);
+bool NET_MqttSN_Message_InfoResponseDequeue(MQTTSN_InfoResponseTypeDef* dataBuf);
 
 bool NET_MqttSN_Message_StatusBasicOffSet(void);
 bool NET_MqttSN_Message_StatusExtendOffSet(void);
@@ -210,6 +230,7 @@ bool NET_MqttSN_Message_InfoWorkOffSet(void);
 bool NET_MqttSN_Message_InfoBasicOffSet(void);
 bool NET_MqttSN_Message_InfoDynamicOffSet(void);
 bool NET_MqttSN_Message_InfoRadarOffSet(void);
+bool NET_MqttSN_Message_InfoResponseOffSet(void);
 
 unsigned char NET_MqttSN_Message_StatusBasicRear(void);
 unsigned char NET_MqttSN_Message_StatusExtendRear(void);
@@ -217,5 +238,6 @@ unsigned char NET_MqttSN_Message_InfoWorkRear(void);
 unsigned char NET_MqttSN_Message_InfoBasicRear(void);
 unsigned char NET_MqttSN_Message_InfoDynamicRear(void);
 unsigned char NET_MqttSN_Message_InfoRadarRear(void);
+unsigned char NET_MqttSN_Message_InfoResponseRear(void);
 
 #endif

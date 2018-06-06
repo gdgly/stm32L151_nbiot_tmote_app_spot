@@ -28,10 +28,91 @@
 /* NBIOT 串口波特率计算中间值 */
 #define BAUDRATE_CAL_MIDDLE_NUM			16
 
+/* 下行数据协议值偏移地址 */
+#define TCLOD_MSGTYPE_OFFSET				4
+#define TCLOD_MSGVERSION_OFFSET			5
+#define TCLOD_MSGENCRYPT_OFFSET			6
+#define TCLOD_MSGID_OFFSET				7
+#define TCLOD_DATA_OFFSET				8
+
+/* 下行数据协议值 */
+#define TCLOD_MSGTYPE					'1'
+#define TCLOD_MSGVERSION					'1'
+#define TCLOD_MSGENCRYPT					'0'
+
+#define TCLOD_MAGIC_NUM					9
+
 typedef struct NBIOT_CDPServerTypeDef		NBIOT_CDPServerTypeDef;
 typedef struct NBIOT_ParameterTypeDef		NBIOT_ParameterTypeDef;
 typedef struct NBIOT_ATCmdTypeDef			NBIOT_ATCmdTypeDef;
 typedef struct NBIOT_ClientsTypeDef		NBIOT_ClientsTypeDef;
+
+/* NBIOT NET MSGID */
+typedef enum
+{
+	TCLOD_LOGIN_REQ					= '0',
+	TCLOD_LOGIN_RSP					= '1',
+	TCLOD_LOGOUT_REQ					= '2',
+	TCLOD_LOGOUT_RSP					= '3',
+	
+	TCLOD_KEEPALIVE_REQ					= '4',
+	TCLOD_KEEPALIVE_RSP					= '5',
+	TCLOD_SYSINFO_REQ					= '6',
+	TCLOD_SYSINFO_RSP					= '7',
+	TCLOD_CONFIG_SET					= 'S',
+	TCLOD_CONFIG_SET_RSP				= 's',
+	TCLOD_CONFIG_GET					= 'G',
+	TCLOD_CONFIG_GET_RSP				= 'g',
+	
+	TCLOD_MODIFYUSER_REQ				= 'c',
+	TCLOD_MODIFYUSER_RSP				= 'd',
+	TCLOD_MODIFYPASSWORD_REQ				= 'e',
+	TCLOD_MODIFYPASSWORD_RSP				= 'f',
+	
+	TCLOD_CLOUD_VERSION_REQ				= 'g',
+	TCLOD_CLOUD_VERSION_RSP				= 'i',
+	TCLOD_CLOUD_UPGRADE_START_REQ			= 'j',
+	TCLOD_CLOUD_UPGRADE_START_RSP			= 'k',
+	TCLOD_CLOUD_UPGRADE_STOP_REQ			= 'l',
+	TCLOD_CLOUD_UPGRADE_STOP_RSP			= 'm',
+	TCLOD_CLOUD_UPGRADE_PROGRESS			= 'n',
+	TCLOD_CLOUD_UPGRADE_DATA				= 'U',
+	TCLOD_CLOUD_UPGRADE_DATA_RSP			= 'u',
+}NBIOT_MsgIDTypeDef;
+
+/* NBIOT NET RET CODE */
+typedef enum
+{
+	NETIP_OK							= 100,											//正常
+	NETIP_UNKNOWNERROR					= 101,											//未知错误
+	NETIP_NOTSUPPORT					= 102,											//版本不支持
+	NETIP_NOTVALID						= 103,											//非法请求
+	NETIP_LOGINED						= 104,											//该用户已经登录
+	NETIP_UNLOGINED					= 105,											//该用户未登录
+	NETIP_USERORPWDERROR				= 106,											//用户名密码错误
+	NETIP_NOPOWER						= 107,											//无权限
+	NETIP_TIMEOUT						= 108,											//超时
+	NETIP_NOTFOUND						= 109,											//查找失败,没有找到对应文件
+	NETIP_FOUND						= 110,											//查找成功,返回全部文件
+	NETIP_FOUNDPART					= 111,											//查找成功,返回部分文件
+	NETIP_USEREXIST					= 112,											//该用户已经存在
+	NETIP_USENOTEXIST					= 113,											//该用户不存在
+	NETIP_GROUPEXIST					= 114,											//该用户组已经存在
+	NETIP_GROUPNOTEXIST					= 115,											//该用户组不存在
+	NETIP_NOTLINKEDIN					= 116,											//device has not linked in the gateway
+	NETIP_OFFLINE						= 117,											//device has linked in the gateway,but is offline
+	NETIP_NOTMACHED					= 118,											//device has linked in the gateway,but isn't offline
+	NETIP_CACHEDSUCCESS					= 119,											//
+	NETIP_CACHEDFAIL					= 120,											//
+	NETIP_NEEDUPDATE					= 121,											//
+	NETIP_ERRORPARAM					= 122,											//错误参数
+	NETIP_NEEDREBOOT					= 150,											//成功,设备需要重启
+	NET_OPERATION_UPGRADE_ALAREADY_START	= 511,											//重发开启
+	NET_OPERATION_UPGRADE_NOT_START		= 512,											//未开始升级
+	NET_OPERATION_UPGRADE_FAILED			= 514,											//操作失败
+	NET_OPERATION_UPGRADE_FAILED_BUSY		= 516,											//设备忙或服务器忙
+	NET_OPERATION_UPGRADE_NO_POWER		= 517											//该升级由其他连接开启,无法停止
+}NBIOT_RetCodeTypeDef;
 
 /* NBIOT Status */
 typedef enum

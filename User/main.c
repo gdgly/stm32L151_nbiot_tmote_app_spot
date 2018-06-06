@@ -4,7 +4,7 @@
   * @author  Movebroad -- KK
   * @version V1.0
   * @date    2017-10-23
-  * @brief   
+  * @brief   1TAB = 5Speace
   *********************************************************************************************************
   * @attention
   *
@@ -121,7 +121,7 @@ int main(void)
 	IWDG_Feed();																		//喂狗
 	
 	Radio_Trf_Printf(" Device Reboot: %d Cause: %d", TCFG_SystemData.DeviceBootCount, SoftResetFlag);	//启动信息
-	Radio_Trf_Printf(" (C) 2018 Movebroad Version:%d.%d", TCFG_Utility_Get_Major_Softnumber(), TCFG_Utility_Get_Sub_Softnumber());
+	Radio_Trf_Printf(" Copyright (C) 2018 Movebroad Version:%d.%d", TCFG_Utility_Get_Major_Softnumber(), TCFG_Utility_Get_Sub_Softnumber());
 	
 	while (true) {
 		

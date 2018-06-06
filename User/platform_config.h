@@ -6,7 +6,7 @@
 #include "net_mqttsn_app.h"
 #include "net_dns_app.h"
 
-//#define	MVB_SUBSN						0x850A0008						//设备号
+//#define	MVB_SUBSN						0x81011000						//设备号
 //#define	MVB_BRAND						"mvb"							//厂牌
 
 #define	MVB_STATICMAGNETIC_MODEL			51
@@ -20,7 +20,7 @@
 
 #define	NETCOAP						0
 #define	NETMQTTSN						1
-#define	NETPROTOCAL					NETCOAP							//网络模式
+#define	NETPROTOCAL					NETMQTTSN							//网络模式
 
 #define	RADAR_MODEL_V1					1
 #define	RADAR_MODEL_V2					2
@@ -33,7 +33,7 @@
 #define	RADIO_SI4438													//无线开启
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					71								//从固件版本
+#define	SOFTWARESUB					74								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 
@@ -68,6 +68,7 @@ extern MQTTSN_InfoWorkTypeDef				MqttSNInfoWorkStructure;				//MqttSN Work Info 
 extern MQTTSN_InfoBasicTypeDef			MqttSNInfoBasicStructure;			//MqttSN Basic Info Packet
 extern MQTTSN_InfoDynamicTypeDef			MqttSNInfoDynamicStructure;			//MqttSN Dynamic Info Packet
 extern MQTTSN_InfoRadarTypeDef			MqttSNInfoRadarStructure;			//MqttSN Radar Info Packet
+extern MQTTSN_InfoResponseTypeDef			MqttSNInfoResponseStructure;			//MqttSN Response Info Packet
 
 extern NET_NBIOT_ClientsTypeDef			NetNbiotClientHandler;				//NET NBIOT Clinet Handler
 extern NBIOT_ATCmdTypeDef				NbiotATCmdHandler;					//NBIOT AT Cmd Handler

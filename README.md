@@ -1,6 +1,9 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang
 
+* 2018-06-06 : 
+	* 增加COAP数据下行命令执行
+	* 增加COAP与MQTTSN对下行数据应答ResponseInfo
 * 2018-06-02 : 
 	* 增加NUESTATS=RADIO信息获取，优化上报workinfo中的频点与CellID值。
 	* 增加RF输出WorkInfo信息。

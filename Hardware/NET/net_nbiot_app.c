@@ -219,6 +219,25 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NETCoapNeedSendCode.RadarInfo = 0;
 		TCFG_Utility_Add_Coap_SentCount();
 	}
+	/* COAP RESPONSE INFO DATA ENQUEUE */
+	else if (NETCoapNeedSendCode.ResponseInfo) {
+		memset((void*)&CoapInfoStructure.InfoData, 0, sizeof(CoapInfoStructure.InfoData));
+		CoapInfoStructure.HeadPacket.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
+		CoapInfoStructure.HeadPacket.DataLen				= 0x00;
+		CoapInfoStructure.HeadPacket.ProtocolType			= 0x00;
+		CoapInfoStructure.HeadPacket.Reserved1				= 0x00;
+		CoapInfoStructure.HeadPacket.ProtocolVersion			= 0x00;
+		CoapInfoStructure.HeadPacket.Reserved2				= 0x00;
+		CoapInfoStructure.HeadPacket.PacketType				= 0x05;
+		CoapInfoStructure.HeadPacket.PacketNumber			= 0x00;
+		CoapInfoStructure.MsgPacket.DestSN					= 0x00;
+		CoapInfoStructure.MsgPacket.Version				= 0x01;
+		CoapInfoStructure.MsgPacket.Type					= COAP_MSGTYPE_TYPE_INFO;
+		len = NET_COAP_Message_Operate_Creat_Json_Response_Info((char *)&CoapInfoStructure.InfoData, NETCoapNeedSendCode.ResponseInfoErrcode);
+		NET_Coap_Message_SendDataEnqueue((unsigned char *)&CoapInfoStructure, sizeof(CoapInfoStructure) - sizeof(CoapInfoStructure.InfoData) + len);
+		NETCoapNeedSendCode.ResponseInfo = 0;
+		TCFG_Utility_Add_Coap_SentCount();
+	}
 #elif NETPROTOCAL == NETMQTTSN
 	
 	SpotStatusTypedef SpotStatusData;
@@ -286,6 +305,14 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		MqttSNInfoRadarStructure.DeviceSN					= TCFG_EEPROM_Get_MAC_SN();
 		NET_MqttSN_Message_InfoRadarEnqueue(MqttSNInfoRadarStructure);
 		NETMqttSNNeedSendCode.InfoRadar = 0;
+		TCFG_Utility_Add_MqttSN_SentCount();
+	}
+	/* MQTTSN INFO RESPONSE DATA ENQUEUE */
+	else if (NETMqttSNNeedSendCode.InfoResponse) {
+		MqttSNInfoResponseStructure.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
+		MqttSNInfoResponseStructure.Errcode				= NETMqttSNNeedSendCode.InfoResponseErrcode;
+		NET_MqttSN_Message_InfoResponseEnqueue(MqttSNInfoResponseStructure);
+		NETMqttSNNeedSendCode.InfoResponse = 0;
 		TCFG_Utility_Add_MqttSN_SentCount();
 	}
 #endif
