@@ -39,6 +39,4 @@ void NET_COAP_NBIOT_Event_SendData(NBIOT_ClientsTypeDef* pClient);				//发送�
 void NET_COAP_NBIOT_Event_RecvData(NBIOT_ClientsTypeDef* pClient);				//接收数据
 void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient);		//下行数据处理
 
-
-
 #endif

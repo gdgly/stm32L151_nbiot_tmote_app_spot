@@ -20,7 +20,7 @@
 
 #define	NETCOAP						0
 #define	NETMQTTSN						1
-#define	NETPROTOCAL					NETMQTTSN							//网络模式
+#define	NETPROTOCAL					NETCOAP							//网络模式
 
 #define	RADAR_MODEL_V1					1
 #define	RADAR_MODEL_V2					2
@@ -33,7 +33,7 @@
 #define	RADIO_SI4438													//无线开启
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					74								//从固件版本
+#define	SOFTWARESUB					76								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 

@@ -1534,16 +1534,6 @@ void NET_COAP_NBIOT_Event_RecvData(NBIOT_ClientsTypeDef* pClient)
 	}
 }
 
-
-
-
-
-
-
-
-
-
-
 /**********************************************************************************************************
  @Function			void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
  @Description			NET_COAP_NBIOT_Event_ExecutDownlinkData	: 下行数据处理
@@ -1648,25 +1638,154 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						}
 						__NOP();
 					}
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
+					/* Reboot */
+					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Reboot") != NULL) {
+						BEEP_CtrlRepeat_Extend(2, 500, 250);
+						Stm32_System_Software_Reboot();
+						__NOP();
+					}
+					/* NewSn */
+					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Newsn") != NULL) {
+						u32 newsnval;
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(Newsn):{(val):%08x,(Magic):%hu}}", &newsnval, &recvMagicNum);
+						if (recvMagicNum == TCLOD_MAGIC_NUM) {
+							TCFG_EEPROM_Set_MAC_SN(newsnval);
+						}
+						else {
+							ret = NETIP_UNKNOWNERROR;
+						}
+						__NOP();
+					}
+					/* Active */
+					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Active") != NULL) {
+						u16 activeval;
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(Active):{(val):%hu,(Magic):%hu}}", &activeval, &recvMagicNum);
+						if (recvMagicNum == TCLOD_MAGIC_NUM) {
+							TCFG_EEPROM_SetActiveDevice(activeval);
+							if (activeval) {
+								DeviceActivedMode = true;
+								BEEP_CtrlRepeat_Extend(5,30,70);
+							}
+							else {
+								DeviceActivedMode = false;
+								BEEP_CtrlRepeat_Extend(1,500,0);
+							}
+						}
+						else {
+							ret = NETIP_UNKNOWNERROR;
+						}
+						__NOP();
+					}
+					/* RadarDbg */
+					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "RadarDbg") != NULL) {
+						u16 radarDbgval;
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(RadarDbg):{(val):%hu,(Magic):%hu}}", &radarDbgval, &recvMagicNum);
+						if (recvMagicNum == TCLOD_MAGIC_NUM) {
+							TCFG_EEPROM_SetRadarDbgMode(radarDbgval);
+							TCFG_SystemData.RadarDbgMode = TCFG_EEPROM_GetRadarDbgMode();
+							NETCoapNeedSendCode.DynamicInfo = 1;
+						}
+						else {
+							ret = NETIP_UNKNOWNERROR;
+						}
+						__NOP();
+					}
+					/* MagMod */
+					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "MagMod") != NULL) {
+						u16 magmodval;
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(MagMod):{(val):%hu,(Magic):%hu}}", &magmodval, &recvMagicNum);
+						if (recvMagicNum == TCLOD_MAGIC_NUM) {
+							TCFG_EEPROM_SetMagMode(magmodval);
+							talgo_set_magmod(magmodval);
+						}
+						else {
+							ret = NETIP_UNKNOWNERROR;
+						}
+						__NOP();
+					}
+					/* NbHeart */
+					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "NbHeart") != NULL) {
+						u16 nbheartval;
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(NbHeart):{(val):%hu,(Magic):%hu}}", &nbheartval, &recvMagicNum);
+						if (recvMagicNum == TCLOD_MAGIC_NUM) {
+							TCFG_EEPROM_SetNbiotHeart(nbheartval);
+							TCFG_SystemData.NBIotHeart = TCFG_EEPROM_GetNbiotHeart();
+						}
+						else {
+							ret = NETIP_UNKNOWNERROR;
+						}
+						__NOP();
+					}
+					/* InitRadar */
+					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "InitRadar") != NULL) {
+						u32 i32, j32, k32, m32;
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
+							"{(InitRadar):{(v23456):%u,(v7890a):%u,(vbcdef):%u,(vg):%u,(Magic):%hu}}", &i32, &j32, &k32, &m32, &recvMagicNum);
+						if (recvMagicNum == TCLOD_MAGIC_NUM) {
+							Radar_InitBG_Cmd(i32, j32, k32, m32);
+						}
+						else {
+							ret = NETIP_UNKNOWNERROR;
+						}
+						__NOP();
+					}
+					/* InitMag */
+					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "InitMag") != NULL) {
+						s16 x, y, z;
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
+							"{(InitMag):{(x):%hd,(y):%hd,(z):%hd,(Magic):%hu}}", &x, &y, &z, &recvMagicNum);
+						if (recvMagicNum == TCLOD_MAGIC_NUM) {
+							QMC5883L_InitBackgroud_cmd(x, y, z);
+						}
+						else {
+							ret = NETIP_UNKNOWNERROR;
+						}
+						__NOP();
+					}
+					/* DisRange */
+					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "DisRange") != NULL) {
+						u16 disrangeval;
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(DisRange):{(val):%hu,(Magic):%hu}}", &disrangeval, &recvMagicNum);
+						if (recvMagicNum == TCLOD_MAGIC_NUM) {
+							tradar_set_distance_range(disrangeval + 4);
+							TCFG_EEPROM_SetRadarRange(disrangeval);
+							TCFG_SystemData.RadarRange = TCFG_EEPROM_GetRadarRange();
+						}
+						else {
+							ret = NETIP_UNKNOWNERROR;
+						}
+						__NOP();
+					}
+					/* CarInDelay */
+					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "InDelay") != NULL) {
+						u16 indelayval;
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(InDelay):{(val):%hu,(Magic):%hu}}", &indelayval, &recvMagicNum);
+						if (recvMagicNum == TCLOD_MAGIC_NUM) {
+							TCFG_EEPROM_SetCarInDelay(indelayval);
+							TCFG_SystemData.CarInDelay = TCFG_EEPROM_GetCarInDelay();
+						}
+						else {
+							ret = NETIP_UNKNOWNERROR;
+						}
+						__NOP();
+					}
+					/* ...... */
 				}
 				else if (pClient->Recvbuf[recvBufOffset + TCLOD_MSGID_OFFSET] == TCLOD_CONFIG_GET) {
 					BEEP_CtrlRepeat_Extend(2, 50, 50);
-					
-					
-					
-					
+					if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Workinfo") != NULL) {
+						NETCoapNeedSendCode.WorkInfo = 1;
+						__NOP();
+					}
+					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "BasicInfo") != NULL) {
+						NETCoapNeedSendCode.BasicInfo = 1;
+						__NOP();
+					}
+					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "DynamicInfo") != NULL) {
+						NETCoapNeedSendCode.DynamicInfo = 1;
+						__NOP();
+					}
+					/* ...... */
 				}
 			}
 			else {
@@ -1680,34 +1799,11 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 		
 		NET_Coap_Message_RecvDataOffSet();
 		
-		
-		
-		
-		
-		
-		
+		NETCoapNeedSendCode.ResponseInfoErrcode = ret;
+		NETCoapNeedSendCode.ResponseInfo = 1;
 	}
 	
 	pClient->DictateRunCtl.dictateEvent = SEND_DATA;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /********************************************** END OF FLEE **********************************************/
