@@ -107,6 +107,10 @@ void NET_COAP_APP_PollExecution(NBIOT_ClientsTypeDef* pClient)
 	case DNS_PROCESS_STACK:
 		pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
 		break;
+	
+	case LISTEN_RUN_CTL:
+		NET_COAP_Listen_PollExecution(pClient);
+		break;
 	}
 }
 
@@ -1499,6 +1503,7 @@ void NET_COAP_NBIOT_Event_RecvData(NBIOT_ClientsTypeDef* pClient)
 				pClient->DictateRunCtl.dictateEnable = false;
 				pClient->DictateRunCtl.dictateEvent = SEND_DATA;
 				pClient->DictateRunCtl.dictateRecvDataFailureCnt = 0;
+				NET_COAP_NBIOT_Listen_Enable_EnterIdleMode(pClient);
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 				Radio_Trf_Debug_Printf("Coap Recv Feedback Ok");
 #endif
@@ -1803,6 +1808,116 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 		NETCoapNeedSendCode.ResponseInfo = 1;
 	}
 	
+	pClient->DictateRunCtl.dictateEnable = false;
+	pClient->DictateRunCtl.dictateEvent = LISTEN_RUN_CTL;
+}
+
+
+/**********************************************************************************************************
+ @Function			void NET_COAP_Listen_PollExecution(NBIOT_ClientsTypeDef* pClient)
+ @Description			NET_COAP_Listen_PollExecution			: COAP监听器处理
+ @Input				pClient							: NBIOT客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_COAP_Listen_PollExecution(NBIOT_ClientsTypeDef* pClient)
+{
+	switch (pClient->ListenRunCtl.listenEvent)
+	{
+	case ENTER_IDLE_MODE:
+		NET_COAP_NBIOT_Listen_Event_EnterIdleMode(pClient);
+		break;
+	}
+}
+
+/**********************************************************************************************************
+ @Function			void NET_COAP_NBIOT_Listen_Enable_EnterIdleMode(NBIOT_ClientsTypeDef* pClient)
+ @Description			NET_COAP_NBIOT_Listen_Enable_EnterIdleMode	: 使能(进入IDLE模式)监听
+ @Input				pClient								: NBIOT客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_COAP_NBIOT_Listen_Enable_EnterIdleMode(NBIOT_ClientsTypeDef* pClient)
+{
+	Stm32_CalculagraphTypeDef listenRunTime;
+	
+	/* Listen Enable */
+	if (pClient->ListenRunCtl.ListenEnterIdle.listenEnable == true) {
+		pClient->ListenRunCtl.ListenEnterIdle.listenStatus = true;
+		Stm32_Calculagraph_CountdownSec(&listenRunTime, pClient->ListenRunCtl.ListenEnterIdle.listenTimereachSec);
+		pClient->ListenRunCtl.ListenEnterIdle.listenRunTime = listenRunTime;
+	}
+}
+
+/**********************************************************************************************************
+ @Function			void NET_COAP_NBIOT_Listen_Event_EnterIdleMode(NBIOT_ClientsTypeDef* pClient)
+ @Description			NET_COAP_NBIOT_Listen_Event_EnterIdleMode	: 事件(进入IDLE模式)监听
+ @Input				pClient								: NBIOT客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_COAP_NBIOT_Listen_Event_EnterIdleMode(NBIOT_ClientsTypeDef* pClient)
+{
+	Stm32_CalculagraphTypeDef eventRunTime;
+	
+	if ((pClient->ListenRunCtl.ListenEnterIdle.listenEnable == true) && (pClient->ListenRunCtl.ListenEnterIdle.listenStatus == true)) {
+		if (Stm32_Calculagraph_IsExpiredSec(&pClient->ListenRunCtl.ListenEnterIdle.listenRunTime) == true) {
+			
+			/* It is the first time to execute */
+			if (pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventEnable != true) {
+				pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventEnable = true;
+				pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventTimeoutSec = 30;
+				Stm32_Calculagraph_CountdownSec(&eventRunTime, pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventTimeoutSec);
+				pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventRunTime = eventRunTime;
+			}
+			
+			if (NBIOT_Neul_NBxx_CheckReadSignalConnectionStatus(pClient) == NBIOT_OK) {
+				/* Dictate execute is Success */
+				pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventEnable = false;
+				pClient->ListenRunCtl.listenEvent = ENTER_IDLE_MODE;
+				pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventFailureCnt = 0;
+			}
+			else {
+				/* Dictate execute is Fail */
+				if (Stm32_Calculagraph_IsExpiredSec(&pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventRunTime) == true) {
+					/* Dictate TimeOut */
+					pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventEnable = false;
+					pClient->ListenRunCtl.listenEvent = ENTER_IDLE_MODE;
+					pClient->DictateRunCtl.dictateEnable = false;
+					pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+					pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventFailureCnt++;
+					if (pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventFailureCnt > 3) {
+						pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventFailureCnt = 0;
+						pClient->DictateRunCtl.dictateEvent = STOP_MODE;
+					}
+				}
+				else {
+					/* Dictate isn't TimeOut */
+					pClient->ListenRunCtl.listenEvent = ENTER_IDLE_MODE;
+				}
+				return;
+			}
+			
+			if (pClient->Parameter.connectedstate == IdleMode) {
+				/* Entered Idle Mode */
+				pClient->ListenRunCtl.ListenEnterIdle.listenEnable = false;
+				pClient->ListenRunCtl.ListenEnterIdle.listenStatus = false;
+				pClient->ListenRunCtl.listenEvent = ENTER_IDLE_MODE;
+#ifdef COAP_DEBUG_LOG_RF_PRINT
+				Radio_Trf_Debug_Printf("NB Enter IDLE Mode");
+#endif
+			}
+			else {
+				/* Not Entered Idle Mode */
+				pClient->ListenRunCtl.ListenEnterIdle.listenEnable = false;
+				pClient->ListenRunCtl.ListenEnterIdle.listenStatus = false;
+				pClient->ListenRunCtl.listenEvent = ENTER_IDLE_MODE;
+				NETCoapNeedSendCode.WorkInfo = 1;
+#ifdef COAP_DEBUG_LOG_RF_PRINT
+				Radio_Trf_Debug_Printf("NB Not Enter IDLE Mode");
+#endif
+			}
+		}
+	}
+	
+	pClient->DictateRunCtl.dictateEnable = false;
 	pClient->DictateRunCtl.dictateEvent = SEND_DATA;
 }
 

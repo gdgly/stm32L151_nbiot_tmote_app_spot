@@ -1483,6 +1483,21 @@ unsigned char TCFG_Utility_Get_Nbiot_Rssi_UnCharVal(void)
 }
 
 /**********************************************************************************************************
+ @Function			unsigned char TCFG_Utility_Get_Nbiot_WorkMode(void)
+ @Description			TCFG_Utility_Get_Nbiot_WorkMode				: 读取Nbiot WorkMode值
+ @Input				void
+ @Return				Nbiot_Rssi
+**********************************************************************************************************/
+unsigned char TCFG_Utility_Get_Nbiot_WorkMode(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return NbiotClientHandler.Parameter.connectedstate;
+#elif NETPROTOCAL == NETMQTTSN
+	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.connectedstate;
+#endif
+}
+
+/**********************************************************************************************************
  @Function			int TCFG_Utility_Get_Nbiot_RadioSignalpower(void)
  @Description			TCFG_Utility_Get_Nbiot_RadioSignalpower			: 读取Nbiot RadioSignalpower值
  @Input				void

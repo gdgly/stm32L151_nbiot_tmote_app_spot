@@ -165,6 +165,13 @@ typedef enum
 	PowerSavingMode					= 0x01
 }NBIOT_PSMStatusTypeDef;
 
+/* NBIOT Connect Status */
+typedef enum
+{
+	IdleMode							= 0x00,
+	ConnectedMode						= 0x01
+}NBIOT_ConnectStatusTypeDef;
+
 /* NBIOT Dictate Event */
 typedef enum
 {
@@ -186,8 +193,15 @@ typedef enum
 	RECV_DATA							= 0x0F,											//接收数据
 	EXECUT_DOWNLINK_DATA				= 0x10,											//执行下行数据
 	MQTTSN_PROCESS_STACK				= 0x11,											//MQTTSN执行栈
-	DNS_PROCESS_STACK					= 0x12											//DNS执行栈
+	DNS_PROCESS_STACK					= 0x12,											//DNS执行栈
+	LISTEN_RUN_CTL						= 0x13											//监听运行控制器
 }NBIOT_DictateEventTypeDef;
+
+/* NBIOT Listen Event */
+typedef enum
+{
+	ENTER_IDLE_MODE					= 0x00											//进入IDLE模式监听
+}NBIOT_ListenEventTypeDef;
 
 /* NBIOT CDP Server Address */
 struct NBIOT_CDPServerTypeDef
@@ -278,6 +292,7 @@ struct NBIOT_ParameterTypeDef
 	}nconfig;
 	
 	NBIOT_PSMStatusTypeDef				psmstate;
+	NBIOT_ConnectStatusTypeDef			connectedstate;
 	NBIOT_NetstateTypeDef				netstate;
 	NBIOT_FunctionalityTypeDef			functionality;
 	NBIOT_OpenOrCloseFuncTypeDef			nnmistate;
@@ -339,6 +354,7 @@ struct NBIOT_ClientsTypeDef
 	unsigned int						Command_Timeout_Msec;
 	unsigned int						Command_Failure_Cnt;
 	
+	/* 事件运行控制器 */
 	struct NBIOTDictateRuningCtlTypeDef
 	{
 		bool							dictateEnable;
@@ -358,9 +374,32 @@ struct NBIOT_ClientsTypeDef
 		unsigned char					dictateCDPServerConfigFailureCnt;
 		unsigned char					dictateSendDataFailureCnt;
 		unsigned char					dictateRecvDataFailureCnt;
+		unsigned char					dictateListenRunCtlFailureCnt;
 		Stm32_CalculagraphTypeDef		dictateRunTime;
 		NBIOT_DictateEventTypeDef		dictateEvent;
 	}DictateRunCtl;
+	
+	/* 事件运行监听器 */
+	struct NBIOTListenRuningCtlTypeDef
+	{
+		struct ListenEnterIdleTypeDef
+		{
+			bool						listenEnable;
+			bool						listenStatus;
+			unsigned int				listenTimereachSec;
+			Stm32_CalculagraphTypeDef	listenRunTime;
+			
+			struct EventCtlTypedef
+			{
+				bool						eventEnable;
+				unsigned int				eventTimeoutSec;
+				unsigned char				eventFailureCnt;
+				Stm32_CalculagraphTypeDef	eventRunTime;
+			}EventCtl;
+		}ListenEnterIdle;
+		
+		NBIOT_ListenEventTypeDef			listenEvent;
+	}ListenRunCtl;
 	
 	NBIOT_ParameterTypeDef				Parameter;
 	NBIOT_ATCmdTypeDef*					ATCmdStack;

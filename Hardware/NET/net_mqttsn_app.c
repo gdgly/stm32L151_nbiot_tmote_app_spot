@@ -107,6 +107,10 @@ void NET_MQTTSN_APP_PollExecution(MQTTSN_ClientsTypeDef* pClient)
 	case DNS_PROCESS_STACK:
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
 		break;
+	
+	case LISTEN_RUN_CTL:
+		
+		break;
 	}
 }
 

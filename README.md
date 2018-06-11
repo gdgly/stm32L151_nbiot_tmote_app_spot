@@ -1,6 +1,9 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang
 
+* 2018-06-11 :
+	* NBIOT增加监听处理器。
+	* NBIOT监听35秒是否进入IDLE，没进入发送WorkInfo包，包中nbworkinfo：1Connected,0Idle。
 * 2018-06-06 : 
 	* 增加COAP数据下行命令执行
 	* 增加COAP与MQTTSN对下行数据应答ResponseInfo

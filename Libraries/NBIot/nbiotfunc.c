@@ -670,6 +670,41 @@ exit:
 }
 
 /**********************************************************************************************************
+ @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSignalConnectionStatus(NBIOT_ClientsTypeDef* pClient)
+ @Description			NBIOT_Neul_NBxx_CheckReadSignalConnectionStatus	: 查询终端Connected状态
+ @Input				pClient									: NBIOT客户端实例
+ @Return				NBIOT_StatusTypeDef							: NBIOT处理状态
+**********************************************************************************************************/
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSignalConnectionStatus(NBIOT_ClientsTypeDef* pClient)
+{
+	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+	
+	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
+	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	
+	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+CSCON?\r");
+	pClient->ATCmdStack->ATSendlen = strlen("AT+CSCON?\r");
+	pClient->ATCmdStack->ATack = "OK";
+	pClient->ATCmdStack->ATNack = "ERROR";
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
+		/* Connected */
+		if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+CSCON:0,1")) {
+			pClient->Parameter.connectedstate = ConnectedMode;
+		}
+		/* Idle */
+		else if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+CSCON:0,0")) {
+			pClient->Parameter.connectedstate = IdleMode;
+		}
+		else {
+			NBStatus = NBIOT_ERROR;
+		}
+	}
+	
+	return NBStatus;
+}
+
+/**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetAttachOrDetach(NBIOT_ClientsTypeDef* pClient, NBIOT_NetstateTypeDef attdet)
  @Description			NBIOT_Neul_NBxx_SetAttachOrDetach			: 设置终端入网退网
  @Input				pClient								: NBIOT客户端实例

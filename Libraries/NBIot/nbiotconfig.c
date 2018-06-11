@@ -46,6 +46,7 @@ void NBIOT_Client_Init(NBIOT_ClientsTypeDef* pClient, NBIOT_ATCmdTypeDef* ATCmdS
 	pClient->Command_Timeout_Msec							= NBIOT_COMMAND_TIMEOUT_MSEC;
 	pClient->Command_Failure_Cnt							= NBIOT_COMMAND_FAILURE_CNT;
 	
+	/* 事件运行控制器 */
 	pClient->DictateRunCtl.dictateEnable					= false;
 	pClient->DictateRunCtl.dictateTimeoutSec				= 0;
 	pClient->DictateRunCtl.dictateRebootFailureCnt			= 0;
@@ -63,7 +64,18 @@ void NBIOT_Client_Init(NBIOT_ClientsTypeDef* pClient, NBIOT_ATCmdTypeDef* ATCmdS
 	pClient->DictateRunCtl.dictateCDPServerConfigFailureCnt	= 0;
 	pClient->DictateRunCtl.dictateSendDataFailureCnt			= 0;
 	pClient->DictateRunCtl.dictateRecvDataFailureCnt			= 0;
+	pClient->DictateRunCtl.dictateListenRunCtlFailureCnt		= 0;
 	pClient->DictateRunCtl.dictateEvent					= HARDWARE_REBOOT;
+	
+	/* 事件运行监听器 */
+	pClient->ListenRunCtl.ListenEnterIdle.listenEnable		= false;
+	pClient->ListenRunCtl.ListenEnterIdle.listenStatus		= false;
+	pClient->ListenRunCtl.ListenEnterIdle.listenTimereachSec	= 35;
+	pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventEnable		= false;
+	pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventTimeoutSec	= 0;
+	pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventFailureCnt	= 0;
+	
+	pClient->ListenRunCtl.listenEvent						= ENTER_IDLE_MODE;
 	
 	pClient->ATCmdStack									= ATCmdStack;
 	pClient->NetNbiotStack								= NetNbiotStack;

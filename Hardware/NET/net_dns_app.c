@@ -106,6 +106,10 @@ void NET_DNS_APP_PollExecution(DNS_ClientsTypeDef* pClient)
 	case DNS_PROCESS_STACK:
 		NET_DNS_APP_ProcessExecution(pClient);
 		break;
+	
+	case LISTEN_RUN_CTL:
+		
+		break;
 	}
 }
 
