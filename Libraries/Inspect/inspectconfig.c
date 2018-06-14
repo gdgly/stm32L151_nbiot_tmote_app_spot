@@ -58,7 +58,7 @@ void Inspect_Spot_Init(void)
 	
 	talgo_register_radar_callback(Radar_GetData);
 	
-	talgo_register_dprintf_callback(Radio_Trf_Debug_Printf);
+	talgo_register_dprintf_callback(Radio_Trf_Debug_Printf_Level3);
 	
 	talgo_register_runningtime_callback(Stm32_GetSecondTick);
 	

@@ -159,7 +159,10 @@ void Radio_Trf_Set_Workmode(uint8_t val);
 void Radio_Trf_Xmit_Heartbeat(void);
 void Radio_Trf_Do_Heartbeat(void);
 
-void Radio_Trf_Debug_Printf(const char *fmt, ...);
+void Radio_Trf_Debug_Printf_Level3(const char *fmt, ...);
+void Radio_Trf_Debug_Printf_Level2(const char *fmt, ...);
+void Radio_Trf_Debug_Printf_Level1(const char *fmt, ...);
+void Radio_Trf_Debug_Printf_Level0(const char *fmt, ...);
 void Radio_Trf_Printf(const char *fmt, ...);
 
 #endif

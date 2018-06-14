@@ -123,6 +123,8 @@
 #define TCFG_RF_CMDCNT_LENGTH				1												//RFCmdCnt			RF命令
 #define TCFG_NB_CMDCNT_OFFSET				TCFG_RF_CMDCNT_OFFSET + TCFG_RF_CMDCNT_LENGTH			//0x080804E0
 #define TCFG_NB_CMDCNT_LENGTH				1												//NBCmdCnt			NB命令
+#define TCFG_RF_DPRINT_LV_OFFSET			TCFG_NB_CMDCNT_OFFSET + TCFG_NB_CMDCNT_LENGTH			//0x080804E1
+#define TCFG_RF_DPRINT_LV_LENGTH			1												//RFDPrintLv			RF调试信息输出等级
 
 enum TCFG_SENSITIVITY																	//传感器灵敏度
 {
@@ -148,6 +150,7 @@ typedef struct
 	unsigned char						WorkMode;											//工作模式
 	unsigned char						WorkModeStr[10];									//工作模式名
 	unsigned char						RFChannel;										//无线通道
+	unsigned char						RFDprintLv;										//无线调试信息输出等级
 	unsigned char						MagMode;											//地磁模式
 	unsigned int						RadarCount;										//雷达次数
 	unsigned char						RadarDbgMode;										//雷达调试模式
@@ -161,6 +164,8 @@ typedef struct
 	unsigned int						CoapRecvCount;										//Coap接收包数
 	unsigned int						MqttSNSentCount;									//MqttSN发送包数
 	unsigned int						MqttSNRecvCount;									//MqttSN接收包数
+	unsigned char						RFCommandCount;									//RF命令接收条数
+	unsigned char						NBCommandCount;									//NB命令接收条数
 	unsigned short						DeviceBootCount;									//设备重启次数
 }TCFG_SystemDataTypeDef;
 
@@ -221,6 +226,9 @@ unsigned int	TCFG_EEPROM_GetStatusCount(void);												//读取StatusCount
 
 void			TCFG_EEPROM_SetRfChannel(unsigned char val);										//保存RfChannel
 unsigned char	TCFG_EEPROM_GetRfChannel(void);												//读取RfChannel
+
+void			TCFG_EEPROM_SetRFDprintLv(uint8_t val);											//保存RFDprintLv
+unsigned char	TCFG_EEPROM_GetRFDprintLv(void);												//读取RFDprintLv
 
 void			TCFG_EEPROM_SetEnableNBiotPSM(unsigned char val);									//保存EnableNBiotPSM
 unsigned char	TCFG_EEPROM_GetEnableNBiotPSM(void);											//读取EnableNBiotPSM

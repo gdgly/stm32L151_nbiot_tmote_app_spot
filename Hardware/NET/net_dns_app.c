@@ -234,7 +234,7 @@ void NET_DNS_NBIOT_Event_HardwareReboot(DNS_ClientsTypeDef* pClient)
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MODULE_CHECK;
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateRebootFailureCnt = 0;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("NB HDRBT Ok, Baud:%d", NBIOTBaudRate.Baud);
+		Radio_Trf_Debug_Printf_Level2("NB HDRBT Ok, Baud:%d", NBIOTBaudRate.Baud);
 #endif
 	}
 	else {
@@ -254,7 +254,7 @@ void NET_DNS_NBIOT_Event_HardwareReboot(DNS_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
 		}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("NB HDRBT Fail");
+		Radio_Trf_Debug_Printf_Level2("NB HDRBT Fail");
 #endif
 	}
 }
@@ -285,7 +285,7 @@ void NET_DNS_NBIOT_Event_ModuleCheck(DNS_ClientsTypeDef* pClient)
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateModuleCheckFailureCnt = 0;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("NB MduCheck Ok");
+		Radio_Trf_Debug_Printf_Level2("NB MduCheck Ok");
 #endif
 	}
 	else {
@@ -305,7 +305,7 @@ void NET_DNS_NBIOT_Event_ModuleCheck(DNS_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MODULE_CHECK;
 		}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("NB MduCheck Fail");
+		Radio_Trf_Debug_Printf_Level2("NB MduCheck Fail");
 #endif
 	}
 }
@@ -334,7 +334,7 @@ void NET_DNS_NBIOT_Event_ParameterConfig(DNS_ClientsTypeDef* pClient)
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ICCID_CHECK;
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("NB CfgRd Ok");
+		Radio_Trf_Debug_Printf_Level2("NB CfgRd Ok");
 #endif
 	}
 	else {
@@ -354,7 +354,7 @@ void NET_DNS_NBIOT_Event_ParameterConfig(DNS_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
 		}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("NB CfgRd Fail");
+		Radio_Trf_Debug_Printf_Level2("NB CfgRd Fail");
 #endif
 		return;
 	}
@@ -366,7 +366,7 @@ void NET_DNS_NBIOT_Event_ParameterConfig(DNS_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ICCID_CHECK;
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("NB %s %d Ok", AutoConnect, AutoConnectVal);
+			Radio_Trf_Debug_Printf_Level2("NB %s %d Ok", AutoConnect, AutoConnectVal);
 #endif
 		}
 		else {
@@ -386,7 +386,7 @@ void NET_DNS_NBIOT_Event_ParameterConfig(DNS_ClientsTypeDef* pClient)
 				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
 			}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("NB %s %d Fail", AutoConnect, AutoConnectVal);
+			Radio_Trf_Debug_Printf_Level2("NB %s %d Fail", AutoConnect, AutoConnectVal);
 #endif
 			return;
 		}
@@ -399,7 +399,7 @@ void NET_DNS_NBIOT_Event_ParameterConfig(DNS_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ICCID_CHECK;
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("NB %s %d Ok", CrScrambling, CrScramblingVal);
+			Radio_Trf_Debug_Printf_Level2("NB %s %d Ok", CrScrambling, CrScramblingVal);
 #endif
 		}
 		else {
@@ -419,7 +419,7 @@ void NET_DNS_NBIOT_Event_ParameterConfig(DNS_ClientsTypeDef* pClient)
 				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
 			}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("NB %s %d Fail", CrScrambling, CrScramblingVal);
+			Radio_Trf_Debug_Printf_Level2("NB %s %d Fail", CrScrambling, CrScramblingVal);
 #endif
 			return;
 		}
@@ -432,7 +432,7 @@ void NET_DNS_NBIOT_Event_ParameterConfig(DNS_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ICCID_CHECK;
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("NB %s %d Ok", CrSiAvoid, CrSiAvoidVal);
+			Radio_Trf_Debug_Printf_Level2("NB %s %d Ok", CrSiAvoid, CrSiAvoidVal);
 #endif
 		}
 		else {
@@ -452,7 +452,7 @@ void NET_DNS_NBIOT_Event_ParameterConfig(DNS_ClientsTypeDef* pClient)
 				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
 			}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("NB %s %d Fail", CrSiAvoid, CrSiAvoidVal);
+			Radio_Trf_Debug_Printf_Level2("NB %s %d Fail", CrSiAvoid, CrSiAvoidVal);
 #endif
 			return;
 		}
@@ -465,7 +465,7 @@ void NET_DNS_NBIOT_Event_ParameterConfig(DNS_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ICCID_CHECK;
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("NB %s %d Ok", CombineAttach, CombineAttachVal);
+			Radio_Trf_Debug_Printf_Level2("NB %s %d Ok", CombineAttach, CombineAttachVal);
 #endif
 		}
 		else {
@@ -485,7 +485,7 @@ void NET_DNS_NBIOT_Event_ParameterConfig(DNS_ClientsTypeDef* pClient)
 				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
 			}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("NB %s %d Fail", CombineAttach, CombineAttachVal);
+			Radio_Trf_Debug_Printf_Level2("NB %s %d Fail", CombineAttach, CombineAttachVal);
 #endif
 			return;
 		}
@@ -498,7 +498,7 @@ void NET_DNS_NBIOT_Event_ParameterConfig(DNS_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ICCID_CHECK;
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("NB %s %d Ok", CellReselection, CellReselectionVal);
+			Radio_Trf_Debug_Printf_Level2("NB %s %d Ok", CellReselection, CellReselectionVal);
 #endif
 		}
 		else {
@@ -518,7 +518,7 @@ void NET_DNS_NBIOT_Event_ParameterConfig(DNS_ClientsTypeDef* pClient)
 				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
 			}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("NB %s %d Fail", CellReselection, CellReselectionVal);
+			Radio_Trf_Debug_Printf_Level2("NB %s %d Fail", CellReselection, CellReselectionVal);
 #endif
 			return;
 		}
@@ -531,7 +531,7 @@ void NET_DNS_NBIOT_Event_ParameterConfig(DNS_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ICCID_CHECK;
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("NB %s %d Ok", EnableBip, EnableBipVal);
+			Radio_Trf_Debug_Printf_Level2("NB %s %d Ok", EnableBip, EnableBipVal);
 #endif
 		}
 		else {
@@ -551,7 +551,7 @@ void NET_DNS_NBIOT_Event_ParameterConfig(DNS_ClientsTypeDef* pClient)
 				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
 			}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("NB %s %d Fail", EnableBip, EnableBipVal);
+			Radio_Trf_Debug_Printf_Level2("NB %s %d Fail", EnableBip, EnableBipVal);
 #endif
 			return;
 		}
@@ -582,7 +582,7 @@ void NET_DNS_NBIOT_Event_SimICCIDCheck(DNS_ClientsTypeDef* pClient)
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MISC_EQUIP_CONFIG;
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateSimICCIDCheckFailureCnt = 0;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("NB ICCIDCheck Ok");
+		Radio_Trf_Debug_Printf_Level2("NB ICCIDCk Ok");
 #endif
 	}
 	else {
@@ -602,7 +602,7 @@ void NET_DNS_NBIOT_Event_SimICCIDCheck(DNS_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ICCID_CHECK;
 		}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("NB ICCIDCheck Fail");
+		Radio_Trf_Debug_Printf_Level2("NB ICCIDCk Fail");
 #endif
 	}
 }
@@ -631,7 +631,7 @@ void NET_DNS_NBIOT_Event_MiscEquipConfig(DNS_ClientsTypeDef* pClient)
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ATTACH_CHECK;
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateMiscEquipConfigFailureCnt = 0;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("NB MiscRead Ok");
+		Radio_Trf_Debug_Printf_Level2("NB MiscRd Ok");
 #endif
 	}
 	else {
@@ -651,7 +651,7 @@ void NET_DNS_NBIOT_Event_MiscEquipConfig(DNS_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MISC_EQUIP_CONFIG;
 		}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("NB MiscRead Fail");
+		Radio_Trf_Debug_Printf_Level2("NB MiscRd Fail");
 #endif
 		return;
 	}
@@ -663,7 +663,7 @@ void NET_DNS_NBIOT_Event_MiscEquipConfig(DNS_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ATTACH_CHECK;
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateMiscEquipConfigFailureCnt = 0;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("NB BandSet %d Ok", DNS_NBIOT_BAND);
+			Radio_Trf_Debug_Printf_Level2("NB BandSet %d Ok", DNS_NBIOT_BAND);
 #endif
 		}
 		else {
@@ -683,7 +683,7 @@ void NET_DNS_NBIOT_Event_MiscEquipConfig(DNS_ClientsTypeDef* pClient)
 				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MISC_EQUIP_CONFIG;
 			}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("NB BandSet %d Fail", DNS_NBIOT_BAND);
+			Radio_Trf_Debug_Printf_Level2("NB BandSet %d Fail", DNS_NBIOT_BAND);
 #endif
 			return;
 		}
@@ -714,7 +714,7 @@ void NET_DNS_NBIOT_Event_AttachCheck(DNS_ClientsTypeDef* pClient)
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ATTACH_CHECK;
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateAttachCheckFailureCnt = 0;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("NB CGATT %d Ok", pClient->SocketStack->NBIotStack->Parameter.netstate);
+		Radio_Trf_Debug_Printf_Level2("NB CGATT %d Ok", pClient->SocketStack->NBIotStack->Parameter.netstate);
 #endif
 	}
 	else {
@@ -734,7 +734,7 @@ void NET_DNS_NBIOT_Event_AttachCheck(DNS_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ATTACH_CHECK;
 		}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("NB CGATT %d Fail", pClient->SocketStack->NBIotStack->Parameter.netstate);
+		Radio_Trf_Debug_Printf_Level2("NB CGATT %d Fail", pClient->SocketStack->NBIotStack->Parameter.netstate);
 #endif
 		return;
 	}
@@ -772,7 +772,7 @@ void NET_DNS_NBIOT_Event_AttachExecute(DNS_ClientsTypeDef* pClient)
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ATTACH_INQUIRE;
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateAttachExecuteFailureCnt = 0;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("NB Set CGATT %d Ok", Attach);
+		Radio_Trf_Debug_Printf_Level2("NB Set CGATT %d Ok", Attach);
 #endif
 	}
 	else {
@@ -792,7 +792,7 @@ void NET_DNS_NBIOT_Event_AttachExecute(DNS_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ATTACH_EXECUTE;
 		}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("NB Set CGATT %d Fail", Attach);
+		Radio_Trf_Debug_Printf_Level2("NB Set CGATT %d Fail", Attach);
 #endif
 	}
 }
@@ -819,7 +819,7 @@ void NET_DNS_NBIOT_Event_AttachInquire(DNS_ClientsTypeDef* pClient)
 		/* Dictate execute is Success */
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ATTACH_INQUIRE;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("NB CGATT %d Ok", pClient->SocketStack->NBIotStack->Parameter.netstate);
+		Radio_Trf_Debug_Printf_Level2("NB CGATT %d Ok", pClient->SocketStack->NBIotStack->Parameter.netstate);
 #endif
 	}
 	else {
@@ -839,7 +839,7 @@ void NET_DNS_NBIOT_Event_AttachInquire(DNS_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ATTACH_INQUIRE;
 		}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("NB CGATT %d Fail", pClient->SocketStack->NBIotStack->Parameter.netstate);
+		Radio_Trf_Debug_Printf_Level2("NB CGATT %d Fail", pClient->SocketStack->NBIotStack->Parameter.netstate);
 #endif
 		return;
 	}
@@ -897,7 +897,7 @@ void NET_DNS_NBIOT_Event_PatameterCheckOut(DNS_ClientsTypeDef* pClient)
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = DNS_PROCESS_STACK;
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictatePatameterCheckOutFailureCnt = 0;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("NB Patameter Check Ok");
+		Radio_Trf_Debug_Printf_Level2("NB Patameter Ck Ok");
 #endif
 	}
 	else {
@@ -917,7 +917,7 @@ void NET_DNS_NBIOT_Event_PatameterCheckOut(DNS_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = PARAMETER_CHECKOUT;
 		}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("NB Patameter Check Fail");
+		Radio_Trf_Debug_Printf_Level2("NB Patameter Ck Fail");
 #endif
 		return;
 	}
@@ -953,7 +953,7 @@ void NET_DNS_Event_CreatUDPSocket(DNS_ClientsTypeDef* pClient)
 		pClient->ProcessState = DNS_PROCESS_SEND_DNS_STRUCT_DATA;
 		pClient->DictateRunCtl.dictateCreatUDPSocketFailureCnt = 0;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("DNS Creat UDP Socket Ok");
+		Radio_Trf_Debug_Printf_Level2("DNS Creat UDP Ok");
 #endif
 	}
 	else {
@@ -976,7 +976,7 @@ void NET_DNS_Event_CreatUDPSocket(DNS_ClientsTypeDef* pClient)
 			pClient->ProcessState = DNS_PROCESS_CREAT_UDP_SOCKET;
 		}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("DNS Creat UDP Socket Fail");
+		Radio_Trf_Debug_Printf_Level2("DNS Creat UDP Fail");
 #endif
 		return;
 	}
@@ -1030,7 +1030,7 @@ void NET_DNS_Event_SendDnsStructData(DNS_ClientsTypeDef* pClient)
 				pClient->ProcessState = DNS_PROCESS_SEND_DNS_STRUCT_DATA;
 			}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("DNS Send %s Fail", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
+			Radio_Trf_Debug_Printf_Level2("DNS Sd %s Fail", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
 #endif
 			return;
 		}
@@ -1041,7 +1041,7 @@ void NET_DNS_Event_SendDnsStructData(DNS_ClientsTypeDef* pClient)
 			pClient->ProcessState = DNS_PROCESS_RECV_DNS_STRUCT_DATA;
 			pClient->DictateRunCtl.dictateSendDnsStructDataFailureCnt = 0;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("DNS Send %s Ok", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
+			Radio_Trf_Debug_Printf_Level2("DNS Sd %s Ok", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
 #endif
 		}
 	}
@@ -1098,7 +1098,7 @@ void NET_DNS_Event_RecvDnsStructData(DNS_ClientsTypeDef* pClient)
 				pClient->ProcessState = DNS_PROCESS_RECV_DNS_STRUCT_DATA;
 			}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("DNS Wait Recv %s", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
+			Radio_Trf_Debug_Printf_Level2("DNS Wait Recv %s", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
 #endif
 			return;
 		}
@@ -1142,7 +1142,7 @@ void NET_DNS_Event_RecvDnsStructData(DNS_ClientsTypeDef* pClient)
 						pClient->ProcessState = DNS_PROCESS_CREAT_UDP_SOCKET;
 					}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-					Radio_Trf_Debug_Printf("DNS Analysis %s Fail", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
+					Radio_Trf_Debug_Printf_Level2("DNS Analysis %s Fail", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
 #endif
 					return;
 				}
@@ -1153,8 +1153,8 @@ void NET_DNS_Event_RecvDnsStructData(DNS_ClientsTypeDef* pClient)
 					pClient->ProcessState = DNS_PROCESS_SEND_DNS_STRUCT_DATA;
 					pClient->DictateRunCtl.dictateRecvDnsStructDataFailureCnt = 0;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-					Radio_Trf_Debug_Printf("DNS Analysis %s OK", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
-					Radio_Trf_Debug_Printf("%s : %s", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr, pClient->AnalysisData[pClient->AnalysisTick].hostIP);
+					Radio_Trf_Debug_Printf_Level2("DNS Analysis %s OK", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
+					Radio_Trf_Debug_Printf_Level2("%s : %s", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr, pClient->AnalysisData[pClient->AnalysisTick].hostIP);
 #endif
 					pClient->AnalysisTick += 1;
 				}
@@ -1196,7 +1196,7 @@ void NET_DNS_Event_CloseUDPSocket(DNS_ClientsTypeDef* pClient)
 		pClient->ProcessState = DNS_PROCESS_OVER_DNS_ANALYSIS;
 		pClient->DictateRunCtl.dictateCloseUDPSocketFailureCnt = 0;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("DNS Close UDP Socket Ok");
+		Radio_Trf_Debug_Printf_Level2("DNS Close UDP Ok");
 #endif
 	}
 	else {
@@ -1213,7 +1213,7 @@ void NET_DNS_Event_CloseUDPSocket(DNS_ClientsTypeDef* pClient)
 			pClient->ProcessState = DNS_PROCESS_CLOSE_UDP_SOCKET;
 		}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf("DNS Close UDP Socket Fail");
+		Radio_Trf_Debug_Printf_Level2("DNS Close UDP Fail");
 #endif
 		return;
 	}

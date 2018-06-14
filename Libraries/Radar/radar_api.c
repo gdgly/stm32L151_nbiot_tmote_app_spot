@@ -353,13 +353,14 @@ u8 Radar_GetData(tradar_targetinfo_s* pTargetinfo[], u8 dataNum)
 			pTargetinfo[0]->pMagBG[6]);
 		}
 		
-		Radio_Trf_Debug_Printf("%dlow%d.%d-%dst%dds%ddf%d&%d;tdf%d.%d;%d,%d,%d,%d ",dataNum,RADER_LOW,val_temp,val_vptat,(uint32_t)radar_targetinfo.status,
+		Radio_Trf_Debug_Printf_Level3("%dlow%d.%d-%dst%dds%ddf%d&%d;tdf%d.%d;%d,%d,%d,%d",
+				dataNum,RADER_LOW,val_temp,val_vptat,(uint32_t)radar_targetinfo.status,
 				(uint32_t)radar_targetinfo.distance_cm,
 				radar_targetinfo.strenth_total_diff,radar_targetinfo.strenth_total_diff_v2,
 				radar_targetinfo.time_total_square_diff,radar_targetinfo.time_total_diff,
 				radar_targetinfo.overnum[0],radar_targetinfo.overnum[1],radar_targetinfo.overnum_bg[0],radar_targetinfo.overnum_bg[1]);
 		
-		Radio_Trf_Debug_Printf("n:%02d%02d%02d%02d%02d;%02d%02d%02d%02d%02d;%02d%02d%02d%02d%02d%02d.%d.%d",
+		Radio_Trf_Debug_Printf_Level3("n:%02d%02d%02d%02d%02d;%02d%02d%02d%02d%02d;%02d%02d%02d%02d%02d%02d.%d.%d",
 				pTargetinfo[0]->pMagNow[2],
 				pTargetinfo[0]->pMagNow[3],pTargetinfo[0]->pMagNow[4],pTargetinfo[0]->pMagNow[5],
 				pTargetinfo[0]->pMagNow[6],pTargetinfo[0]->pMagNow[7],pTargetinfo[0]->pMagNow[8],
@@ -368,7 +369,7 @@ u8 Radar_GetData(tradar_targetinfo_s* pTargetinfo[], u8 dataNum)
 				pTargetinfo[0]->pMagNow[15],pTargetinfo[0]->pMagNow[16],pTargetinfo[0]->pMagNow[17],
 				talgo_get_fredomain_least(),Qmc5883lDiff.BackVal_Diff);
 		
-		Radio_Trf_Debug_Printf("b:%02d%02d%02d%02d%02d;%02d%02d%02d%02d%02d;%02d%02d%02d%02d%02d%02d.%d",
+		Radio_Trf_Debug_Printf_Level3("b:%02d%02d%02d%02d%02d;%02d%02d%02d%02d%02d;%02d%02d%02d%02d%02d%02d.%d",
 				pTargetinfo[0]->pMagBG[2],
 				pTargetinfo[0]->pMagBG[3],pTargetinfo[0]->pMagBG[4],pTargetinfo[0]->pMagBG[5],
 				pTargetinfo[0]->pMagBG[6],pTargetinfo[0]->pMagBG[7],pTargetinfo[0]->pMagBG[8],
@@ -377,12 +378,12 @@ u8 Radar_GetData(tradar_targetinfo_s* pTargetinfo[], u8 dataNum)
 				pTargetinfo[0]->pMagBG[15],pTargetinfo[0]->pMagBG[16],pTargetinfo[0]->pMagBG[17],
 				talgo_get_timedomain_least());
 		
-		Radio_Trf_Debug_Printf("t1:%04d %04d %04d %04d;%04d %04d %04d %04d",
+		Radio_Trf_Debug_Printf_Level3("t1:%04d %04d %04d %04d;%04d %04d %04d %04d",
 				tradar_time_mag_buff_test[0],tradar_time_mag_buff_test[1],tradar_time_mag_buff_test[2],
 				tradar_time_mag_buff_test[3],tradar_time_mag_buff_test[4],tradar_time_mag_buff_test[5],
 				tradar_time_mag_buff_test[6],tradar_time_mag_buff_test[7]);
 		
-		Radio_Trf_Debug_Printf("t2:%04d %04d %04d %04d;%04d %04d %04d",
+		Radio_Trf_Debug_Printf_Level3("t2:%04d %04d %04d %04d;%04d %04d %04d",
 				tradar_time_mag_buff_test[8],tradar_time_mag_buff_test[9],tradar_time_mag_buff_test[10],
 				tradar_time_mag_buff_test[11],tradar_time_mag_buff_test[12],tradar_time_mag_buff_test[13],
 				tradar_time_mag_buff_test[14]);
@@ -631,7 +632,7 @@ void Radar_check_background(RADAR_DataStruct* pRadarData)
 	dec_diff_base	= Radar_get_decrease_sum(tradar_fre_mag_buff, tradar_fre_magBG_base, 10);
 	
 #ifdef RADAR_DEBUG_LOG_RF_PRINT
-	Radio_Trf_Debug_Printf("temp:%d~%d", val_temp, val_temp_adjust);
+	Radio_Trf_Debug_Printf_Level3("temp:%d~%d", val_temp, val_temp_adjust);
 #endif
 	
 	/* the changed temperature value is less than 8 */
@@ -654,7 +655,7 @@ void Radar_check_background(RADAR_DataStruct* pRadarData)
 	if ((pRadarData->Diff <= 16) && ((pRadarData->Diff - pRadarData->Diff_v2) <= 16) && (inc_diff <= 16) && (dec_diff <= 16)) {
 		if ((pRadarData->Diff > 8) || ((pRadarData->Diff - pRadarData->Diff_v2) > 8)) {
 #ifdef RADAR_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("diff:%d,%dbase:%d,%d", inc_diff, dec_diff, inc_diff_base, dec_diff_base);
+			Radio_Trf_Debug_Printf_Level3("diff:%d,%dbase:%d,%d", inc_diff, dec_diff, inc_diff_base, dec_diff_base);
 #endif
 			tradar_background_set((u16*)tradar_fre_mag_buff, (sizeof(tradar_fre_mag_buff)) / 2);
 			val_vptat_adjust = val_vptat;
@@ -666,7 +667,7 @@ void Radar_check_background(RADAR_DataStruct* pRadarData)
 	if ((pRadarData->Diff_base <= 16) && ((pRadarData->Diff_base - pRadarData->Diff_base_v2) <= 16) && (inc_diff_base <= 16) && (dec_diff_base <= 16)) {
 		if ((pRadarData->Diff_base > 8) || ((pRadarData->Diff_base - pRadarData->Diff_base_v2) > 8)) {
 #ifdef RADAR_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("diff:%d,%dbase:%d,%d", inc_diff, dec_diff, inc_diff_base, dec_diff_base);
+			Radio_Trf_Debug_Printf_Level3("diff:%d,%dbase:%d,%d", inc_diff, dec_diff, inc_diff_base, dec_diff_base);
 #endif
 			tradar_background_set((u16*)tradar_fre_mag_buff, (sizeof(tradar_fre_mag_buff)) / 2);
 			val_vptat_adjust = val_vptat;
@@ -698,7 +699,7 @@ void Radar_check_timedomain_background(RADAR_DataStruct* pRadarData)
 	inc_diff		= calculate_time_domain_total_square_diff();
 	
 #ifdef RADAR_DEBUG_LOG_RF_PRINT
-	Radio_Trf_Debug_Printf("temp:%d~%d", val_temp, val_temp_adjust);
+	Radio_Trf_Debug_Printf_Level3("temp:%d~%d", val_temp, val_temp_adjust);
 #endif
 	
 	/* the changed temperature value is less than 8 */
@@ -721,7 +722,7 @@ void Radar_check_timedomain_background(RADAR_DataStruct* pRadarData)
 	if ((pRadarData->Diff <= 16) && (inc_diff <= 16)) {
 		if (pRadarData->Diff > 8) {
 #ifdef RADAR_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("diff:%d,%dbase:%d,%d", inc_diff, dec_diff, inc_diff_base, dec_diff_base);
+			Radio_Trf_Debug_Printf_Level3("diff:%d,%dbase:%d,%d", inc_diff, dec_diff, inc_diff_base, dec_diff_base);
 #endif
 			tradar_background_set((u16*)tradar_fre_mag_buff, (sizeof(tradar_fre_mag_buff)) / 2);
 			val_vptat_adjust = val_vptat;
@@ -733,7 +734,7 @@ void Radar_check_timedomain_background(RADAR_DataStruct* pRadarData)
 	if ((pRadarData->Diff_base <= 16) && (inc_diff_base <= 16)) {
 		if (pRadarData->Diff_base > 8) {
 #ifdef RADAR_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf("diff:%d,%dbase:%d,%d", inc_diff, dec_diff, inc_diff_base, dec_diff_base);
+			Radio_Trf_Debug_Printf_Level3("diff:%d,%dbase:%d,%d", inc_diff, dec_diff, inc_diff_base, dec_diff_base);
 #endif
 			tradar_background_set((u16*)tradar_fre_mag_buff, (sizeof(tradar_fre_mag_buff)) / 2);
 			val_vptat_adjust = val_vptat;

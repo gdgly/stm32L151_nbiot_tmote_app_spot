@@ -84,6 +84,10 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_SystemData.Heartinterval = HEART_INTERVAL;
 	TCFG_EEPROM_SetHeartinterval(TCFG_SystemData.Heartinterval);
 	
+	/* 无线调试输出等级 */
+	TCFG_SystemData.RFDprintLv = RF_DPRINT_LV;
+	TCFG_EEPROM_SetRFDprintLv(TCFG_SystemData.RFDprintLv);
+	
 	/* 地磁模式 */
 	TCFG_SystemData.MagMode = 0;
 	TCFG_EEPROM_SetMagMode(TCFG_SystemData.MagMode);
@@ -139,6 +143,14 @@ void TCFG_EEPROM_WriteConfigData(void)
 	/* NBIot MqttSN 发送数据次数 */
 	TCFG_SystemData.MqttSNSentCount = 0;
 	TCFG_EEPROM_SetMqttSNSentCnt(TCFG_SystemData.MqttSNSentCount);
+	
+	/* RF命令接收条数 */
+	TCFG_SystemData.RFCommandCount = 0;
+	TCFG_EEPROM_SetRFCmdCnt(TCFG_SystemData.RFCommandCount);
+	
+	/* NB命令接收条数 */
+	TCFG_SystemData.NBCommandCount = 0;
+	TCFG_EEPROM_SetNBCmdCnt(TCFG_SystemData.NBCommandCount);
 }
 
 /**********************************************************************************************************
@@ -195,6 +207,9 @@ void TCFG_EEPROM_ReadConfigData(void)
 		TCFG_SystemData.Heartinterval = HEART_INTERVAL;
 		TCFG_EEPROM_SetHeartinterval(TCFG_SystemData.Heartinterval);
 	}
+	
+	/* 无线调试输出等级 */
+	TCFG_SystemData.RFDprintLv = TCFG_EEPROM_GetRFDprintLv();
 	
 	/* 地磁模式 */
 	TCFG_SystemData.MagMode = TCFG_EEPROM_GetMagMode();
@@ -752,6 +767,28 @@ unsigned char TCFG_EEPROM_GetRfChannel(void)
 	}
 	
 	return val;
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetRFDprintLv(uint8_t val)
+ @Description			TCFG_EEPROM_SetRFDprintLv					: 保存RFDprintLv
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetRFDprintLv(uint8_t val)
+{
+	FLASH_EEPROM_WriteByte(TCFG_RF_DPRINT_LV_OFFSET, val);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned char TCFG_EEPROM_GetRFDprintLv(void)
+ @Description			TCFG_EEPROM_GetRFDprintLv					: 读取RFDprintLv
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned char TCFG_EEPROM_GetRFDprintLv(void)
+{
+	return FLASH_EEPROM_ReadByte(TCFG_RF_DPRINT_LV_OFFSET);
 }
 
 /**********************************************************************************************************

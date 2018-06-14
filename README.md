@@ -1,6 +1,9 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang
 
+* 2018-06-14 :
+	* RF输出调试信息采用等级输出，分为4个Level，Level3:输出所有调试信息,Level2不输出Radar调试信息,Leverl1不输出NB调试信息。
+	* RF配置Level指令: rfdplv:3。
 * 2018-06-14 : (同步更新)
 	* 当雷达背景不好的时候,或者雷达无信号的时候，小无线会输出错误信息。
 	* 当收到命令后,会持续3分钟,每秒都发心跳包。

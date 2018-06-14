@@ -215,7 +215,7 @@ void MainMajorCycle(void)
 **********************************************************************************************************/
 void MainRollingEnteredUpWork(void)
 {
-	Radio_Trf_Printf("Entered Up Work");
+	Radio_Trf_Debug_Printf_Level1("Entered Up Work");
 	BEEP_CtrlRepeat_Extend(3, 30, 70);
 	NETCoapNeedSendCode.WorkInfoWait = 3;
 	NETMqttSNNeedSendCode.InfoWorkWait = 3;
@@ -229,7 +229,7 @@ void MainRollingEnteredUpWork(void)
 **********************************************************************************************************/
 void MainRollingEnteringUpWork(void)
 {
-	Radio_Trf_Printf("Entering Up Work");
+	Radio_Trf_Debug_Printf_Level1("Entering Up Work");
 	BEEP_CtrlRepeat_Extend(1, 500, 0);
 }
 

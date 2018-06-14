@@ -352,6 +352,14 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					Radio_Trf_Printf("CarInDelay : %hu", TCFG_SystemData.CarInDelay);
 					__NOP();
 				}
+				/* RFDprintLv */
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "rfdplv")) {
+					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "rfdplv:%hu", &uval16);
+					TCFG_EEPROM_SetRFDprintLv(uval16);
+					TCFG_SystemData.RFDprintLv = TCFG_EEPROM_GetRFDprintLv();
+					Radio_Trf_Printf("RFDprintLv : %hu", TCFG_SystemData.RFDprintLv);
+					__NOP();
+				}
 				/* WorkInfo */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "workinfo")) {
 					NETCoapNeedSendCode.WorkInfo = 1;
@@ -669,12 +677,75 @@ void Radio_Trf_Do_Rf_Pintf(char* info)
 }
 
 /**********************************************************************************************************
- @Function			void Radio_Trf_Debug_Printf(const char *fmt, ...)
- @Description			Radio_Trf_Debug_Printf		: Radio Debug Printf
+ @Function			void Radio_Trf_Debug_Printf_Level3(const char *fmt, ...)
+ @Description			Radio_Trf_Debug_Printf_Level3	: Radio Debug Printf
  @Input				...
  @Return				void
 **********************************************************************************************************/
-void Radio_Trf_Debug_Printf(const char *fmt, ...)
+void Radio_Trf_Debug_Printf_Level3(const char *fmt, ...)
+{
+	if ((DEBUG_WORK == Radio_Trf_Get_Workmode()) && (TCFG_EEPROM_GetRFDprintLv() >= 3)) {
+#ifdef	RADIO_SI4438
+		__va_list args;
+		va_start (args, fmt);
+		
+		memset(TRF_PrintfBuf, 0, sizeof(TRF_PrintfBuf));
+		vsprintf((char*)TRF_PrintfBuf, fmt, args);
+		va_end (args);
+		Radio_Trf_Do_Rf_Pintf((char*)TRF_PrintfBuf);
+#endif
+	}
+}
+
+/**********************************************************************************************************
+ @Function			void Radio_Trf_Debug_Printf_Level2(const char *fmt, ...)
+ @Description			Radio_Trf_Debug_Printf_Level2	: Radio Debug Printf
+ @Input				...
+ @Return				void
+**********************************************************************************************************/
+void Radio_Trf_Debug_Printf_Level2(const char *fmt, ...)
+{
+	if ((DEBUG_WORK == Radio_Trf_Get_Workmode()) && (TCFG_EEPROM_GetRFDprintLv() >= 2)) {
+#ifdef	RADIO_SI4438
+		__va_list args;
+		va_start (args, fmt);
+		
+		memset(TRF_PrintfBuf, 0, sizeof(TRF_PrintfBuf));
+		vsprintf((char*)TRF_PrintfBuf, fmt, args);
+		va_end (args);
+		Radio_Trf_Do_Rf_Pintf((char*)TRF_PrintfBuf);
+#endif
+	}
+}
+
+/**********************************************************************************************************
+ @Function			void Radio_Trf_Debug_Printf_Level1(const char *fmt, ...)
+ @Description			Radio_Trf_Debug_Printf_Level1	: Radio Debug Printf
+ @Input				...
+ @Return				void
+**********************************************************************************************************/
+void Radio_Trf_Debug_Printf_Level1(const char *fmt, ...)
+{
+	if ((DEBUG_WORK == Radio_Trf_Get_Workmode()) && (TCFG_EEPROM_GetRFDprintLv() >= 1)) {
+#ifdef	RADIO_SI4438
+		__va_list args;
+		va_start (args, fmt);
+		
+		memset(TRF_PrintfBuf, 0, sizeof(TRF_PrintfBuf));
+		vsprintf((char*)TRF_PrintfBuf, fmt, args);
+		va_end (args);
+		Radio_Trf_Do_Rf_Pintf((char*)TRF_PrintfBuf);
+#endif
+	}
+}
+
+/**********************************************************************************************************
+ @Function			void Radio_Trf_Debug_Printf_Level0(const char *fmt, ...)
+ @Description			Radio_Trf_Debug_Printf_Level0	: Radio Debug Printf
+ @Input				...
+ @Return				void
+**********************************************************************************************************/
+void Radio_Trf_Debug_Printf_Level0(const char *fmt, ...)
 {
 	if (DEBUG_WORK == Radio_Trf_Get_Workmode()) {
 #ifdef	RADIO_SI4438

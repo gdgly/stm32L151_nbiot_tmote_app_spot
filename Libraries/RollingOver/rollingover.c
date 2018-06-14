@@ -68,8 +68,8 @@ bool RollingOverCheckToActive(void)
 		rollingover_time[3] = rollingover_time[4];
 		rollingover_time[4] = Stm32_GetSecondTick();
 #ifdef ROLLINGOVER_LOG_RF_PRINT
-		Radio_Trf_Printf("rolup:%d,%d,%d,%d,%d", rollingover_time[0], rollingover_time[1], rollingover_time[2], rollingover_time[3], rollingover_time[4]);
-		Radio_Trf_Printf("rolup:[4]-[0]=%d", (rollingover_time[4] - rollingover_time[0]));
+		Radio_Trf_Debug_Printf_Level1("rolup:%d,%d,%d,%d,%d", rollingover_time[0], rollingover_time[1], rollingover_time[2], rollingover_time[3], rollingover_time[4]);
+		Radio_Trf_Debug_Printf_Level1("rolup:[4]-[0]=%d", (rollingover_time[4] - rollingover_time[0]));
 #endif
 		if (((rollingover_time[4] - rollingover_time[0]) < 24) && ((rollingover_time[4] - rollingover_time[0]) > 8)) {
 			InitSensorBackgroundCntdown = 3;
@@ -79,7 +79,7 @@ bool RollingOverCheckToActive(void)
 			rollingover_time[3] = 0;
 			rollingover_time[4] = 0;
 #ifdef ROLLINGOVER_LOG_RF_PRINT
-			Radio_Trf_Printf("Up Rolling OK Cntdown:%d", InitSensorBackgroundCntdown);
+			Radio_Trf_Debug_Printf_Level1("Up Rolling OK Cntdown:%d", InitSensorBackgroundCntdown);
 #endif
 		}
 	}
@@ -90,8 +90,8 @@ bool RollingOverCheckToActive(void)
 		rollingover_time[3] = rollingover_time[4];
 		rollingover_time[4] = Stm32_GetSecondTick();
 #ifdef ROLLINGOVER_LOG_RF_PRINT
-		Radio_Trf_Printf("roldw:%d,%d,%d,%d,%d", rollingover_time[0], rollingover_time[1], rollingover_time[2], rollingover_time[3], rollingover_time[4]);
-		Radio_Trf_Printf("rolup:[4]-[0]=%d", (rollingover_time[4] - rollingover_time[0]));
+		Radio_Trf_Debug_Printf_Level1("roldw:%d,%d,%d,%d,%d", rollingover_time[0], rollingover_time[1], rollingover_time[2], rollingover_time[3], rollingover_time[4]);
+		Radio_Trf_Debug_Printf_Level1("rolup:[4]-[0]=%d", (rollingover_time[4] - rollingover_time[0]));
 #endif
 		if (((rollingover_time[4] - rollingover_time[0]) < 12) && ((rollingover_time[4] - rollingover_time[0]) >= 8)) {
 			do {
@@ -106,7 +106,7 @@ bool RollingOverCheckToActive(void)
 			rollingover_time[3] = 0;
 			rollingover_time[4] = 0;
 #ifdef ROLLINGOVER_LOG_RF_PRINT
-			Radio_Trf_Printf("Down Rolling OK EEPROM:%d", TCFG_EEPROM_GetActiveDevice());
+			Radio_Trf_Debug_Printf_Level1("Down Rolling OK EEPROM:%d", TCFG_EEPROM_GetActiveDevice());
 #endif
 		}
 		else {
@@ -240,7 +240,7 @@ void RollingOverCheckToInitSensorBackground(void)
 	else if (InitSensorBackgroundCntdown > 0) {
 		Radar_InitBackground(TO_SAVE_RADAR_BACKGROUND);
 		QMC5883L_InitBackgroud();
-		Radio_Trf_Printf("Init Sensor Background");
+		Radio_Trf_Debug_Printf_Level1("Init Sensor Background");
 		BEEP_CtrlRepeat_Extend(1, 800, 0);
 	}
 }
