@@ -34,17 +34,24 @@
 
 #define SAMPLE_NUM	TRADAR_SAMPLE_NUM
 
+//#define	XIAMEN
 #define	VDDA2V8														//VDDA = 2.8V 0~2633 -> 0~1.8V
 //#define	VDDA3V3														//VDDA = 3.3V 0~2234 -> 0~1.8V
 //#define	RADAR_VPTAT
 
 #ifdef VDDA3V3
 	#define	RADER_RANGE				6
+	short	RADER_LOW = 250;
 #else
-	#define	RADER_RANGE				8
+#ifdef XIAMEN
+	#define	RADER_RANGE				15							// 6x304 +650 = 2486
+	short	RADER_LOW = 100;
+#else
+	#define	RADER_RANGE				8							// 6x304 +650 = 2486
+	short	RADER_LOW = 250;
+#endif
 #endif
 
-short RADER_LOW = 250;
 short val_vptat, val_vptat_adjust;
 short val_temp, val_temp_adjust;
 
@@ -320,7 +327,32 @@ u8 Radar_GetData(tradar_targetinfo_s* pTargetinfo[], u8 dataNum)
 	memcpy(&radar_targetinfo, pTargetinfo[0], sizeof(radar_targetinfo));
 	
 #ifdef RADAR_DEBUG_LOG_RF_PRINT
-	if (DEBUG_WORK == Radio_Trf_Get_Workmode()) {													//调试信息
+//	if (DEBUG_WORK == Radio_Trf_Get_Workmode()) {													//调试信息
+	{
+		u8 i, error = 1;
+		u16 fre_mag_average;
+		
+		/* if all the strength is smaller than 4 ,error */
+		/* if one strength is larger than 10 ,error */
+		for (i = 2; i < 10; i++) {
+			if (pTargetinfo[0]->pMagBG[i] > 10) {
+				error = 2;
+				break;
+			}
+			if (pTargetinfo[0]->pMagNow[i] > 3) {
+				error = 0;
+			}
+		}
+		if (error == 1) {
+			Radio_Trf_Printf("radar err:no signal");
+		}
+		else if (error == 2) {
+			fre_mag_average = (pTargetinfo[0]->pMagBG[2]+pTargetinfo[0]->pMagBG[3]+pTargetinfo[0]->pMagBG[4]+pTargetinfo[0]->pMagBG[5]+pTargetinfo[0]->pMagBG[6])/5;
+			Radio_Trf_Printf("radar err %hu:bad backgroud.%02d %02d %02d %02d %02d;",fre_mag_average,pTargetinfo[0]->pMagBG[2],
+			pTargetinfo[0]->pMagBG[3],pTargetinfo[0]->pMagBG[4],pTargetinfo[0]->pMagBG[5],
+			pTargetinfo[0]->pMagBG[6]);
+		}
+		
 		Radio_Trf_Debug_Printf("%dlow%d.%d-%dst%dds%ddf%d&%d;tdf%d.%d;%d,%d,%d,%d ",dataNum,RADER_LOW,val_temp,val_vptat,(uint32_t)radar_targetinfo.status,
 				(uint32_t)radar_targetinfo.distance_cm,
 				radar_targetinfo.strenth_total_diff,radar_targetinfo.strenth_total_diff_v2,
@@ -414,7 +446,11 @@ void Radar_GetSample_Time(void)
 	static int xx = 0;
 	
 	if (xx < 1) {
+#ifdef XIAMEN
+		xx = 3;
+#else
 		xx = 13;
+#endif
 		Radar_GetSample();
 	}
 	else {

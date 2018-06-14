@@ -25,6 +25,13 @@
 #define CellReselection					"CELL_RESELECTION"
 #define EnableBip						"ENABLE_BIP"
 
+#define AutoConnectVal					NConfigTrue
+#define CrScramblingVal					NConfigTrue
+#define CrSiAvoidVal					NConfigTrue
+#define CombineAttachVal					NConfigFalse
+#define CellReselectionVal				NConfigTrue
+#define EnableBipVal					NConfigFalse
+
 /* NBIOT 串口波特率计算中间值 */
 #define BAUDRATE_CAL_MIDDLE_NUM			16
 

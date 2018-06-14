@@ -1275,6 +1275,50 @@ unsigned char TCFG_EEPROM_GetCarInDelay(void)
 }
 
 /**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetRFCmdCnt(uint8_t val)
+ @Description			TCFG_EEPROM_SetRFCmdCnt						: 保存RFCmdCnt
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetRFCmdCnt(uint8_t val)
+{
+	FLASH_EEPROM_WriteByte(TCFG_RF_CMDCNT_OFFSET, val);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned char TCFG_EEPROM_GetRFCmdCnt(void)
+ @Description			TCFG_EEPROM_GetRFCmdCnt						: 读取RFCmdCnt
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned char TCFG_EEPROM_GetRFCmdCnt(void)
+{
+	return FLASH_EEPROM_ReadByte(TCFG_RF_CMDCNT_OFFSET);
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetNBCmdCnt(uint8_t val)
+ @Description			TCFG_EEPROM_SetNBCmdCnt						: 保存NBCmdCnt
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetNBCmdCnt(uint8_t val)
+{
+	FLASH_EEPROM_WriteByte(TCFG_NB_CMDCNT_OFFSET, val);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned char TCFG_EEPROM_GetNBCmdCnt(void)
+ @Description			TCFG_EEPROM_GetNBCmdCnt						: 读取NBCmdCnt
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned char TCFG_EEPROM_GetNBCmdCnt(void)
+{
+	return FLASH_EEPROM_ReadByte(TCFG_NB_CMDCNT_OFFSET);
+}
+
+/**********************************************************************************************************
  @Function			void TCFG_Utility_Add_Device_BootCount(void)
  @Description			TCFG_Utility_Add_Device_BootCount				: Device重启次数累加
  @Input				void

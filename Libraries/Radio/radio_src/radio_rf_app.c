@@ -32,6 +32,8 @@
 
 #include "tmesh_algorithm.h"
 
+static uint32_t cmdtime_pre = 0;
+
 static frameInfo_t sInFrameQ[SIZE_INFRAME_Q];
 
 unsigned char TRF_SendBuf[RF_BUFFER_SIZE];
@@ -465,16 +467,20 @@ void Radio_Trf_App_Task(void)
 		Radio_Rf_Interrupt_Init();
 		/* 发送心跳包 */
 		Radio_Trf_Xmit_Heartbeat();
-		/* 发送调试信息 */
-		if (DEBUG_WORK == Radio_Trf_Get_Workmode()) {
-			
-		}
+	}
+	else if (cmdtime_pre + 180 > Stm32_GetSecondTick()) {
+		hearttime_pre = Stm32_GetSecondTick();
+		Radio_Rf_Interface_Init();
+		Radio_Rf_Interrupt_Init();
+		/* 发送心跳包 */
+		Radio_Trf_Xmit_Heartbeat();
 	}
 	
 	/* 接收无线下行数据 */
 	if (TRF_SUCCESS == Radio_Rf_Receive(TRF_RecvBuf, &len)) {
 		if (TRF_SUCCESS == Radio_Rf_Operate_Recvmsg(TRF_RecvBuf, len)) {
-			
+			cmdtime_pre = Stm32_GetSecondTick();
+			TCFG_EEPROM_SetRFCmdCnt(1 + TCFG_EEPROM_GetRFCmdCnt());
 		}
 	}
 }

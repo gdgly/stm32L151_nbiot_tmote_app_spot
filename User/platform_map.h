@@ -119,6 +119,10 @@
 #define TCFG_RADAR_RANGE_LENGTH			1												//RadarRange			雷达范围
 #define TCFG_CARIN_DELAY_OFFSET			TCFG_RADAR_RANGE_OFFSET + TCFG_RADAR_RANGE_LENGTH			//0x080804DE
 #define TCFG_CARIN_DELAY_LENGTH			1												//CarInDelay			车辆进入延时上报时间
+#define TCFG_RF_CMDCNT_OFFSET				TCFG_CARIN_DELAY_OFFSET + TCFG_CARIN_DELAY_LENGTH			//0x080804DF
+#define TCFG_RF_CMDCNT_LENGTH				1												//RFCmdCnt			RF命令
+#define TCFG_NB_CMDCNT_OFFSET				TCFG_RF_CMDCNT_OFFSET + TCFG_RF_CMDCNT_LENGTH			//0x080804E0
+#define TCFG_NB_CMDCNT_LENGTH				1												//NBCmdCnt			NB命令
 
 enum TCFG_SENSITIVITY																	//传感器灵敏度
 {
@@ -277,6 +281,12 @@ unsigned char	TCFG_EEPROM_GetRadarRange(void);												//读取RadarRange
 
 void			TCFG_EEPROM_SetCarInDelay(uint8_t val);											//保存CarInDelay
 unsigned char	TCFG_EEPROM_GetCarInDelay(void);												//读取CarInDelay
+
+void			TCFG_EEPROM_SetRFCmdCnt(uint8_t val);											//保存RFCmdCnt
+unsigned char	TCFG_EEPROM_GetRFCmdCnt(void);												//读取RFCmdCnt
+
+void			TCFG_EEPROM_SetNBCmdCnt(uint8_t val);											//保存NBCmdCnt
+unsigned char	TCFG_EEPROM_GetNBCmdCnt(void);												//读取NBCmdCnt
 
 void			TCFG_Utility_Add_Device_BootCount(void);										//Device重启次数累加
 unsigned short TCFG_Utility_Get_Device_BootCount(void);										//Device重启次数获取

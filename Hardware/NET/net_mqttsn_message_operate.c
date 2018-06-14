@@ -149,9 +149,10 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Work(char* outBuffer)
 				"\"Sense\":%d,"
 				"\"Mode\":\"%s\","
 				"\"Channel\":%d,"
-				"\"range\":%d,"
-				"\"earfcn\":%d,"
-				"\"cellid\":%d"
+				"\"Range\":%d,"
+				"\"Earfcn\":%d,"
+				"\"Cellid\":%d,"
+				"\"Cmdcnt\":\"%d.%d\","
 			"}"
 		"}",
 		
@@ -161,7 +162,9 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Work(char* outBuffer)
 		TCFG_EEPROM_GetRfChannel(),
 		TCFG_Utility_Get_DistanceRange(),
 		TCFG_Utility_Get_Nbiot_RadioEARFCN(), 
-		TCFG_Utility_Get_Nbiot_RadioCellID()
+		TCFG_Utility_Get_Nbiot_RadioCellID(),
+		TCFG_EEPROM_GetRFCmdCnt(),
+		TCFG_EEPROM_GetNBCmdCnt()
 	);
 	
 	return strlen(outBuffer);
@@ -237,18 +240,18 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Dynamic(char* outBuffer)
 				"\"Runtime\":%d,"
 				"\"Rssi\":%d,"
 				"\"Batt\":%d,"
-				"\"rlib\":\"%d\","
-				"\"rcnt\":%d,"
-				"\"temp\":%d,"
-				"\"rdgb\":%d,"
-				"\"psm\":%d,"
-				"\"algo\":%d,"
-				"\"qmcrbt\":%d,"
-				"\"nbboot\":%d,"
-				"\"nbsent\":%d,"
-				"\"nbrecv\":%d,"
-				"\"indelay\":%d,"
-				"\"nbheart\":%d"
+				"\"Rlib\":\"%d\","
+				"\"Rcnt\":%d,"
+				"\"Temp\":%d,"
+				"\"Rdgb\":%d,"
+				"\"Psm\":%d,"
+				"\"Algo\":%d,"
+				"\"Qmcrbt\":%d,"
+				"\"Nbboot\":%d,"
+				"\"Nbsent\":%d,"
+				"\"Nbrecv\":%d,"
+				"\"Indelay\":%d,"
+				"\"Nbheart\":%d"
 			"}"
 		"}",
 		
@@ -300,7 +303,7 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Radar(char* outBuffer)
 				"\"snr\":%d,"
 				"\"rssi\":%d,"
 				"\"temp\":%d,"
-				"\"other\":\"%02d%02d%02d%02d%02d,%02d%02d%02d%02d%02d,%02d%02d%02d%02d%02d%02d;%02d%02d%02d%02d%02d,%02d%02d%02d.dif=%d.tm=%d.frl=%d&%d.tml=%d(%d,%d,%d)\""
+				"\"other\":\"%02d%02d%02d%02d%02d,%02d%02d%02d%02d%02d,%02d%02d%02d%02d%02d%02d;%02d%02d%02d%02d%02d,%02d%02d%02d.dif=%d.tm=%d.frl=%d&%d.tml=%d(%d,%d,%d)%u\""
 				
 			"}"
 		"}",
@@ -326,7 +329,8 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Radar(char* outBuffer)
 		talgo_get_timedomain_least(),
 		Qmc5883lData.X_Back,
 		Qmc5883lData.Y_Back,
-		Qmc5883lData.Z_Back
+		Qmc5883lData.Z_Back,
+		errcode
 	);
 	
 	return strlen(outBuffer);

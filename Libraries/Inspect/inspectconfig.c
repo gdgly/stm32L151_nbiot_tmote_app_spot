@@ -203,8 +203,8 @@ void Inspect_Spot_ExistenceDetect(void)
 						lasttime2send_radar_at_free = Stm32_GetSecondTick();
 						NETCoapNeedSendCode.RadarInfo = 1;
 						NETMqttSNNeedSendCode.InfoRadar = 1;
-						prepare2send_radar = 60;
 					}
+					prepare2send_radar = 60;
 				}
 				else {
 					prepare2send_radar = 0;
@@ -212,6 +212,10 @@ void Inspect_Spot_ExistenceDetect(void)
 			}
 			SpotStatusDataBackUp.timeCounter = 0;
 		}
+	}
+	
+	if (RADAR_NO_CHANGE != talgo_check_radar_motion()) {
+		prepare2send_radar = 60;
 	}
 	
 	if (prepare2send_radar > 0) {
