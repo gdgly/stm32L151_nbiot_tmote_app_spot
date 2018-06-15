@@ -901,7 +901,7 @@ void NET_MQTTSN_NBIOT_Event_PatameterCheckOut(MQTTSN_ClientsTypeDef* pClient)
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictatePatameterCheckOutFailureCnt = 0;
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("NB Patameter Ck Ok");
+		Radio_Trf_Debug_Printf_Level2("NB Pmte Ck Ok");
 #endif
 	}
 	else {
@@ -921,7 +921,7 @@ void NET_MQTTSN_NBIOT_Event_PatameterCheckOut(MQTTSN_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = PARAMETER_CHECKOUT;
 		}
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("NB Patameter Ck Fail");
+		Radio_Trf_Debug_Printf_Level2("NB Pmte Ck Fail");
 #endif
 		return;
 	}
@@ -958,7 +958,7 @@ void NET_MQTTSN_Event_Init(MQTTSN_ClientsTypeDef* pClient)
 		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
 		pClient->DictateRunCtl.dictateInitFailureCnt = 0;
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("MqttSN Creat UDP Ok");
+		Radio_Trf_Debug_Printf_Level2("Creat UDP Ok");
 #endif
 	}
 	else {
@@ -984,7 +984,7 @@ void NET_MQTTSN_Event_Init(MQTTSN_ClientsTypeDef* pClient)
 			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
 		}
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("MqttSN Creat UDP Fail");
+		Radio_Trf_Debug_Printf_Level2("Creat UDP Fail");
 #endif
 		return;
 	}
@@ -1043,7 +1043,7 @@ void NET_MQTTSN_Event_Disconnect(MQTTSN_ClientsTypeDef* pClient)
 			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
 		}
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("MqttSN Cont Server Fail");
+		Radio_Trf_Debug_Printf_Level2("MqttSN Cont Sver Fail");
 #endif
 	}
 	else {
@@ -1054,7 +1054,7 @@ void NET_MQTTSN_Event_Disconnect(MQTTSN_ClientsTypeDef* pClient)
 		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
 		pClient->DictateRunCtl.dictateDisconnectFailureCnt = 0;
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("MqttSN Cont Server Ok");
+		Radio_Trf_Debug_Printf_Level2("MqttSN Cont Sver Ok");
 #endif
 	}
 }
@@ -1102,7 +1102,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
 			}
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Subscrib %s Topic Fail", MQTTSN_SUBSCRIBE_ID);
+			Radio_Trf_Debug_Printf_Level2("MqttSN Subscrib %s Fail", MQTTSN_SUBSCRIBE_ID);
 #endif
 			return;
 		}
@@ -1113,7 +1113,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
 			pClient->DictateRunCtl.dictateSubscribeStatus = true;
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Subscrib %s Topic Ok", MQTTSN_SUBSCRIBE_ID);
+			Radio_Trf_Debug_Printf_Level2("MqttSN Subscrib %s Ok", MQTTSN_SUBSCRIBE_ID);
 #endif
 		}
 	}
@@ -1145,7 +1145,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 				pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
 			}
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Sd StatusBsc Fail");
+			Radio_Trf_Debug_Printf_Level2("MqttSN Sd StusBsc Fail");
 #endif
 			return;
 		}
@@ -1156,7 +1156,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageStatusBasic = false;
 			NET_MqttSN_Message_StatusBasicOffSet();
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Sd StatusBsc Ok");
+			Radio_Trf_Debug_Printf_Level2("MqttSN Sd StusBsc Ok");
 #endif
 		}
 	}
@@ -1187,7 +1187,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 				pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
 			}
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Sd StatusEx Fail");
+			Radio_Trf_Debug_Printf_Level2("MqttSN Sd StusEx Fail");
 #endif
 			return;
 		}
@@ -1198,7 +1198,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageStatusExtend = false;
 			NET_MqttSN_Message_StatusExtendOffSet();
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Sd StatusEx Ok");
+			Radio_Trf_Debug_Printf_Level2("MqttSN Sd StusEx Ok");
 #endif
 		}
 	}
@@ -1229,7 +1229,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 				pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
 			}
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Sd InfoWk Fail");
+			Radio_Trf_Debug_Printf_Level2("MqttSN Sd IfWk Fail");
 #endif
 			return;
 		}
@@ -1240,7 +1240,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageInfoWork = false;
 			NET_MqttSN_Message_InfoWorkOffSet();
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Sd InfoWk Ok");
+			Radio_Trf_Debug_Printf_Level2("MqttSN Sd IfWk Ok");
 #endif
 		}
 	}
@@ -1271,7 +1271,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 				pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
 			}
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Sd InfoBsc Fail");
+			Radio_Trf_Debug_Printf_Level2("MqttSN Sd IfBsc Fail");
 #endif
 			return;
 		}
@@ -1282,7 +1282,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageInfoBasic = false;
 			NET_MqttSN_Message_InfoBasicOffSet();
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Sd InfoBsc Ok");
+			Radio_Trf_Debug_Printf_Level2("MqttSN Sd IfBsc Ok");
 #endif
 		}
 	}
@@ -1313,7 +1313,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 				pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
 			}
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Sd InfoDmc Fail");
+			Radio_Trf_Debug_Printf_Level2("MqttSN Sd IfDmc Fail");
 #endif
 			return;
 		}
@@ -1324,7 +1324,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageInfoDynamic = false;
 			NET_MqttSN_Message_InfoDynamicOffSet();
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Sd InfoDmc Ok");
+			Radio_Trf_Debug_Printf_Level2("MqttSN Sd IfDmc Ok");
 #endif
 		}
 	}
@@ -1355,7 +1355,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 				pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
 			}
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Sd InfoRadr Fail");
+			Radio_Trf_Debug_Printf_Level2("MqttSN Sd IfRadr Fail");
 #endif
 			return;
 		}
@@ -1366,7 +1366,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageInfoRadar = false;
 			NET_MqttSN_Message_InfoRadarOffSet();
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Sd InfoRadr Ok");
+			Radio_Trf_Debug_Printf_Level2("MqttSN Sd IfRadr Ok");
 #endif
 		}
 	}
@@ -1397,7 +1397,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 				pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
 			}
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Sd InfoRps Fail");
+			Radio_Trf_Debug_Printf_Level2("MqttSN Sd IfRps Fail");
 #endif
 			return;
 		}
@@ -1408,7 +1408,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageInfoResponse = false;
 			NET_MqttSN_Message_InfoResponseOffSet();
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Sd InfoRps Ok");
+			Radio_Trf_Debug_Printf_Level2("MqttSN Sd IfRps Ok");
 #endif
 		}
 	}

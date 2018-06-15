@@ -285,7 +285,7 @@ void NET_DNS_NBIOT_Event_ModuleCheck(DNS_ClientsTypeDef* pClient)
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateModuleCheckFailureCnt = 0;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("NB MduCheck Ok");
+		Radio_Trf_Debug_Printf_Level2("NB MduCk Ok");
 #endif
 	}
 	else {
@@ -305,7 +305,7 @@ void NET_DNS_NBIOT_Event_ModuleCheck(DNS_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MODULE_CHECK;
 		}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("NB MduCheck Fail");
+		Radio_Trf_Debug_Printf_Level2("NB MduCk Fail");
 #endif
 	}
 }
@@ -897,7 +897,7 @@ void NET_DNS_NBIOT_Event_PatameterCheckOut(DNS_ClientsTypeDef* pClient)
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = DNS_PROCESS_STACK;
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictatePatameterCheckOutFailureCnt = 0;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("NB Patameter Ck Ok");
+		Radio_Trf_Debug_Printf_Level2("NB Pmte Ck Ok");
 #endif
 	}
 	else {
@@ -917,7 +917,7 @@ void NET_DNS_NBIOT_Event_PatameterCheckOut(DNS_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = PARAMETER_CHECKOUT;
 		}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("NB Patameter Ck Fail");
+		Radio_Trf_Debug_Printf_Level2("NB Pmte Ck Fail");
 #endif
 		return;
 	}
@@ -953,7 +953,7 @@ void NET_DNS_Event_CreatUDPSocket(DNS_ClientsTypeDef* pClient)
 		pClient->ProcessState = DNS_PROCESS_SEND_DNS_STRUCT_DATA;
 		pClient->DictateRunCtl.dictateCreatUDPSocketFailureCnt = 0;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("DNS Creat UDP Ok");
+		Radio_Trf_Debug_Printf_Level2("Creat UDP Ok");
 #endif
 	}
 	else {
@@ -976,7 +976,7 @@ void NET_DNS_Event_CreatUDPSocket(DNS_ClientsTypeDef* pClient)
 			pClient->ProcessState = DNS_PROCESS_CREAT_UDP_SOCKET;
 		}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("DNS Creat UDP Fail");
+		Radio_Trf_Debug_Printf_Level2("Creat UDP Fail");
 #endif
 		return;
 	}
@@ -1196,7 +1196,7 @@ void NET_DNS_Event_CloseUDPSocket(DNS_ClientsTypeDef* pClient)
 		pClient->ProcessState = DNS_PROCESS_OVER_DNS_ANALYSIS;
 		pClient->DictateRunCtl.dictateCloseUDPSocketFailureCnt = 0;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("DNS Close UDP Ok");
+		Radio_Trf_Debug_Printf_Level2("Close UDP Ok");
 #endif
 	}
 	else {
@@ -1213,7 +1213,7 @@ void NET_DNS_Event_CloseUDPSocket(DNS_ClientsTypeDef* pClient)
 			pClient->ProcessState = DNS_PROCESS_CLOSE_UDP_SOCKET;
 		}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("DNS Close UDP Fail");
+		Radio_Trf_Debug_Printf_Level2("Close UDP Fail");
 #endif
 		return;
 	}

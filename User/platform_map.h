@@ -2,6 +2,7 @@
 #define   __PLATFORM_MAP_H
 
 #include "sys.h"
+#include "platform_config.h"
 
 #define TCFG_ENV_BOOTMODE_TOUPDATE			1
 #define TCFG_ENV_BOOTMODE_NORMAL			2
@@ -167,6 +168,9 @@ typedef struct
 	unsigned char						RFCommandCount;									//RF命令接收条数
 	unsigned char						NBCommandCount;									//NB命令接收条数
 	unsigned short						DeviceBootCount;									//设备重启次数
+	unsigned char						NBCoapCDPServerIP[16];								//NB核心网IP地址
+	unsigned char						NBCoapCDPServerPort[6];								//NB核心网IP端口
+	NBIOT_ServerAddr					NBCoapCDPServer;									//NB核心网地址
 }TCFG_SystemDataTypeDef;
 
 extern TCFG_SystemDataTypeDef				TCFG_SystemData;
@@ -208,6 +212,9 @@ unsigned int	TCFG_EEPROM_GetServerIP(void);												//读取ServerIP
 
 void			TCFG_EEPROM_SetServerPort(unsigned short val);									//保存ServerPort
 unsigned short	TCFG_EEPROM_GetServerPort(void);												//读取ServerPort
+
+char*		TCFG_EEPROM_Get_ServerIP_String(void);											//读取ServerIP字符串
+char*		TCFG_EEPROM_Get_ServerPort_String(void);										//读取ServerPort字符串
 
 void			TCFG_EEPROM_SetWorkMode(unsigned char val);										//保存WorkMode
 unsigned char	TCFG_EEPROM_GetWorkMode(void);												//读取WorkMode

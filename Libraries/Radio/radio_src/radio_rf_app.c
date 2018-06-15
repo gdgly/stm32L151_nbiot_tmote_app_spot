@@ -290,6 +290,23 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					Radio_Trf_Printf("New SN : %08x", TCFG_EEPROM_Get_MAC_SN());
 					__NOP();
 				}
+				/* CDPIP */
+				#if NETPROTOCAL == NETCOAP
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "ip")) {
+					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "ip%08x:%hu", &uval32, &uval16);
+					TCFG_EEPROM_SetServerIP(uval32);
+					TCFG_EEPROM_SetServerPort(uval16);
+					TCFG_SystemData.NBCoapCDPServer.ip.ip32 = TCFG_EEPROM_GetServerIP();
+					TCFG_SystemData.NBCoapCDPServer.port = TCFG_EEPROM_GetServerPort();
+					NETCoapNeedSendCode.DynamicInfo = 1;
+					NET_NBIOT_Initialization();
+					Radio_Trf_Printf("CDP IP %d.%d.%d.%d:%d", 
+					TCFG_SystemData.NBCoapCDPServer.ip.ip8[3], TCFG_SystemData.NBCoapCDPServer.ip.ip8[2], 
+					TCFG_SystemData.NBCoapCDPServer.ip.ip8[1], TCFG_SystemData.NBCoapCDPServer.ip.ip8[0], 
+					TCFG_SystemData.NBCoapCDPServer.port);
+					__NOP();
+				}
+				#endif
 				/* Active */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "active")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "active:%hu", &uval16);
@@ -378,8 +395,6 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				#if NETPROTOCAL == NETCOAP
 					NETCoapNeedSendCode.BasicInfo = 1;
 					NETCoapNeedSendCode.DynamicInfo = 1;
-					Radio_Trf_Printf("Mfact:%s", NbiotClientHandler.Parameter.manufacturer);
-					Radio_Trf_Printf("MfactMd:%s", NbiotClientHandler.Parameter.manufacturermode);
 					Radio_Trf_Printf("MduVer:%s", NbiotClientHandler.Parameter.modelversion);
 					Radio_Trf_Printf("IMEI:%s", NbiotClientHandler.Parameter.imei);
 					Radio_Trf_Printf("ICCID:%s", NbiotClientHandler.Parameter.iccid);
@@ -393,8 +408,6 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				#elif NETPROTOCAL == NETMQTTSN
 					NETMqttSNNeedSendCode.InfoBasic = 1;
 					NETMqttSNNeedSendCode.InfoDynamic = 1;
-					Radio_Trf_Printf("Mfact:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.manufacturer);
-					Radio_Trf_Printf("MfactMd:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.manufacturermode);
 					Radio_Trf_Printf("MduVer:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.modelversion);
 					Radio_Trf_Printf("IMEI:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.imei);
 					Radio_Trf_Printf("ICCID:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.iccid);

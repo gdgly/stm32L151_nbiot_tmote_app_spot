@@ -109,9 +109,9 @@ typedef enum
 	NETIP_NOTLINKEDIN					= 116,											//device has not linked in the gateway
 	NETIP_OFFLINE						= 117,											//device has linked in the gateway,but is offline
 	NETIP_NOTMACHED					= 118,											//device has linked in the gateway,but isn't offline
-	NETIP_CACHEDSUCCESS					= 119,											//
-	NETIP_CACHEDFAIL					= 120,											//
-	NETIP_NEEDUPDATE					= 121,											//
+	NETIP_CACHEDSUCCESS					= 119,											//Cached Success
+	NETIP_CACHEDFAIL					= 120,											//Cached Fall
+	NETIP_NEEDUPDATE					= 121,											//Need Up Date
 	NETIP_ERRORPARAM					= 122,											//错误参数
 	NETIP_NEEDREBOOT					= 150,											//成功,设备需要重启
 	NET_OPERATION_UPGRADE_ALAREADY_START	= 511,											//重发开启
@@ -209,6 +209,17 @@ typedef enum
 {
 	ENTER_IDLE_MODE					= 0x00											//进入IDLE模式监听
 }NBIOT_ListenEventTypeDef;
+
+/* NBIOT CDP Server */
+typedef __packed struct NBIOT_ServerAddrTypeDef
+{
+	__packed union
+	{
+		unsigned char					ip8[4];
+		unsigned int					ip32;
+	}ip;
+	unsigned short						port;
+}NBIOT_ServerAddr;
 
 /* NBIOT CDP Server Address */
 struct NBIOT_CDPServerTypeDef

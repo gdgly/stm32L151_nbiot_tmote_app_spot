@@ -743,7 +743,7 @@ void NET_COAP_NBIOT_Event_CDPServerCheck(NBIOT_ClientsTypeDef* pClient)
 		pClient->DictateRunCtl.dictateEvent = CDP_SERVER_CHECK;
 		pClient->DictateRunCtl.dictateCDPServerCheckFailureCnt = 0;
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("Coap CDPRead Ok");
+		Radio_Trf_Debug_Printf_Level2("Coap CDPRead %s:%d Ok", pClient->Parameter.cdpserver.CDPServerHost, pClient->Parameter.cdpserver.CDPServerPort);
 #endif
 	}
 	else {
@@ -763,11 +763,11 @@ void NET_COAP_NBIOT_Event_CDPServerCheck(NBIOT_ClientsTypeDef* pClient)
 			pClient->DictateRunCtl.dictateEvent = CDP_SERVER_CHECK;
 		}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("Coap CDPRead Fail");
+		Radio_Trf_Debug_Printf_Level2("Coap CDPRead %s:%d Fail", pClient->Parameter.cdpserver.CDPServerHost, pClient->Parameter.cdpserver.CDPServerPort);
 #endif
 	}
 	
-	if ((strcmp((const char*)pClient->Parameter.cdpserver.CDPServerHost, COAPCDPADDR) != 0) || (pClient->Parameter.cdpserver.CDPServerPort != COAPCDPPORT)) {
+	if ((strcmp((const char*)pClient->Parameter.cdpserver.CDPServerHost, TCFG_EEPROM_Get_ServerIP_String()) != 0) || (pClient->Parameter.cdpserver.CDPServerPort != TCFG_EEPROM_GetServerPort())) {
 		/* CDP Server Mast be Config */
 		pClient->DictateRunCtl.dictateEvent = MINIMUM_FUNCTIONALITY;
 	}
@@ -801,7 +801,7 @@ void NET_COAP_NBIOT_Event_CDPServerConfig(NBIOT_ClientsTypeDef* pClient)
 		pClient->DictateRunCtl.dictateEvent = FULL_FUNCTIONALITY;
 		pClient->DictateRunCtl.dictateCDPServerConfigFailureCnt = 0;
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("Coap CDPRead Ok");
+		Radio_Trf_Debug_Printf_Level2("Coap CDPRead %s:%d Ok", pClient->Parameter.cdpserver.CDPServerHost, pClient->Parameter.cdpserver.CDPServerPort);
 #endif
 	}
 	else {
@@ -821,19 +821,19 @@ void NET_COAP_NBIOT_Event_CDPServerConfig(NBIOT_ClientsTypeDef* pClient)
 			pClient->DictateRunCtl.dictateEvent = CDP_SERVER_CONFIG;
 		}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("Coap CDPRead Fail");
+		Radio_Trf_Debug_Printf_Level2("Coap CDPRead %s:%d Fail", pClient->Parameter.cdpserver.CDPServerHost, pClient->Parameter.cdpserver.CDPServerPort);
 #endif
 	}
 	
-	if ((strcmp((const char*)pClient->Parameter.cdpserver.CDPServerHost, COAPCDPADDR) != 0) || (pClient->Parameter.cdpserver.CDPServerPort != COAPCDPPORT)) {
+	if ((strcmp((const char*)pClient->Parameter.cdpserver.CDPServerHost, TCFG_EEPROM_Get_ServerIP_String()) != 0) || (pClient->Parameter.cdpserver.CDPServerPort != TCFG_EEPROM_GetServerPort())) {
 		/* CDP Server Mast be Config */
-		if (NBIOT_Neul_NBxx_SetCDPServer(pClient, COAPCDPADDR, COAPCDPPORT) == NBIOT_OK) {
+		if (NBIOT_Neul_NBxx_SetCDPServer(pClient, TCFG_EEPROM_Get_ServerIP_String(), TCFG_EEPROM_GetServerPort()) == NBIOT_OK) {
 			/* Dictate execute is Success */
 			pClient->DictateRunCtl.dictateEnable = false;
 			pClient->DictateRunCtl.dictateEvent = FULL_FUNCTIONALITY;
 			pClient->DictateRunCtl.dictateCDPServerConfigFailureCnt = 0;
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("Coap CDPSet Ok");
+			Radio_Trf_Debug_Printf_Level2("Coap CDPSet %s:%d Ok", TCFG_EEPROM_Get_ServerIP_String(), TCFG_EEPROM_GetServerPort());
 #endif
 		}
 		else {
@@ -853,7 +853,7 @@ void NET_COAP_NBIOT_Event_CDPServerConfig(NBIOT_ClientsTypeDef* pClient)
 				pClient->DictateRunCtl.dictateEvent = CDP_SERVER_CONFIG;
 			}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("Coap CDPSet Fail");
+			Radio_Trf_Debug_Printf_Level2("Coap CDPSet %s:%d Fail", TCFG_EEPROM_Get_ServerIP_String(), TCFG_EEPROM_GetServerPort());
 #endif
 			return;
 		}
@@ -1656,6 +1656,32 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(Newsn):{(val):%08x,(Magic):%hu}}", &newsnval, &recvMagicNum);
 						if (recvMagicNum == TCLOD_MAGIC_NUM) {
 							TCFG_EEPROM_Set_MAC_SN(newsnval);
+						}
+						else {
+							ret = NETIP_UNKNOWNERROR;
+						}
+						__NOP();
+					}
+					/* CDP Server */
+					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Server") != NULL) {
+						u16 cdpip[4];
+						u16 cdpport;
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
+							"{(Server):{(IP):(%hu.%hu.%hu.%hu),(Port):%hu,(Magic):%hu}}", &cdpip[3], &cdpip[2], &cdpip[1], &cdpip[0], &cdpport, &recvMagicNum);
+						if (recvMagicNum == TCLOD_MAGIC_NUM) {
+							TCFG_SystemData.NBCoapCDPServer.ip.ip8[3] = cdpip[3];
+							TCFG_SystemData.NBCoapCDPServer.ip.ip8[2] = cdpip[2];
+							TCFG_SystemData.NBCoapCDPServer.ip.ip8[1] = cdpip[1];
+							TCFG_SystemData.NBCoapCDPServer.ip.ip8[0] = cdpip[0];
+							TCFG_SystemData.NBCoapCDPServer.port = cdpport;
+							TCFG_EEPROM_SetServerIP(TCFG_SystemData.NBCoapCDPServer.ip.ip32);
+							TCFG_EEPROM_SetServerPort(TCFG_SystemData.NBCoapCDPServer.port);
+							NETCoapNeedSendCode.DynamicInfo = 1;
+							NET_Coap_Message_RecvDataOffSet();
+							NETCoapNeedSendCode.ResponseInfoErrcode = ret;
+							NETCoapNeedSendCode.ResponseInfo = 1;
+							NET_NBIOT_Initialization();
+							return;
 						}
 						else {
 							ret = NETIP_UNKNOWNERROR;

@@ -14,7 +14,6 @@
   */
 
 #include "platform_map.h"
-#include "platform_config.h"
 #include "stm32l1xx_config.h"
 #include "hal_eeprom.h"
 #include "hal_vbat.h"
@@ -48,6 +47,9 @@ void TCFG_EEPROM_WriteConfigData(void)
 {
 	char vender[4];
 	unsigned int Brand = 0;
+#if NETPROTOCAL == NETCOAP
+	int serverip[4];
+#endif
 	
 	/* 生产商与设备号 */
 	TCFG_EEPROM_SetSNfromBrandKey(TCFG_EEPROM_Get_MAC_SN());
@@ -151,6 +153,18 @@ void TCFG_EEPROM_WriteConfigData(void)
 	/* NB命令接收条数 */
 	TCFG_SystemData.NBCommandCount = 0;
 	TCFG_EEPROM_SetNBCmdCnt(TCFG_SystemData.NBCommandCount);
+	
+#if NETPROTOCAL == NETCOAP
+	/* NB核心网地址 */
+	sscanf(COAPCDPADDR, "%d.%d.%d.%d", &serverip[3], &serverip[2], &serverip[1], &serverip[0]);
+	TCFG_SystemData.NBCoapCDPServer.ip.ip8[3] = serverip[3];
+	TCFG_SystemData.NBCoapCDPServer.ip.ip8[2] = serverip[2];
+	TCFG_SystemData.NBCoapCDPServer.ip.ip8[1] = serverip[1];
+	TCFG_SystemData.NBCoapCDPServer.ip.ip8[0] = serverip[0];
+	TCFG_SystemData.NBCoapCDPServer.port = COAPCDPPORT;
+	TCFG_EEPROM_SetServerIP(TCFG_SystemData.NBCoapCDPServer.ip.ip32);
+	TCFG_EEPROM_SetServerPort(TCFG_SystemData.NBCoapCDPServer.port);
+#endif
 }
 
 /**********************************************************************************************************
@@ -258,6 +272,12 @@ void TCFG_EEPROM_ReadConfigData(void)
 	
 	/* NBIot MqttSN 发送数据次数 */
 	TCFG_SystemData.MqttSNSentCount = TCFG_EEPROM_GetMqttSNSentCnt();
+	
+#if NETPROTOCAL == NETCOAP
+	/* NB核心网地址 */
+	TCFG_SystemData.NBCoapCDPServer.ip.ip32 = TCFG_EEPROM_GetServerIP();
+	TCFG_SystemData.NBCoapCDPServer.port = TCFG_EEPROM_GetServerPort();
+#endif
 }
 
 /**********************************************************************************************************
@@ -570,6 +590,40 @@ void TCFG_EEPROM_SetServerPort(unsigned short val)
 unsigned short TCFG_EEPROM_GetServerPort(void)
 {
 	return FLASH_EEPROM_ReadHalfWord(TCFG_RECORD_SERVER_OFFSET + 4);
+}
+
+/**********************************************************************************************************
+ @Function			char* TCFG_EEPROM_Get_ServerIP_String(void)
+ @Description			TCFG_EEPROM_Get_ServerIP_String				: 读取ServerIP字符串
+ @Input				void
+ @Return				ServerIP_string
+**********************************************************************************************************/
+char* TCFG_EEPROM_Get_ServerIP_String(void)
+{
+	TCFG_SystemData.NBCoapCDPServer.ip.ip32 = TCFG_EEPROM_GetServerIP();
+	
+	memset((void*)&TCFG_SystemData.NBCoapCDPServerIP, 0, sizeof(TCFG_SystemData.NBCoapCDPServerIP));
+	sprintf((char *)TCFG_SystemData.NBCoapCDPServerIP, "%d.%d.%d.%d", 
+	TCFG_SystemData.NBCoapCDPServer.ip.ip8[3], TCFG_SystemData.NBCoapCDPServer.ip.ip8[2], 
+	TCFG_SystemData.NBCoapCDPServer.ip.ip8[1], TCFG_SystemData.NBCoapCDPServer.ip.ip8[0]);
+	
+	return (char *)TCFG_SystemData.NBCoapCDPServerIP;
+}
+
+/**********************************************************************************************************
+ @Function			char* TCFG_EEPROM_Get_ServerPort_String(void)
+ @Description			TCFG_EEPROM_Get_ServerPort_String				: 读取ServerPort字符串
+ @Input				void
+ @Return				ServerPort_string
+**********************************************************************************************************/
+char* TCFG_EEPROM_Get_ServerPort_String(void)
+{
+	TCFG_SystemData.NBCoapCDPServer.port = TCFG_EEPROM_GetServerPort();
+	
+	memset((void*)&TCFG_SystemData.NBCoapCDPServerPort, 0, sizeof(TCFG_SystemData.NBCoapCDPServerPort));
+	sprintf((char *)TCFG_SystemData.NBCoapCDPServerPort, "%d", TCFG_SystemData.NBCoapCDPServer.port);
+	
+	return (char *)TCFG_SystemData.NBCoapCDPServerPort;
 }
 
 /**********************************************************************************************************
