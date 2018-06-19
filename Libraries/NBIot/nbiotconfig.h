@@ -179,6 +179,17 @@ typedef enum
 	ConnectedMode						= 0x01
 }NBIOT_ConnectStatusTypeDef;
 
+/* NBIOT CON Status */
+typedef enum
+{
+	Unsent							= 0x00,
+	WaitResponse						= 0x01,
+	SendFail							= 0x02,
+	SendTimeout						= 0x03,
+	SendSussess						= 0x04,
+	RecvRST							= 0x05
+}NBIOT_CONDataStatus;
+
 /* NBIOT Dictate Event */
 typedef enum
 {
@@ -309,6 +320,7 @@ struct NBIOT_ParameterTypeDef
 		NBIOT_NConfigTypeDef			enableBip;
 	}nconfig;
 	
+	NBIOT_CONDataStatus					condatastate;
 	NBIOT_PSMStatusTypeDef				psmstate;
 	NBIOT_ConnectStatusTypeDef			connectedstate;
 	NBIOT_NetstateTypeDef				netstate;

@@ -1277,7 +1277,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_QueryReadMessageCOAPPayload(NBIOT_ClientsTyp
 }
 
 /**********************************************************************************************************
- @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCOAPPayload(NBIOT_ClientsTypeDef* pClient, const char *buf, u16 sendlen)
+ @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCOAPPayload(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_SendCOAPPayload			: COAP发送一条负载数据
  @Input				pClient								: NBIOT客户端实例
  @Return				NBIOT_StatusTypeDef						: NBIOT处理状态
@@ -1349,6 +1349,107 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_ReadCOAPPayload(NBIOT_ClientsTypeDef* pClien
 			pClient->Recvbuf[i] = utmp;
 		}
 	}
+	
+exit:
+	return NBStatus;
+}
+
+/**********************************************************************************************************
+ @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCONDataStatus(NBIOT_ClientsTypeDef* pClient)
+ @Description			NBIOT_Neul_NBxx_CheckReadCONDataStatus			: 查询终端CON数据发送状态
+ @Input				pClient									: NBIOT客户端实例
+ @Return				NBIOT_StatusTypeDef							: NBIOT处理状态
+**********************************************************************************************************/
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCONDataStatus(NBIOT_ClientsTypeDef* pClient)
+{
+	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+	
+	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
+	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	
+	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+MLWULDATASTATUS?\r");
+	pClient->ATCmdStack->ATSendlen = strlen("AT+MLWULDATASTATUS?\r");
+	pClient->ATCmdStack->ATack = "OK";
+	pClient->ATCmdStack->ATNack = "ERROR";
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
+		/* Unsent */
+		if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+MLWULDATASTATUS:0")) {
+			pClient->Parameter.condatastate = Unsent;
+		}
+		/* WaitResponse */
+		else if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+MLWULDATASTATUS:1")) {
+			pClient->Parameter.condatastate = WaitResponse;
+		}
+		/* SendFail */
+		else if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+MLWULDATASTATUS:2")) {
+			pClient->Parameter.condatastate = SendFail;
+		}
+		/* SendTimeout */
+		else if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+MLWULDATASTATUS:3")) {
+			pClient->Parameter.condatastate = SendTimeout;
+		}
+		/* SendSussess */
+		else if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+MLWULDATASTATUS:4")) {
+			pClient->Parameter.condatastate = SendSussess;
+		}
+		/* RecvRST */
+		else if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+MLWULDATASTATUS:5")) {
+			pClient->Parameter.condatastate = RecvRST;
+		}
+		else {
+			NBStatus = NBIOT_ERROR;
+		}
+	}
+	
+	return NBStatus;
+}
+
+/**********************************************************************************************************
+ @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCOAPPayloadFlag(NBIOT_ClientsTypeDef* pClient, const char *flag)
+ @Description			NBIOT_Neul_NBxx_SendCOAPPayloadFlag		: COAP发送一条负载数据(FLAG)
+ @Input				pClient								: NBIOT客户端实例
+					flag							0x0000	: NON 一般
+												0x0001	: NON 立马 IDLE
+												0x0100	: CON 一般
+												0x0101	: CON 立马 IDLE
+ @Return				NBIOT_StatusTypeDef						: NBIOT处理状态
+ @attention			必须注网成功才可发送负载数据
+					最大有效数据长度为512字节
+					每次只能缓存一条消息
+**********************************************************************************************************/
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCOAPPayloadFlag(NBIOT_ClientsTypeDef* pClient, const char *flag)
+{
+	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+	u16 length = 0;
+	
+	if ((pClient->Sendlen > pClient->Sendbuf_size) || (((2 * pClient->Sendlen) + 29) > pClient->DataProcessStack_size) || (((2 * pClient->Sendlen) + 29) > pClient->ATCmdStack->ATSendbuf_size)) {
+		NBStatus = NBIOT_ERROR;
+		goto exit;
+	}
+	
+	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
+	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	
+	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
+	sprintf((char *)pClient->DataProcessStack, "AT+MLWULDATAEX=%d,", pClient->Sendlen);
+	length = strlen((const char*)pClient->DataProcessStack);
+	for (int i = 0; i < pClient->Sendlen; i++) {
+		sprintf((char *)(pClient->DataProcessStack + length + i * 2), "%02X", pClient->Sendbuf[i]);
+	}
+	length = length + pClient->Sendlen * 2;
+	sprintf((char *)(pClient->DataProcessStack + length), "%c", ',');
+	length = length + 1;
+	sprintf((char *)(pClient->DataProcessStack + length), "%s", flag);
+	length = length + strlen(flag);
+	sprintf((char *)(pClient->DataProcessStack + length), "%c", '\r');
+	
+	memcpy(pClient->ATCmdStack->ATSendbuf, pClient->DataProcessStack, strlen((char *)pClient->DataProcessStack));
+	pClient->ATCmdStack->ATSendlen = strlen((char *)pClient->DataProcessStack);
+	pClient->ATCmdStack->ATack = "OK";
+	pClient->ATCmdStack->ATNack = "ERROR";
+	NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack);
 	
 exit:
 	return NBStatus;

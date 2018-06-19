@@ -262,6 +262,11 @@
           <WinNumber>2</WinNumber>
           <ItemText>NETCoapMessageRecvPark</ItemText>
         </Ww>
+        <Ww>
+          <count>13</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>NBIOT_DataStack</ItemText>
+        </Ww>
       </WatchWindow2>
       <MemoryWindow1>
         <Mm>
