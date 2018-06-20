@@ -96,6 +96,14 @@ void NET_COAP_APP_PollExecution(NBIOT_ClientsTypeDef* pClient)
 		NET_COAP_NBIOT_Event_RecvData(pClient);
 		break;
 	
+	case SEND_DATA_RA_NORMAL:
+		NET_COAP_NBIOT_Event_SendDataRANormal(pClient);
+		break;
+	
+	case RECV_DATA_RA_NORMAL:
+		NET_COAP_NBIOT_Event_RecvDataRANormal(pClient);
+		break;
+	
 	case EXECUT_DOWNLINK_DATA:
 		NET_COAP_NBIOT_Event_ExecutDownlinkData(pClient);
 		break;
@@ -111,6 +119,31 @@ void NET_COAP_APP_PollExecution(NBIOT_ClientsTypeDef* pClient)
 	case LISTEN_RUN_CTL:
 		NET_COAP_Listen_PollExecution(pClient);
 		break;
+	
+	default :
+		pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+		break;
+	}
+}
+
+/**********************************************************************************************************
+ @Function			static void COAP_NBIOT_DictateEvent_SetTime(NBIOT_ClientsTypeDef* pClient, unsigned int TimeoutSec)
+ @Description			COAP_NBIOT_DictateEvent_SetTime		: 事件运行控制器注入时间(内部使用)
+ @Input				pClient							: NBIOT客户端实例
+					TimeoutSec						: 注入超时时间
+ @Return				void
+ @attention			事件运行之前判断是否需要注入时间
+**********************************************************************************************************/
+static void COAP_NBIOT_DictateEvent_SetTime(NBIOT_ClientsTypeDef* pClient, unsigned int TimeoutSec)
+{
+	Stm32_CalculagraphTypeDef dictateRunTime;
+	
+	/* It is the first time to execute */
+	if (pClient->DictateRunCtl.dictateEnable != true) {
+		pClient->DictateRunCtl.dictateEnable = true;
+		pClient->DictateRunCtl.dictateTimeoutSec = TimeoutSec;
+		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
+		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
 	}
 }
 
@@ -164,15 +197,7 @@ void NET_COAP_NBIOT_Event_StopMode(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_HardwareReboot(NBIOT_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
-	
-	/* It is the first time to execute */
-	if (pClient->DictateRunCtl.dictateEnable != true) {
-		pClient->DictateRunCtl.dictateEnable = true;
-		pClient->DictateRunCtl.dictateTimeoutSec = 30;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
-		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if (NBIOT_Neul_NBxx_HardwareReboot(pClient, 8000) == NBIOT_OK) {
 		/* Dictate execute is Success */
@@ -213,15 +238,7 @@ void NET_COAP_NBIOT_Event_HardwareReboot(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_ModuleCheck(NBIOT_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
-	
-	/* It is the first time to execute */
-	if (pClient->DictateRunCtl.dictateEnable != true) {
-		pClient->DictateRunCtl.dictateEnable = true;
-		pClient->DictateRunCtl.dictateTimeoutSec = 30;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
-		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if ((NBIOT_Neul_NBxx_CheckReadManufacturer(pClient) == NBIOT_OK) && 
 	    (NBIOT_Neul_NBxx_CheckReadManufacturerModel(pClient) == NBIOT_OK) &&
@@ -264,15 +281,7 @@ void NET_COAP_NBIOT_Event_ModuleCheck(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
-	
-	/* It is the first time to execute */
-	if (pClient->DictateRunCtl.dictateEnable != true) {
-		pClient->DictateRunCtl.dictateEnable = true;
-		pClient->DictateRunCtl.dictateTimeoutSec = 30;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
-		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if (NBIOT_Neul_NBxx_CheckReadConfigUE(pClient) == NBIOT_OK) {
 		/* Dictate execute is Success */
@@ -512,15 +521,7 @@ void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_SimICCIDCheck(NBIOT_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
-	
-	/* It is the first time to execute */
-	if (pClient->DictateRunCtl.dictateEnable != true) {
-		pClient->DictateRunCtl.dictateEnable = true;
-		pClient->DictateRunCtl.dictateTimeoutSec = 30;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
-		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if (NBIOT_Neul_NBxx_CheckReadICCID(pClient) == NBIOT_OK) {
 		/* Dictate execute is Success */
@@ -561,15 +562,7 @@ void NET_COAP_NBIOT_Event_SimICCIDCheck(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_FullFunctionality(NBIOT_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
-	
-	/* It is the first time to execute */
-	if (pClient->DictateRunCtl.dictateEnable != true) {
-		pClient->DictateRunCtl.dictateEnable = true;
-		pClient->DictateRunCtl.dictateTimeoutSec = 30;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
-		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if (NBIOT_Neul_NBxx_CheckReadMinOrFullFunc(pClient) == NBIOT_OK) {
 		/* Dictate execute is Success */
@@ -644,15 +637,7 @@ void NET_COAP_NBIOT_Event_FullFunctionality(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_MinimumFunctionality(NBIOT_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
-	
-	/* It is the first time to execute */
-	if (pClient->DictateRunCtl.dictateEnable != true) {
-		pClient->DictateRunCtl.dictateEnable = true;
-		pClient->DictateRunCtl.dictateTimeoutSec = 30;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
-		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if (NBIOT_Neul_NBxx_CheckReadMinOrFullFunc(pClient) == NBIOT_OK) {
 		/* Dictate execute is Success */
@@ -727,15 +712,7 @@ void NET_COAP_NBIOT_Event_MinimumFunctionality(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_CDPServerCheck(NBIOT_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
-	
-	/* It is the first time to execute */
-	if (pClient->DictateRunCtl.dictateEnable != true) {
-		pClient->DictateRunCtl.dictateEnable = true;
-		pClient->DictateRunCtl.dictateTimeoutSec = 30;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
-		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if (NBIOT_Neul_NBxx_CheckReadCDPServer(pClient) == NBIOT_OK) {
 		/* Dictate execute is Success */
@@ -785,15 +762,7 @@ void NET_COAP_NBIOT_Event_CDPServerCheck(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_CDPServerConfig(NBIOT_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
-	
-	/* It is the first time to execute */
-	if (pClient->DictateRunCtl.dictateEnable != true) {
-		pClient->DictateRunCtl.dictateEnable = true;
-		pClient->DictateRunCtl.dictateTimeoutSec = 30;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
-		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if (NBIOT_Neul_NBxx_CheckReadCDPServer(pClient) == NBIOT_OK) {
 		/* Dictate execute is Success */
@@ -872,15 +841,7 @@ void NET_COAP_NBIOT_Event_CDPServerConfig(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_MiscEquipConfig(NBIOT_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
-	
-	/* It is the first time to execute */
-	if (pClient->DictateRunCtl.dictateEnable != true) {
-		pClient->DictateRunCtl.dictateEnable = true;
-		pClient->DictateRunCtl.dictateTimeoutSec = 30;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
-		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if ((NBIOT_Neul_NBxx_CheckReadSupportedBands(pClient) == NBIOT_OK) &&
 	    (NBIOT_Neul_NBxx_CheckReadNewMessageIndications(pClient) == NBIOT_OK) &&
@@ -1023,15 +984,7 @@ void NET_COAP_NBIOT_Event_MiscEquipConfig(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_AttachCheck(NBIOT_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
-	
-	/* It is the first time to execute */
-	if (pClient->DictateRunCtl.dictateEnable != true) {
-		pClient->DictateRunCtl.dictateEnable = true;
-		pClient->DictateRunCtl.dictateTimeoutSec = 30;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
-		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if (NBIOT_Neul_NBxx_CheckReadAttachOrDetach(pClient) == NBIOT_OK) {
 		/* Dictate execute is Success */
@@ -1080,15 +1033,7 @@ void NET_COAP_NBIOT_Event_AttachCheck(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_AttachExecute(NBIOT_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
-	
-	/* It is the first time to execute */
-	if (pClient->DictateRunCtl.dictateEnable != true) {
-		pClient->DictateRunCtl.dictateEnable = true;
-		pClient->DictateRunCtl.dictateTimeoutSec = 30;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
-		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if (NBIOT_Neul_NBxx_SetAttachOrDetach(pClient, Attach) == NBIOT_OK) {
 		/* Dictate execute is Success */
@@ -1129,15 +1074,7 @@ void NET_COAP_NBIOT_Event_AttachExecute(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_AttachInquire(NBIOT_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
-	
-	/* It is the first time to execute */
-	if (pClient->DictateRunCtl.dictateEnable != true) {
-		pClient->DictateRunCtl.dictateEnable = true;
-		pClient->DictateRunCtl.dictateTimeoutSec = 60;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
-		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	COAP_NBIOT_DictateEvent_SetTime(pClient, 60);
 	
 	if (NBIOT_Neul_NBxx_CheckReadAttachOrDetach(pClient) == NBIOT_OK) {
 		/* Dictate execute is Success */
@@ -1197,15 +1134,7 @@ void NET_COAP_NBIOT_Event_AttachInquire(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_PatameterCheckOut(NBIOT_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
-	
-	/* It is the first time to execute */
-	if (pClient->DictateRunCtl.dictateEnable != true) {
-		pClient->DictateRunCtl.dictateEnable = true;
-		pClient->DictateRunCtl.dictateTimeoutSec = 30;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
-		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if ((NBIOT_Neul_NBxx_CheckReadIMEI(pClient) == NBIOT_OK) && 
 	    (NBIOT_Neul_NBxx_CheckReadIMEISV(pClient) == NBIOT_OK) && 
@@ -1259,16 +1188,9 @@ void NET_COAP_NBIOT_Event_PatameterCheckOut(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_SendData(NBIOT_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
 	int SendSentNum = 0;
 	
-	/* It is the first time to execute */
-	if (pClient->DictateRunCtl.dictateEnable != true) {
-		pClient->DictateRunCtl.dictateEnable = true;
-		pClient->DictateRunCtl.dictateTimeoutSec = 30;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
-		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	/* Data packets need to be sent*/
 	if (NET_Coap_Message_SendDataDequeue(pClient->Sendbuf, (unsigned short *)&pClient->Sendlen) == true) {
@@ -1435,16 +1357,9 @@ void NET_COAP_NBIOT_Event_SendData(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_RecvData(NBIOT_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
 	u8 COAPFeedBackData[] = {0xAA, 0xBB};									//COAP反馈包数据
 	
-	/* It is the first time to execute */
-	if (pClient->DictateRunCtl.dictateEnable != true) {
-		pClient->DictateRunCtl.dictateEnable = true;
-		pClient->DictateRunCtl.dictateTimeoutSec = 30;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
-		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if (NBIOT_Neul_NBxx_QueryReadMessageCOAPPayload(pClient) == NBIOT_OK) {
 		/* Dictate execute is Success */
@@ -1538,6 +1453,352 @@ void NET_COAP_NBIOT_Event_RecvData(NBIOT_ClientsTypeDef* pClient)
 		}
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**********************************************************************************************************
+ @Function			void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
+ @Description			NET_COAP_NBIOT_Event_SendDataRANormal	: 发送数据RANormal
+ @Input				pClient							: NBIOT客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
+{
+	int SendSentNum = 0;
+	
+	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
+	
+	/* Data packets need to be sent*/
+	if (NET_Coap_Message_SendDataDequeue(pClient->Sendbuf, (unsigned short *)&pClient->Sendlen) == true) {
+		if (NBIOT_Neul_NBxx_CheckReadAttachOrDetach(pClient) == NBIOT_OK) {
+			/* Dictate execute is Success */
+			pClient->DictateRunCtl.dictateEvent = SEND_DATA_RA_NORMAL;
+#ifdef COAP_DEBUG_LOG_RF_PRINT
+			Radio_Trf_Debug_Printf_Level2("Coap CGATT %d Ok", pClient->Parameter.netstate);
+#endif
+		}
+		else {
+			/* Dictate execute is Fail */
+			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
+				/* Dictate TimeOut */
+				pClient->DictateRunCtl.dictateEnable = false;
+				pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+				pClient->DictateRunCtl.dictateSendDataRANormalFailureCnt++;
+				if (pClient->DictateRunCtl.dictateSendDataRANormalFailureCnt > 3) {
+					pClient->DictateRunCtl.dictateSendDataRANormalFailureCnt = 0;
+					pClient->DictateRunCtl.dictateEvent = STOP_MODE;
+				}
+			}
+			else {
+				/* Dictate isn't TimeOut */
+				pClient->DictateRunCtl.dictateEvent = SEND_DATA_RA_NORMAL;
+			}
+#ifdef COAP_DEBUG_LOG_RF_PRINT
+			Radio_Trf_Debug_Printf_Level2("Coap CGATT %d Fail", pClient->Parameter.netstate);
+#endif
+			return;
+		}
+		
+		if (pClient->Parameter.netstate != Attach) {
+			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
+				pClient->DictateRunCtl.dictateEnable = false;
+				pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+				pClient->DictateRunCtl.dictateSendDataRANormalFailureCnt++;
+				if (pClient->DictateRunCtl.dictateSendDataRANormalFailureCnt > 3) {
+					pClient->DictateRunCtl.dictateSendDataRANormalFailureCnt = 0;
+					pClient->DictateRunCtl.dictateEvent = STOP_MODE;
+				}
+			}
+			else {
+				pClient->DictateRunCtl.dictateEvent = SEND_DATA_RA_NORMAL;
+			}
+			return;
+		}
+		
+		if ((NBIOT_Neul_NBxx_QuerySendMessageCOAPPayload(pClient) == NBIOT_OK) && 
+		    (NBIOT_Neul_NBxx_QueryReadMessageCOAPPayload(pClient) == NBIOT_OK)) {
+			/* Dictate execute is Success */
+			pClient->DictateRunCtl.dictateEvent = SEND_DATA_RA_NORMAL;
+#ifdef COAP_DEBUG_LOG_RF_PRINT
+			Radio_Trf_Debug_Printf_Level2("Coap NQMGS NQMGR Ok");
+#endif
+		}
+		else {
+			/* Dictate execute is Fail */
+			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
+				/* Dictate TimeOut */
+				pClient->DictateRunCtl.dictateEnable = false;
+				pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+				pClient->DictateRunCtl.dictateSendDataRANormalFailureCnt++;
+				if (pClient->DictateRunCtl.dictateSendDataRANormalFailureCnt > 3) {
+					pClient->DictateRunCtl.dictateSendDataRANormalFailureCnt = 0;
+					pClient->DictateRunCtl.dictateEvent = STOP_MODE;
+				}
+			}
+			else {
+				/* Dictate isn't TimeOut */
+				pClient->DictateRunCtl.dictateEvent = SEND_DATA_RA_NORMAL;
+			}
+#ifdef COAP_DEBUG_LOG_RF_PRINT
+			Radio_Trf_Debug_Printf_Level2("Coap NQMGS NQMGR Fail");
+#endif
+			return;
+		}
+		
+		SendSentNum = pClient->Parameter.coapSendMessage.sent;
+		
+		/* 发送负载数据 */
+		if (NBIOT_Neul_NBxx_SendCOAPPayloadFlag(pClient, "0x0100") == NBIOT_OK) {
+			/* Dictate execute is Success */
+			pClient->DictateRunCtl.dictateEvent = SEND_DATA_RA_NORMAL;
+#ifdef COAP_DEBUG_LOG_RF_PRINT
+			Radio_Trf_Debug_Printf_Level2("Coap Send Payload Ok");
+#endif
+		}
+		else {
+			/* Dictate execute is Fail */
+			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
+				/* Dictate TimeOut */
+				pClient->DictateRunCtl.dictateEnable = false;
+				pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+				pClient->DictateRunCtl.dictateSendDataRANormalFailureCnt++;
+				if (pClient->DictateRunCtl.dictateSendDataRANormalFailureCnt > 3) {
+					pClient->DictateRunCtl.dictateSendDataRANormalFailureCnt = 0;
+					pClient->DictateRunCtl.dictateEvent = STOP_MODE;
+				}
+			}
+			else {
+				/* Dictate isn't TimeOut */
+				pClient->DictateRunCtl.dictateEvent = SEND_DATA_RA_NORMAL;
+			}
+#ifdef COAP_DEBUG_LOG_RF_PRINT
+			Radio_Trf_Debug_Printf_Level2("Coap Send Payload Fail");
+#endif
+			return;
+		}
+		
+		if (NBIOT_Neul_NBxx_QuerySendMessageCOAPPayload(pClient) == NBIOT_OK) {
+			/* Dictate execute is Success */
+			pClient->DictateRunCtl.dictateEvent = SEND_DATA_RA_NORMAL;
+		}
+		else {
+			/* Dictate execute is Fail */
+			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
+				/* Dictate TimeOut */
+				pClient->DictateRunCtl.dictateEnable = false;
+				pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+				pClient->DictateRunCtl.dictateSendDataRANormalFailureCnt++;
+				if (pClient->DictateRunCtl.dictateSendDataRANormalFailureCnt > 3) {
+					pClient->DictateRunCtl.dictateSendDataRANormalFailureCnt = 0;
+					pClient->DictateRunCtl.dictateEvent = STOP_MODE;
+				}
+			}
+			else {
+				/* Dictate isn't TimeOut */
+				pClient->DictateRunCtl.dictateEvent = SEND_DATA_RA_NORMAL;
+			}
+			return;
+		}
+		
+		if ((SendSentNum + 1) != pClient->Parameter.coapSendMessage.sent) {
+			/* Send Data Fail */
+			pClient->DictateRunCtl.dictateEnable = false;
+			pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+			pClient->DictateRunCtl.dictateSendDataRANormalFailureCnt++;
+			if (pClient->DictateRunCtl.dictateSendDataRANormalFailureCnt > 3) {
+				pClient->DictateRunCtl.dictateSendDataRANormalFailureCnt = 0;
+				pClient->DictateRunCtl.dictateEvent = STOP_MODE;
+			}
+		}
+		else {
+			/* Send Data Success */
+			pClient->DictateRunCtl.dictateEnable = false;
+			pClient->DictateRunCtl.dictateEvent = RECV_DATA_RA_NORMAL;
+			pClient->DictateRunCtl.dictateSendDataRANormalFailureCnt = 0;
+		}
+	}
+	/* No packets need to be sent */
+	else {
+		pClient->DictateRunCtl.dictateEnable = false;
+		pClient->DictateRunCtl.dictateEvent = EXECUT_DOWNLINK_DATA;
+		pClient->DictateRunCtl.dictateSendDataRANormalFailureCnt = 0;
+	}
+}
+
+/**********************************************************************************************************
+ @Function			void NET_COAP_NBIOT_Event_RecvDataRANormal(NBIOT_ClientsTypeDef* pClient)
+ @Description			NET_COAP_NBIOT_Event_RecvDataRANormal	: 接收数据RANormal
+ @Input				pClient							: NBIOT客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_COAP_NBIOT_Event_RecvDataRANormal(NBIOT_ClientsTypeDef* pClient)
+{
+	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
+	
+	if (NBIOT_Neul_NBxx_CheckReadCONDataStatus(pClient) == NBIOT_OK) {
+		/* Dictate execute is Success */
+		pClient->DictateRunCtl.dictateEvent = RECV_DATA_RA_NORMAL;
+	}
+	else {
+		/* Dictate execute is Fail */
+		if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
+			/* Dictate TimeOut */
+			pClient->DictateRunCtl.dictateEnable = false;
+			pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+			pClient->DictateRunCtl.dictateRecvDataRANormalFailureCnt++;
+			if (pClient->DictateRunCtl.dictateRecvDataRANormalFailureCnt > 3) {
+				pClient->DictateRunCtl.dictateRecvDataRANormalFailureCnt = 0;
+				pClient->DictateRunCtl.dictateEvent = STOP_MODE;
+			}
+		}
+		else {
+			/* Dictate isn't TimeOut */
+			pClient->DictateRunCtl.dictateEvent = RECV_DATA_RA_NORMAL;
+		}
+		return;
+	}
+	
+	if (pClient->Parameter.condatastate == SendSussess) {
+		/* Send Data To Server Success */
+		if (NBIOT_Neul_NBxx_QueryReadMessageCOAPPayload(pClient) == NBIOT_OK) {
+			/* Dictate execute is Success */
+			pClient->DictateRunCtl.dictateEvent = RECV_DATA_RA_NORMAL;
+		}
+		else {
+			/* Dictate execute is Fail */
+			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
+				/* Dictate TimeOut */
+				pClient->DictateRunCtl.dictateEnable = false;
+				pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+				pClient->DictateRunCtl.dictateRecvDataRANormalFailureCnt++;
+				if (pClient->DictateRunCtl.dictateRecvDataRANormalFailureCnt > 3) {
+					pClient->DictateRunCtl.dictateRecvDataRANormalFailureCnt = 0;
+					pClient->DictateRunCtl.dictateEvent = STOP_MODE;
+				}
+			}
+			else {
+				/* Dictate isn't TimeOut */
+				pClient->DictateRunCtl.dictateEvent = RECV_DATA_RA_NORMAL;
+			}
+			return;
+		}
+		
+		/* 检查是否有下行数据 */
+		if (pClient->Parameter.coapReadMessage.buffered != 0) {
+			/* Has Data Need Receive */
+			for (int index = 0; index < pClient->Parameter.coapReadMessage.buffered; index++) {
+				/* 读取负载数据 */
+				if (NBIOT_Neul_NBxx_ReadCOAPPayload(pClient) == NBIOT_OK) {
+					/* Dictate execute is Success */
+					pClient->DictateRunCtl.dictateEvent = pClient->DictateRunCtl.dictateEvent;
+				}
+				else {
+					/* Dictate execute is Fail */
+					if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
+						/* Dictate TimeOut */
+						pClient->DictateRunCtl.dictateEnable = false;
+						pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+						pClient->DictateRunCtl.dictateRecvDataRANormalFailureCnt++;
+						if (pClient->DictateRunCtl.dictateRecvDataRANormalFailureCnt > 3) {
+							pClient->DictateRunCtl.dictateRecvDataRANormalFailureCnt = 0;
+							pClient->DictateRunCtl.dictateEvent = STOP_MODE;
+						}
+					}
+					else {
+						/* Dictate isn't TimeOut */
+						pClient->DictateRunCtl.dictateEvent = pClient->DictateRunCtl.dictateEvent;
+					}
+					return;
+				}
+				
+				NET_Coap_Message_RecvDataEnqueue(pClient->Recvbuf, pClient->Recvlen);
+#ifdef COAP_DEBUG_LOG_RF_PRINT
+				Radio_Trf_Debug_Printf_Level2("Coap Recv Data Ok");
+#endif
+			}
+		}
+		
+		NET_Coap_Message_SendDataOffSet();
+		pClient->DictateRunCtl.dictateEnable = false;
+		pClient->DictateRunCtl.dictateEvent = SEND_DATA_RA_NORMAL;
+		pClient->DictateRunCtl.dictateRecvDataRANormalFailureCnt = 0;
+		NET_COAP_NBIOT_Listen_Enable_EnterIdleMode(pClient);
+#ifdef COAP_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("Coap Send Success");
+#endif
+	}
+	else {
+		/* Not yet Send Data Success */
+		if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
+			/* Dictate TimeOut */
+			pClient->DictateRunCtl.dictateEnable = false;
+			pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+			pClient->DictateRunCtl.dictateRecvDataRANormalFailureCnt++;
+			if (pClient->DictateRunCtl.dictateRecvDataRANormalFailureCnt > 3) {
+				pClient->DictateRunCtl.dictateRecvDataRANormalFailureCnt = 0;
+				pClient->DictateRunCtl.dictateEvent = STOP_MODE;
+			}
+		}
+		else {
+			/* Dictate isn't TimeOut */
+			pClient->DictateRunCtl.dictateEvent = RECV_DATA_RA_NORMAL;
+#ifdef COAP_DEBUG_LOG_RF_PRINT
+			Radio_Trf_Debug_Printf_Level2("Coap Wait Send Success");
+#endif
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**********************************************************************************************************
  @Function			void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)

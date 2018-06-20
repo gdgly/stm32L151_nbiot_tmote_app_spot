@@ -10,8 +10,8 @@
 
 #define COAP_DEBUG_LOG_RF_PRINT											//定义开启RF输出DEBUG信息
 
-#define COAPCDPADDR_CHINA_TELECOM_FORMAL	"117.60.157.137"					//电信生产 : "117.60.157.137"
-#define COAPCDPADDR_CHINA_TELECOM_TEST		"180.101.147.115"					//电信测试 : "180.101.147.115"
+#define COAPCDPADDR_CHINA_TELECOM_FORMAL	"117.60.157.137"					//电信生产 : "117.60.157.137"		ip753c9d89:5683
+#define COAPCDPADDR_CHINA_TELECOM_TEST		"180.101.147.115"					//电信测试 : "180.101.147.115"	ipb4659373:5683
 #define COAPCDPADDR						COAPCDPADDR_CHINA_TELECOM_FORMAL
 #define COAPCDPPORT						5683
 
@@ -37,6 +37,8 @@ void NET_COAP_NBIOT_Event_AttachInquire(NBIOT_ClientsTypeDef* pClient);			//注�
 void NET_COAP_NBIOT_Event_PatameterCheckOut(NBIOT_ClientsTypeDef* pClient);		//参数检出
 void NET_COAP_NBIOT_Event_SendData(NBIOT_ClientsTypeDef* pClient);				//发送数据
 void NET_COAP_NBIOT_Event_RecvData(NBIOT_ClientsTypeDef* pClient);				//接收数据
+void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient);			//发送数据RANormal
+void NET_COAP_NBIOT_Event_RecvDataRANormal(NBIOT_ClientsTypeDef* pClient);			//接收数据RANormal
 void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient);		//下行数据处理
 
 void NET_COAP_Listen_PollExecution(NBIOT_ClientsTypeDef* pClient);				//COAP监听器处理

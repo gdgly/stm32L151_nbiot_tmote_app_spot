@@ -95,6 +95,14 @@ void NET_DNS_APP_PollExecution(DNS_ClientsTypeDef* pClient)
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
 		break;
 	
+	case SEND_DATA_RA_NORMAL:
+		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+		break;
+	
+	case RECV_DATA_RA_NORMAL:
+		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+		break;
+	
 	case EXECUT_DOWNLINK_DATA:
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
 		break;
@@ -108,7 +116,11 @@ void NET_DNS_APP_PollExecution(DNS_ClientsTypeDef* pClient)
 		break;
 	
 	case LISTEN_RUN_CTL:
-		
+		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+		break;
+	
+	default :
+		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
 		break;
 	}
 }
@@ -142,6 +154,27 @@ void NET_DNS_APP_ProcessExecution(DNS_ClientsTypeDef* pClient)
 	case DNS_PROCESS_OVER_DNS_ANALYSIS:
 		NET_DNS_Event_OverDnsAnalysis(pClient);
 		break;
+	}
+}
+
+/**********************************************************************************************************
+ @Function			static void DNS_NBIOT_DictateEvent_SetTime(DNS_ClientsTypeDef* pClient, unsigned int TimeoutSec)
+ @Description			DNS_NBIOT_DictateEvent_SetTime		: 事件运行控制器注入时间(内部使用)
+ @Input				pClient							: NBIOT客户端实例
+					TimeoutSec						: 注入超时时间
+ @Return				void
+ @attention			事件运行之前判断是否需要注入时间
+**********************************************************************************************************/
+static void DNS_NBIOT_DictateEvent_SetTime(DNS_ClientsTypeDef* pClient, unsigned int TimeoutSec)
+{
+	Stm32_CalculagraphTypeDef dictateRunTime;
+	
+	/* It is the first time to execute */
+	if (pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable != true) {
+		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = true;
+		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateTimeoutSec = TimeoutSec;
+		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->SocketStack->NBIotStack->DictateRunCtl.dictateTimeoutSec);
+		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateRunTime = dictateRunTime;
 	}
 }
 
@@ -218,15 +251,7 @@ void NET_DNS_NBIOT_Event_StopMode(DNS_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_DNS_NBIOT_Event_HardwareReboot(DNS_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
-	
-	/* It is the first time to execute */
-	if (pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable != true) {
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = true;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateTimeoutSec = 30;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->SocketStack->NBIotStack->DictateRunCtl.dictateTimeoutSec);
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	DNS_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if (NBIOT_Neul_NBxx_HardwareReboot(pClient->SocketStack->NBIotStack, 8000) == NBIOT_OK) {
 		/* Dictate execute is Success */
@@ -267,15 +292,7 @@ void NET_DNS_NBIOT_Event_HardwareReboot(DNS_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_DNS_NBIOT_Event_ModuleCheck(DNS_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
-	
-	/* It is the first time to execute */
-	if (pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable != true) {
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = true;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateTimeoutSec = 30;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->SocketStack->NBIotStack->DictateRunCtl.dictateTimeoutSec);
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	DNS_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if ((NBIOT_Neul_NBxx_CheckReadManufacturer(pClient->SocketStack->NBIotStack) == NBIOT_OK) && 
 	    (NBIOT_Neul_NBxx_CheckReadManufacturerModel(pClient->SocketStack->NBIotStack) == NBIOT_OK) && 
@@ -318,15 +335,7 @@ void NET_DNS_NBIOT_Event_ModuleCheck(DNS_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_DNS_NBIOT_Event_ParameterConfig(DNS_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
-	
-	/* It is the first time to execute */
-	if (pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable != true) {
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = true;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateTimeoutSec = 30;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->SocketStack->NBIotStack->DictateRunCtl.dictateTimeoutSec);
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	DNS_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if (NBIOT_Neul_NBxx_CheckReadConfigUE(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
 		/* Dictate execute is Success */
@@ -566,15 +575,7 @@ void NET_DNS_NBIOT_Event_ParameterConfig(DNS_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_DNS_NBIOT_Event_SimICCIDCheck(DNS_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
-	
-	/* It is the first time to execute */
-	if (pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable != true) {
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = true;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateTimeoutSec = 30;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->SocketStack->NBIotStack->DictateRunCtl.dictateTimeoutSec);
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	DNS_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if (NBIOT_Neul_NBxx_CheckReadICCID(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
 		/* Dictate execute is Success */
@@ -615,15 +616,7 @@ void NET_DNS_NBIOT_Event_SimICCIDCheck(DNS_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_DNS_NBIOT_Event_MiscEquipConfig(DNS_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
-	
-	/* It is the first time to execute */
-	if (pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable != true) {
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = true;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateTimeoutSec = 30;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->SocketStack->NBIotStack->DictateRunCtl.dictateTimeoutSec);
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	DNS_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if (NBIOT_Neul_NBxx_CheckReadSupportedBands(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
 		/* Dictate execute is Success */
@@ -698,15 +691,7 @@ void NET_DNS_NBIOT_Event_MiscEquipConfig(DNS_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_DNS_NBIOT_Event_AttachCheck(DNS_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
-	
-	/* It is the first time to execute */
-	if (pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable != true) {
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = true;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateTimeoutSec = 30;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->SocketStack->NBIotStack->DictateRunCtl.dictateTimeoutSec);
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	DNS_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if (NBIOT_Neul_NBxx_CheckReadAttachOrDetach(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
 		/* Dictate execute is Success */
@@ -756,15 +741,7 @@ void NET_DNS_NBIOT_Event_AttachCheck(DNS_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_DNS_NBIOT_Event_AttachExecute(DNS_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
-	
-	/* It is the first time to execute */
-	if (pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable != true) {
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = true;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateTimeoutSec = 30;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->SocketStack->NBIotStack->DictateRunCtl.dictateTimeoutSec);
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	DNS_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if (NBIOT_Neul_NBxx_SetAttachOrDetach(pClient->SocketStack->NBIotStack, Attach) == NBIOT_OK) {
 		/* Dictate execute is Success */
@@ -805,15 +782,7 @@ void NET_DNS_NBIOT_Event_AttachExecute(DNS_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_DNS_NBIOT_Event_AttachInquire(DNS_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
-	
-	/* It is the first time to execute */
-	if (pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable != true) {
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = true;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateTimeoutSec = 60;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->SocketStack->NBIotStack->DictateRunCtl.dictateTimeoutSec);
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	DNS_NBIOT_DictateEvent_SetTime(pClient, 60);
 	
 	if (NBIOT_Neul_NBxx_CheckReadAttachOrDetach(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
 		/* Dictate execute is Success */
@@ -873,15 +842,7 @@ void NET_DNS_NBIOT_Event_AttachInquire(DNS_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_DNS_NBIOT_Event_PatameterCheckOut(DNS_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
-	
-	/* It is the first time to execute */
-	if (pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable != true) {
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = true;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateTimeoutSec = 30;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->SocketStack->NBIotStack->DictateRunCtl.dictateTimeoutSec);
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	DNS_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if ((NBIOT_Neul_NBxx_CheckReadIMEI(pClient->SocketStack->NBIotStack) == NBIOT_OK) && 
 	    (NBIOT_Neul_NBxx_CheckReadIMEISV(pClient->SocketStack->NBIotStack) == NBIOT_OK) && 

@@ -209,10 +209,12 @@ typedef enum
 	CDP_SERVER_CONFIG					= 0x0D,											//CDP服务器配置
 	SEND_DATA							= 0x0E,											//发送数据
 	RECV_DATA							= 0x0F,											//接收数据
-	EXECUT_DOWNLINK_DATA				= 0x10,											//执行下行数据
-	MQTTSN_PROCESS_STACK				= 0x11,											//MQTTSN执行栈
-	DNS_PROCESS_STACK					= 0x12,											//DNS执行栈
-	LISTEN_RUN_CTL						= 0x13											//监听运行控制器
+	SEND_DATA_RA_NORMAL					= 0x10,											//发送数据RA_NORMAL
+	RECV_DATA_RA_NORMAL					= 0x11,											//接收数据RA_NORMAL
+	EXECUT_DOWNLINK_DATA				= 0x12,											//执行下行数据
+	MQTTSN_PROCESS_STACK				= 0x13,											//MQTTSN执行栈
+	DNS_PROCESS_STACK					= 0x14,											//DNS执行栈
+	LISTEN_RUN_CTL						= 0x15											//监听运行控制器
 }NBIOT_DictateEventTypeDef;
 
 /* NBIOT Listen Event */
@@ -404,6 +406,8 @@ struct NBIOT_ClientsTypeDef
 		unsigned char					dictateCDPServerConfigFailureCnt;
 		unsigned char					dictateSendDataFailureCnt;
 		unsigned char					dictateRecvDataFailureCnt;
+		unsigned char					dictateSendDataRANormalFailureCnt;
+		unsigned char					dictateRecvDataRANormalFailureCnt;
 		unsigned char					dictateListenRunCtlFailureCnt;
 		Stm32_CalculagraphTypeDef		dictateRunTime;
 		NBIOT_DictateEventTypeDef		dictateEvent;

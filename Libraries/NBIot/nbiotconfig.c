@@ -64,6 +64,8 @@ void NBIOT_Client_Init(NBIOT_ClientsTypeDef* pClient, NBIOT_ATCmdTypeDef* ATCmdS
 	pClient->DictateRunCtl.dictateCDPServerConfigFailureCnt	= 0;
 	pClient->DictateRunCtl.dictateSendDataFailureCnt			= 0;
 	pClient->DictateRunCtl.dictateRecvDataFailureCnt			= 0;
+	pClient->DictateRunCtl.dictateSendDataRANormalFailureCnt	= 0;
+	pClient->DictateRunCtl.dictateRecvDataRANormalFailureCnt	= 0;
 	pClient->DictateRunCtl.dictateListenRunCtlFailureCnt		= 0;
 	pClient->DictateRunCtl.dictateEvent					= HARDWARE_REBOOT;
 	
