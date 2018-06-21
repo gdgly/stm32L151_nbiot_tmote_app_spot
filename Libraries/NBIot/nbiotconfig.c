@@ -47,6 +47,7 @@ void NBIOT_Client_Init(NBIOT_ClientsTypeDef* pClient, NBIOT_ATCmdTypeDef* ATCmdS
 	pClient->Command_Failure_Cnt							= NBIOT_COMMAND_FAILURE_CNT;
 	
 	/* 事件运行控制器 */
+	pClient->DictateRunCtl.dictateCoapRANormalEnable			= false;
 	pClient->DictateRunCtl.dictateEnable					= false;
 	pClient->DictateRunCtl.dictateTimeoutSec				= 0;
 	pClient->DictateRunCtl.dictateRebootFailureCnt			= 0;
@@ -83,6 +84,29 @@ void NBIOT_Client_Init(NBIOT_ClientsTypeDef* pClient, NBIOT_ATCmdTypeDef* ATCmdS
 	pClient->NetNbiotStack								= NetNbiotStack;
 	
 	memset((void *)&pClient->Parameter, 0x0, sizeof(pClient->Parameter));
+}
+
+/**********************************************************************************************************
+ @Function			void NBIOT_COAP_RA_NORMAL_SET_STATE(NBIOT_ClientsTypeDef* pClient, bool enable)
+ @Description			NBIOT_COAP_RA_NORMAL_SET_STATE			: 设置COAP发送RA包或Normal包状态
+ @Input				pClient								: NBIOT客户端实例
+					enable								: 状态
+ @Return				void
+**********************************************************************************************************/
+void NBIOT_COAP_RA_NORMAL_SET_STATE(NBIOT_ClientsTypeDef* pClient, bool enable)
+{
+	pClient->DictateRunCtl.dictateCoapRANormalEnable			= enable;
+}
+
+/**********************************************************************************************************
+ @Function			bool NBIOT_COAP_RA_NORMAL_GET_STATE(NBIOT_ClientsTypeDef* pClient)
+ @Description			NBIOT_COAP_RA_NORMAL_GET_STATE			: 读取COAP发送RA包或Normal包状态
+ @Input				pClient								: NBIOT客户端实例
+ @Return				enable								: 状态
+**********************************************************************************************************/
+bool NBIOT_COAP_RA_NORMAL_GET_STATE(NBIOT_ClientsTypeDef* pClient)
+{
+	return pClient->DictateRunCtl.dictateCoapRANormalEnable;
 }
 
 /********************************************** END OF FLEE **********************************************/

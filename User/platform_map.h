@@ -27,7 +27,7 @@
 #define TCFG_FACTORY_MAC_SN_LENGTH			4
 
 #define TCFG_FACTORY_BRAND_SN_OFFSET		0x0400											//0x08080400
-#define TCFG_FACTORY_BRAND_SN_LENGTH		8												//SN Brand
+#define TCFG_FACTORY_BRAND_SN_LENGTH		8												//Brand SN	4:Brand+4:SN
 
 /* The environment parameters are used both by bootLoader and application */
 #define TCFG_ENVFLAG_OFFSET				TCFG_FACTORY_BRAND_SN_OFFSET + TCFG_FACTORY_BRAND_SN_LENGTH	//0x08080408
@@ -126,6 +126,8 @@
 #define TCFG_NB_CMDCNT_LENGTH				1												//NBCmdCnt			NB命令
 #define TCFG_RF_DPRINT_LV_OFFSET			TCFG_NB_CMDCNT_OFFSET + TCFG_NB_CMDCNT_LENGTH			//0x080804E1
 #define TCFG_RF_DPRINT_LV_LENGTH			1												//RFDPrintLv			RF调试信息输出等级
+#define TCFG_COAP_RA_TIME_OFFSET			TCFG_RF_DPRINT_LV_OFFSET + TCFG_RF_DPRINT_LV_LENGTH		//0x080804E2
+#define TCFG_COAP_RA_TIME_LENGTH			1												//CoapRATime			RA间隔发送普通包时间
 
 enum TCFG_SENSITIVITY																	//传感器灵敏度
 {
@@ -168,6 +170,7 @@ typedef struct
 	unsigned char						RFCommandCount;									//RF命令接收条数
 	unsigned char						NBCommandCount;									//NB命令接收条数
 	unsigned short						DeviceBootCount;									//设备重启次数
+	unsigned char						CoapRATimeHour;									//Coap间隔时间发送普通数据包用于接收下行数据
 	unsigned char						NBCoapCDPServerIP[16];								//NB核心网IP地址
 	unsigned char						NBCoapCDPServerPort[6];								//NB核心网IP端口
 	NBIOT_ServerAddr					NBCoapCDPServer;									//NB核心网地址
@@ -302,6 +305,9 @@ unsigned char	TCFG_EEPROM_GetRFCmdCnt(void);												//读取RFCmdCnt
 
 void			TCFG_EEPROM_SetNBCmdCnt(uint8_t val);											//保存NBCmdCnt
 unsigned char	TCFG_EEPROM_GetNBCmdCnt(void);												//读取NBCmdCnt
+
+void			TCFG_EEPROM_SetCoapRATimeHour(unsigned char val);									//保存CoapRATimeHour
+unsigned char	TCFG_EEPROM_GetCoapRATimeHour(void);											//读取CoapRATimeHour
 
 void			TCFG_Utility_Add_Device_BootCount(void);										//Device重启次数累加
 unsigned short TCFG_Utility_Get_Device_BootCount(void);										//Device重启次数获取

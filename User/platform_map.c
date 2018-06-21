@@ -154,6 +154,10 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_SystemData.NBCommandCount = 0;
 	TCFG_EEPROM_SetNBCmdCnt(TCFG_SystemData.NBCommandCount);
 	
+	/* Coap间隔时间发送普通数据包用于接收下行数据 */
+	TCFG_SystemData.CoapRATimeHour = 2;
+	TCFG_EEPROM_SetCoapRATimeHour(TCFG_SystemData.CoapRATimeHour);
+	
 #if NETPROTOCAL == NETCOAP
 	/* NB核心网地址 */
 	sscanf(COAPCDPADDR, "%d.%d.%d.%d", &serverip[3], &serverip[2], &serverip[1], &serverip[0]);
@@ -175,6 +179,10 @@ void TCFG_EEPROM_WriteConfigData(void)
 **********************************************************************************************************/
 void TCFG_EEPROM_ReadConfigData(void)
 {
+#if NETPROTOCAL == NETCOAP
+	int serverip[4];
+#endif
+	
 	/* 获取SubSN */
 	TCFG_SystemData.SubSn = TCFG_EEPROM_Get_MAC_SN();
 	TCFG_EEPROM_Get_MAC_SN_String();
@@ -224,6 +232,10 @@ void TCFG_EEPROM_ReadConfigData(void)
 	
 	/* 无线调试输出等级 */
 	TCFG_SystemData.RFDprintLv = TCFG_EEPROM_GetRFDprintLv();
+	if (TCFG_SystemData.RFDprintLv == 0) {
+		TCFG_SystemData.RFDprintLv = RF_DPRINT_LV;
+		TCFG_EEPROM_SetRFDprintLv(TCFG_SystemData.RFDprintLv);
+	}
 	
 	/* 地磁模式 */
 	TCFG_SystemData.MagMode = TCFG_EEPROM_GetMagMode();
@@ -273,10 +285,27 @@ void TCFG_EEPROM_ReadConfigData(void)
 	/* NBIot MqttSN 发送数据次数 */
 	TCFG_SystemData.MqttSNSentCount = TCFG_EEPROM_GetMqttSNSentCnt();
 	
+	/* Coap间隔时间发送普通数据包用于接收下行数据 */
+	TCFG_SystemData.CoapRATimeHour = TCFG_EEPROM_GetCoapRATimeHour();
+	if (TCFG_SystemData.CoapRATimeHour == 0) {
+		TCFG_SystemData.CoapRATimeHour = 2;
+		TCFG_EEPROM_SetCoapRATimeHour(TCFG_SystemData.CoapRATimeHour);
+	}
+	
 #if NETPROTOCAL == NETCOAP
 	/* NB核心网地址 */
 	TCFG_SystemData.NBCoapCDPServer.ip.ip32 = TCFG_EEPROM_GetServerIP();
 	TCFG_SystemData.NBCoapCDPServer.port = TCFG_EEPROM_GetServerPort();
+	if ((TCFG_SystemData.NBCoapCDPServer.ip.ip32 == 0) && (TCFG_SystemData.NBCoapCDPServer.port == 0)) {
+		sscanf(COAPCDPADDR, "%d.%d.%d.%d", &serverip[3], &serverip[2], &serverip[1], &serverip[0]);
+		TCFG_SystemData.NBCoapCDPServer.ip.ip8[3] = serverip[3];
+		TCFG_SystemData.NBCoapCDPServer.ip.ip8[2] = serverip[2];
+		TCFG_SystemData.NBCoapCDPServer.ip.ip8[1] = serverip[1];
+		TCFG_SystemData.NBCoapCDPServer.ip.ip8[0] = serverip[0];
+		TCFG_SystemData.NBCoapCDPServer.port = COAPCDPPORT;
+		TCFG_EEPROM_SetServerIP(TCFG_SystemData.NBCoapCDPServer.ip.ip32);
+		TCFG_EEPROM_SetServerPort(TCFG_SystemData.NBCoapCDPServer.port);
+	}
 #endif
 }
 
@@ -1103,14 +1132,27 @@ bool TCFG_EEPROM_CheckNewSNorBrand(void)
 	char vender[4];
 	unsigned int Brand = 0;
 	
-	if (TCFG_EEPROM_CheckInfoBurned() != true) {								//厂牌空
-		ret = true;
+	/* 之前不为此固件,备份域为空 */
+	if ((TCFG_EEPROM_GetSNfromBrandKey() == 0) && (TCFG_EEPROM_GetFactoryBrand() == 0)) {
+		/* 写入生产商与设备号至备份域 */
+		TCFG_EEPROM_SetSNfromBrandKey(TCFG_EEPROM_Get_MAC_SN());
+		TCFG_EEPROM_GetVender(vender);
+		Brand |= (vender[0] & 0x000000FF) << 3*8;
+		Brand |= (vender[1] & 0x000000FF) << 2*8;
+		Brand |= (vender[2] & 0x000000FF) << 1*8;
+		Brand |= (vender[3] & 0x000000FF) << 0*8;
+		TCFG_EEPROM_SetFactoryBrand(Brand);
+		ret = false;
+		goto exit;
 	}
 	
+	/* 设备号与备份域设备号不同,需恢复EEPROM出厂设置 */
 	if (TCFG_EEPROM_Get_MAC_SN() != TCFG_EEPROM_GetSNfromBrandKey()) {			//设备号不同
 		ret = true;
+		goto exit;
 	}
 	
+	/* 厂牌号与备份域厂牌号不同,需恢复EEPROM出厂设置 */
 	TCFG_EEPROM_GetVender(vender);
 	Brand |= (vender[0] & 0x000000FF) << 3*8;
 	Brand |= (vender[1] & 0x000000FF) << 2*8;
@@ -1118,8 +1160,10 @@ bool TCFG_EEPROM_CheckNewSNorBrand(void)
 	Brand |= (vender[3] & 0x000000FF) << 0*8;
 	if (Brand != TCFG_EEPROM_GetFactoryBrand()) {							//厂牌号不同
 		ret = true;
+		goto exit;
 	}
 	
+exit:
 	return ret;
 }
 
@@ -1407,6 +1451,34 @@ void TCFG_EEPROM_SetNBCmdCnt(uint8_t val)
 unsigned char TCFG_EEPROM_GetNBCmdCnt(void)
 {
 	return FLASH_EEPROM_ReadByte(TCFG_NB_CMDCNT_OFFSET);
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetCoapRATimeHour(unsigned char val)
+ @Description			TCFG_EEPROM_SetCoapRATimeHour					: 保存CoapRATimeHour
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetCoapRATimeHour(unsigned char val)
+{
+	if (val > 12) val = 12;
+	FLASH_EEPROM_WriteByte(TCFG_COAP_RA_TIME_OFFSET, val);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned char TCFG_EEPROM_GetCoapRATimeHour(void)
+ @Description			TCFG_EEPROM_GetCoapRATimeHour					: 读取CoapRATimeHour
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned char TCFG_EEPROM_GetCoapRATimeHour(void)
+{
+	unsigned char val8;
+	
+	val8 = FLASH_EEPROM_ReadByte(TCFG_COAP_RA_TIME_OFFSET);
+	if (val8 > 12) val8 = 12;
+	
+	return val8;
 }
 
 /**********************************************************************************************************

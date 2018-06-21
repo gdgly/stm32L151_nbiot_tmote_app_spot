@@ -377,6 +377,14 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					Radio_Trf_Printf("RFDprintLv : %hu", TCFG_SystemData.RFDprintLv);
 					__NOP();
 				}
+				/* RATime */
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "ratime")) {
+					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "ratime:%hu", &uval16);
+					TCFG_EEPROM_SetCoapRATimeHour(uval16);
+					TCFG_SystemData.CoapRATimeHour = TCFG_EEPROM_GetCoapRATimeHour();
+					Radio_Trf_Printf("RATime : %hu", TCFG_SystemData.CoapRATimeHour);
+					__NOP();
+				}
 				/* WorkInfo */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "workinfo")) {
 					NETCoapNeedSendCode.WorkInfo = 1;

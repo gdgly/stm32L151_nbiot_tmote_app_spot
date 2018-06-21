@@ -1147,7 +1147,7 @@ void NET_COAP_NBIOT_Event_PatameterCheckOut(NBIOT_ClientsTypeDef* pClient)
 	    (NBIOT_Neul_NBxx_CheckReadDateTime(pClient) == NBIOT_OK)) {
 		/* Dictate execute is Success */
 		pClient->DictateRunCtl.dictateEnable = false;
-		pClient->DictateRunCtl.dictateEvent = SEND_DATA;
+		pClient->DictateRunCtl.dictateEvent = NBCOAP_SENDMODE_TYPE;
 		pClient->DictateRunCtl.dictatePatameterCheckOutFailureCnt = 0;
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("Coap Patameter Check Ok");
@@ -1454,20 +1454,6 @@ void NET_COAP_NBIOT_Event_RecvData(NBIOT_ClientsTypeDef* pClient)
 	}
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /**********************************************************************************************************
  @Function			void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
  @Description			NET_COAP_NBIOT_Event_SendDataRANormal	: 发送数据RANormal
@@ -1477,6 +1463,9 @@ void NET_COAP_NBIOT_Event_RecvData(NBIOT_ClientsTypeDef* pClient)
 void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
 {
 	int SendSentNum = 0;
+	char* RANormal	= "0x0100";
+	char* RAIdle	= "0x0101";
+	char* RAState	= RAIdle;
 	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -1559,10 +1548,18 @@ void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
 		
 		SendSentNum = pClient->Parameter.coapSendMessage.sent;
 		
+		if (NBIOT_COAP_RA_NORMAL_GET_STATE(pClient) == true) {
+			RAState = RANormal;
+		}
+		else {
+			RAState = RAIdle;
+		}
+		
 		/* 发送负载数据 */
-		if (NBIOT_Neul_NBxx_SendCOAPPayloadFlag(pClient, "0x0100") == NBIOT_OK) {
+		if (NBIOT_Neul_NBxx_SendCOAPPayloadFlag(pClient, RAState) == NBIOT_OK) {
 			/* Dictate execute is Success */
 			pClient->DictateRunCtl.dictateEvent = SEND_DATA_RA_NORMAL;
+			NBIOT_COAP_RA_NORMAL_SET_STATE(pClient, false);
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("Coap Send Payload Ok");
 #endif
@@ -1760,45 +1757,6 @@ void NET_COAP_NBIOT_Event_RecvDataRANormal(NBIOT_ClientsTypeDef* pClient)
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /**********************************************************************************************************
  @Function			void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
@@ -2063,6 +2021,19 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						}
 						__NOP();
 					}
+					/* RATime */
+					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "RATime") != NULL) {
+						u16 ratime;
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(RATime):{(val):%hu,(Magic):%hu}}", &ratime, &recvMagicNum);
+						if (recvMagicNum == TCLOD_MAGIC_NUM) {
+							TCFG_EEPROM_SetCoapRATimeHour(ratime);
+							TCFG_SystemData.CoapRATimeHour = TCFG_EEPROM_GetCoapRATimeHour();
+						}
+						else {
+							ret = NETIP_UNKNOWNERROR;
+						}
+						__NOP();
+					}
 					/* ...... */
 				}
 				else if (pClient->Recvbuf[recvBufOffset + TCLOD_MSGID_OFFSET] == TCLOD_CONFIG_GET) {
@@ -2207,7 +2178,7 @@ void NET_COAP_NBIOT_Listen_Event_EnterIdleMode(NBIOT_ClientsTypeDef* pClient)
 	}
 	
 	pClient->DictateRunCtl.dictateEnable = false;
-	pClient->DictateRunCtl.dictateEvent = SEND_DATA;
+	pClient->DictateRunCtl.dictateEvent = NBCOAP_SENDMODE_TYPE;
 }
 
 /********************************************** END OF FLEE **********************************************/

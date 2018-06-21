@@ -1,6 +1,10 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang
 
+* 2018-06-21 :
+	* COAP发送数据可选则RAIDLE或NORMAL模式，在platform.h中由宏定义选择模式。
+	* RAIDLE模式 : 发送数据采用RA指令发送。
+	* NORMAL模式 : 普通COAP发送模式。
 * 2018-06-15 :
 	* Coap协议CDP服务器可通过RF或NB命令配置。
 * 2018-06-14 :

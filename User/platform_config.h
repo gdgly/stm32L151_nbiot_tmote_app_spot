@@ -22,6 +22,10 @@
 #define	NETMQTTSN						1
 #define	NETPROTOCAL					NETCOAP							//网络模式
 
+#define	NBCOAP_SENDMODE_NORMAL			SEND_DATA
+#define	NBCOAP_SENDMODE_RAIDLE			SEND_DATA_RA_NORMAL
+#define	NBCOAP_SENDMODE_TYPE			NBCOAP_SENDMODE_RAIDLE				//COAP发送模式
+
 #define	RADAR_MODEL_V1					1
 #define	RADAR_MODEL_V2					2
 #define	RADAR_MODEL_TYPE				RADAR_MODEL_V2						//雷达类型
@@ -30,13 +34,13 @@
 #define	LOWPOWERENABLE					1
 #define	LOWPOWERMODE					LOWPOWERENABLE						//低功耗模式
 
-#define	RADIO_SI4438													//无线开启
-#define	RF_DPRINT_LV					2								//无线调试信息输出等级
-
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					84								//从固件版本
+#define	SOFTWARESUB					86								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
+
+#define	RADIO_SI4438													//无线开启
+#define	RF_DPRINT_LV					2								//无线调试信息输出等级
 
 #define	IDLE_WORK						4								//休眠
 #define	NOTACTIVE_WORK					3								//不工作

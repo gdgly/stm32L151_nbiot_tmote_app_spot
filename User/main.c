@@ -400,7 +400,7 @@ void MainHandleRoutine(void)
 		SystemRunningTime.fifteenMinutes = Stm32_GetSecondTick() / 900;
 		
 		val8 = TCFG_EEPROM_GetRadarDbgMode();
-		if ((val8 != 0 )&& (SystemRunningTime.fifteenMinutes % val8 == 0)) {
+		if ((val8 != 0 ) && (SystemRunningTime.fifteenMinutes % val8 == 0)) {
 			if (radarCountPre != TCFG_GetRadarCount()) {
 				radarCountPre = TCFG_GetRadarCount();
 				NETCoapNeedSendCode.RadarInfo = 1;
@@ -422,7 +422,10 @@ void MainHandleRoutine(void)
 	if ((Stm32_GetSecondTick() / 3600) != SystemRunningTime.hours) {
 		SystemRunningTime.hours = Stm32_GetSecondTick() / 3600;
 		
-		
+		val8 = TCFG_EEPROM_GetCoapRATimeHour();
+		if ((val8 != 0) && (SystemRunningTime.hours % val8 == 0)) {
+			NBIOT_COAP_RA_NORMAL_SET_STATE(&NbiotClientHandler, true);
+		}
 	}
 	/* Every TwoHours Running */
 	if ((Stm32_GetSecondTick() / 7200) != SystemRunningTime.twoHours) {

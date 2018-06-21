@@ -188,7 +188,7 @@ typedef enum
 	SendTimeout						= 0x03,
 	SendSussess						= 0x04,
 	RecvRST							= 0x05
-}NBIOT_CONDataStatus;
+}NBIOT_CONDataStatusTypeDef;
 
 /* NBIOT Dictate Event */
 typedef enum
@@ -322,7 +322,7 @@ struct NBIOT_ParameterTypeDef
 		NBIOT_NConfigTypeDef			enableBip;
 	}nconfig;
 	
-	NBIOT_CONDataStatus					condatastate;
+	NBIOT_CONDataStatusTypeDef			condatastate;
 	NBIOT_PSMStatusTypeDef				psmstate;
 	NBIOT_ConnectStatusTypeDef			connectedstate;
 	NBIOT_NetstateTypeDef				netstate;
@@ -389,6 +389,7 @@ struct NBIOT_ClientsTypeDef
 	/* 事件运行控制器 */
 	struct NBIOTDictateRuningCtlTypeDef
 	{
+		bool							dictateCoapRANormalEnable;
 		bool							dictateEnable;
 		unsigned int					dictateTimeoutSec;
 		unsigned char					dictateRebootFailureCnt;
@@ -443,5 +444,8 @@ struct NBIOT_ClientsTypeDef
 extern NBIOT_BaudrateTypeDef NBIOTBaudRate;;																		//NBIOT波特率计算
 
 void NBIOT_Client_Init(NBIOT_ClientsTypeDef* pClient, NBIOT_ATCmdTypeDef* ATCmdStack, NET_NBIOT_ClientsTypeDef* NetNbiotStack);	//NBIOT客户端初始化
+
+void NBIOT_COAP_RA_NORMAL_SET_STATE(NBIOT_ClientsTypeDef* pClient, bool enable);										//设置COAP发送RA包或Normal包状态
+bool NBIOT_COAP_RA_NORMAL_GET_STATE(NBIOT_ClientsTypeDef* pClient);													//读取COAP发送RA包或Normal包状态
 
 #endif
