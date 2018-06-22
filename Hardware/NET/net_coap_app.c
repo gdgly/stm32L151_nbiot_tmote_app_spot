@@ -1358,6 +1358,7 @@ void NET_COAP_NBIOT_Event_SendData(NBIOT_ClientsTypeDef* pClient)
 void NET_COAP_NBIOT_Event_RecvData(NBIOT_ClientsTypeDef* pClient)
 {
 	u8 COAPFeedBackData[] = {0xAA, 0xBB};									//COAP反馈包数据
+	bool COAPFeedBackFlag = false;										//COAP反馈包接收标志位
 	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -1414,7 +1415,10 @@ void NET_COAP_NBIOT_Event_RecvData(NBIOT_ClientsTypeDef* pClient)
 			
 			if (memcmp((const char*)pClient->Recvbuf, COAPFeedBackData, sizeof(COAPFeedBackData)) == 0) {
 				/* Is Feedback */
-				NET_Coap_Message_SendDataOffSet();
+				if (COAPFeedBackFlag == false) {
+					COAPFeedBackFlag = true;
+					NET_Coap_Message_SendDataOffSet();
+				}
 				pClient->DictateRunCtl.dictateEnable = false;
 				pClient->DictateRunCtl.dictateEvent = SEND_DATA;
 				pClient->DictateRunCtl.dictateRecvDataFailureCnt = 0;
