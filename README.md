@@ -1,6 +1,9 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang
 
+* 2018-06-23 :
+	* Bootloader改为0V20，适配该Bootloader，Bootloader减少6Kflash，NB上传INFO数据增加Boot版本号。
+	* TCFG_MAG_FREQ_OFFSET 改为 TCFG_BOOT_VERSION_OFFSET。
 * 2018-06-21 :
 	* COAP发送数据可选则RAIDLE或NORMAL模式，在platform.h中由宏定义选择模式。
 	* RAIDLE模式 : 发送数据采用RA指令发送。

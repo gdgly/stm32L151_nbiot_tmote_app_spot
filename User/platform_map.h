@@ -46,10 +46,10 @@
 #define TCFG_HEARTINTERVAL_LENGTH			2												//Heart Interval		心跳间隔时间
 #define TCFG_MAG_SENSITIVITY_OFFSET		TCFG_HEARTINTERVAL_OFFSET + TCFG_HEARTINTERVAL_LENGTH		//0x08080427
 #define TCFG_MAG_SENSITIVITY_LENGTH		1												//Sensitivity			传感器灵敏度
-#define TCFG_MAG_FREQ_OFFSET				TCFG_MAG_SENSITIVITY_OFFSET + TCFG_MAG_SENSITIVITY_LENGTH	//0x08080428
-#define TCFG_MAG_FREQ_LENGTH				1												//Freq				地磁扫描频率
+#define TCFG_BOOT_VERSION_OFFSET			TCFG_MAG_SENSITIVITY_OFFSET + TCFG_MAG_SENSITIVITY_LENGTH	//0x08080428
+#define TCFG_BOOT_VERSION_LENGTH			1												//BootVersion			BOOT版本号
 
-#define TCFG_MAGFLAG_OFFSET				TCFG_MAG_FREQ_OFFSET + TCFG_MAG_FREQ_LENGTH				//0x08080429
+#define TCFG_MAGFLAG_OFFSET				TCFG_BOOT_VERSION_OFFSET + TCFG_BOOT_VERSION_LENGTH		//0x08080429
 #define TCFG_MAGFLAG_LENGTH				1												//'T' = 0x54			状态码
 #define TCFG_MAG_BACK_X_OFFSET			TCFG_MAGFLAG_OFFSET + TCFG_MAGFLAG_LENGTH				//0x0808042A
 #define TCFG_MAG_BACK_X_LENGTH			2												//Mag X Back			地磁X背景值
@@ -146,7 +146,7 @@ typedef struct
 	unsigned char						BuildTime[16];										//编译日期
 	unsigned short						Heartinterval;										//心跳间隔
 	unsigned char						Sensitivity;										//灵敏度
-	unsigned char						MagFreq;											//地磁扫描频率
+	unsigned char						BootVersion;										//Boot版本号
 	unsigned short						MagBackgroundX;									//地磁背景值X
 	unsigned short						MagBackgroundY;									//地磁背景值Y
 	unsigned short						MagBackgroundZ;									//地磁背景值Z
@@ -195,8 +195,8 @@ unsigned short	TCFG_EEPROM_GetHeartinterval(void);											//读取Heartinterv
 void			TCFG_EEPROM_SetSavedSensitivity(unsigned char val);								//保存Sensitivity
 unsigned char	TCFG_EEPROM_GetSavedSensitivity(void);											//读取Sensitivity
 
-void			TCFG_EEPROM_SetMagFreq(unsigned char val);										//保存Freq
-unsigned char	TCFG_EEPROM_GetMagFreq(void);													//读取Freq
+void			TCFG_EEPROM_SetBootVersion(unsigned char val);									//保存BootVersion
+unsigned char	TCFG_EEPROM_GetBootVersion(void);												//读取BootVersion
 
 void			TCFG_EEPROM_SetMagBackgroud(int16_t x_axis, int16_t y_axis, int16_t z_axis);			//保存地磁背景值
 unsigned short	TCFG_EEPROM_GetMagBackgroud(char axis);											//读取地磁背景值

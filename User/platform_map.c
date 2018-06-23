@@ -64,10 +64,6 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_SystemData.Sensitivity = SENSE_MIDDLE;
 	TCFG_EEPROM_SetSavedSensitivity(TCFG_SystemData.Sensitivity);
 	
-	/* 地磁扫描频率 */
-	TCFG_SystemData.MagFreq = 1;
-	TCFG_EEPROM_SetMagFreq(TCFG_SystemData.MagFreq);
-	
 	/* 地磁背景值 */
 	TCFG_SystemData.MagBackgroundX = 0x7FFF;
 	TCFG_SystemData.MagBackgroundY = 0x7FFF;
@@ -194,12 +190,8 @@ void TCFG_EEPROM_ReadConfigData(void)
 		TCFG_EEPROM_SetSavedSensitivity(TCFG_SystemData.Sensitivity);
 	}
 	
-	/* 获取地磁扫描频率 */
-	TCFG_SystemData.MagFreq = TCFG_EEPROM_GetMagFreq();
-	if (TCFG_SystemData.MagFreq >= 4) {
-		TCFG_SystemData.MagFreq = 1;
-		TCFG_EEPROM_SetMagFreq(TCFG_SystemData.MagFreq);
-	}
+	/* 获取BOOT版本号 */
+	TCFG_SystemData.BootVersion = TCFG_EEPROM_GetBootVersion();
 	
 	/* 地磁背景值 */
 	TCFG_SystemData.MagBackgroundX = TCFG_EEPROM_GetMagBackgroud(TCFG_X_AXIS);
@@ -450,25 +442,25 @@ unsigned char TCFG_EEPROM_GetSavedSensitivity(void)
 }
 
 /**********************************************************************************************************
- @Function			void TCFG_EEPROM_SetMagFreq(unsigned char val)
- @Description			TCFG_EEPROM_SetMagFreq						: 保存Freq
+ @Function			void TCFG_EEPROM_SetBootVersion(unsigned char val)
+ @Description			TCFG_EEPROM_SetBootVersion					: 保存BootVersion
  @Input				val
  @Return				void
 **********************************************************************************************************/
-void TCFG_EEPROM_SetMagFreq(unsigned char val)
+void TCFG_EEPROM_SetBootVersion(unsigned char val)
 {
-	FLASH_EEPROM_WriteByte(TCFG_MAG_FREQ_OFFSET, val);
+	FLASH_EEPROM_WriteByte(TCFG_BOOT_VERSION_OFFSET, val);
 }
 
 /**********************************************************************************************************
- @Function			unsigned char TCFG_EEPROM_GetMagFreq(void)
- @Description			TCFG_EEPROM_GetMagFreq						: 读取Freq
+ @Function			unsigned char TCFG_EEPROM_GetBootVersion(void)
+ @Description			TCFG_EEPROM_GetBootVersion					: 读取BootVersion
  @Input				void
  @Return				val
 **********************************************************************************************************/
-unsigned char TCFG_EEPROM_GetMagFreq(void)
+unsigned char TCFG_EEPROM_GetBootVersion(void)
 {
-	return FLASH_EEPROM_ReadByte(TCFG_MAG_FREQ_OFFSET);
+	return FLASH_EEPROM_ReadByte(TCFG_BOOT_VERSION_OFFSET);
 }
 
 /**********************************************************************************************************

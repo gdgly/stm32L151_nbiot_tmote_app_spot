@@ -24,7 +24,7 @@
 
 #define	NBCOAP_SENDMODE_NORMAL			SEND_DATA
 #define	NBCOAP_SENDMODE_RAIDLE			SEND_DATA_RA_NORMAL
-#define	NBCOAP_SENDMODE_TYPE			NBCOAP_SENDMODE_RAIDLE				//COAP发送模式
+#define	NBCOAP_SENDMODE_TYPE			NBCOAP_SENDMODE_NORMAL				//COAP发送模式
 
 #define	RADAR_MODEL_V1					1
 #define	RADAR_MODEL_V2					2
@@ -35,7 +35,7 @@
 #define	LOWPOWERMODE					LOWPOWERENABLE						//低功耗模式
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					86								//从固件版本
+#define	SOFTWARESUB					87								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 

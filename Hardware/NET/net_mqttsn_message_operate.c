@@ -193,7 +193,7 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Basic(char* outBuffer)
 				"\"Type\":\"%d.1\","
 				"\"Vender\":\"%s\","
 				"\"Hard\":\"%d\","
-				"\"Soft\":\"%d.%d\","
+				"\"Soft\":\"%d:%d.%d\","
 				"\"Build\":\"%s\","
 				"\"Sim\":\"%s\","
 				"\"Imei\":\"%s\","
@@ -206,7 +206,7 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Basic(char* outBuffer)
 		TCFG_Utility_Get_Mvb_ModelType(),
 		TCFG_EEPROM_Get_Vender_String(),
 		TCFG_Utility_Get_Major_Hardnumber(),
-		TCFG_Utility_Get_Major_Softnumber(), TCFG_Utility_Get_Sub_Softnumber(),
+		TCFG_EEPROM_GetBootVersion(), TCFG_Utility_Get_Major_Softnumber(), TCFG_Utility_Get_Sub_Softnumber(),
 		TCFG_Utility_Get_Build_Time_String(),
 		TCFG_Utility_Get_Nbiot_Iccid_String(),
 		TCFG_Utility_Get_Nbiot_Imei_String(),
