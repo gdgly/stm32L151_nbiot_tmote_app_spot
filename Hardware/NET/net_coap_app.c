@@ -2060,6 +2060,9 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 			else {
 				ret = NETIP_NOTSUPPORT;
 			}
+			
+			NETCoapNeedSendCode.ResponseInfoErrcode = ret;
+			NETCoapNeedSendCode.ResponseInfo = 1;
 		}
 		else {
 			/* Not Valid */
@@ -2067,9 +2070,6 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 		}
 		
 		NET_Coap_Message_RecvDataOffSet();
-		
-		NETCoapNeedSendCode.ResponseInfoErrcode = ret;
-		NETCoapNeedSendCode.ResponseInfo = 1;
 	}
 	
 	pClient->DictateRunCtl.dictateEnable = false;
