@@ -47,9 +47,7 @@ void TCFG_EEPROM_WriteConfigData(void)
 {
 	char vender[4];
 	unsigned int Brand = 0;
-#if NETPROTOCAL == NETCOAP
 	int serverip[4];
-#endif
 	
 	/* 生产商与设备号 */
 	TCFG_EEPROM_SetSNfromBrandKey(TCFG_EEPROM_Get_MAC_SN());
@@ -154,7 +152,6 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_SystemData.CoapRATimeHour = 2;
 	TCFG_EEPROM_SetCoapRATimeHour(TCFG_SystemData.CoapRATimeHour);
 	
-#if NETPROTOCAL == NETCOAP
 	/* NB核心网地址 */
 	sscanf(COAPCDPADDR, "%d.%d.%d.%d", &serverip[3], &serverip[2], &serverip[1], &serverip[0]);
 	TCFG_SystemData.NBCoapCDPServer.ip.ip8[3] = serverip[3];
@@ -164,7 +161,6 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_SystemData.NBCoapCDPServer.port = COAPCDPPORT;
 	TCFG_EEPROM_SetServerIP(TCFG_SystemData.NBCoapCDPServer.ip.ip32);
 	TCFG_EEPROM_SetServerPort(TCFG_SystemData.NBCoapCDPServer.port);
-#endif
 }
 
 /**********************************************************************************************************
@@ -175,9 +171,7 @@ void TCFG_EEPROM_WriteConfigData(void)
 **********************************************************************************************************/
 void TCFG_EEPROM_ReadConfigData(void)
 {
-#if NETPROTOCAL == NETCOAP
 	int serverip[4];
-#endif
 	
 	/* 获取SubSN */
 	TCFG_SystemData.SubSn = TCFG_EEPROM_Get_MAC_SN();
@@ -284,7 +278,6 @@ void TCFG_EEPROM_ReadConfigData(void)
 		TCFG_EEPROM_SetCoapRATimeHour(TCFG_SystemData.CoapRATimeHour);
 	}
 	
-#if NETPROTOCAL == NETCOAP
 	/* NB核心网地址 */
 	TCFG_SystemData.NBCoapCDPServer.ip.ip32 = TCFG_EEPROM_GetServerIP();
 	TCFG_SystemData.NBCoapCDPServer.port = TCFG_EEPROM_GetServerPort();
@@ -298,7 +291,6 @@ void TCFG_EEPROM_ReadConfigData(void)
 		TCFG_EEPROM_SetServerIP(TCFG_SystemData.NBCoapCDPServer.ip.ip32);
 		TCFG_EEPROM_SetServerPort(TCFG_SystemData.NBCoapCDPServer.port);
 	}
-#endif
 }
 
 /**********************************************************************************************************

@@ -291,7 +291,6 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					__NOP();
 				}
 				/* CDPIP */
-				#if NETPROTOCAL == NETCOAP
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "ip")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "ip%08x:%hu", &uval32, &uval16);
 					TCFG_EEPROM_SetServerIP(uval32);
@@ -306,7 +305,6 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					TCFG_SystemData.NBCoapCDPServer.port);
 					__NOP();
 				}
-				#endif
 				/* Active */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "active")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "active:%hu", &uval16);
@@ -390,12 +388,14 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					NETCoapNeedSendCode.WorkInfo = 1;
 					NETMqttSNNeedSendCode.InfoWork = 1;
 					Radio_Trf_Printf("WorkInfo:");
+					Radio_Trf_Printf("Soft:%d:%d.%d", TCFG_EEPROM_GetBootVersion(), TCFG_Utility_Get_Major_Softnumber(), TCFG_Utility_Get_Sub_Softnumber());
 					Radio_Trf_Printf("Sense:%d", TCFG_EEPROM_GetSavedSensitivity());
 					Radio_Trf_Printf("Mode:%s", TCFG_EEPROM_Get_WorkMode_String());
 					Radio_Trf_Printf("Channel:%d", TCFG_EEPROM_GetRfChannel());
 					Radio_Trf_Printf("Range:%d", TCFG_Utility_Get_DistanceRange());
 					Radio_Trf_Printf("Earfcn:%d", TCFG_Utility_Get_Nbiot_RadioEARFCN());
 					Radio_Trf_Printf("CellId:%d", TCFG_Utility_Get_Nbiot_RadioCellID());
+					Radio_Trf_Printf("Cmdcnt:%d.%d", TCFG_EEPROM_GetRFCmdCnt(), TCFG_EEPROM_GetNBCmdCnt());
 					__NOP();
 				}
 				/* NetInfo */
@@ -403,6 +403,8 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				#if NETPROTOCAL == NETCOAP
 					NETCoapNeedSendCode.BasicInfo = 1;
 					NETCoapNeedSendCode.DynamicInfo = 1;
+					Radio_Trf_Printf("Manufacturer:%s", NbiotClientHandler.Parameter.manufacturer);
+					Radio_Trf_Printf("ManufacturerMode:%s", NbiotClientHandler.Parameter.manufacturermode);
 					Radio_Trf_Printf("MduVer:%s", NbiotClientHandler.Parameter.modelversion);
 					Radio_Trf_Printf("IMEI:%s", NbiotClientHandler.Parameter.imei);
 					Radio_Trf_Printf("ICCID:%s", NbiotClientHandler.Parameter.iccid);
@@ -416,6 +418,8 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				#elif NETPROTOCAL == NETMQTTSN
 					NETMqttSNNeedSendCode.InfoBasic = 1;
 					NETMqttSNNeedSendCode.InfoDynamic = 1;
+					Radio_Trf_Printf("Manufacturer:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.manufacturer);
+					Radio_Trf_Printf("ManufacturerMode:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.manufacturermode);
 					Radio_Trf_Printf("MduVer:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.modelversion);
 					Radio_Trf_Printf("IMEI:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.imei);
 					Radio_Trf_Printf("ICCID:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.iccid);

@@ -3,7 +3,7 @@
 
 #include "sys.h"
 
-//#define ROLLINGOVER_LOG_RF_PRINT											//定义开启RF输出信息
+#define ROLLINGOVER_LOG_RF_PRINT											//定义开启RF输出信息
 
 #define ROLLINGOVER_ENTER_SLEEP_TIME		900								//等待900秒进入休眠
 #define ROLLINGOVER_WAIT_SLEEP_TIME		45								//保持45秒处理

@@ -195,6 +195,26 @@
           <WinNumber>1</WinNumber>
           <ItemText>DNS_DataStack</ItemText>
         </Ww>
+        <Ww>
+          <count>9</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>MQTTSN_SendBuf</ItemText>
+        </Ww>
+        <Ww>
+          <count>10</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>MQTTSN_RecvBuf</ItemText>
+        </Ww>
+        <Ww>
+          <count>11</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>MQTTSN_DataStack</ItemText>
+        </Ww>
+        <Ww>
+          <count>12</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>MqttSNClientHandler</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>

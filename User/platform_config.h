@@ -35,7 +35,7 @@
 #define	LOWPOWERMODE					LOWPOWERENABLE						//低功耗模式
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					87								//从固件版本
+#define	SOFTWARESUB					88								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 

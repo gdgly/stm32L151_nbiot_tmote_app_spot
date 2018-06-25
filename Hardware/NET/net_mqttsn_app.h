@@ -11,7 +11,6 @@
 #include "net_mqttsn_message_operate.h"
 #include "platform_map.h"
 
-//#define MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE									//定义开启RF输出DEBUG信息
 #define MQTTSN_DEBUG_LOG_RF_PRINT											//定义开启RF输出DEBUG信息
 
 #define MQTTSN_CLIENT_ID					TCFG_EEPROM_Get_MAC_SN_String()
