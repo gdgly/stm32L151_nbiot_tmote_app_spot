@@ -396,6 +396,11 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					Radio_Trf_Printf("Earfcn:%d", TCFG_Utility_Get_Nbiot_RadioEARFCN());
 					Radio_Trf_Printf("CellId:%d", TCFG_Utility_Get_Nbiot_RadioCellID());
 					Radio_Trf_Printf("Cmdcnt:%d.%d", TCFG_EEPROM_GetRFCmdCnt(), TCFG_EEPROM_GetNBCmdCnt());
+					#if NETPROTOCAL == NETCOAP
+					Radio_Trf_Printf("Nbworkmode:%d", TCFG_Utility_Get_Nbiot_WorkMode());
+					Radio_Trf_Printf("Nbruntime:%d.%d", TCFG_EEPROM_GetCoapConnectTime(), TCFG_EEPROM_GetCoapIdleTime());
+					#elif NETPROTOCAL == NETMQTTSN
+					#endif
 					__NOP();
 				}
 				/* NetInfo */

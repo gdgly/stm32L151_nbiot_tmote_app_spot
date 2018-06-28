@@ -152,6 +152,14 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_SystemData.CoapRATimeHour = 2;
 	TCFG_EEPROM_SetCoapRATimeHour(TCFG_SystemData.CoapRATimeHour);
 	
+	/* Coap保持连接时间 */
+	TCFG_SystemData.CoapConnectTime = 0;
+	TCFG_EEPROM_SetCoapConnectTime(TCFG_SystemData.CoapConnectTime);
+	
+	/* Coap休眠时间 */
+	TCFG_SystemData.CoapIdleTime = 0;
+	TCFG_EEPROM_SetCoapIdleTime(TCFG_SystemData.CoapIdleTime);
+	
 	/* NB核心网地址 */
 	sscanf(COAPCDPADDR, "%d.%d.%d.%d", &serverip[3], &serverip[2], &serverip[1], &serverip[0]);
 	TCFG_SystemData.NBCoapCDPServer.ip.ip8[3] = serverip[3];
@@ -277,6 +285,12 @@ void TCFG_EEPROM_ReadConfigData(void)
 		TCFG_SystemData.CoapRATimeHour = 2;
 		TCFG_EEPROM_SetCoapRATimeHour(TCFG_SystemData.CoapRATimeHour);
 	}
+	
+	/* Coap保持连接时间 */
+	TCFG_SystemData.CoapConnectTime = TCFG_EEPROM_GetCoapConnectTime();
+	
+	/* Coap休眠时间 */
+	TCFG_SystemData.CoapIdleTime = TCFG_EEPROM_GetCoapIdleTime();
 	
 	/* NB核心网地址 */
 	TCFG_SystemData.NBCoapCDPServer.ip.ip32 = TCFG_EEPROM_GetServerIP();
@@ -1463,6 +1477,50 @@ unsigned char TCFG_EEPROM_GetCoapRATimeHour(void)
 	if (val8 > 12) val8 = 12;
 	
 	return val8;
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetCoapConnectTime(unsigned int val)
+ @Description			TCFG_EEPROM_SetCoapConnectTime				: 保存CoapConnectTime
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetCoapConnectTime(unsigned int val)
+{
+	FLASH_EEPROM_WriteWord(TCFG_COAP_CON_TIME_OFFSET, val);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned int TCFG_EEPROM_GetCoapConnectTime(void)
+ @Description			TCFG_EEPROM_GetCoapConnectTime				: 读取CoapConnectTime
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned int TCFG_EEPROM_GetCoapConnectTime(void)
+{
+	return FLASH_EEPROM_ReadWord(TCFG_COAP_CON_TIME_OFFSET);
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetCoapIdleTime(unsigned int val)
+ @Description			TCFG_EEPROM_SetCoapIdleTime					: 保存CoapIdleTime
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetCoapIdleTime(unsigned int val)
+{
+	FLASH_EEPROM_WriteWord(TCFG_COAP_IDLE_TIME_OFFSET, val);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned int TCFG_EEPROM_GetCoapIdleTime(void)
+ @Description			TCFG_EEPROM_GetCoapIdleTime					: 读取CoapIdleTime
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned int TCFG_EEPROM_GetCoapIdleTime(void)
+{
+	return FLASH_EEPROM_ReadWord(TCFG_COAP_IDLE_TIME_OFFSET);
 }
 
 /**********************************************************************************************************

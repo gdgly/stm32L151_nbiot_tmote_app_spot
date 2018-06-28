@@ -51,6 +51,13 @@ typedef struct
 
 typedef struct
 {
+	bool			bEventRunningState;
+	unsigned int	xEventRunningStartTime;
+	unsigned int	xEventRunningEndTime;
+}Stm32_EventRunningTimeTypeDef;												//事件运行时间器
+
+typedef struct
+{
 	unsigned int	seconds;													//秒
 	unsigned int	tenseconds;												//10秒
 	unsigned int	minutes;													//分
@@ -78,6 +85,13 @@ void Stm32_Calculagraph_CountdownMS(Stm32_CalculagraphTypeDef* timer, u32 timeou
 bool Stm32_Calculagraph_IsExpiredMS(Stm32_CalculagraphTypeDef* timer);				//查询是否到达计时器计时时间(MS)
 void Stm32_Calculagraph_CountdownSec(Stm32_CalculagraphTypeDef* timer, u32 timeout_sec);	//配置计时器倒数时间(S)
 bool Stm32_Calculagraph_IsExpiredSec(Stm32_CalculagraphTypeDef* timer);				//查询是否到达计时器计时时间(S)
+
+void Stm32_EventRunningTime_Init(Stm32_EventRunningTimeTypeDef* timer);				//初始化事件运行时间器
+void Stm32_EventRunningTime_StartMS(Stm32_EventRunningTimeTypeDef* timer);				//开启事件运行时间器(MS)
+unsigned int Stm32_EventRunningTime_EndMS(Stm32_EventRunningTimeTypeDef* timer);		//结束事件运行时间器(MS)
+void Stm32_EventRunningTime_StartSec(Stm32_EventRunningTimeTypeDef* timer);			//开启事件运行时间器(S)
+unsigned int Stm32_EventRunningTime_EndSec(Stm32_EventRunningTimeTypeDef* timer);		//结束事件运行时间器(S)
+
 
 /* 以下为汇编函数 */
 void WFI_SET(void);															//执行WFI指令

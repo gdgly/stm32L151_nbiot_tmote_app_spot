@@ -169,6 +169,11 @@ void NET_COAP_NBIOT_Event_StopMode(NBIOT_ClientsTypeDef* pClient)
 		NBIOT_Neul_NBxx_HardwarePoweroff(pClient);
 		/* Send Message Index */
 		CoapSendMessageIndex = NET_Coap_Message_SendDataRear();
+		/* Into ConnectTime & IdleTime */
+		TCFG_SystemData.CoapConnectTime = TCFG_EEPROM_GetCoapConnectTime() + Stm32_EventRunningTime_EndMS(&pClient->ConnectTimeMS) / 1000;
+		TCFG_EEPROM_SetCoapConnectTime(TCFG_SystemData.CoapConnectTime);
+		TCFG_SystemData.CoapIdleTime = TCFG_EEPROM_GetCoapIdleTime() + Stm32_EventRunningTime_EndMS(&pClient->IdleTimeMS) / 1000;
+		TCFG_EEPROM_SetCoapIdleTime(TCFG_SystemData.CoapIdleTime);
 	}
 	
 	if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
@@ -204,6 +209,8 @@ void NET_COAP_NBIOT_Event_HardwareReboot(NBIOT_ClientsTypeDef* pClient)
 		pClient->DictateRunCtl.dictateEnable = false;
 		pClient->DictateRunCtl.dictateEvent = MODULE_CHECK;
 		pClient->DictateRunCtl.dictateRebootFailureCnt = 0;
+		/* Start ConnectTime */
+		Stm32_EventRunningTime_StartMS(&pClient->ConnectTimeMS);
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("NB HDRBT Ok, Baud:%d", NBIOTBaudRate.Baud);
 #endif
@@ -1194,6 +1201,12 @@ void NET_COAP_NBIOT_Event_SendData(NBIOT_ClientsTypeDef* pClient)
 	
 	/* Data packets need to be sent*/
 	if (NET_Coap_Message_SendDataDequeue(pClient->Sendbuf, (unsigned short *)&pClient->Sendlen) == true) {
+		/* End IdleTime */
+		TCFG_SystemData.CoapIdleTime = TCFG_EEPROM_GetCoapIdleTime() + Stm32_EventRunningTime_EndMS(&pClient->IdleTimeMS) / 1000;
+		TCFG_EEPROM_SetCoapIdleTime(TCFG_SystemData.CoapIdleTime);
+		/* Start ConnectTime */
+		Stm32_EventRunningTime_StartMS(&pClient->ConnectTimeMS);
+		/* Connect Check */
 		if (NBIOT_Neul_NBxx_CheckReadAttachOrDetach(pClient) == NBIOT_OK) {
 			/* Dictate execute is Success */
 			pClient->DictateRunCtl.dictateEvent = SEND_DATA;
@@ -1423,6 +1436,11 @@ void NET_COAP_NBIOT_Event_RecvData(NBIOT_ClientsTypeDef* pClient)
 				pClient->DictateRunCtl.dictateEvent = SEND_DATA;
 				pClient->DictateRunCtl.dictateRecvDataFailureCnt = 0;
 				NET_COAP_NBIOT_Listen_Enable_EnterIdleMode(pClient);
+				/* End ConnectTime */
+				TCFG_SystemData.CoapConnectTime = TCFG_EEPROM_GetCoapConnectTime() + Stm32_EventRunningTime_EndMS(&pClient->ConnectTimeMS) / 1000;
+				TCFG_EEPROM_SetCoapConnectTime(TCFG_SystemData.CoapConnectTime);
+				/* Start IdleTime */
+				Stm32_EventRunningTime_StartMS(&pClient->IdleTimeMS);
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 				Radio_Trf_Debug_Printf_Level2("Coap Recv Feedback Ok");
 #endif
@@ -1475,6 +1493,12 @@ void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
 	
 	/* Data packets need to be sent*/
 	if (NET_Coap_Message_SendDataDequeue(pClient->Sendbuf, (unsigned short *)&pClient->Sendlen) == true) {
+		/* End IdleTime */
+		TCFG_SystemData.CoapIdleTime = TCFG_EEPROM_GetCoapIdleTime() + Stm32_EventRunningTime_EndMS(&pClient->IdleTimeMS) / 1000;
+		TCFG_EEPROM_SetCoapIdleTime(TCFG_SystemData.CoapIdleTime);
+		/* Start ConnectTime */
+		Stm32_EventRunningTime_StartMS(&pClient->ConnectTimeMS);
+		/* Connect Check */
 		if (NBIOT_Neul_NBxx_CheckReadAttachOrDetach(pClient) == NBIOT_OK) {
 			/* Dictate execute is Success */
 			pClient->DictateRunCtl.dictateEvent = SEND_DATA_RA_NORMAL;
@@ -1736,6 +1760,11 @@ void NET_COAP_NBIOT_Event_RecvDataRANormal(NBIOT_ClientsTypeDef* pClient)
 		pClient->DictateRunCtl.dictateEvent = SEND_DATA_RA_NORMAL;
 		pClient->DictateRunCtl.dictateRecvDataRANormalFailureCnt = 0;
 		NET_COAP_NBIOT_Listen_Enable_EnterIdleMode(pClient);
+		/* End ConnectTime */
+		TCFG_SystemData.CoapConnectTime = TCFG_EEPROM_GetCoapConnectTime() + Stm32_EventRunningTime_EndMS(&pClient->ConnectTimeMS) / 1000;
+		TCFG_EEPROM_SetCoapConnectTime(TCFG_SystemData.CoapConnectTime);
+		/* Start IdleTime */
+		Stm32_EventRunningTime_StartMS(&pClient->IdleTimeMS);
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("Coap Send Success");
 #endif

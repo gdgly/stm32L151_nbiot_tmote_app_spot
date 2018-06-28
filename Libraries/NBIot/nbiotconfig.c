@@ -34,56 +34,59 @@ NBIOT_BaudrateTypeDef NBIOTBaudRate;
 **********************************************************************************************************/
 void NBIOT_Client_Init(NBIOT_ClientsTypeDef* pClient, NBIOT_ATCmdTypeDef* ATCmdStack, NET_NBIOT_ClientsTypeDef* NetNbiotStack)
 {
-	pClient->Sendbuf									= NBIOT_SendBuf;
-	pClient->Recvbuf									= NBIOT_RecvBuf;
-	pClient->Sendbuf_size								= sizeof(NBIOT_SendBuf);
-	pClient->Recvbuf_size								= sizeof(NBIOT_RecvBuf);
-	pClient->Sendlen									= 0;
-	pClient->Recvlen									= 0;
-	pClient->DataProcessStack							= NBIOT_DataStack;
-	pClient->DataProcessStack_size						= sizeof(NBIOT_DataStack);
+	pClient->Sendbuf										= NBIOT_SendBuf;
+	pClient->Recvbuf										= NBIOT_RecvBuf;
+	pClient->Sendbuf_size									= sizeof(NBIOT_SendBuf);
+	pClient->Recvbuf_size									= sizeof(NBIOT_RecvBuf);
+	pClient->Sendlen										= 0;
+	pClient->Recvlen										= 0;
+	pClient->DataProcessStack								= NBIOT_DataStack;
+	pClient->DataProcessStack_size							= sizeof(NBIOT_DataStack);
 	
-	pClient->Command_Timeout_Msec							= NBIOT_COMMAND_TIMEOUT_MSEC;
-	pClient->Command_Failure_Cnt							= NBIOT_COMMAND_FAILURE_CNT;
+	pClient->Command_Timeout_Msec								= NBIOT_COMMAND_TIMEOUT_MSEC;
+	pClient->Command_Failure_Cnt								= NBIOT_COMMAND_FAILURE_CNT;
 	
 	/* 事件运行控制器 */
-	pClient->DictateRunCtl.dictateCoapRANormalEnable			= false;
-	pClient->DictateRunCtl.dictateEnable					= false;
-	pClient->DictateRunCtl.dictateTimeoutSec				= 0;
-	pClient->DictateRunCtl.dictateRebootFailureCnt			= 0;
-	pClient->DictateRunCtl.dictateModuleCheckFailureCnt		= 0;
-	pClient->DictateRunCtl.dictateParameterConfigFailureCnt	= 0;
-	pClient->DictateRunCtl.dictateSimICCIDCheckFailureCnt		= 0;
-	pClient->DictateRunCtl.dictateMiscEquipConfigFailureCnt	= 0;
-	pClient->DictateRunCtl.dictateAttachCheckFailureCnt		= 0;
-	pClient->DictateRunCtl.dictateAttachExecuteFailureCnt		= 0;
-	pClient->DictateRunCtl.dictateAttachInquireFailureCnt		= 0;
-	pClient->DictateRunCtl.dictatePatameterCheckOutFailureCnt	= 0;
-	pClient->DictateRunCtl.dictateFullFunctionalityFailureCnt	= 0;
-	pClient->DictateRunCtl.dictateMinimumFunctionalityFailureCnt= 0;
-	pClient->DictateRunCtl.dictateCDPServerCheckFailureCnt		= 0;
-	pClient->DictateRunCtl.dictateCDPServerConfigFailureCnt	= 0;
-	pClient->DictateRunCtl.dictateSendDataFailureCnt			= 0;
-	pClient->DictateRunCtl.dictateRecvDataFailureCnt			= 0;
-	pClient->DictateRunCtl.dictateSendDataRANormalFailureCnt	= 0;
-	pClient->DictateRunCtl.dictateRecvDataRANormalFailureCnt	= 0;
-	pClient->DictateRunCtl.dictateListenRunCtlFailureCnt		= 0;
-	pClient->DictateRunCtl.dictateEvent					= HARDWARE_REBOOT;
+	pClient->DictateRunCtl.dictateCoapRANormalEnable				= false;
+	pClient->DictateRunCtl.dictateEnable						= false;
+	pClient->DictateRunCtl.dictateTimeoutSec					= 0;
+	pClient->DictateRunCtl.dictateRebootFailureCnt				= 0;
+	pClient->DictateRunCtl.dictateModuleCheckFailureCnt			= 0;
+	pClient->DictateRunCtl.dictateParameterConfigFailureCnt		= 0;
+	pClient->DictateRunCtl.dictateSimICCIDCheckFailureCnt			= 0;
+	pClient->DictateRunCtl.dictateMiscEquipConfigFailureCnt		= 0;
+	pClient->DictateRunCtl.dictateAttachCheckFailureCnt			= 0;
+	pClient->DictateRunCtl.dictateAttachExecuteFailureCnt			= 0;
+	pClient->DictateRunCtl.dictateAttachInquireFailureCnt			= 0;
+	pClient->DictateRunCtl.dictatePatameterCheckOutFailureCnt		= 0;
+	pClient->DictateRunCtl.dictateFullFunctionalityFailureCnt		= 0;
+	pClient->DictateRunCtl.dictateMinimumFunctionalityFailureCnt	= 0;
+	pClient->DictateRunCtl.dictateCDPServerCheckFailureCnt			= 0;
+	pClient->DictateRunCtl.dictateCDPServerConfigFailureCnt		= 0;
+	pClient->DictateRunCtl.dictateSendDataFailureCnt				= 0;
+	pClient->DictateRunCtl.dictateRecvDataFailureCnt				= 0;
+	pClient->DictateRunCtl.dictateSendDataRANormalFailureCnt		= 0;
+	pClient->DictateRunCtl.dictateRecvDataRANormalFailureCnt		= 0;
+	pClient->DictateRunCtl.dictateListenRunCtlFailureCnt			= 0;
+	pClient->DictateRunCtl.dictateEvent						= HARDWARE_REBOOT;
 	
 	/* 事件运行监听器 */
-	pClient->ListenRunCtl.ListenEnterIdle.listenEnable		= false;
-	pClient->ListenRunCtl.ListenEnterIdle.listenStatus		= false;
-	pClient->ListenRunCtl.ListenEnterIdle.listenTimereachSec	= 35;
+	pClient->ListenRunCtl.ListenEnterIdle.listenEnable			= false;
+	pClient->ListenRunCtl.ListenEnterIdle.listenStatus			= false;
+	pClient->ListenRunCtl.ListenEnterIdle.listenTimereachSec		= 35;
 	pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventEnable		= false;
 	pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventTimeoutSec	= 0;
 	pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventFailureCnt	= 0;
 	
-	pClient->ListenRunCtl.listenEvent						= ENTER_IDLE_MODE;
+	pClient->ListenRunCtl.listenEvent							= ENTER_IDLE_MODE;
 	
-	pClient->ATCmdStack									= ATCmdStack;
-	pClient->NetNbiotStack								= NetNbiotStack;
+	pClient->ATCmdStack										= ATCmdStack;
+	pClient->NetNbiotStack									= NetNbiotStack;
 	
 	memset((void *)&pClient->Parameter, 0x0, sizeof(pClient->Parameter));
+	
+	Stm32_EventRunningTime_Init(&pClient->ConnectTimeMS);
+	Stm32_EventRunningTime_Init(&pClient->IdleTimeMS);
 }
 
 /**********************************************************************************************************
@@ -95,7 +98,7 @@ void NBIOT_Client_Init(NBIOT_ClientsTypeDef* pClient, NBIOT_ATCmdTypeDef* ATCmdS
 **********************************************************************************************************/
 void NBIOT_COAP_RA_NORMAL_SET_STATE(NBIOT_ClientsTypeDef* pClient, bool enable)
 {
-	pClient->DictateRunCtl.dictateCoapRANormalEnable			= enable;
+	pClient->DictateRunCtl.dictateCoapRANormalEnable				= enable;
 }
 
 /**********************************************************************************************************

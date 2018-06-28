@@ -163,8 +163,7 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Work(char* outBuffer)
 		TCFG_Utility_Get_DistanceRange(),
 		TCFG_Utility_Get_Nbiot_RadioEARFCN(), 
 		TCFG_Utility_Get_Nbiot_RadioCellID(),
-		TCFG_EEPROM_GetRFCmdCnt(),
-		TCFG_EEPROM_GetNBCmdCnt()
+		TCFG_EEPROM_GetRFCmdCnt(), TCFG_EEPROM_GetNBCmdCnt()
 	);
 	
 	return strlen(outBuffer);

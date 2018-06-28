@@ -254,6 +254,89 @@ bool Stm32_Calculagraph_IsExpiredSec(Stm32_CalculagraphTypeDef* timer)
 	}
 }
 
+/**********************************************************************************************************
+ @Function			void Stm32_EventRunningTime_Init(Stm32_EventRunningTimeTypeDef* timer)
+ @Description			Stm32_EventRunningTime_Init 		: 初始化事件运行时间器
+ @Input				Stm32_CalculagraphTypeDef*		: 事件运行时间器结构体指针
+ @Return				void
+**********************************************************************************************************/
+void Stm32_EventRunningTime_Init(Stm32_EventRunningTimeTypeDef* timer)
+{
+	timer->bEventRunningState = false;
+	timer->xEventRunningStartTime = 0;
+	timer->xEventRunningEndTime = 0;
+}
+
+/**********************************************************************************************************
+ @Function			void Stm32_EventRunningTime_StartMS(Stm32_EventRunningTimeTypeDef* timer)
+ @Description			Stm32_EventRunningTime_StartMS	: 开启事件运行时间器(MS)
+ @Input				Stm32_CalculagraphTypeDef*		: 事件运行时间器结构体指针
+ @Return				void
+**********************************************************************************************************/
+void Stm32_EventRunningTime_StartMS(Stm32_EventRunningTimeTypeDef* timer)
+{
+	if (timer->bEventRunningState == false) {
+		timer->bEventRunningState = true;
+		timer->xEventRunningStartTime = HAL_GetTick();
+	}
+}
+
+/**********************************************************************************************************
+ @Function			unsigned int Stm32_EventRunningTime_EndMS(Stm32_EventRunningTimeTypeDef* timer)
+ @Description			Stm32_EventRunningTime_StartMS	: 结束事件运行时间器(MS)
+ @Input				Stm32_CalculagraphTypeDef*		: 事件运行时间器结构体指针
+ @Return				unsigned int					: 事件运行时间(MS)
+**********************************************************************************************************/
+unsigned int Stm32_EventRunningTime_EndMS(Stm32_EventRunningTimeTypeDef* timer)
+{
+	unsigned int ret = 0;
+	
+	if (timer->bEventRunningState == true) {
+		timer->bEventRunningState = false;
+		timer->xEventRunningEndTime = HAL_GetTick();
+		ret = (timer->xEventRunningEndTime > timer->xEventRunningStartTime) ? \
+			 (timer->xEventRunningEndTime - timer->xEventRunningStartTime) : \
+			 (0xFFFFFFFF - timer->xEventRunningStartTime + timer->xEventRunningEndTime);
+	}
+	
+	return ret;
+}
+
+/**********************************************************************************************************
+ @Function			void Stm32_EventRunningTime_StartSec(Stm32_EventRunningTimeTypeDef* timer)
+ @Description			Stm32_EventRunningTime_StartSec	: 开启事件运行时间器(S)
+ @Input				Stm32_CalculagraphTypeDef*		: 事件运行时间器结构体指针
+ @Return				void
+**********************************************************************************************************/
+void Stm32_EventRunningTime_StartSec(Stm32_EventRunningTimeTypeDef* timer)
+{
+	if (timer->bEventRunningState == false) {
+		timer->bEventRunningState = true;
+		timer->xEventRunningStartTime = Stm32_GetSecondTick();
+	}
+}
+
+/**********************************************************************************************************
+ @Function			unsigned int Stm32_EventRunningTime_EndSec(Stm32_EventRunningTimeTypeDef* timer)
+ @Description			Stm32_EventRunningTime_EndSec		: 结束事件运行时间器(S)
+ @Input				Stm32_CalculagraphTypeDef*		: 事件运行时间器结构体指针
+ @Return				unsigned int					: 事件运行时间(S)
+**********************************************************************************************************/
+unsigned int Stm32_EventRunningTime_EndSec(Stm32_EventRunningTimeTypeDef* timer)
+{
+	unsigned int ret = 0;
+	
+	if (timer->bEventRunningState == true) {
+		timer->bEventRunningState = false;
+		timer->xEventRunningEndTime = Stm32_GetSecondTick();
+		ret = (timer->xEventRunningEndTime > timer->xEventRunningStartTime) ? \
+			 (timer->xEventRunningEndTime - timer->xEventRunningStartTime) : \
+			 (0xFFFFFFFF - timer->xEventRunningStartTime + timer->xEventRunningEndTime);
+	}
+	
+	return ret;
+}
+
 
 #ifdef  USE_FULL_ASSERT
 /**********************************************************************************************************

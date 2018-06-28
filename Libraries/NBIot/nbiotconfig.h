@@ -386,6 +386,9 @@ struct NBIOT_ClientsTypeDef
 	unsigned int						Command_Timeout_Msec;
 	unsigned int						Command_Failure_Cnt;
 	
+	Stm32_EventRunningTimeTypeDef			ConnectTimeMS;
+	Stm32_EventRunningTimeTypeDef			IdleTimeMS;
+	
 	/* 事件运行控制器 */
 	struct NBIOTDictateRuningCtlTypeDef
 	{

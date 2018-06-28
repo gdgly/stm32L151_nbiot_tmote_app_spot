@@ -128,6 +128,10 @@
 #define TCFG_RF_DPRINT_LV_LENGTH			1												//RFDPrintLv			RF调试信息输出等级
 #define TCFG_COAP_RA_TIME_OFFSET			TCFG_RF_DPRINT_LV_OFFSET + TCFG_RF_DPRINT_LV_LENGTH		//0x080804E2
 #define TCFG_COAP_RA_TIME_LENGTH			1												//CoapRATime			RA间隔发送普通包时间
+#define TCFG_COAP_CON_TIME_OFFSET			TCFG_COAP_RA_TIME_OFFSET + TCFG_COAP_RA_TIME_LENGTH		//0x080804E3
+#define TCFG_COAP_CON_TIME_LENGTH			4												//CoapConTime			Coap连接时间
+#define TCFG_COAP_IDLE_TIME_OFFSET			TCFG_COAP_CON_TIME_OFFSET + TCFG_COAP_CON_TIME_LENGTH		//0x080804E7
+#define TCFG_COAP_IDLE_TIME_LENGTH			4												//CoapIdleTime			Coap休眠时间
 
 enum TCFG_SENSITIVITY																	//传感器灵敏度
 {
@@ -171,6 +175,8 @@ typedef struct
 	unsigned char						NBCommandCount;									//NB命令接收条数
 	unsigned short						DeviceBootCount;									//设备重启次数
 	unsigned char						CoapRATimeHour;									//Coap间隔时间发送普通数据包用于接收下行数据
+	unsigned int						CoapConnectTime;									//Coap保持连接时间
+	unsigned int						CoapIdleTime;										//Coap休眠时间
 	unsigned char						NBCoapCDPServerIP[16];								//NB核心网IP地址
 	unsigned char						NBCoapCDPServerPort[6];								//NB核心网IP端口
 	NBIOT_ServerAddr					NBCoapCDPServer;									//NB核心网地址
@@ -308,6 +314,12 @@ unsigned char	TCFG_EEPROM_GetNBCmdCnt(void);												//读取NBCmdCnt
 
 void			TCFG_EEPROM_SetCoapRATimeHour(unsigned char val);									//保存CoapRATimeHour
 unsigned char	TCFG_EEPROM_GetCoapRATimeHour(void);											//读取CoapRATimeHour
+
+void			TCFG_EEPROM_SetCoapConnectTime(unsigned int val);									//保存CoapConnectTime
+unsigned int	TCFG_EEPROM_GetCoapConnectTime(void);											//读取CoapConnectTime
+
+void			TCFG_EEPROM_SetCoapIdleTime(unsigned int val);									//保存CoapIdleTime
+unsigned int	TCFG_EEPROM_GetCoapIdleTime(void);												//读取CoapIdleTime
 
 void			TCFG_Utility_Add_Device_BootCount(void);										//Device重启次数累加
 unsigned short TCFG_Utility_Get_Device_BootCount(void);										//Device重启次数获取

@@ -45,7 +45,8 @@ int NET_COAP_Message_Operate_Creat_Json_Work_Info(char* outBuffer)
 				"\"Earfcn\":%d,"
 				"\"Cellid\":%d,"
 				"\"Cmdcnt\":\"%d.%d\","
-				"\"Nbworkmode\":%d"
+				"\"Nbworkmode\":%d,"
+				"\"Nbruntime\":\"%d.%d\""
 			"}"
 		"}",
 		
@@ -56,9 +57,9 @@ int NET_COAP_Message_Operate_Creat_Json_Work_Info(char* outBuffer)
 		TCFG_Utility_Get_DistanceRange(),
 		TCFG_Utility_Get_Nbiot_RadioEARFCN(),
 		TCFG_Utility_Get_Nbiot_RadioCellID(),
-		TCFG_EEPROM_GetRFCmdCnt(),
-		TCFG_EEPROM_GetNBCmdCnt(),
-		TCFG_Utility_Get_Nbiot_WorkMode()
+		TCFG_EEPROM_GetRFCmdCnt(), TCFG_EEPROM_GetNBCmdCnt(),
+		TCFG_Utility_Get_Nbiot_WorkMode(),
+		TCFG_EEPROM_GetCoapConnectTime(), TCFG_EEPROM_GetCoapIdleTime()
 	);
 	
 	return strlen(outBuffer);
