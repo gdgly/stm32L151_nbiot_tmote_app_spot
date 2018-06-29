@@ -29,12 +29,12 @@
 #define TCFG_FACTORY_BRAND_SN_OFFSET		0x0400											//0x08080400
 #define TCFG_FACTORY_BRAND_SN_LENGTH		8												//Brand SN	4:Brand+4:SN
 
-/* The environment parameters are used both by bootLoader and application */
+/**************************** The environment parameters are used both by bootLoader and application *****************************/
 #define TCFG_ENVFLAG_OFFSET				TCFG_FACTORY_BRAND_SN_OFFSET + TCFG_FACTORY_BRAND_SN_LENGTH	//0x08080408
 #define TCFG_ENVFLAG_LENGTH				4												//"TCLD"
 #define TCFG_ENV_BOOTMODE_OFFSET			TCFG_ENVFLAG_OFFSET + TCFG_ENVFLAG_LENGTH				//0x0808040C
 #define TCFG_ENV_BOOTMODE_LENGTH			1												//boot app from flash or load app from air
-/********************************** end ***********************************/
+/************************************************************** End **************************************************************/
 
 #define TCFG_HEADFLAG_OFFSET				TCFG_ENV_BOOTMODE_OFFSET + TCFG_ENV_BOOTMODE_LENGTH		//0x0808040D
 #define TCFG_HEADFLAG_LENGTH				4												//"TCLD"				状态码
@@ -98,40 +98,46 @@
 #define TCFG_ACTIVE_DEVICE_LENGTH			1												//ActiveDevice			设备工作模式
 #define TCFG_NBIOT_BOOTCNT_OFFSET			TCFG_ACTIVE_DEVICE_OFFSET + TCFG_ACTIVE_DEVICE_LENGTH		//0x080804BF
 #define TCFG_NBIOT_BOOTCNT_LENGTH			4												//NBIOTBootCnt			NB重启次数
-#define TCFG_COAP_SENTCNT_OFFSET			TCFG_NBIOT_BOOTCNT_OFFSET + TCFG_NBIOT_BOOTCNT_LENGTH		//0x080804C3
-#define TCFG_COAP_SENTCNT_LENGTH			4												//CoapSentCnt			COAP发送包数
-#define TCFG_COAP_RECVCNT_OFFSET			TCFG_COAP_SENTCNT_OFFSET + TCFG_COAP_SENTCNT_LENGTH		//0x080804C7
-#define TCFG_COAP_RECVCNT_LENGTH			4												//CoapRecvCnt			COAP接收包数
-#define TCFG_MQTTSN_SENTCNT_OFFSET			TCFG_COAP_RECVCNT_OFFSET + TCFG_COAP_RECVCNT_LENGTH		//0x080804CB
-#define TCFG_MQTTSN_SENTCNT_LENGTH			4												//MqttSentCnt			MQTTSN发送包数
-#define TCFG_MQTTSN_RECVCNT_OFFSET			TCFG_MQTTSN_SENTCNT_OFFSET + TCFG_MQTTSN_SENTCNT_LENGTH	//0x080804CF
-#define TCFG_MQTTSN_RECVCNT_LENGTH			4												//MqttRecvCnt			MQTTSN接收包数
-#define TCFG_DEV_BOOTCNT_OFFSET			TCFG_MQTTSN_RECVCNT_OFFSET + TCFG_MQTTSN_RECVCNT_LENGTH	//0x080804D3
+#define TCFG_NBIOT_SENTCNT_OFFSET			TCFG_NBIOT_BOOTCNT_OFFSET + TCFG_NBIOT_BOOTCNT_LENGTH		//0x080804C3
+#define TCFG_NBIOT_SENTCNT_LENGTH			4												//NBIOTSentCnt			NB发送次数(预留)
+#define TCFG_DEV_BOOTCNT_OFFSET			TCFG_NBIOT_SENTCNT_OFFSET + TCFG_NBIOT_SENTCNT_LENGTH		//0x080804C7
 #define TCFG_DEV_BOOTCNT_LENGTH			2												//DevBootCnt			设备重启次数
-#define TCFG_EVENT_TIME_OFFSET			TCFG_DEV_BOOTCNT_OFFSET + TCFG_DEV_BOOTCNT_LENGTH			//0x080804D5
+#define TCFG_EVENT_TIME_OFFSET			TCFG_DEV_BOOTCNT_OFFSET + TCFG_DEV_BOOTCNT_LENGTH			//0x080804C9
 #define TCFG_EVENT_TIME_LENGTH			4												//EventTime			设备运行事件时间
-#define TCFG_TEMP_BACKGROUND_OFFSET		TCFG_EVENT_TIME_OFFSET + TCFG_EVENT_TIME_LENGTH			//0x080804D9
+#define TCFG_TEMP_BACKGROUND_OFFSET		TCFG_EVENT_TIME_OFFSET + TCFG_EVENT_TIME_LENGTH			//0x080804CD
 #define TCFG_TEMP_BACKGROUND_LENGTH		2												//BackgroundTemp		雷达背景
-#define TCFG_MAG_MODE_OFFSET				TCFG_TEMP_BACKGROUND_OFFSET + TCFG_TEMP_BACKGROUND_LENGTH	//0x080804DB
+#define TCFG_MAG_MODE_OFFSET				TCFG_TEMP_BACKGROUND_OFFSET + TCFG_TEMP_BACKGROUND_LENGTH	//0x080804CF
 #define TCFG_MAG_MODE_LENGTH				1												//MagMode				地磁模式
-#define TCFG_NB_HEART_OFFSET				TCFG_MAG_MODE_OFFSET + TCFG_MAG_MODE_LENGTH				//0x080804DC
+#define TCFG_NB_HEART_OFFSET				TCFG_MAG_MODE_OFFSET + TCFG_MAG_MODE_LENGTH				//0x080804D0
 #define TCFG_NB_HEART_LENGTH				1												//NBHeart				NB心跳
-#define TCFG_RADAR_RANGE_OFFSET			TCFG_NB_HEART_OFFSET + TCFG_NB_HEART_LENGTH				//0x080804DD
+#define TCFG_RADAR_RANGE_OFFSET			TCFG_NB_HEART_OFFSET + TCFG_NB_HEART_LENGTH				//0x080804D1
 #define TCFG_RADAR_RANGE_LENGTH			1												//RadarRange			雷达范围
-#define TCFG_CARIN_DELAY_OFFSET			TCFG_RADAR_RANGE_OFFSET + TCFG_RADAR_RANGE_LENGTH			//0x080804DE
+#define TCFG_CARIN_DELAY_OFFSET			TCFG_RADAR_RANGE_OFFSET + TCFG_RADAR_RANGE_LENGTH			//0x080804D2
 #define TCFG_CARIN_DELAY_LENGTH			1												//CarInDelay			车辆进入延时上报时间
-#define TCFG_RF_CMDCNT_OFFSET				TCFG_CARIN_DELAY_OFFSET + TCFG_CARIN_DELAY_LENGTH			//0x080804DF
+#define TCFG_RF_CMDCNT_OFFSET				TCFG_CARIN_DELAY_OFFSET + TCFG_CARIN_DELAY_LENGTH			//0x080804D3
 #define TCFG_RF_CMDCNT_LENGTH				1												//RFCmdCnt			RF命令
-#define TCFG_NB_CMDCNT_OFFSET				TCFG_RF_CMDCNT_OFFSET + TCFG_RF_CMDCNT_LENGTH			//0x080804E0
+#define TCFG_NB_CMDCNT_OFFSET				TCFG_RF_CMDCNT_OFFSET + TCFG_RF_CMDCNT_LENGTH			//0x080804D4
 #define TCFG_NB_CMDCNT_LENGTH				1												//NBCmdCnt			NB命令
-#define TCFG_RF_DPRINT_LV_OFFSET			TCFG_NB_CMDCNT_OFFSET + TCFG_NB_CMDCNT_LENGTH			//0x080804E1
-#define TCFG_RF_DPRINT_LV_LENGTH			1												//RFDPrintLv			RF调试信息输出等级
-#define TCFG_COAP_RA_TIME_OFFSET			TCFG_RF_DPRINT_LV_OFFSET + TCFG_RF_DPRINT_LV_LENGTH		//0x080804E2
-#define TCFG_COAP_RA_TIME_LENGTH			1												//CoapRATime			RA间隔发送普通包时间
-#define TCFG_COAP_CON_TIME_OFFSET			TCFG_COAP_RA_TIME_OFFSET + TCFG_COAP_RA_TIME_LENGTH		//0x080804E3
+#define TCFG_COAP_CON_TIME_OFFSET			TCFG_NB_CMDCNT_OFFSET + TCFG_NB_CMDCNT_LENGTH			//0x080804D5
 #define TCFG_COAP_CON_TIME_LENGTH			4												//CoapConTime			Coap连接时间
-#define TCFG_COAP_IDLE_TIME_OFFSET			TCFG_COAP_CON_TIME_OFFSET + TCFG_COAP_CON_TIME_LENGTH		//0x080804E7
+#define TCFG_COAP_IDLE_TIME_OFFSET			TCFG_COAP_CON_TIME_OFFSET + TCFG_COAP_CON_TIME_LENGTH		//0x080804D9
 #define TCFG_COAP_IDLE_TIME_LENGTH			4												//CoapIdleTime			Coap休眠时间
+
+/************************************** The environment parameters are used both by extend ***************************************/
+#define TCFG_COAP_SENTCNT_OFFSET			TCFG_COAP_IDLE_TIME_OFFSET + TCFG_COAP_IDLE_TIME_LENGTH	//0x080804DD
+#define TCFG_COAP_SENTCNT_LENGTH			4												//CoapSentCnt			COAP发送包数
+#define TCFG_COAP_RECVCNT_OFFSET			TCFG_COAP_SENTCNT_OFFSET + TCFG_COAP_SENTCNT_LENGTH		//0x080804E1
+#define TCFG_COAP_RECVCNT_LENGTH			4												//CoapRecvCnt			COAP接收包数
+#define TCFG_MQTTSN_SENTCNT_OFFSET			TCFG_COAP_RECVCNT_OFFSET + TCFG_COAP_RECVCNT_LENGTH		//0x080804E5
+#define TCFG_MQTTSN_SENTCNT_LENGTH			4												//MqttSentCnt			MQTTSN发送包数
+#define TCFG_MQTTSN_RECVCNT_OFFSET			TCFG_MQTTSN_SENTCNT_OFFSET + TCFG_MQTTSN_SENTCNT_LENGTH	//0x080804E9
+#define TCFG_MQTTSN_RECVCNT_LENGTH			4												//MqttRecvCnt			MQTTSN接收包数
+
+#define TCFG_RF_DPRINT_LV_OFFSET			TCFG_MQTTSN_RECVCNT_OFFSET + TCFG_MQTTSN_RECVCNT_LENGTH	//0x080804ED
+#define TCFG_RF_DPRINT_LV_LENGTH			1												//RFDPrintLv			RF调试信息输出等级
+#define TCFG_COAP_RA_TIME_OFFSET			TCFG_RF_DPRINT_LV_OFFSET + TCFG_RF_DPRINT_LV_LENGTH		//0x080804EE
+#define TCFG_COAP_RA_TIME_LENGTH			1												//CoapRATime			RA间隔发送普通包时间
+/************************************************************** End **************************************************************/
 
 enum TCFG_SENSITIVITY																	//传感器灵敏度
 {
@@ -144,6 +150,8 @@ enum TCFG_SENSITIVITY																	//传感器灵敏度
 
 typedef struct
 {
+	unsigned char						SoftVersion[20];									//软件版本
+	unsigned char						HardVersion[20];									//硬件版本
 	unsigned int						SubSn;											//设备号
 	unsigned char						SubMacSN[9];										//设备标识号
 	unsigned char						SubVender[4];										//设备厂商号
@@ -379,5 +387,7 @@ unsigned short TCFG_Utility_Get_DistanceRange(void);											//读取雷达检
 unsigned char	TCFG_Utility_Get_Major_Softnumber(void);										//读取Major_Softnumber
 unsigned char	TCFG_Utility_Get_Sub_Softnumber(void);											//读取Sub_Softnumber
 unsigned char	TCFG_Utility_Get_Major_Hardnumber(void);										//读取Major_Hardnumber
+char*		TCFG_Utility_Get_Softwear_Version_String(void);									//读取Softwear Version字符串
+char*		TCFG_Utility_Get_Hardwear_Version_String(void);									//读取Hardwear Version字符串
 
 #endif

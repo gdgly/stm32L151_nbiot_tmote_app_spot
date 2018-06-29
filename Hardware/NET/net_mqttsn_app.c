@@ -1637,6 +1637,196 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					}
 					__NOP();
 				}
+				/* 传感器灵敏度配置指令 */
+				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "Sense") != NULL) {
+					u16 sense;
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(Sense):{(val):%hu,(Magic):%hu}}", &sense, &recvMagicNum);
+					if (recvMagicNum == TCLOD_MAGIC_NUM) {
+						TCFG_SystemData.Sensitivity = sense;
+						if ((TCFG_SystemData.Sensitivity > SENSE_LOWEST) || (TCFG_SystemData.Sensitivity < SENSE_HIGHEST)) {
+							TCFG_SystemData.Sensitivity = SENSE_MIDDLE;
+							TCFG_EEPROM_SetSavedSensitivity(TCFG_SystemData.Sensitivity);
+							ret = NETIP_ERRORPARAM;
+						}
+						else {
+							TCFG_EEPROM_SetSavedSensitivity(TCFG_SystemData.Sensitivity);
+						}
+					}
+					else {
+						ret = NETIP_UNKNOWNERROR;
+					}
+					__NOP();
+				}
+				/* 无线心跳间隔时间配置指令 */
+				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "RFHeart") != NULL) {
+					u16 rfheart;
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(RFHeart):{(val):%hu,(Magic):%hu}}", &rfheart, &recvMagicNum);
+					if (recvMagicNum == TCLOD_MAGIC_NUM) {
+						TCFG_SystemData.Heartinterval = rfheart;
+						if ((TCFG_SystemData.Heartinterval > 120) || (TCFG_SystemData.Heartinterval < 1)) {
+							TCFG_SystemData.Heartinterval = HEART_INTERVAL;
+							TCFG_EEPROM_SetHeartinterval(TCFG_SystemData.Heartinterval);
+							ret = NETIP_ERRORPARAM;
+						}
+						else {
+							TCFG_EEPROM_SetHeartinterval(TCFG_SystemData.Heartinterval);
+						}
+					}
+					else {
+						ret = NETIP_UNKNOWNERROR;
+					}
+					__NOP();
+				}
+				/* 初始化传感器指令 */
+				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "Background") != NULL) {
+					u16 backgroundval;
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(Background):{(val):%hu,(Magic):%hu}}", &backgroundval, &recvMagicNum);
+					if (recvMagicNum == TCLOD_MAGIC_NUM) {
+						if (((radar_targetinfo.strenth_total_diff > (backgroundval-5)) && (radar_targetinfo.strenth_total_diff < (backgroundval+5))) || (backgroundval == 0)) {
+							Radar_InitBackground(TO_SAVE_RADAR_BACKGROUND);
+							QMC5883L_InitBackgroud();
+						}
+						else {
+							ret = NETIP_ERRORPARAM;
+						}
+					}
+					else {
+						ret = NETIP_UNKNOWNERROR;
+					}
+					__NOP();
+				}
+				/* Reboot */
+				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "Reboot") != NULL) {
+					BEEP_CtrlRepeat_Extend(2, 500, 250);
+					Stm32_System_Software_Reboot();
+					__NOP();
+				}
+				/* NewSn */
+				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "Newsn") != NULL) {
+					u32 newsnval;
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(Newsn):{(val):%08x,(Magic):%hu}}", &newsnval, &recvMagicNum);
+					if (recvMagicNum == TCLOD_MAGIC_NUM) {
+						TCFG_EEPROM_Set_MAC_SN(newsnval);
+					}
+					else {
+						ret = NETIP_UNKNOWNERROR;
+					}
+					__NOP();
+				}
+				/* Active */
+				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "Active") != NULL) {
+					u16 activeval;
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(Active):{(val):%hu,(Magic):%hu}}", &activeval, &recvMagicNum);
+					if (recvMagicNum == TCLOD_MAGIC_NUM) {
+						TCFG_EEPROM_SetActiveDevice(activeval);
+						if (activeval) {
+							DeviceActivedMode = true;
+							BEEP_CtrlRepeat_Extend(5,30,70);
+						}
+						else {
+							DeviceActivedMode = false;
+							BEEP_CtrlRepeat_Extend(1,500,0);
+						}
+					}
+					else {
+						ret = NETIP_UNKNOWNERROR;
+					}
+					__NOP();
+				}
+				/* RadarDbg */
+				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "RadarDbg") != NULL) {
+					u16 radarDbgval;
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(RadarDbg):{(val):%hu,(Magic):%hu}}", &radarDbgval, &recvMagicNum);
+					if (recvMagicNum == TCLOD_MAGIC_NUM) {
+						TCFG_EEPROM_SetRadarDbgMode(radarDbgval);
+						TCFG_SystemData.RadarDbgMode = TCFG_EEPROM_GetRadarDbgMode();
+						NETMqttSNNeedSendCode.InfoDynamic = 1;
+					}
+					else {
+						ret = NETIP_UNKNOWNERROR;
+					}
+					__NOP();
+				}
+				/* MagMod */
+				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "MagMod") != NULL) {
+					u16 magmodval;
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(MagMod):{(val):%hu,(Magic):%hu}}", &magmodval, &recvMagicNum);
+					if (recvMagicNum == TCLOD_MAGIC_NUM) {
+						TCFG_EEPROM_SetMagMode(magmodval);
+						talgo_set_magmod(magmodval);
+					}
+					else {
+						ret = NETIP_UNKNOWNERROR;
+					}
+					__NOP();
+				}
+				/* NbHeart */
+				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "NbHeart") != NULL) {
+					u16 nbheartval;
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(NbHeart):{(val):%hu,(Magic):%hu}}", &nbheartval, &recvMagicNum);
+					if (recvMagicNum == TCLOD_MAGIC_NUM) {
+						TCFG_EEPROM_SetNbiotHeart(nbheartval);
+						TCFG_SystemData.NBIotHeart = TCFG_EEPROM_GetNbiotHeart();
+					}
+					else {
+						ret = NETIP_UNKNOWNERROR;
+					}
+					__NOP();
+				}
+				/* InitRadar */
+				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "InitRadar") != NULL) {
+					u32 i32, j32, k32, m32;
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
+						"{(InitRadar):{(v23456):%u,(v7890a):%u,(vbcdef):%u,(vg):%u,(Magic):%hu}}", &i32, &j32, &k32, &m32, &recvMagicNum);
+					if (recvMagicNum == TCLOD_MAGIC_NUM) {
+						Radar_InitBG_Cmd(i32, j32, k32, m32);
+						NETMqttSNNeedSendCode.InfoRadar = 1;
+					}
+					else {
+						ret = NETIP_UNKNOWNERROR;
+					}
+					__NOP();
+				}
+				/* InitMag */
+				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "InitMag") != NULL) {
+					s16 x, y, z;
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
+						"{(InitMag):{(x):%hd,(y):%hd,(z):%hd,(Magic):%hu}}", &x, &y, &z, &recvMagicNum);
+					if (recvMagicNum == TCLOD_MAGIC_NUM) {
+						QMC5883L_InitBackgroud_cmd(x, y, z);
+					}
+					else {
+						ret = NETIP_UNKNOWNERROR;
+					}
+					__NOP();
+				}
+				/* DisRange */
+				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "DisRange") != NULL) {
+					u16 disrangeval;
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(DisRange):{(val):%hu,(Magic):%hu}}", &disrangeval, &recvMagicNum);
+					if (recvMagicNum == TCLOD_MAGIC_NUM) {
+						tradar_set_distance_range(disrangeval + 4);
+						TCFG_EEPROM_SetRadarRange(disrangeval);
+						TCFG_SystemData.RadarRange = TCFG_EEPROM_GetRadarRange();
+					}
+					else {
+						ret = NETIP_UNKNOWNERROR;
+					}
+					__NOP();
+				}
+				/* CarInDelay */
+				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "InDelay") != NULL) {
+					u16 indelayval;
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(InDelay):{(val):%hu,(Magic):%hu}}", &indelayval, &recvMagicNum);
+					if (recvMagicNum == TCLOD_MAGIC_NUM) {
+						TCFG_EEPROM_SetCarInDelay(indelayval);
+						TCFG_SystemData.CarInDelay = TCFG_EEPROM_GetCarInDelay();
+					}
+					else {
+						ret = NETIP_UNKNOWNERROR;
+					}
+					__NOP();
+				}
 				/* ...... */
 			}
 			else if (messageHandler->message->payload[recvBufOffset + TCLOD_MSGID_OFFSET] == TCLOD_CONFIG_GET) {

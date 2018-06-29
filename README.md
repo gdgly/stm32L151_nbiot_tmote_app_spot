@@ -1,6 +1,8 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang
 
+* 2018-06-28 :
+	* 增加NB对COAP处理时间的统计，ConnectTime和IdleTime，通过workinfo发送，nb工作时间.nb休眠时间。
 * 2018-06-23 :
 	* Bootloader改为0V20，适配该Bootloader，Bootloader减少6Kflash，NB上传INFO数据增加Boot版本号。
 	* TCFG_MAG_FREQ_OFFSET 改为 TCFG_BOOT_VERSION_OFFSET。

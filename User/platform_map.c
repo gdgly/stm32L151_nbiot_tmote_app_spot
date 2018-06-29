@@ -2301,4 +2301,51 @@ unsigned char TCFG_Utility_Get_Major_Hardnumber(void)
 #endif
 }
 
+/**********************************************************************************************************
+ @Function			char* TCFG_Utility_Get_Softwear_Version_String(void)
+ @Description			TCFG_Utility_Get_Softwear_Version_String			: 读取Softwear Version字符串
+ @Input				void
+ @Return				Softwear_Version_String
+**********************************************************************************************************/
+char* TCFG_Utility_Get_Softwear_Version_String(void)
+{
+	memset((void*)&TCFG_SystemData.SoftVersion, 0, sizeof(TCFG_SystemData.SoftVersion));
+	
+	sprintf((char*)TCFG_SystemData.SoftVersion, "%d:%d.%d", \
+		TCFG_EEPROM_GetBootVersion(), TCFG_Utility_Get_Major_Softnumber(), TCFG_Utility_Get_Sub_Softnumber());
+	
+	return (char*)TCFG_SystemData.SoftVersion;
+}
+
+/**********************************************************************************************************
+ @Function			char* TCFG_Utility_Get_Hardwear_Version_String(void)
+ @Description			TCFG_Utility_Get_Hardwear_Version_String			: 读取Hardwear Version字符串
+ @Input				void
+ @Return				Hadrwear_Version_String
+**********************************************************************************************************/
+char* TCFG_Utility_Get_Hardwear_Version_String(void)
+{
+	memset((void*)&TCFG_SystemData.HardVersion, 0, sizeof(TCFG_SystemData.HardVersion));
+	
+#if RADAR_MODEL_TYPE == RADAR_MODEL_V1
+	if (Radio_Rf_get_Status() == TRF_OK) {
+		sprintf((char*)TCFG_SystemData.HardVersion, "L151-nb-rf");
+	}
+	else {
+		sprintf((char*)TCFG_SystemData.HardVersion, "L151-nb");
+	}
+#elif RADAR_MODEL_TYPE == RADAR_MODEL_V2
+	if (Radio_Rf_get_Status() == TRF_OK) {
+		sprintf((char*)TCFG_SystemData.HardVersion, "L151-nb-rf-rv2");
+	}
+	else {
+		sprintf((char*)TCFG_SystemData.HardVersion, "L151-nb-rv2");
+	}
+#else
+	#error RADAR_MODEL_TYPE Define Error
+#endif
+	
+	return (char*)TCFG_SystemData.HardVersion;
+}
+
 /********************************************** END OF FLEE **********************************************/
