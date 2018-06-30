@@ -209,6 +209,9 @@ void NET_COAP_NBIOT_Event_HardwareReboot(NBIOT_ClientsTypeDef* pClient)
 		pClient->DictateRunCtl.dictateEnable = false;
 		pClient->DictateRunCtl.dictateEvent = MODULE_CHECK;
 		pClient->DictateRunCtl.dictateRebootFailureCnt = 0;
+		/* End IdleTime */
+		TCFG_SystemData.CoapIdleTime = TCFG_EEPROM_GetCoapIdleTime() + Stm32_EventRunningTime_EndMS(&pClient->IdleTimeMS) / 1000;
+		TCFG_EEPROM_SetCoapIdleTime(TCFG_SystemData.CoapIdleTime);
 		/* Start ConnectTime */
 		Stm32_EventRunningTime_StartMS(&pClient->ConnectTimeMS);
 #ifdef COAP_DEBUG_LOG_RF_PRINT

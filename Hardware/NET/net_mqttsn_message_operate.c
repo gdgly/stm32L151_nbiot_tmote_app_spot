@@ -189,7 +189,7 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Basic(char* outBuffer)
 			"\"SN\":\"%08x\","
 			"\"TMoteInfo\":"
 			"{"
-				"\"Type\":\"%d.1\","
+				"\"Type\":\"%d.2\","
 				"\"Vender\":\"%s\","
 				"\"Hard\":\"%s\","
 				"\"Soft\":\"%d:%d.%d\","
