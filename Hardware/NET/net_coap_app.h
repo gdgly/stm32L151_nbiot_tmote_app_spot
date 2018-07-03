@@ -34,7 +34,7 @@ void NET_COAP_NBIOT_Event_MiscEquipConfig(NBIOT_ClientsTypeDef* pClient);			//�
 void NET_COAP_NBIOT_Event_AttachCheck(NBIOT_ClientsTypeDef* pClient);				//注网检查
 void NET_COAP_NBIOT_Event_AttachExecute(NBIOT_ClientsTypeDef* pClient);			//注网进行
 void NET_COAP_NBIOT_Event_AttachInquire(NBIOT_ClientsTypeDef* pClient);			//注网查询
-void NET_COAP_NBIOT_Event_PatameterCheckOut(NBIOT_ClientsTypeDef* pClient);		//参数检出
+void NET_COAP_NBIOT_Event_ParameterCheckOut(NBIOT_ClientsTypeDef* pClient);		//参数检出
 void NET_COAP_NBIOT_Event_SendData(NBIOT_ClientsTypeDef* pClient);				//发送数据
 void NET_COAP_NBIOT_Event_RecvData(NBIOT_ClientsTypeDef* pClient);				//接收数据
 void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient);			//发送数据RANormal
@@ -44,5 +44,7 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient);		//
 void NET_COAP_Listen_PollExecution(NBIOT_ClientsTypeDef* pClient);				//COAP监听器处理
 void NET_COAP_NBIOT_Listen_Enable_EnterIdleMode(NBIOT_ClientsTypeDef* pClient);		//使能(进入IDLE模式)监听
 void NET_COAP_NBIOT_Listen_Event_EnterIdleMode(NBIOT_ClientsTypeDef* pClient);		//事件(进入IDLE模式)监听
+void NET_COAP_NBIOT_Listen_Enable_EnterParameter(NBIOT_ClientsTypeDef* pClient);	//使能(进入NBIOT运行信息)监听
+void NET_COAP_NBIOT_Listen_Event_EnterParameter(NBIOT_ClientsTypeDef* pClient);		//事件(进入NBIOT运行信息)监听
 
 #endif

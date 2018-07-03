@@ -233,7 +233,8 @@ u8 Radar_InitBackground(char mode)
 				
 				return TRADAR_ERROR;
 			}
-
+			
+#if 0
 #if RADAR_MODEL_TYPE == RADAR_MODEL_V1
 			
 #elif RADAR_MODEL_TYPE == RADAR_MODEL_V2
@@ -241,14 +242,17 @@ u8 Radar_InitBackground(char mode)
 #else
 	#error RADAR_MODEL_TYPE Define Error
 #endif
+#endif
 			BEEP_CtrlRepeat_Extend(1, 30, 0);
 			
+#if 0
 #if RADAR_MODEL_TYPE == RADAR_MODEL_V1
 			
 #elif RADAR_MODEL_TYPE == RADAR_MODEL_V2
 			RADARPOWER(ON);																	//开启雷达电源
 #else
 	#error RADAR_MODEL_TYPE Define Error
+#endif
 #endif
 			Delay_MS(30);
 			
@@ -296,6 +300,9 @@ u8 Radar_GetData(tradar_targetinfo_s* pTargetinfo[], u8 dataNum)
 			
 			if (pTargetinfo[dataNum - 1]->strenth_total_diff > 255) {
 				pTargetinfo[dataNum - 1]->strenth_total_diff = 255;
+			}
+			if (pTargetinfo[dataNum - 1]->strenth_total_diff_v2 > 255) {
+				pTargetinfo[dataNum - 1]->strenth_total_diff_v2 = 255;
 			}
 			
 			if ((pTargetinfo[dataNum-1]->pMagNow[2] <= 3)&&(pTargetinfo[dataNum-1]->pMagNow[3] <= 3)&&(pTargetinfo[dataNum-1]->pMagNow[4] <= 3)) {
@@ -448,7 +455,7 @@ void Radar_GetSample_Time(void)
 	
 	if (xx < 1) {
 #ifdef XIAMEN
-		xx = 3;
+		xx = 13;
 #else
 		xx = 13;
 #endif

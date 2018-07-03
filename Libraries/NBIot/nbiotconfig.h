@@ -220,7 +220,8 @@ typedef enum
 /* NBIOT Listen Event */
 typedef enum
 {
-	ENTER_IDLE_MODE					= 0x00											//进入IDLE模式监听
+	ENTER_IDLE_MODE					= 0x00,											//进入IDLE模式监听
+	ENTER_PARAMETER_CHECKOUT				= 0x01											//进入NBIOT运行信息监听
 }NBIOT_ListenEventTypeDef;
 
 /* NBIOT CDP Server */
@@ -427,7 +428,7 @@ struct NBIOT_ClientsTypeDef
 			unsigned int				listenTimereachSec;
 			Stm32_CalculagraphTypeDef	listenRunTime;
 			
-			struct EventCtlTypedef
+			struct EventCtlIdleTypedef
 			{
 				bool						eventEnable;
 				unsigned int				eventTimeoutSec;
@@ -435,6 +436,22 @@ struct NBIOT_ClientsTypeDef
 				Stm32_CalculagraphTypeDef	eventRunTime;
 			}EventCtl;
 		}ListenEnterIdle;
+		
+		struct ListenEnterParameterTypeDef
+		{
+			bool						listenEnable;
+			bool						listenStatus;
+			unsigned int				listenTimereachSec;
+			Stm32_CalculagraphTypeDef	listenRunTime;
+			
+			struct EventCtlParameterTypedef
+			{
+				bool						eventEnable;
+				unsigned int				eventTimeoutSec;
+				unsigned char				eventFailureCnt;
+				Stm32_CalculagraphTypeDef	eventRunTime;
+			}EventCtl;
+		}ListenEnterParameter;
 		
 		NBIOT_ListenEventTypeDef			listenEvent;
 	}ListenRunCtl;

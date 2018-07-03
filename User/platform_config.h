@@ -26,6 +26,10 @@
 #define	NBCOAP_SENDMODE_RAIDLE			SEND_DATA_RA_NORMAL
 #define	NBCOAP_SENDMODE_TYPE			NBCOAP_SENDMODE_RAIDLE				//COAP发送模式
 
+#define	NBCOAP_QUOTA_TIME_3YEAR			1972
+#define	NBCOAP_QUOTA_TIME_5YEAR			1183
+#define	NBCOAP_COAP_QUOTA_TIME_TYPE		NBCOAP_QUOTA_TIME_3YEAR				//Coap一天使用配额时间
+
 #define	RADAR_MODEL_V1					1
 #define	RADAR_MODEL_V2					2
 #define	RADAR_MODEL_TYPE				RADAR_MODEL_V2						//雷达类型
@@ -35,7 +39,7 @@
 #define	LOWPOWERMODE					LOWPOWERENABLE						//低功耗模式
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					90								//从固件版本
+#define	SOFTWARESUB					94								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 
@@ -49,6 +53,8 @@
 #define	NORMAL_WORK					0								//正常工作模式
 
 #define	TIME_TO_MODULE_INIT				3600*24*3							//间隔时间初始化模块
+
+#define	NBIOT_HEART_DATA_HOURS			2								//NB心跳数据包时间
 
 #define	DNS_SERVER_HOST_IP				"114.114.114.114"					//DNS服务器默认配置
 #define	DNS_SERVER_LOCAL_PORT			5000

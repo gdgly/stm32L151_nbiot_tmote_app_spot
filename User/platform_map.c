@@ -113,7 +113,7 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_EEPROM_SetDevBootCnt(TCFG_SystemData.DeviceBootCount);
 	
 	/* NBIot心跳间隔 */
-	TCFG_SystemData.NBIotHeart = 2;
+	TCFG_SystemData.NBIotHeart = NBIOT_HEART_DATA_HOURS;
 	TCFG_EEPROM_SetNbiotHeart(TCFG_SystemData.NBIotHeart);
 	
 	/* NBIot重启次数 */
@@ -159,6 +159,18 @@ void TCFG_EEPROM_WriteConfigData(void)
 	/* Coap休眠时间 */
 	TCFG_SystemData.CoapIdleTime = 0;
 	TCFG_EEPROM_SetCoapIdleTime(TCFG_SystemData.CoapIdleTime);
+	
+	/* Coap保持连接时间(一天) */
+	TCFG_SystemData.CoapConnectDayTime = 0;
+	TCFG_EEPROM_SetCoapConnectDayTime(TCFG_SystemData.CoapConnectDayTime);
+	
+	/* Coap休眠时间(一天) */
+	TCFG_SystemData.CoapIdleDayTime = 0;
+	TCFG_EEPROM_SetCoapIdleDayTime(TCFG_SystemData.CoapIdleDayTime);
+	
+	/* Coap使用配额时间(一天) */
+	TCFG_SystemData.CoapQuotaTime = NBCOAP_COAP_QUOTA_TIME_TYPE;
+	TCFG_EEPROM_SetCoapQuotaTime(TCFG_SystemData.CoapQuotaTime);
 	
 	/* NB核心网地址 */
 	sscanf(COAPCDPADDR, "%d.%d.%d.%d", &serverip[3], &serverip[2], &serverip[1], &serverip[0]);
@@ -256,8 +268,8 @@ void TCFG_EEPROM_ReadConfigData(void)
 	
 	/* NBIot心跳间隔 */
 	TCFG_SystemData.NBIotHeart = TCFG_EEPROM_GetNbiotHeart();
-	if ((TCFG_SystemData.NBIotHeart == 0) || (TCFG_SystemData.NBIotHeart > 4)) {
-		TCFG_SystemData.NBIotHeart = 2;
+	if ((TCFG_SystemData.NBIotHeart == 0) || (TCFG_SystemData.NBIotHeart > 8)) {
+		TCFG_SystemData.NBIotHeart = NBIOT_HEART_DATA_HOURS;
 		TCFG_EEPROM_SetNbiotHeart(TCFG_SystemData.NBIotHeart);
 	}
 	
@@ -291,6 +303,19 @@ void TCFG_EEPROM_ReadConfigData(void)
 	
 	/* Coap休眠时间 */
 	TCFG_SystemData.CoapIdleTime = TCFG_EEPROM_GetCoapIdleTime();
+	
+	/* Coap保持连接时间(一天) */
+	TCFG_SystemData.CoapConnectDayTime = TCFG_EEPROM_GetCoapConnectDayTime();
+	
+	/* Coap休眠时间(一天) */
+	TCFG_SystemData.CoapIdleDayTime = TCFG_EEPROM_GetCoapIdleDayTime();
+	
+	/* Coap使用配额时间(一天) */
+	TCFG_SystemData.CoapQuotaTime = TCFG_EEPROM_GetCoapQuotaTime();
+	if (TCFG_SystemData.CoapQuotaTime < 500) {
+		TCFG_SystemData.CoapQuotaTime = NBCOAP_COAP_QUOTA_TIME_TYPE;
+		TCFG_EEPROM_SetCoapQuotaTime(TCFG_SystemData.CoapQuotaTime);
+	}
 	
 	/* NB核心网地址 */
 	TCFG_SystemData.NBCoapCDPServer.ip.ip32 = TCFG_EEPROM_GetServerIP();
@@ -1521,6 +1546,72 @@ void TCFG_EEPROM_SetCoapIdleTime(unsigned int val)
 unsigned int TCFG_EEPROM_GetCoapIdleTime(void)
 {
 	return FLASH_EEPROM_ReadWord(TCFG_COAP_IDLE_TIME_OFFSET);
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetCoapConnectDayTime(unsigned short val)
+ @Description			TCFG_EEPROM_SetCoapConnectDayTime				: 保存CoapConnectDayTime
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetCoapConnectDayTime(unsigned short val)
+{
+	FLASH_EEPROM_WriteHalfWord(TCFG_COAP_CON_DAY_OFFSET, val);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned short TCFG_EEPROM_GetCoapConnectDayTime(void)
+ @Description			TCFG_EEPROM_GetCoapConnectDayTime				: 读取CoapConnectDayTime
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned short TCFG_EEPROM_GetCoapConnectDayTime(void)
+{
+	return FLASH_EEPROM_ReadHalfWord(TCFG_COAP_CON_DAY_OFFSET);
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetCoapIdleDayTime(unsigned short val)
+ @Description			TCFG_EEPROM_SetCoapIdleDayTime				: 保存CoapIdleDayTime
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetCoapIdleDayTime(unsigned short val)
+{
+	FLASH_EEPROM_WriteHalfWord(TCFG_COAP_IDLE_DAY_OFFSET, val);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned short TCFG_EEPROM_GetCoapIdleDayTime(void)
+ @Description			TCFG_EEPROM_GetCoapIdleDayTime				: 读取CoapIdleDayTime
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned short TCFG_EEPROM_GetCoapIdleDayTime(void)
+{
+	return FLASH_EEPROM_ReadHalfWord(TCFG_COAP_IDLE_DAY_OFFSET);
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetCoapQuotaTime(unsigned short val)
+ @Description			TCFG_EEPROM_SetCoapQuotaTime					: 保存CoapQuotaTime
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetCoapQuotaTime(unsigned short val)
+{
+	FLASH_EEPROM_WriteHalfWord(TCFG_COAP_QUOTA_TIME_OFFSET, val);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned short TCFG_EEPROM_GetCoapQuotaTime(void)
+ @Description			TCFG_EEPROM_GetCoapQuotaTime					: 读取CoapQuotaTime
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned short TCFG_EEPROM_GetCoapQuotaTime(void)
+{
+	return FLASH_EEPROM_ReadHalfWord(TCFG_COAP_QUOTA_TIME_OFFSET);
 }
 
 /**********************************************************************************************************

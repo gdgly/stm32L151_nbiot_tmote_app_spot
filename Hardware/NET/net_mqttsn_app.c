@@ -69,7 +69,7 @@ void NET_MQTTSN_APP_PollExecution(MQTTSN_ClientsTypeDef* pClient)
 		break;
 	
 	case PARAMETER_CHECKOUT:
-		NET_MQTTSN_NBIOT_Event_PatameterCheckOut(pClient);
+		NET_MQTTSN_NBIOT_Event_ParameterCheckOut(pClient);
 		break;
 	
 	case MINIMUM_FUNCTIONALITY:
@@ -844,7 +844,7 @@ void NET_MQTTSN_NBIOT_Event_AttachInquire(MQTTSN_ClientsTypeDef* pClient)
  @Input				pClient							: MqttSN客户端实例
  @Return				void
 **********************************************************************************************************/
-void NET_MQTTSN_NBIOT_Event_PatameterCheckOut(MQTTSN_ClientsTypeDef* pClient)
+void NET_MQTTSN_NBIOT_Event_ParameterCheckOut(MQTTSN_ClientsTypeDef* pClient)
 {
 	MQTTSN_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -862,7 +862,7 @@ void NET_MQTTSN_NBIOT_Event_PatameterCheckOut(MQTTSN_ClientsTypeDef* pClient)
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictatePatameterCheckOutFailureCnt = 0;
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("NB Patameter Check Ok");
+		Radio_Trf_Debug_Printf_Level2("NB Parameter Check Ok");
 #endif
 	}
 	else {
@@ -882,7 +882,7 @@ void NET_MQTTSN_NBIOT_Event_PatameterCheckOut(MQTTSN_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = PARAMETER_CHECKOUT;
 		}
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("NB Patameter Check Fail");
+		Radio_Trf_Debug_Printf_Level2("NB Parameter Check Fail");
 #endif
 		return;
 	}

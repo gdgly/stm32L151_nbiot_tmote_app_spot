@@ -46,7 +46,8 @@ int NET_COAP_Message_Operate_Creat_Json_Work_Info(char* outBuffer)
 				"\"Cellid\":%d,"
 				"\"Cmdcnt\":\"%d.%d\","
 				"\"Nbworkmode\":%d,"
-				"\"Nbruntime\":\"%d.%d\""
+				"\"Nbruntime\":\"%d.%d\","
+				"\"NbruntimeDay\":\"%d.%d\""
 			"}"
 		"}",
 		
@@ -59,7 +60,8 @@ int NET_COAP_Message_Operate_Creat_Json_Work_Info(char* outBuffer)
 		TCFG_Utility_Get_Nbiot_RadioCellID(),
 		TCFG_EEPROM_GetRFCmdCnt(), TCFG_EEPROM_GetNBCmdCnt(),
 		TCFG_Utility_Get_Nbiot_WorkMode(),
-		TCFG_EEPROM_GetCoapConnectTime(), TCFG_EEPROM_GetCoapIdleTime()
+		TCFG_EEPROM_GetCoapConnectTime(), TCFG_EEPROM_GetCoapIdleTime(),
+		TCFG_EEPROM_GetCoapConnectDayTime(), TCFG_EEPROM_GetCoapIdleDayTime()
 	);
 	
 	return strlen(outBuffer);
@@ -122,6 +124,7 @@ int NET_COAP_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer)
 			"{"
 				"\"Runtime\":%d,"
 				"\"Rssi\":%d,"
+				"\"Snr\":%d,"
 				"\"Batt\":%d,"
 				"\"Rlib\":\"%d\","
 				"\"Rcnt\":%d,"
@@ -141,6 +144,7 @@ int NET_COAP_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer)
 		TCFG_EEPROM_Get_MAC_SN(),
 		TCFG_Utility_Get_Run_Time(),
 		TCFG_Utility_Get_Nbiot_Rssi_IntVal(),
+		TCFG_Utility_Get_Nbiot_RadioSNR(),
 		TCFG_Utility_Get_Device_Batt_ShortVal(),
 		TCFG_Utility_Get_RadarLibNum(),
 		TCFG_GetRadarCount(),
@@ -190,7 +194,7 @@ int NET_COAP_Message_Operate_Creat_Json_Radar_Info(char* outBuffer)
 		Qmc5883lData.X_Now,
 		Qmc5883lData.Y_Now,
 		Qmc5883lData.Z_Now,
-		TCFG_Utility_Get_Nbiot_CellSnr(),
+		TCFG_Utility_Get_Nbiot_RadioSNR(),
 		TCFG_Utility_Get_Nbiot_Rssi_IntVal(),
 		TCFG_Utility_Get_Device_Temperature(),
 		radar_targetinfo.pMagNow[2],  radar_targetinfo.pMagNow[3],  radar_targetinfo.pMagNow[4],  radar_targetinfo.pMagNow[5],

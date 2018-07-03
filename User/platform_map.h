@@ -18,13 +18,16 @@
 
 #define EEPROM_BASE_ADDRESS				0x08080000
 #define EEPROM_CONFIG_OFFSET				0x08080000
-#define EEPROM_CONFIG_SIZE				0x0300
+#define EEPROM_CONFIG_SIZE				0x0400
 
 #define TCFG_FACTORY_VENDER_OFFSET			0x0C00
 #define TCFG_FACTORY_VENDER_LENGTH			4
 
 #define TCFG_FACTORY_MAC_SN_OFFSET			0x0C04
 #define TCFG_FACTORY_MAC_SN_LENGTH			4
+
+#define EEPROM_CONFIG_PAGE1_ADDRESS		0x08080400
+#define EEPROM_CONFIG_PAGE1_SIZE			0x0800
 
 #define TCFG_FACTORY_BRAND_SN_OFFSET		0x0400											//0x08080400
 #define TCFG_FACTORY_BRAND_SN_LENGTH		8												//Brand SN	4:Brand+4:SN
@@ -122,20 +125,30 @@
 #define TCFG_COAP_CON_TIME_LENGTH			4												//CoapConTime			Coap连接时间
 #define TCFG_COAP_IDLE_TIME_OFFSET			TCFG_COAP_CON_TIME_OFFSET + TCFG_COAP_CON_TIME_LENGTH		//0x080804D9
 #define TCFG_COAP_IDLE_TIME_LENGTH			4												//CoapIdleTime			Coap休眠时间
+#define TCFG_COAP_CON_DAY_OFFSET			TCFG_COAP_IDLE_TIME_OFFSET + TCFG_COAP_IDLE_TIME_LENGTH	//0x080804DD
+#define TCFG_COAP_CON_DAY_LENGTH			2												//CoapConDayTime		Coap一天连接时间
+#define TCFG_COAP_IDLE_DAY_OFFSET			TCFG_COAP_CON_DAY_OFFSET + TCFG_COAP_CON_DAY_LENGTH		//0x080804DF
+#define TCFG_COAP_IDLE_DAY_LENGTH			2												//CoapIdleDayTime		Coap一天休眠时间
+#define TCFG_COAP_QUOTA_TIME_OFFSET		TCFG_COAP_IDLE_DAY_OFFSET + TCFG_COAP_IDLE_DAY_LENGTH		//0x080804E1
+#define TCFG_COAP_QUOTA_TIME_LENGTH		2												//CoapQuotaTime		Coap一天使用配额时间
 
 /************************************** The environment parameters are used both by extend ***************************************/
-#define TCFG_COAP_SENTCNT_OFFSET			TCFG_COAP_IDLE_TIME_OFFSET + TCFG_COAP_IDLE_TIME_LENGTH	//0x080804DD
+#define EEPROM_CONFIG_PAGE2_ADDRESS		0x08080E00
+#define EEPROM_CONFIG_PAGE2_SIZE			0x0200
+#define TCFG_EEPROM_CONFIG_PAGE2_OFFSET		0x0E00
+
+#define TCFG_COAP_SENTCNT_OFFSET			TCFG_EEPROM_CONFIG_PAGE2_OFFSET						//0x08080E00
 #define TCFG_COAP_SENTCNT_LENGTH			4												//CoapSentCnt			COAP发送包数
-#define TCFG_COAP_RECVCNT_OFFSET			TCFG_COAP_SENTCNT_OFFSET + TCFG_COAP_SENTCNT_LENGTH		//0x080804E1
+#define TCFG_COAP_RECVCNT_OFFSET			TCFG_COAP_SENTCNT_OFFSET + TCFG_COAP_SENTCNT_LENGTH		//0x08080E04
 #define TCFG_COAP_RECVCNT_LENGTH			4												//CoapRecvCnt			COAP接收包数
-#define TCFG_MQTTSN_SENTCNT_OFFSET			TCFG_COAP_RECVCNT_OFFSET + TCFG_COAP_RECVCNT_LENGTH		//0x080804E5
+#define TCFG_MQTTSN_SENTCNT_OFFSET			TCFG_COAP_RECVCNT_OFFSET + TCFG_COAP_RECVCNT_LENGTH		//0x08080E08
 #define TCFG_MQTTSN_SENTCNT_LENGTH			4												//MqttSentCnt			MQTTSN发送包数
-#define TCFG_MQTTSN_RECVCNT_OFFSET			TCFG_MQTTSN_SENTCNT_OFFSET + TCFG_MQTTSN_SENTCNT_LENGTH	//0x080804E9
+#define TCFG_MQTTSN_RECVCNT_OFFSET			TCFG_MQTTSN_SENTCNT_OFFSET + TCFG_MQTTSN_SENTCNT_LENGTH	//0x08080E0C
 #define TCFG_MQTTSN_RECVCNT_LENGTH			4												//MqttRecvCnt			MQTTSN接收包数
 
-#define TCFG_RF_DPRINT_LV_OFFSET			TCFG_MQTTSN_RECVCNT_OFFSET + TCFG_MQTTSN_RECVCNT_LENGTH	//0x080804ED
+#define TCFG_RF_DPRINT_LV_OFFSET			TCFG_MQTTSN_RECVCNT_OFFSET + TCFG_MQTTSN_RECVCNT_LENGTH	//0x08080E10
 #define TCFG_RF_DPRINT_LV_LENGTH			1												//RFDPrintLv			RF调试信息输出等级
-#define TCFG_COAP_RA_TIME_OFFSET			TCFG_RF_DPRINT_LV_OFFSET + TCFG_RF_DPRINT_LV_LENGTH		//0x080804EE
+#define TCFG_COAP_RA_TIME_OFFSET			TCFG_RF_DPRINT_LV_OFFSET + TCFG_RF_DPRINT_LV_LENGTH		//0x08080E11
 #define TCFG_COAP_RA_TIME_LENGTH			1												//CoapRATime			RA间隔发送普通包时间
 /************************************************************** End **************************************************************/
 
@@ -185,6 +198,9 @@ typedef struct
 	unsigned char						CoapRATimeHour;									//Coap间隔时间发送普通数据包用于接收下行数据
 	unsigned int						CoapConnectTime;									//Coap保持连接时间
 	unsigned int						CoapIdleTime;										//Coap休眠时间
+	unsigned short						CoapConnectDayTime;									//Coap保持连接时间(一天)
+	unsigned short						CoapIdleDayTime;									//Coap休眠时间(一天)
+	unsigned short						CoapQuotaTime;										//Coap使用配额时间(一天)
 	unsigned char						NBCoapCDPServerIP[16];								//NB核心网IP地址
 	unsigned char						NBCoapCDPServerPort[6];								//NB核心网IP端口
 	NBIOT_ServerAddr					NBCoapCDPServer;									//NB核心网地址
@@ -328,6 +344,15 @@ unsigned int	TCFG_EEPROM_GetCoapConnectTime(void);											//读取CoapConnect
 
 void			TCFG_EEPROM_SetCoapIdleTime(unsigned int val);									//保存CoapIdleTime
 unsigned int	TCFG_EEPROM_GetCoapIdleTime(void);												//读取CoapIdleTime
+
+void			TCFG_EEPROM_SetCoapConnectDayTime(unsigned short val);								//保存CoapConnectDayTime
+unsigned short	TCFG_EEPROM_GetCoapConnectDayTime(void);										//读取CoapConnectDayTime
+
+void			TCFG_EEPROM_SetCoapIdleDayTime(unsigned short val);								//保存CoapIdleDayTime
+unsigned short	TCFG_EEPROM_GetCoapIdleDayTime(void);											//读取CoapIdleDayTime
+
+void			TCFG_EEPROM_SetCoapQuotaTime(unsigned short val);									//保存CoapQuotaTime
+unsigned short	TCFG_EEPROM_GetCoapQuotaTime(void);											//读取CoapQuotaTime
 
 void			TCFG_Utility_Add_Device_BootCount(void);										//Device重启次数累加
 unsigned short TCFG_Utility_Get_Device_BootCount(void);										//Device重启次数获取

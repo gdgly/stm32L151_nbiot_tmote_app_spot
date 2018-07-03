@@ -69,7 +69,7 @@ void NET_COAP_APP_PollExecution(NBIOT_ClientsTypeDef* pClient)
 		break;
 	
 	case PARAMETER_CHECKOUT:
-		NET_COAP_NBIOT_Event_PatameterCheckOut(pClient);
+		NET_COAP_NBIOT_Event_ParameterCheckOut(pClient);
 		break;
 	
 	case MINIMUM_FUNCTIONALITY:
@@ -158,6 +158,8 @@ void NET_COAP_NBIOT_Event_StopMode(NBIOT_ClientsTypeDef* pClient)
 {
 	Stm32_CalculagraphTypeDef dictateRunTime;
 	static unsigned char CoapSendMessageIndex;
+	unsigned int uICoapConnectTime = 0;
+	unsigned int uICoapIdleTime = 0;
 	
 	/* It is the first time to execute */
 	if (pClient->DictateRunCtl.dictateEnable != true) {
@@ -169,11 +171,19 @@ void NET_COAP_NBIOT_Event_StopMode(NBIOT_ClientsTypeDef* pClient)
 		NBIOT_Neul_NBxx_HardwarePoweroff(pClient);
 		/* Send Message Index */
 		CoapSendMessageIndex = NET_Coap_Message_SendDataRear();
+		/* Get ConnectTime & IdleTime */
+		uICoapConnectTime = Stm32_EventRunningTime_EndMS(&pClient->ConnectTimeMS) / 1000;
+		uICoapIdleTime = Stm32_EventRunningTime_EndMS(&pClient->IdleTimeMS) / 1000;
 		/* Into ConnectTime & IdleTime */
-		TCFG_SystemData.CoapConnectTime = TCFG_EEPROM_GetCoapConnectTime() + Stm32_EventRunningTime_EndMS(&pClient->ConnectTimeMS) / 1000;
+		TCFG_SystemData.CoapConnectTime = TCFG_EEPROM_GetCoapConnectTime() + uICoapConnectTime;
 		TCFG_EEPROM_SetCoapConnectTime(TCFG_SystemData.CoapConnectTime);
-		TCFG_SystemData.CoapIdleTime = TCFG_EEPROM_GetCoapIdleTime() + Stm32_EventRunningTime_EndMS(&pClient->IdleTimeMS) / 1000;
+		TCFG_SystemData.CoapIdleTime = TCFG_EEPROM_GetCoapIdleTime() + uICoapIdleTime;
 		TCFG_EEPROM_SetCoapIdleTime(TCFG_SystemData.CoapIdleTime);
+		/* Into ConnectDayTime & IdleDayTime */
+		TCFG_SystemData.CoapConnectDayTime = TCFG_EEPROM_GetCoapConnectDayTime() + uICoapConnectTime;
+		TCFG_EEPROM_SetCoapConnectDayTime(TCFG_SystemData.CoapConnectDayTime);
+		TCFG_SystemData.CoapIdleDayTime = TCFG_EEPROM_GetCoapIdleDayTime() + uICoapIdleTime;
+		TCFG_EEPROM_SetCoapIdleDayTime(TCFG_SystemData.CoapIdleDayTime);
 	}
 	
 	if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
@@ -202,6 +212,8 @@ void NET_COAP_NBIOT_Event_StopMode(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_HardwareReboot(NBIOT_ClientsTypeDef* pClient)
 {
+	unsigned int uICoapIdleTime = 0;
+	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if (NBIOT_Neul_NBxx_HardwareReboot(pClient, 8000) == NBIOT_OK) {
@@ -209,9 +221,15 @@ void NET_COAP_NBIOT_Event_HardwareReboot(NBIOT_ClientsTypeDef* pClient)
 		pClient->DictateRunCtl.dictateEnable = false;
 		pClient->DictateRunCtl.dictateEvent = MODULE_CHECK;
 		pClient->DictateRunCtl.dictateRebootFailureCnt = 0;
+		
+		/* Get IdleTime */
+		uICoapIdleTime = Stm32_EventRunningTime_EndMS(&pClient->IdleTimeMS) / 1000;
 		/* End IdleTime */
-		TCFG_SystemData.CoapIdleTime = TCFG_EEPROM_GetCoapIdleTime() + Stm32_EventRunningTime_EndMS(&pClient->IdleTimeMS) / 1000;
+		TCFG_SystemData.CoapIdleTime = TCFG_EEPROM_GetCoapIdleTime() + uICoapIdleTime;
 		TCFG_EEPROM_SetCoapIdleTime(TCFG_SystemData.CoapIdleTime);
+		/* End IdleDayTime */
+		TCFG_SystemData.CoapIdleDayTime = TCFG_EEPROM_GetCoapIdleDayTime() + uICoapIdleTime;
+		TCFG_EEPROM_SetCoapIdleDayTime(TCFG_SystemData.CoapIdleDayTime);
 		/* Start ConnectTime */
 		Stm32_EventRunningTime_StartMS(&pClient->ConnectTimeMS);
 #ifdef COAP_DEBUG_LOG_RF_PRINT
@@ -1142,7 +1160,7 @@ void NET_COAP_NBIOT_Event_AttachInquire(NBIOT_ClientsTypeDef* pClient)
  @Input				pClient							: NBIOT客户端实例
  @Return				void
 **********************************************************************************************************/
-void NET_COAP_NBIOT_Event_PatameterCheckOut(NBIOT_ClientsTypeDef* pClient)
+void NET_COAP_NBIOT_Event_ParameterCheckOut(NBIOT_ClientsTypeDef* pClient)
 {
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -1160,7 +1178,7 @@ void NET_COAP_NBIOT_Event_PatameterCheckOut(NBIOT_ClientsTypeDef* pClient)
 		pClient->DictateRunCtl.dictateEvent = NBCOAP_SENDMODE_TYPE;
 		pClient->DictateRunCtl.dictatePatameterCheckOutFailureCnt = 0;
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("Coap Patameter Check Ok");
+		Radio_Trf_Debug_Printf_Level2("Coap Parameter Check Ok");
 #endif
 	}
 	else {
@@ -1180,7 +1198,7 @@ void NET_COAP_NBIOT_Event_PatameterCheckOut(NBIOT_ClientsTypeDef* pClient)
 			pClient->DictateRunCtl.dictateEvent = PARAMETER_CHECKOUT;
 		}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("Coap Patameter Check Fail");
+		Radio_Trf_Debug_Printf_Level2("Coap Parameter Check Fail");
 #endif
 		return;
 	}
@@ -1199,14 +1217,20 @@ void NET_COAP_NBIOT_Event_PatameterCheckOut(NBIOT_ClientsTypeDef* pClient)
 void NET_COAP_NBIOT_Event_SendData(NBIOT_ClientsTypeDef* pClient)
 {
 	int SendSentNum = 0;
+	unsigned int uICoapIdleTime = 0;
 	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	/* Data packets need to be sent*/
 	if (NET_Coap_Message_SendDataDequeue(pClient->Sendbuf, (unsigned short *)&pClient->Sendlen) == true) {
+		/* Get IdleTime */
+		uICoapIdleTime = Stm32_EventRunningTime_EndMS(&pClient->IdleTimeMS) / 1000;
 		/* End IdleTime */
-		TCFG_SystemData.CoapIdleTime = TCFG_EEPROM_GetCoapIdleTime() + Stm32_EventRunningTime_EndMS(&pClient->IdleTimeMS) / 1000;
+		TCFG_SystemData.CoapIdleTime = TCFG_EEPROM_GetCoapIdleTime() + uICoapIdleTime;
 		TCFG_EEPROM_SetCoapIdleTime(TCFG_SystemData.CoapIdleTime);
+		/* End IdleDayTime */
+		TCFG_SystemData.CoapIdleDayTime = TCFG_EEPROM_GetCoapIdleDayTime() + uICoapIdleTime;
+		TCFG_EEPROM_SetCoapIdleDayTime(TCFG_SystemData.CoapIdleDayTime);
 		/* Start ConnectTime */
 		Stm32_EventRunningTime_StartMS(&pClient->ConnectTimeMS);
 		/* Connect Check */
@@ -1375,6 +1399,7 @@ void NET_COAP_NBIOT_Event_RecvData(NBIOT_ClientsTypeDef* pClient)
 {
 	u8 COAPFeedBackData[] = {0xAA, 0xBB};									//COAP反馈包数据
 	bool COAPFeedBackFlag = false;										//COAP反馈包接收标志位
+	unsigned int uICoapConnectTime = 0;
 	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -1439,9 +1464,15 @@ void NET_COAP_NBIOT_Event_RecvData(NBIOT_ClientsTypeDef* pClient)
 				pClient->DictateRunCtl.dictateEvent = SEND_DATA;
 				pClient->DictateRunCtl.dictateRecvDataFailureCnt = 0;
 				NET_COAP_NBIOT_Listen_Enable_EnterIdleMode(pClient);
+				NET_COAP_NBIOT_Listen_Enable_EnterParameter(pClient);
+				/* Get ConnectTime */
+				uICoapConnectTime = Stm32_EventRunningTime_EndMS(&pClient->ConnectTimeMS) / 1000;
 				/* End ConnectTime */
-				TCFG_SystemData.CoapConnectTime = TCFG_EEPROM_GetCoapConnectTime() + Stm32_EventRunningTime_EndMS(&pClient->ConnectTimeMS) / 1000;
+				TCFG_SystemData.CoapConnectTime = TCFG_EEPROM_GetCoapConnectTime() + uICoapConnectTime;
 				TCFG_EEPROM_SetCoapConnectTime(TCFG_SystemData.CoapConnectTime);
+				/* End ConnectDayTime */
+				TCFG_SystemData.CoapConnectDayTime = TCFG_EEPROM_GetCoapConnectDayTime() + uICoapConnectTime;
+				TCFG_EEPROM_SetCoapConnectDayTime(TCFG_SystemData.CoapConnectDayTime);
 				/* Start IdleTime */
 				Stm32_EventRunningTime_StartMS(&pClient->IdleTimeMS);
 #ifdef COAP_DEBUG_LOG_RF_PRINT
@@ -1491,14 +1522,20 @@ void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
 	char* RANormal	= "0x0100";
 	char* RAIdle	= "0x0101";
 	char* RAState	= RAIdle;
+	unsigned int uICoapIdleTime = 0;
 	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	/* Data packets need to be sent*/
 	if (NET_Coap_Message_SendDataDequeue(pClient->Sendbuf, (unsigned short *)&pClient->Sendlen) == true) {
+		/* Get IdleTime */
+		uICoapIdleTime = Stm32_EventRunningTime_EndMS(&pClient->IdleTimeMS) / 1000;
 		/* End IdleTime */
-		TCFG_SystemData.CoapIdleTime = TCFG_EEPROM_GetCoapIdleTime() + Stm32_EventRunningTime_EndMS(&pClient->IdleTimeMS) / 1000;
+		TCFG_SystemData.CoapIdleTime = TCFG_EEPROM_GetCoapIdleTime() + uICoapIdleTime;
 		TCFG_EEPROM_SetCoapIdleTime(TCFG_SystemData.CoapIdleTime);
+		/* End IdleDayTime */
+		TCFG_SystemData.CoapIdleDayTime = TCFG_EEPROM_GetCoapIdleDayTime() + uICoapIdleTime;
+		TCFG_EEPROM_SetCoapIdleDayTime(TCFG_SystemData.CoapIdleDayTime);
 		/* Start ConnectTime */
 		Stm32_EventRunningTime_StartMS(&pClient->ConnectTimeMS);
 		/* Connect Check */
@@ -1673,6 +1710,8 @@ void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_RecvDataRANormal(NBIOT_ClientsTypeDef* pClient)
 {
+	unsigned int uICoapConnectTime = 0;
+	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if (NBIOT_Neul_NBxx_CheckReadCONDataStatus(pClient) == NBIOT_OK) {
@@ -1763,9 +1802,15 @@ void NET_COAP_NBIOT_Event_RecvDataRANormal(NBIOT_ClientsTypeDef* pClient)
 		pClient->DictateRunCtl.dictateEvent = SEND_DATA_RA_NORMAL;
 		pClient->DictateRunCtl.dictateRecvDataRANormalFailureCnt = 0;
 		NET_COAP_NBIOT_Listen_Enable_EnterIdleMode(pClient);
+		NET_COAP_NBIOT_Listen_Enable_EnterParameter(pClient);
+		/* Get ConnectTime */
+		uICoapConnectTime = Stm32_EventRunningTime_EndMS(&pClient->ConnectTimeMS) / 1000;
 		/* End ConnectTime */
-		TCFG_SystemData.CoapConnectTime = TCFG_EEPROM_GetCoapConnectTime() + Stm32_EventRunningTime_EndMS(&pClient->ConnectTimeMS) / 1000;
+		TCFG_SystemData.CoapConnectTime = TCFG_EEPROM_GetCoapConnectTime() + uICoapConnectTime;
 		TCFG_EEPROM_SetCoapConnectTime(TCFG_SystemData.CoapConnectTime);
+		/* End ConnectDayTime */
+		TCFG_SystemData.CoapConnectDayTime = TCFG_EEPROM_GetCoapConnectDayTime() + uICoapConnectTime;
+		TCFG_EEPROM_SetCoapConnectDayTime(TCFG_SystemData.CoapConnectDayTime);
 		/* Start IdleTime */
 		Stm32_EventRunningTime_StartMS(&pClient->IdleTimeMS);
 #ifdef COAP_DEBUG_LOG_RF_PRINT
@@ -2070,6 +2115,22 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						}
 						__NOP();
 					}
+					/* QuotaTime */
+					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "QuotaTime") != NULL) {
+						u16 quotatime;
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(QuotaTime):{(val):%hu,(Magic):%hu}}", &quotatime, &recvMagicNum);
+						if (recvMagicNum == TCLOD_MAGIC_NUM) {
+							TCFG_SystemData.CoapQuotaTime = quotatime;
+							if (TCFG_SystemData.CoapQuotaTime < 500) {
+								TCFG_SystemData.CoapQuotaTime = NBCOAP_COAP_QUOTA_TIME_TYPE;
+								TCFG_EEPROM_SetCoapQuotaTime(TCFG_SystemData.CoapQuotaTime);
+							}
+						}
+						else {
+							ret = NETIP_UNKNOWNERROR;
+						}
+						__NOP();
+					}
 					/* ...... */
 				}
 				else if (pClient->Recvbuf[recvBufOffset + TCLOD_MSGID_OFFSET] == TCLOD_CONFIG_GET) {
@@ -2124,6 +2185,10 @@ void NET_COAP_Listen_PollExecution(NBIOT_ClientsTypeDef* pClient)
 	{
 	case ENTER_IDLE_MODE:
 		NET_COAP_NBIOT_Listen_Event_EnterIdleMode(pClient);
+		break;
+	
+	case ENTER_PARAMETER_CHECKOUT:
+		NET_COAP_NBIOT_Listen_Event_EnterParameter(pClient);
 		break;
 	}
 }
@@ -2217,7 +2282,94 @@ void NET_COAP_NBIOT_Listen_Event_EnterIdleMode(NBIOT_ClientsTypeDef* pClient)
 	}
 	
 	pClient->DictateRunCtl.dictateEnable = false;
+	pClient->DictateRunCtl.dictateEvent = LISTEN_RUN_CTL;
+	pClient->ListenRunCtl.listenEvent = ENTER_PARAMETER_CHECKOUT;
+}
+
+/**********************************************************************************************************
+ @Function			void NET_COAP_NBIOT_Listen_Enable_EnterParameter(NBIOT_ClientsTypeDef* pClient)
+ @Description			NET_COAP_NBIOT_Listen_Enable_EnterParameter	: 使能(进入NBIOT运行信息)监听
+ @Input				pClient								: NBIOT客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_COAP_NBIOT_Listen_Enable_EnterParameter(NBIOT_ClientsTypeDef* pClient)
+{
+	Stm32_CalculagraphTypeDef listenRunTime;
+	
+	/* Listen Enable */
+	if (pClient->ListenRunCtl.ListenEnterParameter.listenEnable == true) {
+		pClient->ListenRunCtl.ListenEnterParameter.listenStatus = true;
+		Stm32_Calculagraph_CountdownSec(&listenRunTime, pClient->ListenRunCtl.ListenEnterParameter.listenTimereachSec);
+		pClient->ListenRunCtl.ListenEnterParameter.listenRunTime = listenRunTime;
+	}
+}
+
+/**********************************************************************************************************
+ @Function			void NET_COAP_NBIOT_Listen_Event_EnterParameter(NBIOT_ClientsTypeDef* pClient)
+ @Description			NET_COAP_NBIOT_Listen_Event_EnterParameter	: 事件(进入NBIOT运行信息)监听
+ @Input				pClient								: NBIOT客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_COAP_NBIOT_Listen_Event_EnterParameter(NBIOT_ClientsTypeDef* pClient)
+{
+	Stm32_CalculagraphTypeDef eventRunTime;
+	
+	if ((pClient->ListenRunCtl.ListenEnterParameter.listenEnable == true) && (pClient->ListenRunCtl.ListenEnterParameter.listenStatus == true)) {
+		if (Stm32_Calculagraph_IsExpiredSec(&pClient->ListenRunCtl.ListenEnterParameter.listenRunTime) == true) {
+			
+			/* It is the first time to execute */
+			if (pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventEnable != true) {
+				pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventEnable = true;
+				pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventTimeoutSec = 30;
+				Stm32_Calculagraph_CountdownSec(&eventRunTime, pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventTimeoutSec);
+				pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventRunTime = eventRunTime;
+			}
+			
+			if ((NBIOT_Neul_NBxx_CheckReadRSSI(pClient) == NBIOT_OK) &&
+			    (NBIOT_Neul_NBxx_CheckReadStatisticsRADIO(pClient) == NBIOT_OK)) {
+				/* Dictate execute is Success */
+				pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventEnable = false;
+				pClient->ListenRunCtl.listenEvent = ENTER_PARAMETER_CHECKOUT;
+				pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt = 0;
+#ifdef COAP_DEBUG_LOG_RF_PRINT
+				Radio_Trf_Debug_Printf_Level2("Coap Patameter Check Ok");
+				Radio_Trf_Printf("RSSI:%d", pClient->Parameter.rssi);
+				Radio_Trf_Printf("SNR:%d", pClient->Parameter.statisticsRADIO.SNR);
+#endif
+			}
+			else {
+				/* Dictate execute is Fail */
+				if (Stm32_Calculagraph_IsExpiredSec(&pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventRunTime) == true) {
+					/* Dictate TimeOut */
+					pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventEnable = false;
+					pClient->ListenRunCtl.listenEvent = ENTER_PARAMETER_CHECKOUT;
+					pClient->DictateRunCtl.dictateEnable = false;
+					pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+					pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt++;
+					if (pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt > 3) {
+						pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt = 0;
+						pClient->DictateRunCtl.dictateEvent = STOP_MODE;
+					}
+				}
+				else {
+					/* Dictate isn't TimeOut */
+					pClient->ListenRunCtl.listenEvent = ENTER_PARAMETER_CHECKOUT;
+				}
+#ifdef COAP_DEBUG_LOG_RF_PRINT
+				Radio_Trf_Debug_Printf_Level2("Coap Patameter Check Fail");
+#endif
+				return;
+			}
+			
+			pClient->ListenRunCtl.ListenEnterParameter.listenEnable = false;
+			pClient->ListenRunCtl.ListenEnterParameter.listenStatus = false;
+			pClient->ListenRunCtl.listenEvent = ENTER_PARAMETER_CHECKOUT;
+		}
+	}
+	
+	pClient->DictateRunCtl.dictateEnable = false;
 	pClient->DictateRunCtl.dictateEvent = NBCOAP_SENDMODE_TYPE;
+	pClient->ListenRunCtl.listenEvent = ENTER_IDLE_MODE;
 }
 
 /********************************************** END OF FLEE **********************************************/

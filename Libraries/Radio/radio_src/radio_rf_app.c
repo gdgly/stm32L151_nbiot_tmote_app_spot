@@ -383,6 +383,16 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					Radio_Trf_Printf("RATime : %hu", TCFG_SystemData.CoapRATimeHour);
 					__NOP();
 				}
+				/* QuotaTime */
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "quotatime")) {
+					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "quotatime:%hu", &uval16);
+					TCFG_SystemData.CoapQuotaTime = uval16;
+					if (TCFG_SystemData.CoapQuotaTime < 500) {
+						TCFG_SystemData.CoapQuotaTime = NBCOAP_COAP_QUOTA_TIME_TYPE;
+						TCFG_EEPROM_SetCoapQuotaTime(TCFG_SystemData.CoapQuotaTime);
+					}
+					__NOP();
+				}
 				/* WorkInfo */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "workinfo")) {
 					NETCoapNeedSendCode.WorkInfo = 1;
@@ -396,15 +406,18 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					Radio_Trf_Printf("Earfcn:%d", TCFG_Utility_Get_Nbiot_RadioEARFCN());
 					Radio_Trf_Printf("CellId:%d", TCFG_Utility_Get_Nbiot_RadioCellID());
 					Radio_Trf_Printf("Cmdcnt:%d.%d", TCFG_EEPROM_GetRFCmdCnt(), TCFG_EEPROM_GetNBCmdCnt());
-					#if NETPROTOCAL == NETCOAP
+				#if NETPROTOCAL == NETCOAP
 					Radio_Trf_Printf("Nbworkmode:%d", TCFG_Utility_Get_Nbiot_WorkMode());
 					Radio_Trf_Printf("Nbruntime:%d.%d", TCFG_EEPROM_GetCoapConnectTime(), TCFG_EEPROM_GetCoapIdleTime());
-					#elif NETPROTOCAL == NETMQTTSN
-					#endif
+					Radio_Trf_Printf("NbruntimeDay:%d.%d", TCFG_EEPROM_GetCoapConnectDayTime(), TCFG_EEPROM_GetCoapIdleDayTime());
+				#elif NETPROTOCAL == NETMQTTSN
+					
+				#endif
 					__NOP();
 				}
 				/* NetInfo */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "netinfo")) {
+					Radio_Trf_Printf("NetInfo:");
 				#if NETPROTOCAL == NETCOAP
 					NETCoapNeedSendCode.BasicInfo = 1;
 					NETCoapNeedSendCode.DynamicInfo = 1;
@@ -417,7 +430,7 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					Radio_Trf_Printf("CGP:%s", NbiotClientHandler.Parameter.cgpaddr);
 					Radio_Trf_Printf("CGD:%s", NbiotClientHandler.Parameter.cgdcont);
 					Radio_Trf_Printf("RSSI:%d", NbiotClientHandler.Parameter.rssi);
-					Radio_Trf_Printf("SNR:%d", NbiotClientHandler.Parameter.statisticsCELL.snr);
+					Radio_Trf_Printf("SNR:%d", NbiotClientHandler.Parameter.statisticsRADIO.SNR);
 					Radio_Trf_Printf("CDPHost:%s", NbiotClientHandler.Parameter.cdpserver.CDPServerHost);
 					Radio_Trf_Printf("CDPPort:%d", NbiotClientHandler.Parameter.cdpserver.CDPServerPort);
 				#elif NETPROTOCAL == NETMQTTSN
@@ -432,10 +445,26 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					Radio_Trf_Printf("CGP:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.cgpaddr);
 					Radio_Trf_Printf("CGD:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.cgdcont);
 					Radio_Trf_Printf("RSSI:%d", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.rssi);
-					Radio_Trf_Printf("SNR:%d", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsCELL.snr);
+					Radio_Trf_Printf("SNR:%d", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR);
 					Radio_Trf_Printf("MqttSN :%s", MQTTSN_SERVER_HOST_NAME);
 					Radio_Trf_Printf("MqttSN :%s:%d", MqttSNClientHandler.SocketStack->ServerHost, MqttSNClientHandler.SocketStack->ServerPort);
 				#endif
+					__NOP();
+				}
+				/* DeviceInfo */
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "devinfo")) {
+					Radio_Trf_Printf("DeviceInfo:");
+					Radio_Trf_Printf("Runtime:%d", TCFG_Utility_Get_Run_Time());
+					Radio_Trf_Printf("Batt:%d", TCFG_Utility_Get_Device_Batt_ShortVal());
+					Radio_Trf_Printf("RadarLib:%d", TCFG_Utility_Get_RadarLibNum());
+					Radio_Trf_Printf("RadarCnt:%d", TCFG_GetRadarCount());
+					Radio_Trf_Printf("Temperature:%d", TCFG_Utility_Get_Device_Temperature());
+					Radio_Trf_Printf("RadarDbgMode:%d", TCFG_EEPROM_GetRadarDbgMode());
+					Radio_Trf_Printf("AlgoLib:%d", TCFG_Utility_Get_AlgoLibNum());
+					Radio_Trf_Printf("QmcReboot:%d", TCFG_Utility_Get_ReInitModuleCount());
+					Radio_Trf_Printf("Nbboot:%d", TCFG_Utility_Get_Nbiot_BootCount());
+					Radio_Trf_Printf("Nbsent:%d", TCFG_Utility_Get_Nbiot_SentCount());
+					Radio_Trf_Printf("Nbrecv:%d", TCFG_Utility_Get_Nbiot_RecvCount());
 					__NOP();
 				}
 				/* ...... */

@@ -33,7 +33,7 @@ void NET_DNS_NBIOT_Event_MiscEquipConfig(DNS_ClientsTypeDef* pClient);			//其�
 void NET_DNS_NBIOT_Event_AttachCheck(DNS_ClientsTypeDef* pClient);				//注网检查
 void NET_DNS_NBIOT_Event_AttachExecute(DNS_ClientsTypeDef* pClient);				//注网进行
 void NET_DNS_NBIOT_Event_AttachInquire(DNS_ClientsTypeDef* pClient);				//注网查询
-void NET_DNS_NBIOT_Event_PatameterCheckOut(DNS_ClientsTypeDef* pClient);			//参数检出
+void NET_DNS_NBIOT_Event_ParameterCheckOut(DNS_ClientsTypeDef* pClient);			//参数检出
 
 void NET_DNS_APP_ProcessExecution(DNS_ClientsTypeDef* pClient);					//DNS协议逻辑处理
 void NET_DNS_Event_CreatUDPSocket(DNS_ClientsTypeDef* pClient);					//CreatUDPSocket

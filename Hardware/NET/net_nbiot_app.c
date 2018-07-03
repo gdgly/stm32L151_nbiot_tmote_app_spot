@@ -113,6 +113,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		Inspect_Message_SpotStatusOffSet();
 		TCFG_Utility_Add_Coap_SentCount();
 		NbiotClientHandler.ListenRunCtl.ListenEnterIdle.listenEnable = true;
+		NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
 	}
 	/* COAP LONG STATUS DATA ENQUEUE */
 	else if (NETCoapNeedSendCode.LongStatus) {
@@ -144,6 +145,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		Inspect_Message_SpotStatusOffSet();
 		TCFG_Utility_Add_Coap_SentCount();
 		NbiotClientHandler.ListenRunCtl.ListenEnterIdle.listenEnable = true;
+		NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
 	}
 	/* COAP WORK INFO DATA ENQUEUE */
 	else if (NETCoapNeedSendCode.WorkInfo) {
@@ -164,6 +166,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NETCoapNeedSendCode.WorkInfo = 0;
 		TCFG_Utility_Add_Coap_SentCount();
 		NbiotClientHandler.ListenRunCtl.ListenEnterIdle.listenEnable = NbiotClientHandler.ListenRunCtl.ListenEnterIdle.listenEnable;
+		NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
 	}
 	/* COAP BASIC INFO DATA ENQUEUE */
 	else if (NETCoapNeedSendCode.BasicInfo) {
@@ -184,6 +187,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NETCoapNeedSendCode.BasicInfo = 0;
 		TCFG_Utility_Add_Coap_SentCount();
 		NbiotClientHandler.ListenRunCtl.ListenEnterIdle.listenEnable = true;
+		NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
 	}
 	/* COAP DYNAMIC INFO DATA ENQUEUE */
 	else if (NETCoapNeedSendCode.DynamicInfo) {
@@ -204,6 +208,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NETCoapNeedSendCode.DynamicInfo = 0;
 		TCFG_Utility_Add_Coap_SentCount();
 		NbiotClientHandler.ListenRunCtl.ListenEnterIdle.listenEnable = true;
+		NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
 	}
 	/* COAP RADAR INFO DATA ENQUEUE */
 	else if (NETCoapNeedSendCode.RadarInfo) {
@@ -224,6 +229,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NETCoapNeedSendCode.RadarInfo = 0;
 		TCFG_Utility_Add_Coap_SentCount();
 		NbiotClientHandler.ListenRunCtl.ListenEnterIdle.listenEnable = true;
+		NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
 	}
 	/* COAP RESPONSE INFO DATA ENQUEUE */
 	else if (NETCoapNeedSendCode.ResponseInfo) {
@@ -244,6 +250,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NETCoapNeedSendCode.ResponseInfo = 0;
 		TCFG_Utility_Add_Coap_SentCount();
 		NbiotClientHandler.ListenRunCtl.ListenEnterIdle.listenEnable = true;
+		NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
 	}
 #elif NETPROTOCAL == NETMQTTSN
 	

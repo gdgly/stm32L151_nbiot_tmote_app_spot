@@ -238,6 +238,7 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Dynamic(char* outBuffer)
 			"{"
 				"\"Runtime\":%d,"
 				"\"Rssi\":%d,"
+				"\"Snr\":%d,"
 				"\"Batt\":%d,"
 				"\"Rlib\":\"%d\","
 				"\"Rcnt\":%d,"
@@ -257,6 +258,7 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Dynamic(char* outBuffer)
 		dataBuf.DeviceSN,
 		TCFG_Utility_Get_Run_Time(),
 		TCFG_Utility_Get_Nbiot_Rssi_IntVal(),
+		TCFG_Utility_Get_Nbiot_RadioSNR(),
 		TCFG_Utility_Get_Device_Batt_ShortVal(),
 		TCFG_Utility_Get_RadarLibNum(),
 		TCFG_GetRadarCount(),
@@ -312,7 +314,7 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Radar(char* outBuffer)
 		Qmc5883lData.X_Now,
 		Qmc5883lData.Y_Now,
 		Qmc5883lData.Z_Now,
-		TCFG_Utility_Get_Nbiot_CellSnr(),
+		TCFG_Utility_Get_Nbiot_RadioSNR(),
 		TCFG_Utility_Get_Nbiot_Rssi_IntVal(),
 		TCFG_Utility_Get_Device_Temperature(),
 		radar_targetinfo.pMagNow[2],  radar_targetinfo.pMagNow[3],  radar_targetinfo.pMagNow[4],  radar_targetinfo.pMagNow[5],

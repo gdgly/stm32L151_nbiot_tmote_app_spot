@@ -403,7 +403,9 @@ void MainHandleRoutine(void)
 		if ((val8 != 0 ) && (SystemRunningTime.fifteenMinutes % val8 == 0)) {
 			if (radarCountPre != TCFG_GetRadarCount()) {
 				radarCountPre = TCFG_GetRadarCount();
-				NETCoapNeedSendCode.RadarInfo = 1;
+				if (TCFG_EEPROM_GetCoapConnectDayTime() <= (TCFG_EEPROM_GetCoapQuotaTime() / 2)) {
+					NETCoapNeedSendCode.RadarInfo = 1;
+				}
 				NETMqttSNNeedSendCode.InfoRadar = 1;
 			}
 		}
@@ -415,6 +417,19 @@ void MainHandleRoutine(void)
 		if (RTC_Time_GetCurrentHour() == 0) {
 			if (Inspect_Message_SpotStatusisEmpty() != false) {
 				NET_NBIOT_Initialization();
+			}
+			
+			/* Coap保持连接时间(一天) */
+			TCFG_SystemData.CoapConnectDayTime = 0;
+			TCFG_EEPROM_SetCoapConnectDayTime(TCFG_SystemData.CoapConnectDayTime);
+			
+			/* Coap休眠时间(一天) */
+			TCFG_SystemData.CoapIdleDayTime = 0;
+			TCFG_EEPROM_SetCoapIdleDayTime(TCFG_SystemData.CoapIdleDayTime);
+			
+			if (TCFG_EEPROM_GetNbiotHeart() > NBIOT_HEART_DATA_HOURS) {
+				TCFG_SystemData.NBIotHeart = NBIOT_HEART_DATA_HOURS;
+				TCFG_EEPROM_SetNbiotHeart(TCFG_SystemData.NBIotHeart);
 			}
 		}
 	}

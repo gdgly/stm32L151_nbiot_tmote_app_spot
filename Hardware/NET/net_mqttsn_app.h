@@ -61,7 +61,7 @@ void NET_MQTTSN_NBIOT_Event_MiscEquipConfig(MQTTSN_ClientsTypeDef* pClient);		//
 void NET_MQTTSN_NBIOT_Event_AttachCheck(MQTTSN_ClientsTypeDef* pClient);			//注网检查
 void NET_MQTTSN_NBIOT_Event_AttachExecute(MQTTSN_ClientsTypeDef* pClient);			//注网进行
 void NET_MQTTSN_NBIOT_Event_AttachInquire(MQTTSN_ClientsTypeDef* pClient);			//注网查询
-void NET_MQTTSN_NBIOT_Event_PatameterCheckOut(MQTTSN_ClientsTypeDef* pClient);		//参数检出
+void NET_MQTTSN_NBIOT_Event_ParameterCheckOut(MQTTSN_ClientsTypeDef* pClient);		//参数检出
 
 void NET_MQTTSN_APP_ProcessExecution(MQTTSN_ClientsTypeDef* pClient);				//MqttSN协议逻辑处理
 void NET_MQTTSN_Event_Init(MQTTSN_ClientsTypeDef* pClient);						//INIT

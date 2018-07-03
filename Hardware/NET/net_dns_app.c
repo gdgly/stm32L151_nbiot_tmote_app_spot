@@ -68,7 +68,7 @@ void NET_DNS_APP_PollExecution(DNS_ClientsTypeDef* pClient)
 		break;
 	
 	case PARAMETER_CHECKOUT:
-		NET_DNS_NBIOT_Event_PatameterCheckOut(pClient);
+		NET_DNS_NBIOT_Event_ParameterCheckOut(pClient);
 		break;
 	
 	case MINIMUM_FUNCTIONALITY:
@@ -840,7 +840,7 @@ void NET_DNS_NBIOT_Event_AttachInquire(DNS_ClientsTypeDef* pClient)
  @Input				pClient							: DNS客户端实例
  @Return				void
 **********************************************************************************************************/
-void NET_DNS_NBIOT_Event_PatameterCheckOut(DNS_ClientsTypeDef* pClient)
+void NET_DNS_NBIOT_Event_ParameterCheckOut(DNS_ClientsTypeDef* pClient)
 {
 	DNS_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -858,7 +858,7 @@ void NET_DNS_NBIOT_Event_PatameterCheckOut(DNS_ClientsTypeDef* pClient)
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = DNS_PROCESS_STACK;
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictatePatameterCheckOutFailureCnt = 0;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("NB Patameter Check Ok");
+		Radio_Trf_Debug_Printf_Level2("NB Parameter Check Ok");
 #endif
 	}
 	else {
@@ -878,7 +878,7 @@ void NET_DNS_NBIOT_Event_PatameterCheckOut(DNS_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = PARAMETER_CHECKOUT;
 		}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("NB Patameter Check Fail");
+		Radio_Trf_Debug_Printf_Level2("NB Parameter Check Fail");
 #endif
 		return;
 	}

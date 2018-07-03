@@ -71,14 +71,21 @@ void NBIOT_Client_Init(NBIOT_ClientsTypeDef* pClient, NBIOT_ATCmdTypeDef* ATCmdS
 	pClient->DictateRunCtl.dictateEvent						= HARDWARE_REBOOT;
 	
 	/* 事件运行监听器 */
-	pClient->ListenRunCtl.ListenEnterIdle.listenEnable			= false;
-	pClient->ListenRunCtl.ListenEnterIdle.listenStatus			= false;
-	pClient->ListenRunCtl.ListenEnterIdle.listenTimereachSec		= 35;
-	pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventEnable		= false;
-	pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventTimeoutSec	= 0;
-	pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventFailureCnt	= 0;
+	pClient->ListenRunCtl.ListenEnterIdle.listenEnable				= false;
+	pClient->ListenRunCtl.ListenEnterIdle.listenStatus				= false;
+	pClient->ListenRunCtl.ListenEnterIdle.listenTimereachSec			= 35;
+	pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventEnable			= false;
+	pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventTimeoutSec		= 0;
+	pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventFailureCnt		= 0;
 	
-	pClient->ListenRunCtl.listenEvent							= ENTER_IDLE_MODE;
+	pClient->ListenRunCtl.ListenEnterParameter.listenEnable			= false;
+	pClient->ListenRunCtl.ListenEnterParameter.listenStatus			= false;
+	pClient->ListenRunCtl.ListenEnterParameter.listenTimereachSec		= 10;
+	pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventEnable		= false;
+	pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventTimeoutSec	= 0;
+	pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt	= 0;
+	
+	pClient->ListenRunCtl.listenEvent								= ENTER_IDLE_MODE;
 	
 	pClient->ATCmdStack										= ATCmdStack;
 	pClient->NetNbiotStack									= NetNbiotStack;
