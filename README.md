@@ -1,6 +1,12 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang
 
+* 2018-07-04 :
+	* 雷达vptat电压低于0.1v就认为前端集成运放,反之则不集成运放。
+	* 当调整温漂系数时,背景值也要根据温度进行调整,那么也就是要记录背景值的温度。
+	* 增加了磁场值的温漂系数,用以矫正温度带来的影响
+	* rf 指令:coef:xx,xx,xx
+	* nb 指令:{(MagCoef):{(x):xx,(y):xx,(z):xx,(Magic):xx}}
 * 2018-07-03 :
 	* 增加nb工作时间配额管理，当时间超过一天配额的一半时,除了状态包和心跳包.其他包就不发。
 	* nb工作时间 超过一天配额的 2/3 时,就心跳包的间隔也强制改为4小时。
@@ -9,6 +15,8 @@ movebroad Knagkang
 	* 增加COAP发送数据后检出信号值与信噪比。
 * 2018-06-28 :
 	* 增加NB对COAP处理时间的统计，ConnectTime和IdleTime，通过workinfo发送，nb工作时间.nb休眠时间。
+* 2018-06-27 :
+	* 更新了雷达库,纠正谱线2和3的背景值计算有偏差的错误。
 * 2018-06-23 :
 	* Bootloader改为0V20，适配该Bootloader，Bootloader减少6Kflash，NB上传INFO数据增加Boot版本号。
 	* TCFG_MAG_FREQ_OFFSET 改为 TCFG_BOOT_VERSION_OFFSET。
@@ -41,6 +49,9 @@ movebroad Knagkang
 * 2018-06-02 : 
 	* 增加NUESTATS=RADIO信息获取，优化上报workinfo中的频点与CellID值。
 	* 增加RF输出WorkInfo信息。
+	* 初始化的时候不再开关雷达。
+	* 雷达波动一分钟后不再上报雷达信息。
+	* soft增加BootLoader的版本号,TCFG_MAG_FREQ_OFFSET用来存储boot的版本号。
 * 2018-05-26 : 
 	* NB增加清空频点指令,获取当前PSM状态指令。
 * 2018-05-24 : 

@@ -33,6 +33,8 @@ COAP_SwapRecvDataTypeDef		NETCoapMessageRecvPark;
 **********************************************************************************************************/
 int NET_COAP_Message_Operate_Creat_Json_Work_Info(char* outBuffer)
 {
+	TCFG_EEPROM_GetMagTempCoef(&TCFG_SystemData.MagCoefX, &TCFG_SystemData.MagCoefY, &TCFG_SystemData.MagCoefZ);
+	
 	sprintf(outBuffer, 
 		"{"
 			"\"SN\":\"%08x\","
@@ -47,7 +49,8 @@ int NET_COAP_Message_Operate_Creat_Json_Work_Info(char* outBuffer)
 				"\"Cmdcnt\":\"%d.%d\","
 				"\"Nbworkmode\":%d,"
 				"\"Nbruntime\":\"%d.%d\","
-				"\"NbruntimeDay\":\"%d.%d\""
+				"\"NbruntimeDay\":\"%d.%d\","
+				"\"Coef\":\"%d.%d.%d\""
 			"}"
 		"}",
 		
@@ -61,7 +64,8 @@ int NET_COAP_Message_Operate_Creat_Json_Work_Info(char* outBuffer)
 		TCFG_EEPROM_GetRFCmdCnt(), TCFG_EEPROM_GetNBCmdCnt(),
 		TCFG_Utility_Get_Nbiot_WorkMode(),
 		TCFG_EEPROM_GetCoapConnectTime(), TCFG_EEPROM_GetCoapIdleTime(),
-		TCFG_EEPROM_GetCoapConnectDayTime(), TCFG_EEPROM_GetCoapIdleDayTime()
+		TCFG_EEPROM_GetCoapConnectDayTime(), TCFG_EEPROM_GetCoapIdleDayTime(),
+		TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ
 	);
 	
 	return strlen(outBuffer);

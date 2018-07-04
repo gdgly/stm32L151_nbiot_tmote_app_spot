@@ -561,4 +561,24 @@ void QMC5883L_Softwart_Reset(void)
 	QMC5883L_WriteByte(QMC5883L_CR2, QMC_INT_ENABLE | QMC_POINT_ROLL_DISABLE);
 }
 
+/**********************************************************************************************************
+ @Function			short QMC5883L_Temperature_Read(void)
+ @Description			QMC5883L温度读取
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+short QMC5883L_Temperature_Read(void)
+{
+	uint8_t temp_l, temp_h;
+	short i16;
+	
+	temp_l = QMC5883L_ReadByte(QMC_TEMPERATURE_L);
+	temp_h = QMC5883L_ReadByte(QMC_TEMPERATURE_H);
+	i16 = ((int16_t)(temp_h << 8)|temp_l)/100;
+	
+	Qmc5883lData.temp_now = i16;
+	
+	return Qmc5883lData.temp_now;
+}
+
 /********************************************** END OF FLEE **********************************************/

@@ -20,7 +20,7 @@
 
 __IO u32 SystemRunningTimesSecond = 0;										//系统运行时间(S)
 __IO u32 SystemSoftResetTime = 0;											//系统运行超时软件复位时间(MS)
-Stm32_SystemRunningTime		SystemRunningTime;								//系统运行时间(结构体)
+Stm32_SystemRunningTime		SystemRunningTime = {0,0,100,0,0,0,1,0};			//系统运行时间(结构体)
 
 /**********************************************************************************************************
  @Function			void Stm32_Clock_Init(u32 pllmul, u32 plldiv)
@@ -129,6 +129,9 @@ void Stm32_System_Software_Reboot(void)
 	TCFG_SystemData.MagBackgroundY = Qmc5883lData.Y_Back;
 	TCFG_SystemData.MagBackgroundZ = Qmc5883lData.Z_Back;
 	TCFG_EEPROM_SetMagBackgroud(TCFG_SystemData.MagBackgroundX, TCFG_SystemData.MagBackgroundY, TCFG_SystemData.MagBackgroundZ);
+	
+	TCFG_SystemData.MagBackgroudTemp = Qmc5883lData.temp_back;
+	TCFG_EEPROM_SetMagBackgroudTemp(TCFG_SystemData.MagBackgroudTemp);
 	
 	__set_FAULTMASK(1);													//关闭所有中断
 	HAL_NVIC_SystemReset();												//软件复位

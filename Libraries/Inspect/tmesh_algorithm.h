@@ -66,6 +66,8 @@ typedef __packed struct
 	signed short int					Y_Now;
 	signed short int					Z_Now;
 	
+	signed short int					temp_now;
+	
 	signed short int					X_Last[5];
 	signed short int					Y_Last[5];
 	signed short int					Z_Last[5];
@@ -73,6 +75,12 @@ typedef __packed struct
 	signed short int					X_Back;
 	signed short int					Y_Back;
 	signed short int					Z_Back;
+	
+	signed short int					temp_back;
+	
+	char								X_Coef;
+	char								Y_Coef;
+	char								Z_Coef;
 }QMC5883L_TypeDef;
 
 typedef __packed struct

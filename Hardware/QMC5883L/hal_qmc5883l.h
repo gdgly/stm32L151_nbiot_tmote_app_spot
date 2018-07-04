@@ -53,7 +53,7 @@
 #define QMC_DEVIATION_MAX		100										//最大跳变值
 #define QMC_SAMPLE_TIMES			5										//采样次数
 
-void QMC5883L_Init(void);												//QMC5883L初始化
+void	QMC5883L_Init(void);												//QMC5883L初始化
 void QMC5883L_Drdy_Init(void);											//QMC5883L引脚配置PA11高电平读取
 void QMC5883L_Drdy_DeInit(void);											//QMC5883L引脚配置PA11反初始化
 void QMC5883L_Drdy_Exti_Init(void);										//QMC5883L引脚配置PA11高电平读取(中断)
@@ -69,5 +69,6 @@ void QMC5883L_Range_Selection(u8 range);									//QMC5883L测量范围选择
 void QMC5883L_Osr_Selection(u8 osr);										//QMC5883L内置滤波器带宽选择
 void QMC5883L_Interrupt_Selection(u8 interrupt);								//QMC5883L引脚中断选择
 void QMC5883L_Softwart_Reset(void);										//QMC5883L复位
+short QMC5883L_Temperature_Read(void);										//QMC5883L温度读取
 
 #endif

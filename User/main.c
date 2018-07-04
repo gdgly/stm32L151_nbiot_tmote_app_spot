@@ -358,6 +358,7 @@ void MainHandleRoutine(void)
 {
 	static uint32_t radarCountPre = 0;
 	uint8_t val8;
+	short val16;
 	
 	/* Every Second Running */
 	if (Stm32_GetSecondTick() != SystemRunningTime.seconds) {
@@ -393,7 +394,8 @@ void MainHandleRoutine(void)
 	if ((Stm32_GetSecondTick() / 60) != SystemRunningTime.minutes) {
 		SystemRunningTime.minutes = Stm32_GetSecondTick() / 60;
 		
-		
+		val16 = QMC5883L_Temperature_Read();
+		Radio_Trf_Debug_Printf_Level3(" qmc_temperature = %hd ", val16);
 	}
 	/* Every FifteenMinutes Running */
 	if ((Stm32_GetSecondTick() / 900) != SystemRunningTime.fifteenMinutes) {
@@ -454,6 +456,9 @@ void MainHandleRoutine(void)
 		TCFG_SystemData.MagBackgroundY = Qmc5883lData.Y_Back;
 		TCFG_SystemData.MagBackgroundZ = Qmc5883lData.Z_Back;
 		TCFG_EEPROM_SetMagBackgroud(TCFG_SystemData.MagBackgroundX, TCFG_SystemData.MagBackgroundY, TCFG_SystemData.MagBackgroundZ);
+		
+		TCFG_SystemData.MagBackgroudTemp = Qmc5883lData.temp_back;
+		TCFG_EEPROM_SetMagBackgroudTemp(TCFG_SystemData.MagBackgroudTemp);
 	}
 	/* Every Day Running */
 	if ((Stm32_GetSecondTick() / (24*3600)) != SystemRunningTime.days) {

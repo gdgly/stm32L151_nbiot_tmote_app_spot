@@ -193,6 +193,7 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 	unsigned int mac_sn = 0;
 	unsigned int uval32 = 0;
 	unsigned short int uval16 = 0;
+	short magTempCoefX, magTempCoefY, magTempCoefZ;
 	
 	mac_sn = TCFG_EEPROM_Get_MAC_SN();
 	
@@ -393,10 +394,20 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					}
 					__NOP();
 				}
+				/* MagTempCoef */
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "coef")) {
+					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "coef:%hd,%hd,%hd", &magTempCoefX, &magTempCoefY, &magTempCoefZ);
+					TCFG_SystemData.MagCoefX = magTempCoefX;
+					TCFG_SystemData.MagCoefY = magTempCoefY;
+					TCFG_SystemData.MagCoefZ = magTempCoefZ;
+					TCFG_EEPROM_SetMagTempCoef(TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
+					__NOP();
+				}
 				/* WorkInfo */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "workinfo")) {
 					NETCoapNeedSendCode.WorkInfo = 1;
 					NETMqttSNNeedSendCode.InfoWork = 1;
+					TCFG_EEPROM_GetMagTempCoef(&TCFG_SystemData.MagCoefX, &TCFG_SystemData.MagCoefY, &TCFG_SystemData.MagCoefZ);
 					Radio_Trf_Printf("WorkInfo:");
 					Radio_Trf_Printf("Soft:%d:%d.%d", TCFG_EEPROM_GetBootVersion(), TCFG_Utility_Get_Major_Softnumber(), TCFG_Utility_Get_Sub_Softnumber());
 					Radio_Trf_Printf("Sense:%d", TCFG_EEPROM_GetSavedSensitivity());
@@ -413,6 +424,7 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				#elif NETPROTOCAL == NETMQTTSN
 					
 				#endif
+					Radio_Trf_Printf("Coef:%d.%d.%d", TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
 					__NOP();
 				}
 				/* NetInfo */

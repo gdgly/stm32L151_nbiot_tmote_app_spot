@@ -34,23 +34,31 @@
 
 #define SAMPLE_NUM	TRADAR_SAMPLE_NUM
 
+enum TRADAR_MODEL_TYPE
+{
+	TRADAR_IMSEMI						= 0x00,
+	TRADAR_INFINEON					= 0x01
+};
+
 //#define	XIAMEN
 #define	VDDA2V8														//VDDA = 2.8V 0~2633 -> 0~1.8V
 //#define	VDDA3V3														//VDDA = 3.3V 0~2234 -> 0~1.8V
 //#define	RADAR_VPTAT
 
 #ifdef VDDA3V3
-	#define	RADER_RANGE				6
-	short	RADER_LOW = 250;
+	char		RADER_RANGE	= 6;
+	short	RADER_LOW		= 250;
 #else
 #ifdef XIAMEN
-	#define	RADER_RANGE				15							// 6x304 +650 = 2486
-	short	RADER_LOW = 100;
+	char		RADER_RANGE	= 15;										// 6x304 +650 = 2486
+	short	RADER_LOW		= 100;
 #else
-	#define	RADER_RANGE				8							// 6x304 +650 = 2486
-	short	RADER_LOW = 250;
+	char		RADER_RANGE	= 8;											// 6x304 +650 = 2486
+	short	RADER_LOW		= 250;
 #endif
 #endif
+
+char radar_model = TRADAR_INFINEON;
 
 short val_vptat, val_vptat_adjust;
 short val_temp, val_temp_adjust;
@@ -533,6 +541,15 @@ void Radar_EnterCriticalSection(void)
 	talgo_get_radartunebase_test();
 #elif RADAR_MODEL_TYPE == RADAR_MODEL_V2
 	talgo_get_radartunebase_vptat();
+	/* -<0.1v 那么是国产雷达- */
+	if (val_vptat < 10) {
+		RADER_RANGE = 15;												// 6x304 +650 = 2486
+		RADER_LOW = 100;
+	}
+	else {
+		RADER_RANGE = 8;												// 6x304 +650 = 2486
+		RADER_LOW = 250;
+	}
 	__NOP();
 #else
 	#error RADAR_MODEL_TYPE Define Error

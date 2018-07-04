@@ -68,6 +68,16 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_SystemData.MagBackgroundZ = 0x7FFF;
 	TCFG_EEPROM_SetMagBackgroud(TCFG_SystemData.MagBackgroundX, TCFG_SystemData.MagBackgroundY, TCFG_SystemData.MagBackgroundZ);
 	
+	/* 地磁背景温度补偿值 */
+	TCFG_SystemData.MagBackgroudTemp = 0;
+	TCFG_EEPROM_SetMagBackgroudTemp(TCFG_SystemData.MagBackgroudTemp);
+	
+	/* 地磁温飘计算值 */
+	TCFG_SystemData.MagCoefX = 0;
+	TCFG_SystemData.MagCoefY = 0;
+	TCFG_SystemData.MagCoefZ = 0;
+	TCFG_EEPROM_SetMagTempCoef(TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
+	
 	/* 设备工作模式 */
 	TCFG_SystemData.WorkMode = NORMAL_WORK;
 	TCFG_EEPROM_SetWorkMode(TCFG_SystemData.WorkMode);
@@ -217,6 +227,16 @@ void TCFG_EEPROM_ReadConfigData(void)
 	Qmc5883lData.X_Back = TCFG_SystemData.MagBackgroundX;
 	Qmc5883lData.Y_Back = TCFG_SystemData.MagBackgroundY;
 	Qmc5883lData.Z_Back = TCFG_SystemData.MagBackgroundZ;
+	
+	/* 地磁背景温度补偿值 */
+	TCFG_SystemData.MagBackgroudTemp = TCFG_EEPROM_GetMagBackgroudTemp();
+	Qmc5883lData.temp_back = TCFG_SystemData.MagBackgroudTemp;
+	
+	/* 地磁温飘计算值 */
+	TCFG_EEPROM_GetMagTempCoef(&TCFG_SystemData.MagCoefX, &TCFG_SystemData.MagCoefY, &TCFG_SystemData.MagCoefZ);
+	Qmc5883lData.X_Coef = TCFG_SystemData.MagCoefX;
+	Qmc5883lData.Y_Coef = TCFG_SystemData.MagCoefY;
+	Qmc5883lData.Z_Coef = TCFG_SystemData.MagCoefZ;
 	
 	/* 获取设备工作模式 */
 	TCFG_SystemData.WorkMode = TCFG_EEPROM_GetWorkMode();
@@ -532,6 +552,90 @@ unsigned short TCFG_EEPROM_GetMagBackgroud(char axis)
 	}
 	
 	return 0x7FFF;
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetMagTempCoef(char coef_x, char coef_y, char coef_z)
+ @Description			TCFG_EEPROM_SetMagTempCoef					: 保存地磁温飘计算值
+ @Input				coef_x
+					coef_y
+					coef_z
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetMagTempCoef(char coef_x, char coef_y, char coef_z)
+{
+	int sval32;
+	
+	sval32 = Qmc5883lData.X_Back*(10000+coef_x*Qmc5883lData.temp_back)/(10000+Qmc5883lData.X_Coef*Qmc5883lData.temp_back);
+	if (sval32 > 32767)
+		Qmc5883lData.X_Back = 32767;
+	else if (sval32 < -32768)
+		Qmc5883lData.X_Back = -32768;
+	else
+		Qmc5883lData.X_Back = sval32;
+	
+	sval32 = Qmc5883lData.Y_Back*(10000+coef_y*Qmc5883lData.temp_back)/(10000+Qmc5883lData.Y_Coef*Qmc5883lData.temp_back);
+	if (sval32 > 32767)
+		Qmc5883lData.Y_Back = 32767;
+	else if (sval32 < -32768)
+		Qmc5883lData.Y_Back = -32768;
+	else
+		Qmc5883lData.Y_Back = sval32;
+	
+	sval32 = Qmc5883lData.Z_Back*(10000+coef_z*Qmc5883lData.temp_back)/(10000+Qmc5883lData.Z_Coef*Qmc5883lData.temp_back);
+	if (sval32 > 32767)
+		Qmc5883lData.Z_Back = 32767;
+	else if (sval32 < -32768)
+		Qmc5883lData.Z_Back = -32768;
+	else
+		Qmc5883lData.Z_Back = sval32;
+	
+	Qmc5883lData.X_Coef = coef_x;
+	Qmc5883lData.Y_Coef = coef_y;
+	Qmc5883lData.Z_Coef = coef_z;
+	
+	FLASH_EEPROM_WriteByte(TCFG_MAG_COEF_X_OFFSET, coef_x);
+	FLASH_EEPROM_WriteByte(TCFG_MAG_COEF_Y_OFFSET, coef_y);
+	FLASH_EEPROM_WriteByte(TCFG_MAG_COEF_Z_OFFSET, coef_z);
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_GetMagTempCoef(char* coef_x, char* coef_y, char* coef_z)
+ @Description			TCFG_EEPROM_GetMagTempCoef					: 读取地磁温飘计算值
+ @Input				*coef_x
+					*coef_y
+					*coef_z
+ @Return				val
+**********************************************************************************************************/
+void TCFG_EEPROM_GetMagTempCoef(char* coef_x, char* coef_y, char* coef_z)
+{
+	*coef_x = FLASH_EEPROM_ReadByte(TCFG_MAG_COEF_X_OFFSET);
+	*coef_y = FLASH_EEPROM_ReadByte(TCFG_MAG_COEF_Y_OFFSET);
+	*coef_z = FLASH_EEPROM_ReadByte(TCFG_MAG_COEF_Z_OFFSET);
+	
+	return ;
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetMagBackgroudTemp(short temp)
+ @Description			TCFG_EEPROM_SetMagBackgroudTemp				: 保存MagBackgroudTemp
+ @Input				temp
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetMagBackgroudTemp(short temp)
+{
+	FLASH_EEPROM_WriteHalfWord(TCFG_MAG_BACK_TEMP_OFFSET, temp);
+}
+
+/**********************************************************************************************************
+ @Function			short TCFG_EEPROM_GetMagBackgroudTemp(void)
+ @Description			TCFG_EEPROM_GetMagBackgroudTemp				: 读取MagBackgroudTemp
+ @Input				void
+ @Return				temp
+**********************************************************************************************************/
+short TCFG_EEPROM_GetMagBackgroudTemp(void)
+{
+	return FLASH_EEPROM_ReadHalfWord(TCFG_MAG_BACK_TEMP_OFFSET);
 }
 
 /**********************************************************************************************************

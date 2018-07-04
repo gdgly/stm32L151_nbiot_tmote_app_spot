@@ -1827,6 +1827,22 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					}
 					__NOP();
 				}
+				/* MagCoef */
+				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "MagCoef") != NULL) {
+					short magTempCoefX, magTempCoefY, magTempCoefZ;
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
+						"{(MagCoef):{(x):%hd,(y):%hd,(z):%hd,(Magic):%hu}}", &magTempCoefX, &magTempCoefY, &magTempCoefZ, &recvMagicNum);
+					if (recvMagicNum == TCLOD_MAGIC_NUM) {
+						TCFG_SystemData.MagCoefX = magTempCoefX;
+						TCFG_SystemData.MagCoefY = magTempCoefY;
+						TCFG_SystemData.MagCoefZ = magTempCoefZ;
+						TCFG_EEPROM_SetMagTempCoef(TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
+					}
+					else {
+						ret = NETIP_UNKNOWNERROR;
+					}
+					__NOP();
+				}
 				/* ...... */
 			}
 			else if (messageHandler->message->payload[recvBufOffset + TCLOD_MSGID_OFFSET] == TCLOD_CONFIG_GET) {

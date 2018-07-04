@@ -2131,6 +2131,22 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						}
 						__NOP();
 					}
+					/* MagCoef */
+					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "MagCoef") != NULL) {
+						short magTempCoefX, magTempCoefY, magTempCoefZ;
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
+							"{(MagCoef):{(x):%hd,(y):%hd,(z):%hd,(Magic):%hu}}", &magTempCoefX, &magTempCoefY, &magTempCoefZ, &recvMagicNum);
+						if (recvMagicNum == TCLOD_MAGIC_NUM) {
+							TCFG_SystemData.MagCoefX = magTempCoefX;
+							TCFG_SystemData.MagCoefY = magTempCoefY;
+							TCFG_SystemData.MagCoefZ = magTempCoefZ;
+							TCFG_EEPROM_SetMagTempCoef(TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
+						}
+						else {
+							ret = NETIP_UNKNOWNERROR;
+						}
+						__NOP();
+					}
 					/* ...... */
 				}
 				else if (pClient->Recvbuf[recvBufOffset + TCLOD_MSGID_OFFSET] == TCLOD_CONFIG_GET) {
