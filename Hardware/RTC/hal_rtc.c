@@ -234,12 +234,16 @@ time_t RTC_GetUnixTimeToStamp(void)
 uint8_t RTC_Time_GetCurrentHour(void)
 {
 	RTC_TimeTypeDef RTC_Timestructure;
+	RTC_DateTypeDef RTC_Datestructure;
+	
 	HAL_RTC_GetTime(&RTC_Handler, &RTC_Timestructure, RTC_FORMAT_BIN);
+	HAL_RTC_GetDate(&RTC_Handler, &RTC_Datestructure, RTC_FORMAT_BIN);
+	
 	return RTC_Timestructure.Hours;
 }
 
 /**********************************************************************************************************
- @Function			uint8_t RTC_Time_GetCurrentHour(void)
+ @Function			uint8_t RTC_Time_GetCurrentMinute(void)
  @Description			获取当前系统时间(分)
  @Input				void
  @Return				uint8_t			: 分
@@ -247,12 +251,16 @@ uint8_t RTC_Time_GetCurrentHour(void)
 uint8_t RTC_Time_GetCurrentMinute(void)
 {
 	RTC_TimeTypeDef RTC_Timestructure;
+	RTC_DateTypeDef RTC_Datestructure;
+	
 	HAL_RTC_GetTime(&RTC_Handler, &RTC_Timestructure, RTC_FORMAT_BIN);
+	HAL_RTC_GetDate(&RTC_Handler, &RTC_Datestructure, RTC_FORMAT_BIN);
+	
 	return RTC_Timestructure.Minutes;
 }
 
 /**********************************************************************************************************
- @Function			uint8_t RTC_Time_GetCurrentHour(void)
+ @Function			uint8_t RTC_Time_GetCurrentSecond(void)
  @Description			获取当前系统时间(秒)
  @Input				void
  @Return				uint8_t			: 秒
@@ -260,7 +268,11 @@ uint8_t RTC_Time_GetCurrentMinute(void)
 uint8_t RTC_Time_GetCurrentSecond(void)
 {
 	RTC_TimeTypeDef RTC_Timestructure;
+	RTC_DateTypeDef RTC_Datestructure;
+	
 	HAL_RTC_GetTime(&RTC_Handler, &RTC_Timestructure, RTC_FORMAT_BIN);
+	HAL_RTC_GetDate(&RTC_Handler, &RTC_Datestructure, RTC_FORMAT_BIN);
+	
 	return RTC_Timestructure.Seconds;
 }
 
