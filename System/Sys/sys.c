@@ -133,6 +133,18 @@ void Stm32_System_Software_Reboot(void)
 	TCFG_SystemData.MagBackgroudTemp = Qmc5883lData.temp_back;
 	TCFG_EEPROM_SetMagBackgroudTemp(TCFG_SystemData.MagBackgroudTemp);
 	
+	TCFG_SystemData.CoapConnectTime = TCFG_Utility_GetCoapConnectTime();
+	TCFG_EEPROM_SetCoapConnectTime(TCFG_SystemData.CoapConnectTime);
+	
+	TCFG_SystemData.CoapIdleTime = TCFG_Utility_GetCoapIdleTime();
+	TCFG_EEPROM_SetCoapIdleTime(TCFG_SystemData.CoapIdleTime);
+	
+	TCFG_SystemData.CoapConnectDayTime = TCFG_Utility_GetCoapConnectDayTime();
+	TCFG_EEPROM_SetCoapConnectDayTime(TCFG_SystemData.CoapConnectDayTime);
+	
+	TCFG_SystemData.CoapIdleDayTime = TCFG_Utility_GetCoapIdleDayTime();
+	TCFG_EEPROM_SetCoapIdleDayTime(TCFG_SystemData.CoapIdleDayTime);
+	
 	__set_FAULTMASK(1);													//关闭所有中断
 	HAL_NVIC_SystemReset();												//软件复位
 	__NOP();

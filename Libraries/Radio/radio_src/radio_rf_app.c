@@ -419,8 +419,8 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					Radio_Trf_Printf("Cmdcnt:%d.%d", TCFG_EEPROM_GetRFCmdCnt(), TCFG_EEPROM_GetNBCmdCnt());
 				#if NETPROTOCAL == NETCOAP
 					Radio_Trf_Printf("Nbworkmode:%d", TCFG_Utility_Get_Nbiot_WorkMode());
-					Radio_Trf_Printf("Nbruntime:%d.%d", TCFG_EEPROM_GetCoapConnectTime(), TCFG_EEPROM_GetCoapIdleTime());
-					Radio_Trf_Printf("NbruntimeDay:%d.%d", TCFG_EEPROM_GetCoapConnectDayTime(), TCFG_EEPROM_GetCoapIdleDayTime());
+					Radio_Trf_Printf("Nbruntime:%d.%d", TCFG_Utility_GetCoapConnectTime(), TCFG_Utility_GetCoapIdleTime());
+					Radio_Trf_Printf("NbruntimeDay:%d.%d", TCFG_Utility_GetCoapConnectDayTime(), TCFG_Utility_GetCoapIdleDayTime());
 				#elif NETPROTOCAL == NETMQTTSN
 					
 				#endif

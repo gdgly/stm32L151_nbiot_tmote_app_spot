@@ -124,9 +124,54 @@ typedef enum
 /* NBIOT Status */
 typedef enum
 {
+	/* -Normal Errors- */
 	NBIOT_OK       					= 0x00,
 	NBIOT_ERROR    					= 0x01,
-	NBIOT_CMD_TIMEOUT					= 0x02
+	NBIOT_CMD_TIMEOUT					= 0x02,
+	
+	/* -General Errors- */
+	Operation_not_allowed				= 3,
+	Operation_not_supported				= 4,
+	Need_to_enter_PIN					= 5,
+	Memory_failure						= 23,
+	No_Network_Service					= 30,
+	Incorrect_parameters				= 50,
+	Command_implemented_but				= 51,
+	Command_aborted_by_user				= 52,
+	Uplink_Busy_Flow_Control				= 159,
+	ME_failure						= 300,
+	SMS_service_of_ME_reserved			= 301,
+	operation_not_allowed				= 302,
+	operation_not_supported				= 303,
+	invalid_PDU_mode_parameter			= 304,
+	invalid_text_mode_parameter			= 305,
+	SIM_not_inserted					= 310,
+	SIM_PIN_required					= 311,
+	PH_SIM_PIN_required					= 312,
+	SIM_failure						= 313,
+	SIM_busy							= 314,
+	SIM_wrong							= 315,
+	SIM_PUK_required					= 316,
+	SIM_PIN2_required					= 317,
+	SIM_PUK2_required					= 318,
+	memory_failure						= 320,
+	invalid_memory_index				= 321,
+	memory_full						= 322,
+	SMSC_address_unknown				= 330,
+	no_network_service					= 331,
+	network_timeout					= 332,
+	acknowledgement_expected				= 340,
+	unknown_error						= 500,
+	
+	/* -HISI specific error codes- */
+	Required_parameter_not_configured		= 512,
+	TUP_not_registered					= 513,
+	AT_Internal_Error					= 514,
+	CID_is_active						= 515,
+	Incorrect_State_for_Command			= 516,
+	Cid_is_invalid						= 517,
+	Deactive_last_active_cid				= 520,
+	Cid_is_not_defined					= 521
 }NBIOT_StatusTypeDef;
 
 /* NBIOT BAND */
@@ -164,6 +209,34 @@ typedef enum
 	NConfigFalse						= 0x00,
 	NConfigTrue						= 0x01
 }NBIOT_NConfigTypeDef;
+
+/* NBIOT ReportError is Status */
+typedef enum
+{
+	CMEDisable						= 0x00,
+	CMEEnable							= 0x01
+}NBIOT_ReportErrorTypeDef;
+
+/* NBIOT Message Registration Status */
+typedef enum
+{
+	UNINITIALISED						= 0x00,
+	MISSING_CONFIG						= 0x01,
+	INIT_FAILED						= 0x02,
+	INIITIALISED						= 0x03,
+	REGISTERING						= 0x04,
+	REREGISTERING						= 0x05,
+	REGISTERED						= 0x06,
+	REREGISTERED						= 0x07,
+	MO_DATA_ENABLED					= 0x08,
+	NO_UE_IP							= 0x09,
+	MEMORY_ERROR						= 0x0A,
+	COAP_ERROR						= 0x0B,
+	MSG_SEND_FAILED					= 0x0C,
+	REJECTED_BY_SERVER					= 0x0D,
+	TIMEOUT_AND_RETRYING				= 0x0E,
+	TIMEOUT_AND_FAILED					= 0x0F
+}NBIOT_MessageRegistrationStatusTypeDef;
 
 /* NBIOT PSM Status */
 typedef enum
@@ -331,6 +404,8 @@ struct NBIOT_ParameterTypeDef
 	NBIOT_OpenOrCloseFuncTypeDef			nnmistate;
 	NBIOT_OpenOrCloseFuncTypeDef			nsmistate;
 	NBIOT_BandTypeDef					band;
+	NBIOT_ReportErrorTypeDef				cmeestate;
+	NBIOT_MessageRegistrationStatusTypeDef	messageregistration;
 	NBIOT_CDPServerTypeDef				cdpserver;
 };
 
@@ -387,6 +462,10 @@ struct NBIOT_ClientsTypeDef
 	unsigned int						Command_Timeout_Msec;
 	unsigned int						Command_Failure_Cnt;
 	
+	unsigned int						CoapConnectTimeSec;
+	unsigned int						CoapIdleTimeSec;
+	unsigned short						CoapConnectDayTimeSec;
+	unsigned short						CoapIdleDayTimeSec;
 	Stm32_EventRunningTimeTypeDef			ConnectTimeMS;
 	Stm32_EventRunningTimeTypeDef			IdleTimeMS;
 	

@@ -405,7 +405,7 @@ void MainHandleRoutine(void)
 		if ((val8 != 0 ) && (SystemRunningTime.fifteenMinutes % val8 == 0)) {
 			if (radarCountPre != TCFG_GetRadarCount()) {
 				radarCountPre = TCFG_GetRadarCount();
-				if (TCFG_EEPROM_GetCoapConnectDayTime() <= (TCFG_EEPROM_GetCoapQuotaTime() / 2)) {
+				if (TCFG_Utility_GetCoapConnectDayTime() <= (TCFG_EEPROM_GetCoapQuotaTime() / 2)) {
 					NETCoapNeedSendCode.RadarInfo = 1;
 				}
 				NETMqttSNNeedSendCode.InfoRadar = 1;
@@ -423,10 +423,12 @@ void MainHandleRoutine(void)
 			
 			/* Coap保持连接时间(一天) */
 			TCFG_SystemData.CoapConnectDayTime = 0;
+			NbiotClientHandler.CoapConnectDayTimeSec = TCFG_SystemData.CoapConnectDayTime;
 			TCFG_EEPROM_SetCoapConnectDayTime(TCFG_SystemData.CoapConnectDayTime);
 			
 			/* Coap休眠时间(一天) */
 			TCFG_SystemData.CoapIdleDayTime = 0;
+			NbiotClientHandler.CoapIdleDayTimeSec = TCFG_SystemData.CoapIdleDayTime;
 			TCFG_EEPROM_SetCoapIdleDayTime(TCFG_SystemData.CoapIdleDayTime);
 			
 			if (TCFG_EEPROM_GetNbiotHeart() > NBIOT_HEART_DATA_HOURS) {
@@ -468,12 +470,24 @@ void MainHandleRoutine(void)
 		NETCoapNeedSendCode.DynamicInfo = 1;
 		NETMqttSNNeedSendCode.InfoWork = 1;
 		NETMqttSNNeedSendCode.InfoDynamic = 1;
+		
+		TCFG_SystemData.CoapConnectTime = TCFG_Utility_GetCoapConnectTime();
+		TCFG_EEPROM_SetCoapConnectTime(TCFG_SystemData.CoapConnectTime);
+		
+		TCFG_SystemData.CoapIdleTime = TCFG_Utility_GetCoapIdleTime();
+		TCFG_EEPROM_SetCoapIdleTime(TCFG_SystemData.CoapIdleTime);
+		
+		TCFG_SystemData.CoapConnectDayTime = TCFG_Utility_GetCoapConnectDayTime();
+		TCFG_EEPROM_SetCoapConnectDayTime(TCFG_SystemData.CoapConnectDayTime);
+		
+		TCFG_SystemData.CoapIdleDayTime = TCFG_Utility_GetCoapIdleDayTime();
+		TCFG_EEPROM_SetCoapIdleDayTime(TCFG_SystemData.CoapIdleDayTime);
 	}
 }
 
 #ifdef	DEVICE_DEBUG
 /********************************************* DEBUG *****************************************************/
-
+NBIOT_StatusTypeDef NBIOT_RunStatus;
 /****************************************** Debug Ending *************************************************/
 /**********************************************************************************************************
  @Function			void DeBugMain(void)
@@ -485,11 +499,18 @@ void DeBugMain(void)
 {
 	TCFG_EEPROM_SetBootCount(0);
 	
-	NBIOT_Neul_NBxx_HardwareReboot(MqttSNClientHandler.SocketStack->NBIotStack, 8000);
+	NBIOT_Neul_NBxx_HardwareReboot(&NbiotClientHandler, 8000);
+	
+	NBIOT_RunStatus = NBIOT_Neul_NBxx_SetReportTerminationError(&NbiotClientHandler, CMEEnable);
+	NBIOT_RunStatus = NBIOT_Neul_NBxx_CheckReadReportTerminationError(&NbiotClientHandler);
+	
+	__NOP();
 	
 	while (true) {
 		
+		NBIOT_RunStatus = NBIOT_Neul_NBxx_CheckReadMessageRegistrationStatus(&NbiotClientHandler);
 		
+		__NOP();
 		
 		/* 小无线处理 */
 		Radio_Trf_App_Task();

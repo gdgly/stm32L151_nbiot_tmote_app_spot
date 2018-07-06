@@ -175,15 +175,15 @@ void NET_COAP_NBIOT_Event_StopMode(NBIOT_ClientsTypeDef* pClient)
 		uICoapConnectTime = Stm32_EventRunningTime_EndMS(&pClient->ConnectTimeMS) / 1000;
 		uICoapIdleTime = Stm32_EventRunningTime_EndMS(&pClient->IdleTimeMS) / 1000;
 		/* Into ConnectTime & IdleTime */
-		TCFG_SystemData.CoapConnectTime = TCFG_EEPROM_GetCoapConnectTime() + uICoapConnectTime;
-		TCFG_EEPROM_SetCoapConnectTime(TCFG_SystemData.CoapConnectTime);
-		TCFG_SystemData.CoapIdleTime = TCFG_EEPROM_GetCoapIdleTime() + uICoapIdleTime;
-		TCFG_EEPROM_SetCoapIdleTime(TCFG_SystemData.CoapIdleTime);
+		TCFG_SystemData.CoapConnectTime = pClient->CoapConnectTimeSec + uICoapConnectTime;
+		pClient->CoapConnectTimeSec = TCFG_SystemData.CoapConnectTime;
+		TCFG_SystemData.CoapIdleTime = pClient->CoapIdleTimeSec + uICoapIdleTime;
+		pClient->CoapIdleTimeSec = TCFG_SystemData.CoapIdleTime;
 		/* Into ConnectDayTime & IdleDayTime */
-		TCFG_SystemData.CoapConnectDayTime = TCFG_EEPROM_GetCoapConnectDayTime() + uICoapConnectTime;
-		TCFG_EEPROM_SetCoapConnectDayTime(TCFG_SystemData.CoapConnectDayTime);
-		TCFG_SystemData.CoapIdleDayTime = TCFG_EEPROM_GetCoapIdleDayTime() + uICoapIdleTime;
-		TCFG_EEPROM_SetCoapIdleDayTime(TCFG_SystemData.CoapIdleDayTime);
+		TCFG_SystemData.CoapConnectDayTime = pClient->CoapConnectDayTimeSec + uICoapConnectTime;
+		pClient->CoapConnectDayTimeSec = TCFG_SystemData.CoapConnectDayTime;
+		TCFG_SystemData.CoapIdleDayTime = pClient->CoapIdleDayTimeSec + uICoapIdleTime;
+		pClient->CoapIdleDayTimeSec = TCFG_SystemData.CoapIdleDayTime;
 	}
 	
 	if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
@@ -225,11 +225,11 @@ void NET_COAP_NBIOT_Event_HardwareReboot(NBIOT_ClientsTypeDef* pClient)
 		/* Get IdleTime */
 		uICoapIdleTime = Stm32_EventRunningTime_EndMS(&pClient->IdleTimeMS) / 1000;
 		/* End IdleTime */
-		TCFG_SystemData.CoapIdleTime = TCFG_EEPROM_GetCoapIdleTime() + uICoapIdleTime;
-		TCFG_EEPROM_SetCoapIdleTime(TCFG_SystemData.CoapIdleTime);
+		TCFG_SystemData.CoapIdleTime = pClient->CoapIdleTimeSec + uICoapIdleTime;
+		pClient->CoapIdleTimeSec = TCFG_SystemData.CoapIdleTime;
 		/* End IdleDayTime */
-		TCFG_SystemData.CoapIdleDayTime = TCFG_EEPROM_GetCoapIdleDayTime() + uICoapIdleTime;
-		TCFG_EEPROM_SetCoapIdleDayTime(TCFG_SystemData.CoapIdleDayTime);
+		TCFG_SystemData.CoapIdleDayTime = pClient->CoapIdleDayTimeSec + uICoapIdleTime;
+		pClient->CoapIdleDayTimeSec = TCFG_SystemData.CoapIdleDayTime;
 		/* Start ConnectTime */
 		Stm32_EventRunningTime_StartMS(&pClient->ConnectTimeMS);
 #ifdef COAP_DEBUG_LOG_RF_PRINT
@@ -1226,11 +1226,11 @@ void NET_COAP_NBIOT_Event_SendData(NBIOT_ClientsTypeDef* pClient)
 		/* Get IdleTime */
 		uICoapIdleTime = Stm32_EventRunningTime_EndMS(&pClient->IdleTimeMS) / 1000;
 		/* End IdleTime */
-		TCFG_SystemData.CoapIdleTime = TCFG_EEPROM_GetCoapIdleTime() + uICoapIdleTime;
-		TCFG_EEPROM_SetCoapIdleTime(TCFG_SystemData.CoapIdleTime);
+		TCFG_SystemData.CoapIdleTime = pClient->CoapIdleTimeSec + uICoapIdleTime;
+		pClient->CoapIdleTimeSec = TCFG_SystemData.CoapIdleTime;
 		/* End IdleDayTime */
-		TCFG_SystemData.CoapIdleDayTime = TCFG_EEPROM_GetCoapIdleDayTime() + uICoapIdleTime;
-		TCFG_EEPROM_SetCoapIdleDayTime(TCFG_SystemData.CoapIdleDayTime);
+		TCFG_SystemData.CoapIdleDayTime = pClient->CoapIdleDayTimeSec + uICoapIdleTime;
+		pClient->CoapIdleDayTimeSec = TCFG_SystemData.CoapIdleDayTime;
 		/* Start ConnectTime */
 		Stm32_EventRunningTime_StartMS(&pClient->ConnectTimeMS);
 		/* Connect Check */
@@ -1468,11 +1468,11 @@ void NET_COAP_NBIOT_Event_RecvData(NBIOT_ClientsTypeDef* pClient)
 				/* Get ConnectTime */
 				uICoapConnectTime = Stm32_EventRunningTime_EndMS(&pClient->ConnectTimeMS) / 1000;
 				/* End ConnectTime */
-				TCFG_SystemData.CoapConnectTime = TCFG_EEPROM_GetCoapConnectTime() + uICoapConnectTime;
-				TCFG_EEPROM_SetCoapConnectTime(TCFG_SystemData.CoapConnectTime);
+				TCFG_SystemData.CoapConnectTime = pClient->CoapConnectTimeSec + uICoapConnectTime;
+				pClient->CoapConnectTimeSec = TCFG_SystemData.CoapConnectTime;
 				/* End ConnectDayTime */
-				TCFG_SystemData.CoapConnectDayTime = TCFG_EEPROM_GetCoapConnectDayTime() + uICoapConnectTime;
-				TCFG_EEPROM_SetCoapConnectDayTime(TCFG_SystemData.CoapConnectDayTime);
+				TCFG_SystemData.CoapConnectDayTime = pClient->CoapConnectDayTimeSec + uICoapConnectTime;
+				pClient->CoapConnectDayTimeSec = TCFG_SystemData.CoapConnectDayTime;
 				/* Start IdleTime */
 				Stm32_EventRunningTime_StartMS(&pClient->IdleTimeMS);
 #ifdef COAP_DEBUG_LOG_RF_PRINT
@@ -1531,11 +1531,11 @@ void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
 		/* Get IdleTime */
 		uICoapIdleTime = Stm32_EventRunningTime_EndMS(&pClient->IdleTimeMS) / 1000;
 		/* End IdleTime */
-		TCFG_SystemData.CoapIdleTime = TCFG_EEPROM_GetCoapIdleTime() + uICoapIdleTime;
-		TCFG_EEPROM_SetCoapIdleTime(TCFG_SystemData.CoapIdleTime);
+		TCFG_SystemData.CoapIdleTime = pClient->CoapIdleTimeSec + uICoapIdleTime;
+		pClient->CoapIdleTimeSec = TCFG_SystemData.CoapIdleTime;
 		/* End IdleDayTime */
-		TCFG_SystemData.CoapIdleDayTime = TCFG_EEPROM_GetCoapIdleDayTime() + uICoapIdleTime;
-		TCFG_EEPROM_SetCoapIdleDayTime(TCFG_SystemData.CoapIdleDayTime);
+		TCFG_SystemData.CoapIdleDayTime = pClient->CoapIdleDayTimeSec + uICoapIdleTime;
+		pClient->CoapIdleDayTimeSec = TCFG_SystemData.CoapIdleDayTime;
 		/* Start ConnectTime */
 		Stm32_EventRunningTime_StartMS(&pClient->ConnectTimeMS);
 		/* Connect Check */
@@ -1806,11 +1806,11 @@ void NET_COAP_NBIOT_Event_RecvDataRANormal(NBIOT_ClientsTypeDef* pClient)
 		/* Get ConnectTime */
 		uICoapConnectTime = Stm32_EventRunningTime_EndMS(&pClient->ConnectTimeMS) / 1000;
 		/* End ConnectTime */
-		TCFG_SystemData.CoapConnectTime = TCFG_EEPROM_GetCoapConnectTime() + uICoapConnectTime;
-		TCFG_EEPROM_SetCoapConnectTime(TCFG_SystemData.CoapConnectTime);
+		TCFG_SystemData.CoapConnectTime = pClient->CoapConnectTimeSec + uICoapConnectTime;
+		pClient->CoapConnectTimeSec = TCFG_SystemData.CoapConnectTime;
 		/* End ConnectDayTime */
-		TCFG_SystemData.CoapConnectDayTime = TCFG_EEPROM_GetCoapConnectDayTime() + uICoapConnectTime;
-		TCFG_EEPROM_SetCoapConnectDayTime(TCFG_SystemData.CoapConnectDayTime);
+		TCFG_SystemData.CoapConnectDayTime = pClient->CoapConnectDayTimeSec + uICoapConnectTime;
+		pClient->CoapConnectDayTimeSec = TCFG_SystemData.CoapConnectDayTime;
 		/* Start IdleTime */
 		Stm32_EventRunningTime_StartMS(&pClient->IdleTimeMS);
 #ifdef COAP_DEBUG_LOG_RF_PRINT

@@ -705,6 +705,97 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSignalConnectionStatus(NBIOT_Client
 }
 
 /**********************************************************************************************************
+ @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadMessageRegistrationStatus(NBIOT_ClientsTypeDef* pClient)
+ @Description			NBIOT_Neul_NBxx_CheckReadMessageRegistrationStatus: 查询终端MessageRegistration状态
+ @Input				pClient									: NBIOT客户端实例
+ @Return				NBIOT_StatusTypeDef							: NBIOT处理状态
+**********************************************************************************************************/
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadMessageRegistrationStatus(NBIOT_ClientsTypeDef* pClient)
+{
+	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+	
+	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
+	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	
+	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+NMSTATUS?\r");
+	pClient->ATCmdStack->ATSendlen = strlen("AT+NMSTATUS?\r");
+	pClient->ATCmdStack->ATack = "OK";
+	pClient->ATCmdStack->ATNack = "ERROR";
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
+		/* UNINITIALISED */
+		if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+NMSTATUS:UNINITIALISED")) {
+			pClient->Parameter.messageregistration = UNINITIALISED;
+		}
+		/* MISSING_CONFIG */
+		else if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+NMSTATUS:MISSING_CONFIG")) {
+			pClient->Parameter.messageregistration = MISSING_CONFIG;
+		}
+		/* INIT_FAILED */
+		else if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+NMSTATUS:INIT_FAILED")) {
+			pClient->Parameter.messageregistration = INIT_FAILED;
+		}
+		/* INIITIALISED */
+		else if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+NMSTATUS:INIITIALISED")) {
+			pClient->Parameter.messageregistration = INIITIALISED;
+		}
+		/* REGISTERING */
+		else if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+NMSTATUS:REGISTERING")) {
+			pClient->Parameter.messageregistration = REGISTERING;
+		}
+		/* REREGISTERING */
+		else if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+NMSTATUS:REREGISTERING")) {
+			pClient->Parameter.messageregistration = REREGISTERING;
+		}
+		/* REGISTERED */
+		else if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+NMSTATUS:REGISTERED")) {
+			pClient->Parameter.messageregistration = REGISTERED;
+		}
+		/* REREGISTERED */
+		else if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+NMSTATUS:REREGISTERED")) {
+			pClient->Parameter.messageregistration = REREGISTERED;
+		}
+		/* MO_DATA_ENABLED */
+		else if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+NMSTATUS:MO_DATA_ENABLED")) {
+			pClient->Parameter.messageregistration = MO_DATA_ENABLED;
+		}
+		/* NO_UE_IP */
+		else if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+NMSTATUS:NO_UE_IP")) {
+			pClient->Parameter.messageregistration = NO_UE_IP;
+		}
+		/* MEMORY_ERROR */
+		else if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+NMSTATUS:MEMORY_ERROR")) {
+			pClient->Parameter.messageregistration = MEMORY_ERROR;
+		}
+		/* COAP_ERROR */
+		else if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+NMSTATUS:COAP_ERROR")) {
+			pClient->Parameter.messageregistration = COAP_ERROR;
+		}
+		/* MSG_SEND_FAILED */
+		else if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+NMSTATUS:MSG_SEND_FAILED")) {
+			pClient->Parameter.messageregistration = MSG_SEND_FAILED;
+		}
+		/* REJECTED_BY_SERVER */
+		else if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+NMSTATUS:REJECTED_BY_SERVER")) {
+			pClient->Parameter.messageregistration = REJECTED_BY_SERVER;
+		}
+		/* TIMEOUT_AND_RETRYING */
+		else if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+NMSTATUS:TIMEOUT_AND_RETRYING")) {
+			pClient->Parameter.messageregistration = TIMEOUT_AND_RETRYING;
+		}
+		/* TIMEOUT_AND_FAILED */
+		else if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+NMSTATUS:TIMEOUT_AND_FAILED")) {
+			pClient->Parameter.messageregistration = TIMEOUT_AND_FAILED;
+		}
+		else {
+			NBStatus = NBIOT_ERROR;
+		}
+	}
+	
+	return NBStatus;
+}
+
+/**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetAttachOrDetach(NBIOT_ClientsTypeDef* pClient, NBIOT_NetstateTypeDef attdet)
  @Description			NBIOT_Neul_NBxx_SetAttachOrDetach			: 设置终端入网退网
  @Input				pClient								: NBIOT客户端实例
@@ -1033,6 +1124,73 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSupportedBands(NBIOT_ClientsTypeDef
 			}
 			else if (bands == ChinaUnicom) {
 				pClient->Parameter.band = ChinaUnicom;
+			}
+			else {
+				NBStatus = NBIOT_ERROR;
+			}
+		}
+	}
+	
+	return NBStatus;
+}
+
+/**********************************************************************************************************
+ @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetReportTerminationError(NBIOT_ClientsTypeDef* pClient, NBIOT_ReportErrorTypeDef enable)
+ @Description			NBIOT_Neul_NBxx_SetReportTerminationError	: 设置CMEE
+ @Input				pClient								: NBIOT客户端实例
+					enable								: CMEDisable						= 0
+														  CMEEnable						= 1
+ @Return				NBIOT_StatusTypeDef						: NBIOT处理状态
+**********************************************************************************************************/
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetReportTerminationError(NBIOT_ClientsTypeDef* pClient, NBIOT_ReportErrorTypeDef enable)
+{
+	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+	
+	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
+	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	
+	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
+	sprintf((char *)pClient->DataProcessStack, "AT+CMEE=%d\r", enable);
+	
+	memcpy(pClient->ATCmdStack->ATSendbuf, pClient->DataProcessStack, strlen((char *)pClient->DataProcessStack));
+	pClient->ATCmdStack->ATSendlen = strlen((char *)pClient->DataProcessStack);
+	pClient->ATCmdStack->ATack = "OK";
+	pClient->ATCmdStack->ATNack = "ERROR";
+	NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack);
+	
+	return NBStatus;
+}
+
+/**********************************************************************************************************
+ @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadReportTerminationError(NBIOT_ClientsTypeDef* pClient)
+ @Description			NBIOT_Neul_NBxx_CheckReadReportTerminationError	: 查询CMEE
+ @Input				pClient									: NBIOT客户端实例
+ @Return				NBIOT_StatusTypeDef							: NBIOT处理状态
+**********************************************************************************************************/
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadReportTerminationError(NBIOT_ClientsTypeDef* pClient)
+{
+	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+	int enable = 0;
+	
+	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
+	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	
+	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+CMEE?\r");
+	pClient->ATCmdStack->ATSendlen = strlen("AT+CMEE?\r");
+	pClient->ATCmdStack->ATack = "OK";
+	pClient->ATCmdStack->ATNack = "ERROR";
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\n+CMEE:%d\r", &enable) <= 0) {
+			NBStatus = NBIOT_ERROR;
+		}
+		else {
+			if (enable == CMEDisable) {
+				pClient->Parameter.cmeestate = CMEDisable;
+			}
+			else if (enable == CMEEnable) {
+				pClient->Parameter.cmeestate = CMEEnable;
 			}
 			else {
 				NBStatus = NBIOT_ERROR;

@@ -189,7 +189,7 @@ void Inspect_Spot_ExistenceDetect(void)
 		}
 		time2send_spot = Stm32_GetSecondTick();
 		
-		if (TCFG_EEPROM_GetCoapConnectDayTime() > (TCFG_EEPROM_GetCoapQuotaTime() * 2 / 3)) {
+		if (TCFG_Utility_GetCoapConnectDayTime() > (TCFG_EEPROM_GetCoapQuotaTime() * 2 / 3)) {
 			if (TCFG_EEPROM_GetNbiotHeart() < 4) {
 				TCFG_SystemData.NBIotHeart = 4;
 				TCFG_EEPROM_SetNbiotHeart(TCFG_SystemData.NBIotHeart);
@@ -208,7 +208,7 @@ void Inspect_Spot_ExistenceDetect(void)
 				if (SpotStatusDataBackUp.spot_status == SPOT_CAR_FREE) {
 					if ((lasttime2send_radar_at_free + 3600) < Stm32_GetSecondTick()) {
 						lasttime2send_radar_at_free = Stm32_GetSecondTick();
-						if (TCFG_EEPROM_GetCoapConnectDayTime() <= (TCFG_EEPROM_GetCoapQuotaTime() / 2)) {
+						if (TCFG_Utility_GetCoapConnectDayTime() <= (TCFG_EEPROM_GetCoapQuotaTime() / 2)) {
 							NETCoapNeedSendCode.RadarInfo = 1;
 						}
 						NETMqttSNNeedSendCode.InfoRadar = 1;
@@ -234,7 +234,7 @@ void Inspect_Spot_ExistenceDetect(void)
 		prepare2send_radar--;
 		if ((prepare2send_radar == 0) && (SpotStatusDataBackUp.spot_status == 0)) {
 			lasttime2send_radar_at_free = Stm32_GetSecondTick();
-			if (TCFG_EEPROM_GetCoapConnectDayTime() <= (TCFG_EEPROM_GetCoapQuotaTime() / 2)) {
+			if (TCFG_Utility_GetCoapConnectDayTime() <= (TCFG_EEPROM_GetCoapQuotaTime() / 2)) {
 				NETCoapNeedSendCode.RadarInfo = 1;
 			}
 			NETMqttSNNeedSendCode.InfoRadar = 1;

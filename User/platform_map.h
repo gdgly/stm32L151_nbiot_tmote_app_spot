@@ -414,6 +414,11 @@ int			TCFG_Utility_Get_Nbiot_CellSnr(void);											//读取Nbiot CellSnr值
 unsigned int	TCFG_Utility_Get_Nbiot_NetworkRegistStatusTac(void);								//读取Nbiot NetworkRegistStatusTac值
 unsigned int	TCFG_Utility_Get_Nbiot_NetworkRegistStatusCellID(void);							//读取Nbiot NetworkRegistStatusCellID值
 
+unsigned int	TCFG_Utility_GetCoapConnectTime(void);											//读取Nbiot CoapConnectTime值
+unsigned int	TCFG_Utility_GetCoapIdleTime(void);											//读取Nbiot CoapIdleTime值
+unsigned short	TCFG_Utility_GetCoapConnectDayTime(void);										//读取Nbiot CoapConnectDayTime值
+unsigned short	TCFG_Utility_GetCoapIdleDayTime(void);											//读取Nbiot CoapIdleDayTime值
+
 char*		TCFG_Utility_Get_Nbiot_ModelVersion(void);										//读取Nbiot ModelVersion值
 unsigned int	TCFG_Utility_Get_Nbiot_SentCount(void);											//读取Nbiot SentCount值
 unsigned int	TCFG_Utility_Get_Nbiot_RecvCount(void);											//读取Nbiot RecvCount值

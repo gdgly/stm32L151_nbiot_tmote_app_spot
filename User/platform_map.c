@@ -320,15 +320,19 @@ void TCFG_EEPROM_ReadConfigData(void)
 	
 	/* Coap保持连接时间 */
 	TCFG_SystemData.CoapConnectTime = TCFG_EEPROM_GetCoapConnectTime();
+	NbiotClientHandler.CoapConnectTimeSec = TCFG_SystemData.CoapConnectTime;
 	
 	/* Coap休眠时间 */
 	TCFG_SystemData.CoapIdleTime = TCFG_EEPROM_GetCoapIdleTime();
+	NbiotClientHandler.CoapIdleTimeSec = TCFG_SystemData.CoapIdleTime;
 	
 	/* Coap保持连接时间(一天) */
 	TCFG_SystemData.CoapConnectDayTime = TCFG_EEPROM_GetCoapConnectDayTime();
+	NbiotClientHandler.CoapConnectDayTimeSec = TCFG_SystemData.CoapConnectDayTime;
 	
 	/* Coap休眠时间(一天) */
 	TCFG_SystemData.CoapIdleDayTime = TCFG_EEPROM_GetCoapIdleDayTime();
+	NbiotClientHandler.CoapIdleDayTimeSec = TCFG_SystemData.CoapIdleDayTime;
 	
 	/* Coap使用配额时间(一天) */
 	TCFG_SystemData.CoapQuotaTime = TCFG_EEPROM_GetCoapQuotaTime();
@@ -2239,6 +2243,50 @@ unsigned int TCFG_Utility_Get_Nbiot_NetworkRegistStatusCellID(void)
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.networkRegStatus.cellID;
 #endif
+}
+
+/**********************************************************************************************************
+ @Function			unsigned int TCFG_Utility_GetCoapConnectTime(void)
+ @Description			TCFG_Utility_GetCoapConnectTime				: 读取Nbiot CoapConnectTime值
+ @Input				void
+ @Return				Nbiot_CoapConnectTime
+**********************************************************************************************************/
+unsigned int TCFG_Utility_GetCoapConnectTime(void)
+{
+	return NbiotClientHandler.CoapConnectTimeSec;
+}
+
+/**********************************************************************************************************
+ @Function			unsigned int TCFG_Utility_GetCoapIdleTime(void)
+ @Description			TCFG_Utility_GetCoapIdleTime					: 读取Nbiot CoapIdleTime值
+ @Input				void
+ @Return				Nbiot_CoapIdleTime
+**********************************************************************************************************/
+unsigned int TCFG_Utility_GetCoapIdleTime(void)
+{
+	return NbiotClientHandler.CoapIdleTimeSec;
+}
+
+/**********************************************************************************************************
+ @Function			unsigned short TCFG_Utility_GetCoapConnectDayTime(void)
+ @Description			TCFG_Utility_GetCoapConnectDayTime				: 读取Nbiot CoapConnectDayTime值
+ @Input				void
+ @Return				Nbiot_CoapConnectDayTime
+**********************************************************************************************************/
+unsigned short TCFG_Utility_GetCoapConnectDayTime(void)
+{
+	return NbiotClientHandler.CoapConnectDayTimeSec;
+}
+
+/**********************************************************************************************************
+ @Function			unsigned short TCFG_Utility_GetCoapIdleDayTime(void)
+ @Description			TCFG_Utility_GetCoapIdleDayTime				: 读取Nbiot CoapIdleDayTime值
+ @Input				void
+ @Return				Nbiot_CoapIdleDayTime
+**********************************************************************************************************/
+unsigned short TCFG_Utility_GetCoapIdleDayTime(void)
+{
+	return NbiotClientHandler.CoapIdleDayTimeSec;
 }
 
 /**********************************************************************************************************
