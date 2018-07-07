@@ -268,26 +268,27 @@ typedef enum
 {
 	STOP_MODE							= 0x00,											//停止模式
 	HARDWARE_REBOOT					= 0x01,											//硬件重启
-	MODULE_CHECK						= 0x02,											//模块检查
-	PARAMETER_CONFIG					= 0x03,											//参数配置
-	ICCID_CHECK						= 0x04,											//检测SIM卡
-	MISC_EQUIP_CONFIG					= 0x05,											//其他配置
-	ATTACH_CHECK						= 0x06,											//注网检查
-	ATTACH_EXECUTE						= 0x07,											//注网进行
-	ATTACH_INQUIRE						= 0x08,											//注网查询
-	PARAMETER_CHECKOUT					= 0x09,											//参数检出
-	MINIMUM_FUNCTIONALITY				= 0x0A,											//最小功能
-	FULL_FUNCTIONALITY					= 0x0B,											//完整功能
-	CDP_SERVER_CHECK					= 0x0C,											//CDP服务器查询
-	CDP_SERVER_CONFIG					= 0x0D,											//CDP服务器配置
-	SEND_DATA							= 0x0E,											//发送数据
-	RECV_DATA							= 0x0F,											//接收数据
-	SEND_DATA_RA_NORMAL					= 0x10,											//发送数据RA_NORMAL
-	RECV_DATA_RA_NORMAL					= 0x11,											//接收数据RA_NORMAL
-	EXECUT_DOWNLINK_DATA				= 0x12,											//执行下行数据
-	MQTTSN_PROCESS_STACK				= 0x13,											//MQTTSN执行栈
-	DNS_PROCESS_STACK					= 0x14,											//DNS执行栈
-	LISTEN_RUN_CTL						= 0x15											//监听运行控制器
+	REPORT_ERROE						= 0x02,											//错误输出
+	MODULE_CHECK						= 0x03,											//模块检查
+	PARAMETER_CONFIG					= 0x04,											//参数配置
+	ICCID_CHECK						= 0x05,											//检测SIM卡
+	MISC_EQUIP_CONFIG					= 0x06,											//其他配置
+	ATTACH_CHECK						= 0x07,											//注网检查
+	ATTACH_EXECUTE						= 0x08,											//注网进行
+	ATTACH_INQUIRE						= 0x09,											//注网查询
+	PARAMETER_CHECKOUT					= 0x0A,											//参数检出
+	MINIMUM_FUNCTIONALITY				= 0x0B,											//最小功能
+	FULL_FUNCTIONALITY					= 0x0C,											//完整功能
+	CDP_SERVER_CHECK					= 0x0D,											//CDP服务器查询
+	CDP_SERVER_CONFIG					= 0x0E,											//CDP服务器配置
+	SEND_DATA							= 0x0F,											//发送数据
+	RECV_DATA							= 0x10,											//接收数据
+	SEND_DATA_RA_NORMAL					= 0x11,											//发送数据RA_NORMAL
+	RECV_DATA_RA_NORMAL					= 0x12,											//接收数据RA_NORMAL
+	EXECUT_DOWNLINK_DATA				= 0x13,											//执行下行数据
+	MQTTSN_PROCESS_STACK				= 0x14,											//MQTTSN执行栈
+	DNS_PROCESS_STACK					= 0x15,											//DNS执行栈
+	LISTEN_RUN_CTL						= 0x16											//监听运行控制器
 }NBIOT_DictateEventTypeDef;
 
 /* NBIOT Listen Event */
@@ -476,6 +477,7 @@ struct NBIOT_ClientsTypeDef
 		bool							dictateEnable;
 		unsigned int					dictateTimeoutSec;
 		unsigned char					dictateRebootFailureCnt;
+		unsigned char					dictateReportErrorFailureCnt;
 		unsigned char					dictateModuleCheckFailureCnt;
 		unsigned char					dictateParameterConfigFailureCnt;
 		unsigned char					dictateSimICCIDCheckFailureCnt;

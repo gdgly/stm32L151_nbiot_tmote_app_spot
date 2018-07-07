@@ -22,6 +22,21 @@
 #include "hal_rtc.h"
 
 /**********************************************************************************************************
+ @Function			static void NBIOT_Neul_NBxx_DictateEvent_SetTime(NBIOT_ClientsTypeDef* pClient, unsigned int TimeoutMsec)
+ @Description			NBIOT_Neul_NBxx_DictateEvent_SetTime	: 事件运行控制器注入时间(内部使用)
+ @Input				pClient							: NBIOT客户端实例
+					TimeoutMsec						: 注入超时时间
+ @Return				void
+**********************************************************************************************************/
+static void NBIOT_Neul_NBxx_DictateEvent_SetTime(NBIOT_ClientsTypeDef* pClient, unsigned int TimeoutMsec)
+{
+	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+	
+	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, TimeoutMsec);
+	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+}
+
+/**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_HardwarePoweroff(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_HardwareReboot			: 硬件断电
  @Input				pClient								: NBIOT客户端实例
@@ -54,7 +69,6 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_HardwarePoweroff(NBIOT_ClientsTypeDef* pClie
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_HardwareReboot(NBIOT_ClientsTypeDef* pClient, u32 rebootTimeoutMS)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
 	GPIO_InitTypeDef GPIO_Initure;
 	
 	GPIO_Initure.Pin = NBIOT_RESET_PIN;
@@ -76,8 +90,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_HardwareReboot(NBIOT_ClientsTypeDef* pClient
 	Delay_MS(200);
 	HAL_GPIO_WritePin(NBIOT_RESET_GPIOx, NBIOT_RESET_PIN, GPIO_PIN_RESET);
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, rebootTimeoutMS);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, rebootTimeoutMS);
 	
 	pClient->ATCmdStack->ATack = "OK";
 	pClient->ATCmdStack->ATNack = "ERROR";
@@ -108,16 +121,25 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_HardwareReboot(NBIOT_ClientsTypeDef* pClient
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SoftwareReboot(NBIOT_ClientsTypeDef* pClient, u32 rebootTimeoutMS)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, rebootTimeoutMS);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, rebootTimeoutMS);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+NRB\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+NRB\r");
 	pClient->ATCmdStack->ATack = "OK";
 	pClient->ATCmdStack->ATNack = "ERROR";
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_ERROR) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#else
 	NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack);
+#endif
 	
 	return NBStatus;
 }
@@ -131,16 +153,26 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SoftwareReboot(NBIOT_ClientsTypeDef* pClient
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_ClearStoredEarfcn(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+NCSEARFCN\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+NCSEARFCN\r");
 	pClient->ATCmdStack->ATack = "OK";
 	pClient->ATCmdStack->ATNack = "ERROR";
+#if NBIOT_PRINT_ERROR_CODE_TYPE
 	NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack);
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_ERROR) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#else
+	NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack);
+#endif
 	
 	return NBStatus;
 }
@@ -154,10 +186,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_ClearStoredEarfcn(NBIOT_ClientsTypeDef* pCli
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadManufacturer(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+CGMI\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+CGMI\r");
@@ -169,6 +202,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadManufacturer(NBIOT_ClientsTypeDef* 
 			NBStatus = NBIOT_ERROR;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 	return NBStatus;
 }
@@ -182,10 +222,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadManufacturer(NBIOT_ClientsTypeDef* 
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadManufacturerModel(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+CGMM\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+CGMM\r");
@@ -197,6 +238,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadManufacturerModel(NBIOT_ClientsType
 			NBStatus = NBIOT_ERROR;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 	return NBStatus;
 }
@@ -210,10 +258,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadManufacturerModel(NBIOT_ClientsType
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadModuleVersion(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+CGMR\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+CGMR\r");
@@ -225,6 +274,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadModuleVersion(NBIOT_ClientsTypeDef*
 			NBStatus = NBIOT_ERROR;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 	return NBStatus;
 }
@@ -238,10 +294,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadModuleVersion(NBIOT_ClientsTypeDef*
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadIMEI(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+CGSN=1\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+CGSN=1\r");
@@ -253,6 +310,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadIMEI(NBIOT_ClientsTypeDef* pClient)
 			NBStatus = NBIOT_ERROR;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 	return NBStatus;
 }
@@ -266,10 +330,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadIMEI(NBIOT_ClientsTypeDef* pClient)
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadIMEISV(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+CGSN=2\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+CGSN=2\r");
@@ -281,6 +346,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadIMEISV(NBIOT_ClientsTypeDef* pClien
 			NBStatus = NBIOT_ERROR;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 	return NBStatus;
 }
@@ -294,10 +366,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadIMEISV(NBIOT_ClientsTypeDef* pClien
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadRSSI(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+CSQ\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+CSQ\r");
@@ -308,6 +381,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadRSSI(NBIOT_ClientsTypeDef* pClient)
 			NBStatus = NBIOT_ERROR;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 	return NBStatus;
 }
@@ -321,10 +401,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadRSSI(NBIOT_ClientsTypeDef* pClient)
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadStatisticsRADIO(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+NUESTATS\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+NUESTATS\r");
@@ -347,6 +428,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadStatisticsRADIO(NBIOT_ClientsTypeDe
 			NBStatus = NBIOT_ERROR;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 	return NBStatus;
 }
@@ -360,10 +448,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadStatisticsRADIO(NBIOT_ClientsTypeDe
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadStatisticsCELL(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+NUESTATS=CELL\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+NUESTATS=CELL\r");
@@ -382,6 +471,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadStatisticsCELL(NBIOT_ClientsTypeDef
 			NBStatus = NBIOT_ERROR;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 	return NBStatus;
 }
@@ -395,10 +491,8 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadStatisticsCELL(NBIOT_ClientsTypeDef
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadAreaCode(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+CEREG=2\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+CEREG=2\r");
@@ -440,10 +534,11 @@ exit:
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadICCID(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+NCCID\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+NCCID\r");
@@ -455,6 +550,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadICCID(NBIOT_ClientsTypeDef* pClient
 			NBStatus = NBIOT_ERROR;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 	return NBStatus;
 }
@@ -468,10 +570,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadICCID(NBIOT_ClientsTypeDef* pClient
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadIMSI(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+CIMI\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+CIMI\r");
@@ -483,6 +586,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadIMSI(NBIOT_ClientsTypeDef* pClient)
 			NBStatus = NBIOT_ERROR;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 	return NBStatus;
 }
@@ -496,10 +606,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadIMSI(NBIOT_ClientsTypeDef* pClient)
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCGPADDR(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+CGPADDR\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+CGPADDR\r");
@@ -519,6 +630,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCGPADDR(NBIOT_ClientsTypeDef* pClie
 			NBStatus = NBIOT_ERROR;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 	return NBStatus;
 }
@@ -532,10 +650,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCGPADDR(NBIOT_ClientsTypeDef* pClie
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCGDCONT(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+CGDCONT?\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+CGDCONT?\r");
@@ -555,6 +674,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCGDCONT(NBIOT_ClientsTypeDef* pClie
 			NBStatus = NBIOT_ERROR;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 	return NBStatus;
 }
@@ -568,12 +694,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCGDCONT(NBIOT_ClientsTypeDef* pClie
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadDateTime(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
 	struct tm Datetime;
 	int zoneTime;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+CCLK?\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+CCLK?\r");
@@ -614,6 +741,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadDateTime(NBIOT_ClientsTypeDef* pCli
 			NBStatus = NBIOT_OK;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 	return NBStatus;
 }
@@ -627,10 +761,8 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadDateTime(NBIOT_ClientsTypeDef* pCli
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadPowerSavingModeStatus(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+NPSMR=1\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+NPSMR=1\r");
@@ -678,10 +810,11 @@ exit:
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSignalConnectionStatus(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+CSCON?\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+CSCON?\r");
@@ -700,6 +833,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSignalConnectionStatus(NBIOT_Client
 			NBStatus = NBIOT_ERROR;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 	return NBStatus;
 }
@@ -713,10 +853,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSignalConnectionStatus(NBIOT_Client
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadMessageRegistrationStatus(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+NMSTATUS?\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+NMSTATUS?\r");
@@ -791,6 +932,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadMessageRegistrationStatus(NBIOT_Cli
 			NBStatus = NBIOT_ERROR;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 	return NBStatus;
 }
@@ -805,10 +953,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadMessageRegistrationStatus(NBIOT_Cli
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetAttachOrDetach(NBIOT_ClientsTypeDef* pClient, NBIOT_NetstateTypeDef attdet)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	if (attdet == Detach) {												//退网
 		sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+CGATT=0\r");
@@ -824,7 +973,15 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetAttachOrDetach(NBIOT_ClientsTypeDef* pCli
 	
 	pClient->ATCmdStack->ATack = "OK";
 	pClient->ATCmdStack->ATNack = "ERROR";
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_ERROR) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#else
 	NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack);
+#endif
 	
 	return NBStatus;
 }
@@ -838,10 +995,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetAttachOrDetach(NBIOT_ClientsTypeDef* pCli
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadAttachOrDetach(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+CGATT?\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+CGATT?\r");
@@ -858,6 +1016,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadAttachOrDetach(NBIOT_ClientsTypeDef
 			NBStatus = NBIOT_ERROR;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 	return NBStatus;
 }
@@ -872,10 +1037,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadAttachOrDetach(NBIOT_ClientsTypeDef
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetMinOrFullFunc(NBIOT_ClientsTypeDef* pClient, NBIOT_FunctionalityTypeDef minfull)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	if (minfull == MinFunc) {											//最小功能
 		sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+CFUN=0\r");
@@ -887,12 +1053,22 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetMinOrFullFunc(NBIOT_ClientsTypeDef* pClie
 	}
 	else {
 		NBStatus = NBIOT_ERROR;
+		goto exit;
 	}
 	
 	pClient->ATCmdStack->ATack = "OK";
 	pClient->ATCmdStack->ATNack = "ERROR";
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_ERROR) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#else
 	NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack);
+#endif
 	
+exit:
 	return NBStatus;
 }
 
@@ -905,10 +1081,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetMinOrFullFunc(NBIOT_ClientsTypeDef* pClie
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadMinOrFullFunc(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+CFUN?\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+CFUN?\r");
@@ -925,6 +1102,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadMinOrFullFunc(NBIOT_ClientsTypeDef*
 			NBStatus = NBIOT_ERROR;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 	return NBStatus;
 }
@@ -939,10 +1123,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadMinOrFullFunc(NBIOT_ClientsTypeDef*
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetNewMessageIndications(NBIOT_ClientsTypeDef* pClient, NBIOT_OpenOrCloseFuncTypeDef state)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	if (state == CloseFunc) {											//关闭
 		sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+NNMI=0\r");
@@ -954,12 +1139,22 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetNewMessageIndications(NBIOT_ClientsTypeDe
 	}
 	else {
 		NBStatus = NBIOT_ERROR;
+		goto exit;
 	}
 	
 	pClient->ATCmdStack->ATack = "OK";
 	pClient->ATCmdStack->ATNack = "ERROR";
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_ERROR) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#else
 	NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack);
+#endif
 	
+exit:
 	return NBStatus;
 }
 
@@ -972,10 +1167,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetNewMessageIndications(NBIOT_ClientsTypeDe
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadNewMessageIndications(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+NNMI?\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+NNMI?\r");
@@ -992,6 +1188,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadNewMessageIndications(NBIOT_Clients
 			NBStatus = NBIOT_ERROR;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 	return NBStatus;
 }
@@ -1006,10 +1209,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadNewMessageIndications(NBIOT_Clients
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetSentMessageIndications(NBIOT_ClientsTypeDef* pClient, NBIOT_OpenOrCloseFuncTypeDef state)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	if (state == CloseFunc) {											//关闭
 		sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+NSMI=0\r");
@@ -1021,12 +1225,22 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetSentMessageIndications(NBIOT_ClientsTypeD
 	}
 	else {
 		NBStatus = NBIOT_ERROR;
+		goto exit;
 	}
 	
 	pClient->ATCmdStack->ATack = "OK";
 	pClient->ATCmdStack->ATNack = "ERROR";
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_ERROR) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#else
 	NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack);
+#endif
 	
+exit:
 	return NBStatus;
 }
 
@@ -1039,10 +1253,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetSentMessageIndications(NBIOT_ClientsTypeD
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSentMessageIndications(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+NSMI?\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+NSMI?\r");
@@ -1059,6 +1274,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSentMessageIndications(NBIOT_Client
 			NBStatus = NBIOT_ERROR;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 	return NBStatus;
 }
@@ -1075,10 +1297,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSentMessageIndications(NBIOT_Client
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetSupportedBands(NBIOT_ClientsTypeDef* pClient, NBIOT_BandTypeDef bands)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	sprintf((char *)pClient->DataProcessStack, "AT+NBAND=%d\r", bands);
@@ -1087,7 +1310,15 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetSupportedBands(NBIOT_ClientsTypeDef* pCli
 	pClient->ATCmdStack->ATSendlen = strlen((char *)pClient->DataProcessStack);
 	pClient->ATCmdStack->ATack = "OK";
 	pClient->ATCmdStack->ATNack = "ERROR";
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_ERROR) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#else
 	NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack);
+#endif
 	
 	return NBStatus;
 }
@@ -1101,11 +1332,12 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetSupportedBands(NBIOT_ClientsTypeDef* pCli
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSupportedBands(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
 	int bands = 0;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+NBAND?\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+NBAND?\r");
@@ -1130,6 +1362,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSupportedBands(NBIOT_ClientsTypeDef
 			}
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 	return NBStatus;
 }
@@ -1145,10 +1384,8 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSupportedBands(NBIOT_ClientsTypeDef
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetReportTerminationError(NBIOT_ClientsTypeDef* pClient, NBIOT_ReportErrorTypeDef enable)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	sprintf((char *)pClient->DataProcessStack, "AT+CMEE=%d\r", enable);
@@ -1171,11 +1408,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetReportTerminationError(NBIOT_ClientsTypeD
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadReportTerminationError(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
 	int enable = 0;
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+CMEE?\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+CMEE?\r");
@@ -1212,10 +1447,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadReportTerminationError(NBIOT_Client
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetCDPServer(NBIOT_ClientsTypeDef* pClient, const char *host, unsigned short port)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	sprintf((char *)pClient->DataProcessStack, "AT+NCDP=%s,%d\r", host, port);
@@ -1225,6 +1461,15 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetCDPServer(NBIOT_ClientsTypeDef* pClient, 
 	pClient->ATCmdStack->ATack = "OK";
 	pClient->ATCmdStack->ATNack = "ERROR";
 	NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack);
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_ERROR) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#else
+	NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack);
+#endif
 	
 	return NBStatus;
 }
@@ -1238,10 +1483,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetCDPServer(NBIOT_ClientsTypeDef* pClient, 
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCDPServer(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	memset((void *)&pClient->Parameter.cdpserver, 0x0, sizeof(pClient->Parameter.cdpserver));
 	
@@ -1254,6 +1500,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCDPServer(NBIOT_ClientsTypeDef* pCl
 			NBStatus = NBIOT_ERROR;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 	return NBStatus;
 }
@@ -1269,10 +1522,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCDPServer(NBIOT_ClientsTypeDef* pCl
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetConfigUE(NBIOT_ClientsTypeDef* pClient, const char *ncmd, NBIOT_NConfigTypeDef state)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	sprintf((char *)pClient->DataProcessStack, "AT+NCONFIG=%s,%s\r", ncmd, (state == NConfigTrue)?"TRUE":"FALSE");
@@ -1281,7 +1535,15 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetConfigUE(NBIOT_ClientsTypeDef* pClient, c
 	pClient->ATCmdStack->ATSendlen = strlen((char *)pClient->DataProcessStack);
 	pClient->ATCmdStack->ATack = "OK";
 	pClient->ATCmdStack->ATNack = "ERROR";
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_ERROR) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#else
 	NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack);
+#endif
 	
 	return NBStatus;
 }
@@ -1295,10 +1557,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetConfigUE(NBIOT_ClientsTypeDef* pClient, c
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadConfigUE(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+NCONFIG?\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+NCONFIG?\r");
@@ -1371,6 +1634,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadConfigUE(NBIOT_ClientsTypeDef* pCli
 			goto exit;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 exit:
 	return NBStatus;
@@ -1385,10 +1655,11 @@ exit:
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_QuerySendMessageCOAPPayload(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+NQMGS\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+NQMGS\r");
@@ -1401,6 +1672,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_QuerySendMessageCOAPPayload(NBIOT_ClientsTyp
 			NBStatus = NBIOT_ERROR;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 	return NBStatus;
 }
@@ -1414,10 +1692,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_QuerySendMessageCOAPPayload(NBIOT_ClientsTyp
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_QueryReadMessageCOAPPayload(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+NQMGR\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+NQMGR\r");
@@ -1430,6 +1709,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_QueryReadMessageCOAPPayload(NBIOT_ClientsTyp
 			NBStatus = NBIOT_ERROR;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 	return NBStatus;
 }
@@ -1446,16 +1732,17 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_QueryReadMessageCOAPPayload(NBIOT_ClientsTyp
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCOAPPayload(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
 	u16 length = 0;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
 	if ((pClient->Sendlen > pClient->Sendbuf_size) || (((2 * pClient->Sendlen) + 15) > pClient->DataProcessStack_size) || (((2 * pClient->Sendlen) + 15) > pClient->ATCmdStack->ATSendbuf_size)) {
 		NBStatus = NBIOT_ERROR;
 		goto exit;
 	}
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	sprintf((char *)pClient->DataProcessStack, "AT+NMGS=%d,", pClient->Sendlen);
@@ -1470,7 +1757,15 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCOAPPayload(NBIOT_ClientsTypeDef* pClien
 	pClient->ATCmdStack->ATSendlen = strlen((char *)pClient->DataProcessStack);
 	pClient->ATCmdStack->ATack = "OK";
 	pClient->ATCmdStack->ATNack = "ERROR";
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_ERROR) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#else
 	NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack);
+#endif
 	
 exit:
 	return NBStatus;
@@ -1485,11 +1780,12 @@ exit:
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_ReadCOAPPayload(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
 	u32 utmp = 0;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+NMGR\r");
@@ -1507,6 +1803,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_ReadCOAPPayload(NBIOT_ClientsTypeDef* pClien
 			pClient->Recvbuf[i] = utmp;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 exit:
 	return NBStatus;
@@ -1521,10 +1824,11 @@ exit:
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCONDataStatus(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	sprintf((char *)pClient->ATCmdStack->ATSendbuf, "AT+MLWULDATASTATUS?\r");
 	pClient->ATCmdStack->ATSendlen = strlen("AT+MLWULDATASTATUS?\r");
@@ -1559,6 +1863,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCONDataStatus(NBIOT_ClientsTypeDef*
 			NBStatus = NBIOT_ERROR;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 	return NBStatus;
 }
@@ -1579,16 +1890,17 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCONDataStatus(NBIOT_ClientsTypeDef*
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCOAPPayloadFlag(NBIOT_ClientsTypeDef* pClient, const char *flag)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
 	u16 length = 0;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
 	if ((pClient->Sendlen > pClient->Sendbuf_size) || (((2 * pClient->Sendlen) + 29) > pClient->DataProcessStack_size) || (((2 * pClient->Sendlen) + 29) > pClient->ATCmdStack->ATSendbuf_size)) {
 		NBStatus = NBIOT_ERROR;
 		goto exit;
 	}
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	sprintf((char *)pClient->DataProcessStack, "AT+MLWULDATAEX=%d,", pClient->Sendlen);
@@ -1607,7 +1919,15 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCOAPPayloadFlag(NBIOT_ClientsTypeDef* pC
 	pClient->ATCmdStack->ATSendlen = strlen((char *)pClient->DataProcessStack);
 	pClient->ATCmdStack->ATack = "OK";
 	pClient->ATCmdStack->ATNack = "ERROR";
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_ERROR) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#else
 	NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack);
+#endif
 	
 exit:
 	return NBStatus;
@@ -1625,10 +1945,11 @@ exit:
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CreateUDPSocket(NBIOT_ClientsTypeDef* pClient, u16 localport, u8 receivectl, int *socket)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	sprintf((char *)pClient->DataProcessStack, "AT+NSOCR=%s,%d,%d,%d\r", "DGRAM", 17, localport, receivectl);
@@ -1642,6 +1963,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CreateUDPSocket(NBIOT_ClientsTypeDef* pClien
 			NBStatus = NBIOT_ERROR;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 	return NBStatus;
 }
@@ -1656,10 +1984,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CreateUDPSocket(NBIOT_ClientsTypeDef* pClien
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CloseUDPSocket(NBIOT_ClientsTypeDef* pClient, int socket)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	sprintf((char *)pClient->DataProcessStack, "AT+NSOCL=%d\r", socket);
@@ -1668,7 +1997,15 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CloseUDPSocket(NBIOT_ClientsTypeDef* pClient
 	pClient->ATCmdStack->ATSendlen = strlen((char *)pClient->DataProcessStack);
 	pClient->ATCmdStack->ATack = "OK";
 	pClient->ATCmdStack->ATNack = "ERROR";
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_ERROR) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#else
 	NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack);
+#endif
 	
 	return NBStatus;
 }
@@ -1685,18 +2022,19 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CloseUDPSocket(NBIOT_ClientsTypeDef* pClient
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendUDPPayload(NBIOT_ClientsTypeDef* pClient, int socket, const char *addr, u16 port)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
 	u16 length = 0;
 	u16 rdsocket = 0;
 	u16 rdlength = 0;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
 	if ((pClient->Sendlen > pClient->Sendbuf_size) || (((2 * pClient->Sendlen) + 15) > pClient->DataProcessStack_size) || (((2 * pClient->Sendlen) + 15) > pClient->ATCmdStack->ATSendbuf_size)) {
 		NBStatus = NBIOT_ERROR;
 		goto exit;
 	}
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	sprintf((char *)pClient->DataProcessStack, "AT+NSOST=%d,%s,%d,%d,", socket, addr, port, pClient->Sendlen);
@@ -1722,6 +2060,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendUDPPayload(NBIOT_ClientsTypeDef* pClient
 			}
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 exit:
 	return NBStatus;
@@ -1742,18 +2087,19 @@ exit:
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendUDPPayloadFlag(NBIOT_ClientsTypeDef* pClient, int socket, const char *addr, u16 port, const char *flag)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
 	u16 length = 0;
 	u16 rdsocket = 0;
 	u16 rdlength = 0;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
 	if ((pClient->Sendlen > pClient->Sendbuf_size) || (((2 * pClient->Sendlen) + 15) > pClient->DataProcessStack_size) || (((2 * pClient->Sendlen) + 15) > pClient->ATCmdStack->ATSendbuf_size)) {
 		NBStatus = NBIOT_ERROR;
 		goto exit;
 	}
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	sprintf((char *)pClient->DataProcessStack, "AT+NSOSTF=%d,%s,%d,%s,%d,", socket, addr, port, flag, pClient->Sendlen);
@@ -1779,6 +2125,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendUDPPayloadFlag(NBIOT_ClientsTypeDef* pCl
 			}
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 exit:
 	return NBStatus;
@@ -1798,12 +2151,13 @@ exit:
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_ReadUDPPayload(NBIOT_ClientsTypeDef* pClient, int socket, int maxrlen, int *rleft, char *addr, u16 *port)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	Stm32_CalculagraphTypeDef ATCmd_timer_Ms;
 	u32 utmp = 0;
 	int rdsocket = 0;
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	int retErrorCode;
+#endif
 	
-	Stm32_Calculagraph_CountdownMS(&ATCmd_timer_Ms, pClient->Command_Timeout_Msec);
-	pClient->ATCmdStack->CmdWaitTime = ATCmd_timer_Ms;
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	sprintf((char *)pClient->DataProcessStack, "AT+NSORF=%d,%d\r", socket, maxrlen);
@@ -1830,6 +2184,13 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_ReadUDPPayload(NBIOT_ClientsTypeDef* pClient
 			pClient->Recvbuf[i] = utmp;
 		}
 	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nERROR: %d\r\n", &retErrorCode) > 0) {
+			NBStatus = (NBIOT_StatusTypeDef)retErrorCode;
+		}
+	}
+#endif
 	
 exit:
 	return NBStatus;

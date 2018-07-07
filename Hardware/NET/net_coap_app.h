@@ -23,6 +23,7 @@
 void NET_COAP_APP_PollExecution(NBIOT_ClientsTypeDef* pClient);					//COAP逻辑处理
 void NET_COAP_NBIOT_Event_StopMode(NBIOT_ClientsTypeDef* pClient);				//停止模式
 void NET_COAP_NBIOT_Event_HardwareReboot(NBIOT_ClientsTypeDef* pClient);			//硬件重启
+void NET_COAP_NBIOT_Event_ReportError(NBIOT_ClientsTypeDef* pClient);				//错误码输出
 void NET_COAP_NBIOT_Event_ModuleCheck(NBIOT_ClientsTypeDef* pClient);				//模块检测
 void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient);			//参数配置
 void NET_COAP_NBIOT_Event_SimICCIDCheck(NBIOT_ClientsTypeDef* pClient);			//Sim卡检测

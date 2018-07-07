@@ -39,6 +39,10 @@ void NET_DNS_APP_PollExecution(DNS_ClientsTypeDef* pClient)
 		NET_DNS_NBIOT_Event_HardwareReboot(pClient);
 		break;
 	
+	case REPORT_ERROE:
+		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+		break;
+	
 	case MODULE_CHECK:
 		NET_DNS_NBIOT_Event_ModuleCheck(pClient);
 		break;

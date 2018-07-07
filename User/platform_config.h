@@ -30,16 +30,20 @@
 #define	NBCOAP_QUOTA_TIME_5YEAR			1183
 #define	NBCOAP_COAP_QUOTA_TIME_TYPE		NBCOAP_QUOTA_TIME_3YEAR				//Coap一天使用配额时间
 
-#define	RADAR_MODEL_V1					1
-#define	RADAR_MODEL_V2					2
-#define	RADAR_MODEL_TYPE				RADAR_MODEL_V2						//雷达类型
+#define	NBIOT_PRINT_ERROR_CODE_DISABLE	0
+#define	NBIOT_PRINT_ERROR_CODE_ENABLE		1
+#define	NBIOT_PRINT_ERROR_CODE_TYPE		NBIOT_PRINT_ERROR_CODE_ENABLE			//NBIOT输出错误码模式
 
 #define	LOWPOWERDISABLE				0
 #define	LOWPOWERENABLE					1
 #define	LOWPOWERMODE					LOWPOWERENABLE						//低功耗模式
 
+#define	RADAR_MODEL_V1					1
+#define	RADAR_MODEL_V2					2
+#define	RADAR_MODEL_TYPE				RADAR_MODEL_V2						//雷达类型
+
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					96								//从固件版本
+#define	SOFTWARESUB					97								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 

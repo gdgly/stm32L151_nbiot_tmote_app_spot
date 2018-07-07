@@ -1,6 +1,9 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang
 
+* 2018-07-07 :
+	* COAP增加RF输出AT指令执行错误码显示。
+	* COAP数据发送检测数据是否送达时间增加至60秒。
 * 2018-07-06 :
 	* COAP工作时间统计采用变量存储，一天写入EEPROM一次。
 	* 增加2个指令，CMEE和查看TUP信息。
