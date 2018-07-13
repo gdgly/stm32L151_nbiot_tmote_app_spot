@@ -89,11 +89,14 @@ int NET_COAP_Message_Operate_Creat_Json_Basic_Info(char* outBuffer)
 				"\"Vender\":\"%s\","
 				"\"Hard\":\"%s\","
 				"\"Soft\":\"%d:%d.%d\","
+#if 0
 				"\"Build\":\"%s\","
+#endif
 				"\"Sim\":\"%s\","
 				"\"Imei\":\"%s\","
 				"\"Boot\":\"%d.%d\","
-				"\"Ver\":\"%s\""
+				"\"Ver\":\"%s\","
+				"\"Rmold\":\"%d\""
 			"}"
 		"}",
 		
@@ -102,11 +105,14 @@ int NET_COAP_Message_Operate_Creat_Json_Basic_Info(char* outBuffer)
 		TCFG_EEPROM_Get_Vender_String(),
 		TCFG_Utility_Get_Hardwear_Version_String(),
 		TCFG_EEPROM_GetBootVersion(), TCFG_Utility_Get_Major_Softnumber(), TCFG_Utility_Get_Sub_Softnumber(),
+#if 0
 		TCFG_Utility_Get_Build_Time_String(),
+#endif
 		TCFG_Utility_Get_Nbiot_Iccid_String(),
 		TCFG_Utility_Get_Nbiot_Imei_String(),
 		TCFG_Utility_Get_SoftResetFlag(), TCFG_Utility_Get_Device_BootCount(),
-		TCFG_Utility_Get_Nbiot_ModelVersion()
+		TCFG_Utility_Get_Nbiot_ModelVersion(),
+		Radar_GetModel()
 	);
 	
 	return strlen(outBuffer);
@@ -188,8 +194,8 @@ int NET_COAP_Message_Operate_Creat_Json_Radar_Info(char* outBuffer)
 				"\"snr\":%d,"
 				"\"rssi\":%d,"
 				"\"temp\":%d,"
-				"\"other\":\"%02d%02d%02d%02d%02d,%02d%02d%02d%02d%02d,%02d%02d%02d%02d%02d%02d;%02d%02d%02d%02d%02d,%02d%02d%02d.dif=%d.tm=%d.frl=%d&%d.tml=%d(%d,%d,%d)%u\""
-				
+				"\"qtemp\":%d,"
+				"\"other\":\"%02d%02d%02d%02d%02d,%02d%02d%02d%02d%02d,%02d%02d%02d%02d%02d%02d;%02d%02d%02d%02d%02d,%02d%02d%02d.dif=%d.frl=%d&%d(%d,%d,%d)%u\""
 			"}"
 		"}",
 		
@@ -201,6 +207,7 @@ int NET_COAP_Message_Operate_Creat_Json_Radar_Info(char* outBuffer)
 		TCFG_Utility_Get_Nbiot_RadioSNR(),
 		TCFG_Utility_Get_Nbiot_Rssi_IntVal(),
 		TCFG_Utility_Get_Device_Temperature(),
+		Qmc5883lData.temp_now,
 		radar_targetinfo.pMagNow[2],  radar_targetinfo.pMagNow[3],  radar_targetinfo.pMagNow[4],  radar_targetinfo.pMagNow[5],
 		radar_targetinfo.pMagNow[6],  radar_targetinfo.pMagNow[7],  radar_targetinfo.pMagNow[8],  radar_targetinfo.pMagNow[9],
 		radar_targetinfo.pMagNow[10], radar_targetinfo.pMagNow[11], radar_targetinfo.pMagNow[12], radar_targetinfo.pMagNow[13],
@@ -208,10 +215,8 @@ int NET_COAP_Message_Operate_Creat_Json_Radar_Info(char* outBuffer)
 		radar_targetinfo.pMagBG[2], radar_targetinfo.pMagBG[3], radar_targetinfo.pMagBG[4], radar_targetinfo.pMagBG[5],
 		radar_targetinfo.pMagBG[6], radar_targetinfo.pMagBG[7], radar_targetinfo.pMagBG[8], radar_targetinfo.pMagBG[9],
 		sRadarData.Diff_v2,
-		sRadarData.timedomain_square_dif/100,
 		talgo_get_fredomain_least(),
 		talgo_get_fredomain_least_inhalfhour(),
-		talgo_get_timedomain_least(),
 		Qmc5883lData.X_Back,
 		Qmc5883lData.Y_Back,
 		Qmc5883lData.Z_Back,

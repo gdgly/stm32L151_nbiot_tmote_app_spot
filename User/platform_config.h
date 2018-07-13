@@ -43,7 +43,7 @@
 #define	RADAR_MODEL_TYPE				RADAR_MODEL_V2						//雷达类型
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					97								//从固件版本
+#define	SOFTWARESUB					98								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 

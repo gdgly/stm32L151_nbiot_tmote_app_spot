@@ -545,10 +545,12 @@ void Radar_EnterCriticalSection(void)
 	if (val_vptat < 10) {
 		RADER_RANGE = 15;												// 6x304 +650 = 2486
 		RADER_LOW = 100;
+		radar_model = TRADAR_IMSEMI;
 	}
 	else {
 		RADER_RANGE = 8;												// 6x304 +650 = 2486
 		RADER_LOW = 250;
+		radar_model = TRADAR_INFINEON;
 	}
 	__NOP();
 #else
@@ -766,6 +768,17 @@ void Radar_check_timedomain_background(RADAR_DataStruct* pRadarData)
 			return;
 		}
 	}
+}
+
+/**********************************************************************************************************
+ @Function			char Radar_GetModel(void)
+ @Description			获取雷达类型
+ @Input				void
+ @Return				Model
+**********************************************************************************************************/
+char Radar_GetModel(void)
+{
+	return radar_model;
 }
 
 /********************************************** END OF FLEE **********************************************/

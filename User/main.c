@@ -395,7 +395,7 @@ void MainHandleRoutine(void)
 		SystemRunningTime.minutes = Stm32_GetSecondTick() / 60;
 		
 		val16 = QMC5883L_Temperature_Read();
-		Radio_Trf_Debug_Printf_Level3(" qmc_temperature = %hd ", val16);
+		Radio_Trf_Debug_Printf_Level3(" qmc_temp=%hd,x=%dy=%dz=%d ", val16, Qmc5883lData.X_Now, Qmc5883lData.Y_Now, Qmc5883lData.Z_Now);
 	}
 	/* Every FifteenMinutes Running */
 	if ((Stm32_GetSecondTick() / 900) != SystemRunningTime.fifteenMinutes) {

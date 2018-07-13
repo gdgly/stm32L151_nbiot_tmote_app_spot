@@ -20,6 +20,7 @@ u8   Radar_CheckData(u32 datain_t[], u16 in_num);								//雷达数据检查
 void Radar_InitBG_Cmd(u32 v23456, u32 v7890a, u32 vbcdef, u32 vg);				//雷达初始化背景命令
 u8   Radar_InitBackground(char mode);										//雷达初始化背景值
 u8   Radar_GetData(tradar_targetinfo_s* targetinfo[], u8 dataNum);				//获取雷达数据
+char	Radar_GetModel(void);												//获取雷达类型
 
 void Radar_GetSample(void);												//雷达采样
 void Radar_GetSample_Time(void);											//雷达采样节拍
