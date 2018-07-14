@@ -500,16 +500,16 @@ void DeBugMain(void)
 	TCFG_EEPROM_SetBootCount(0);
 	
 	NBIOT_Neul_NBxx_HardwareReboot(&NbiotClientHandler, 8000);
-	
+#if 0
 	NBIOT_RunStatus = NBIOT_Neul_NBxx_SetReportTerminationError(&NbiotClientHandler, CMEEnable);
 	NBIOT_RunStatus = NBIOT_Neul_NBxx_CheckReadReportTerminationError(&NbiotClientHandler);
-	
+#endif
 	__NOP();
 	
 	while (true) {
-		
+#if 0
 		NBIOT_RunStatus = NBIOT_Neul_NBxx_CheckReadMessageRegistrationStatus(&NbiotClientHandler);
-		
+#endif
 		__NOP();
 		
 		/* 小无线处理 */

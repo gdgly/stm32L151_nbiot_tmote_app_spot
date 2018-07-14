@@ -18,12 +18,12 @@
 #define NBIOT_DATASTACK_SIZE				1024
 
 /* NCONFIG配置参数 */
-#define AutoConnect						"AUTOCONNECT"
-#define CrScrambling					"CR_0354_0338_SCRAMBLING"
-#define CrSiAvoid						"CR_0859_SI_AVOID"
-#define CombineAttach					"COMBINE_ATTACH"
-#define CellReselection					"CELL_RESELECTION"
-#define EnableBip						"ENABLE_BIP"
+#define AutoConnect						"AUTOCONNECT"										//自动注网模式
+#define CrScrambling					"CR_0354_0338_SCRAMBLING"							//扰码功能
+#define CrSiAvoid						"CR_0859_SI_AVOID"									//扰码功能
+#define CombineAttach					"COMBINE_ATTACH"									//联合附着
+#define CellReselection					"CELL_RESELECTION"									//小区重选
+#define EnableBip						"ENABLE_BIP"										//短信
 
 #define AutoConnectVal					NConfigTrue
 #define CrScramblingVal					NConfigTrue
