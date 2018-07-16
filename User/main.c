@@ -45,7 +45,9 @@
 //#define	DEVICE_DEBUG													//定义开启设备调试
 /********************************************* DEBUG *****************************************************/
 #ifdef	DEVICE_DEBUG
-
+#include "pcpconfig.h"
+#include "pcpcrccheck.h"
+#include "pcpsock.h"
 void DeBugMain(void);
 #endif
 /****************************************** Debug Ending *************************************************/
@@ -488,6 +490,10 @@ void MainHandleRoutine(void)
 #ifdef	DEVICE_DEBUG
 /********************************************* DEBUG *****************************************************/
 NBIOT_StatusTypeDef NBIOT_RunStatus;
+u8 TestData[] = {0xFF, 0xFE, 0x01, 0x13, 0x4C, 0x9A, 0x00, 0x00, 0x01, 0x00, 0x00};
+u16 TestCheckCode = 0;
+u16 TestReadCheckCode = 0;
+PCP_MessageDataTypeDef* PCPMessageData;
 /****************************************** Debug Ending *************************************************/
 /**********************************************************************************************************
  @Function			void DeBugMain(void)
@@ -498,12 +504,21 @@ NBIOT_StatusTypeDef NBIOT_RunStatus;
 void DeBugMain(void)
 {
 	TCFG_EEPROM_SetBootCount(0);
-	
-	NBIOT_Neul_NBxx_HardwareReboot(&NbiotClientHandler, 8000);
 #if 0
+	NBIOT_Neul_NBxx_HardwareReboot(&NbiotClientHandler, 8000);
+
 	NBIOT_RunStatus = NBIOT_Neul_NBxx_SetReportTerminationError(&NbiotClientHandler, CMEEnable);
 	NBIOT_RunStatus = NBIOT_Neul_NBxx_CheckReadReportTerminationError(&NbiotClientHandler);
 #endif
+	
+	PCPMessageData = (PCP_MessageDataTypeDef*)TestData;
+	TestReadCheckCode = PCPSock_ntohs(PCPMessageData->CRCCheckCode);
+	
+	PCPMessageData->CRCCheckCode = 0;
+	TestCheckCode = PCPCrcCheck_getCrcCheckCode(TestData, 8);
+	PCPMessageData->CRCCheckCode = TestCheckCode;
+	
+	__NOP();
 	__NOP();
 	
 	while (true) {

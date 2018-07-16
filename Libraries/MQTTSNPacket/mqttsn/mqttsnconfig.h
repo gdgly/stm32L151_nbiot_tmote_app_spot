@@ -145,4 +145,4 @@ typedef MQTTSN_StatusTypeDef (*messageHandlerFp)(MQTTSN_ClientsTypeDef*, MQTTSN_
 void MQTTSN_WaitforCallback(MQTTSN_ClientsTypeDef* pClient);															//MQTTSN数据等待接收回调函数
 void MQTTSN_Client_Init(MQTTSN_ClientsTypeDef* pClient, MQTTSN_SocketNetTypeDef* NetSock, NET_NBIOT_ClientsTypeDef* NetNbiotStack);	//MQTTSN客户端初始化
 
-#endif
+#endif /* __MQTTSN_CONFIG_H */

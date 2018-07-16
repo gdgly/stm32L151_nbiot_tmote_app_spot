@@ -23,4 +23,4 @@ MQTTSN_StatusTypeDef MQTTSN_Subscribe(MQTTSN_ClientsTypeDef* pClient, const char
 
 MQTTSN_StatusTypeDef MQTTSN_RecvAck(MQTTSN_ClientsTypeDef* pClient);
 
-#endif
+#endif /* __MQTTSN_FUNC_H */

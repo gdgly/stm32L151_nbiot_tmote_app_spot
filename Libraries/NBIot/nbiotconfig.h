@@ -25,12 +25,12 @@
 #define CellReselection					"CELL_RESELECTION"									//小区重选
 #define EnableBip						"ENABLE_BIP"										//短信
 
-#define AutoConnectVal					NConfigTrue
-#define CrScramblingVal					NConfigTrue
-#define CrSiAvoidVal					NConfigTrue
-#define CombineAttachVal					NConfigFalse
-#define CellReselectionVal				NConfigTrue
-#define EnableBipVal					NConfigFalse
+#define AutoConnectVal					NConfigTrue										//True
+#define CrScramblingVal					NConfigTrue										//True
+#define CrSiAvoidVal					NConfigTrue										//True
+#define CombineAttachVal					NConfigFalse										//False
+#define CellReselectionVal				NConfigTrue										//True
+#define EnableBipVal					NConfigFalse										//False
 
 /* NBIOT 串口波特率计算中间值 */
 #define BAUDRATE_CAL_MIDDLE_NUM			16
@@ -549,4 +549,4 @@ void NBIOT_Client_Init(NBIOT_ClientsTypeDef* pClient, NBIOT_ATCmdTypeDef* ATCmdS
 void NBIOT_COAP_RA_NORMAL_SET_STATE(NBIOT_ClientsTypeDef* pClient, bool enable);										//设置COAP发送RA包或Normal包状态
 bool NBIOT_COAP_RA_NORMAL_GET_STATE(NBIOT_ClientsTypeDef* pClient);													//读取COAP发送RA包或Normal包状态
 
-#endif
+#endif /* __NBIOT_CONFIG_H */

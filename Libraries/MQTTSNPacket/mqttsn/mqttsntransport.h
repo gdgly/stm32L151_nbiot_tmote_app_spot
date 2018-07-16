@@ -11,4 +11,4 @@ MQTTSN_StatusTypeDef MQTTSN_Transport_Read(MQTTSN_SocketNetTypeDef* NetSock, cha
 
 MQTTSN_StatusTypeDef MQTTSN_Transport_Init(MQTTSN_SocketNetTypeDef* , NBIOT_ClientsTypeDef* , u16 , const char *, u16 );		//初始化
 
-#endif
+#endif /* __MQTTSN_TRANSPORT_H */
