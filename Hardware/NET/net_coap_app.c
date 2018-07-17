@@ -1530,6 +1530,7 @@ void NET_COAP_NBIOT_Event_RecvData(NBIOT_ClientsTypeDef* pClient)
 			
 			if (memcmp((const char*)pClient->Recvbuf, COAPFeedBackData, sizeof(COAPFeedBackData)) == 0) {
 				/* Is Feedback */
+				pClient->Registered = true;
 				if (COAPFeedBackFlag == false) {
 					COAPFeedBackFlag = true;
 					NET_Coap_Message_SendDataOffSet();
@@ -1872,6 +1873,7 @@ void NET_COAP_NBIOT_Event_RecvDataRANormal(NBIOT_ClientsTypeDef* pClient)
 			}
 		}
 		
+		pClient->Registered = true;
 		NET_Coap_Message_SendDataOffSet();
 		pClient->DictateRunCtl.dictateEnable = false;
 		pClient->DictateRunCtl.dictateEvent = SEND_DATA_RA_NORMAL;

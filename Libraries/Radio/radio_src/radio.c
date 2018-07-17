@@ -17,7 +17,7 @@
 #include "si446x_api_lib.h"
 #include "si446x_cmd.h"
 
-static char g_rf_state = RF_STATE_SLEEP;
+char g_rf_state = RF_STATE_SLEEP;
 unsigned char g_Rest_num = 0, g_Send_num = 0;
 unsigned char *g_P_frame;
 

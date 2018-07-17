@@ -449,15 +449,34 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
 **********************************************************************************************************/
 void HAL_SPI_MspDeInit(SPI_HandleTypeDef* hspi)
 {
+	GPIO_InitTypeDef GPIO_Initure;
+	
 	if (hspi->Instance == SPIx)
 	{
 		SPIx_FORCE_RESET();
 		SPIx_RELEASE_RESET();
 		
-		HAL_GPIO_DeInit(SPIx_NSS_GPIO_PORT, SPIx_NSS_PIN);
 		HAL_GPIO_DeInit(SPIx_SCK_GPIO_PORT, SPIx_SCK_PIN);
 		HAL_GPIO_DeInit(SPIx_MOSI_GPIO_PORT, SPIx_MOSI_PIN);
 		HAL_GPIO_DeInit(SPIx_MISO_GPIO_PORT, SPIx_MISO_PIN);
+		
+		GPIO_Initure.Pin		= SPIx_SCK_PIN | SPIx_MOSI_PIN;
+		GPIO_Initure.Mode		= GPIO_MODE_INPUT;
+		GPIO_Initure.Pull		= GPIO_PULLDOWN;
+		GPIO_Initure.Speed		= GPIO_SPEED_HIGH;
+		HAL_GPIO_Init(SPIx_SCK_GPIO_PORT, &GPIO_Initure);
+		
+		GPIO_Initure.Pin		= SPIx_MOSI_PIN;
+		GPIO_Initure.Mode		= GPIO_MODE_INPUT;
+		GPIO_Initure.Pull		= GPIO_PULLDOWN;
+		GPIO_Initure.Speed		= GPIO_SPEED_HIGH;
+		HAL_GPIO_Init(SPIx_MOSI_GPIO_PORT, &GPIO_Initure);
+		
+		GPIO_Initure.Pin		= SPIx_MISO_PIN;
+		GPIO_Initure.Mode		= GPIO_MODE_INPUT;
+		GPIO_Initure.Pull		= GPIO_NOPULL;
+		GPIO_Initure.Speed		= GPIO_SPEED_HIGH;
+		HAL_GPIO_Init(SPIx_MISO_GPIO_PORT, &GPIO_Initure);
 	}
 }
 

@@ -87,6 +87,7 @@ void NBIOT_Client_Init(NBIOT_ClientsTypeDef* pClient, NBIOT_ATCmdTypeDef* ATCmdS
 	
 	pClient->ListenRunCtl.listenEvent								= ENTER_IDLE_MODE;
 	
+	pClient->Registered										= false;
 	pClient->ATCmdStack										= ATCmdStack;
 	pClient->NetNbiotStack									= NetNbiotStack;
 	

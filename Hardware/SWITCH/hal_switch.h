@@ -9,6 +9,13 @@
 #define MERCURY_RCC_GPIO_CLK_DISABLE()		__HAL_RCC_GPIOH_CLK_DISABLE()
 #define MERCURY_READ()					HAL_GPIO_ReadPin(MERCURY_GPIOx, MERCURY_PIN)
 
+#define PRODUCTTEST_GPIOx				GPIOB
+#define PRODUCTTEST_PIN					GPIO_PIN_5
+#define PRODUCTTEST_RCC_GPIO_CLK_ENABLE()	__HAL_RCC_GPIOB_CLK_ENABLE()
+#define PRODUCTTEST_RCC_GPIO_CLK_DISABLE()	__HAL_RCC_GPIOB_CLK_DISABLE()
+#define PRODUCTTEST_READ()				HAL_GPIO_ReadPin(PRODUCTTEST_GPIOx, PRODUCTTEST_PIN)
+
 u8 Mercury_Read(void);													//水银开关读取状态
+u8 ProductTest_Read(void);												//产品测试读取状态
 
 #endif

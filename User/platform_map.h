@@ -390,6 +390,7 @@ char*		TCFG_Utility_Get_Nbiot_Imei_String(void);										//读取Nbiot Imei字�
 int			TCFG_Utility_Get_Nbiot_Rssi_IntVal(void);										//读取Nbiot Rssi值
 unsigned char	TCFG_Utility_Get_Nbiot_Rssi_UnCharVal(void);										//读取Nbiot Rssi值
 unsigned char	TCFG_Utility_Get_Nbiot_WorkMode(void);											//读取Nbiot WorkMode值
+unsigned char	TCFG_Utility_Get_Nbiot_Registered(void);										//读取Nbiot Registered值
 
 int			TCFG_Utility_Get_Nbiot_RadioSignalpower(void);									//读取Nbiot RadioSignalpower值
 int			TCFG_Utility_Get_Nbiot_RadioTotalpower(void);									//读取Nbiot RadioTotalpower值

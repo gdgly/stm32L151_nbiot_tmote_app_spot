@@ -42,7 +42,8 @@ enum trfStatus
 	TRF_NO_PAYLOAD,
 	TRF_BAD_PROTOCAL,
 	TRF_BAD_MSGTYPE,
-	TRF_NOT_FORME
+	TRF_NOT_FORME,
+	TRF_IS_ACK
 };
 
 typedef struct
@@ -77,9 +78,10 @@ typedef __packed struct _trf_heartbeat
 	uint8_t							major_softver;
 	uint8_t							sub_softver;
 	uint8_t							DevType;
-	uint8_t							sub_hardver;
-	uint8_t							workmode:2;
-	uint8_t							status:3;
+	uint8_t							sub_hardver;						// hardvare version
+	uint8_t							workmode:2;						// 0=normal,1=config,2=debug
+	uint8_t							status:3;							// 0=free,1=occupy
+	uint8_t							nbstate:1;						// 0=sending,1=sent
 }trf_heartbeat_s;
 
 typedef __packed struct _trf_defaultrsp
@@ -128,6 +130,18 @@ typedef __packed struct _tmote_debug_status
 	uint8_t							radar_strength;
 	uint8_t							radar_covercount;
 	uint8_t							radar_diff;
+	/* -------------------Add Version2------------------- */
+	uint8_t							rssi;
+	uint8_t							snr;
+	int8_t							mcu_temp;
+	int8_t							qmc_temp;
+	int16_t							back_x;
+	int16_t							back_y;
+	int16_t							back_z;
+	int16_t							debugval;
+	uint8_t							radarval[16];
+	uint8_t							radarback[16];
+	/* -------------------End Version2------------------- */
 }tmote_debug_status_s;
 
 typedef __packed struct _tmote_basic_info

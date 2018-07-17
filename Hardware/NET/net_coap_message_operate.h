@@ -3,6 +3,10 @@
 
 #include "sys.h"
 
+#define NBIOT_STATUS_MSG_VERSION_33BYTE_V1	0
+#define NBIOT_STATUS_MSG_VERSION_77BYTE_V2	1
+#define NBIOT_STATUS_MSG_VERSION_TYPE		NBIOT_STATUS_MSG_VERSION_33BYTE_V1		//NBIOT状态包版本
+
 #define COAP_MSGTYPE_TYPE_SHORT_STATUS		0x37
 #define COAP_MSGTYPE_TYPE_LONG_STATUS		0x3A
 #define COAP_MSGTYPE_TYPE_INFO			0x35
@@ -50,7 +54,19 @@ typedef __packed struct
 	u8	RadarStrength;
 	u8	RadarCoverCount;
 	u8	RadarDiff;
-}COAP_PacketLongTypeDef;													//长包33Byte
+#if NBIOT_STATUS_MSG_VERSION_TYPE == NBIOT_STATUS_MSG_VERSION_77BYTE_V2
+	u8	NBRssi;
+	s8	NBSnr;
+	s8	MCUTemp;
+	s8	QMCTemp;
+	s16	MagneticBackX;
+	s16	MagneticBackY;
+	s16	MagneticBackZ;
+	s16	Debugval;
+	u8	Radarval[16];
+	u8	Radarback[16];
+#endif
+}COAP_PacketLongTypeDef;													//长包77Byte
 
 typedef __packed struct
 {

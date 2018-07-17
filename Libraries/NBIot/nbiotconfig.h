@@ -537,6 +537,7 @@ struct NBIOT_ClientsTypeDef
 		NBIOT_ListenEventTypeDef			listenEvent;
 	}ListenRunCtl;
 	
+	bool								Registered;
 	NBIOT_ParameterTypeDef				Parameter;
 	NBIOT_ATCmdTypeDef*					ATCmdStack;
 	NET_NBIOT_ClientsTypeDef*			NetNbiotStack;

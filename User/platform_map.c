@@ -288,7 +288,7 @@ void TCFG_EEPROM_ReadConfigData(void)
 	
 	/* NBIot心跳间隔 */
 	TCFG_SystemData.NBIotHeart = TCFG_EEPROM_GetNbiotHeart();
-	if ((TCFG_SystemData.NBIotHeart == 0) || (TCFG_SystemData.NBIotHeart > 8)) {
+	if ((TCFG_SystemData.NBIotHeart == 0) || (TCFG_SystemData.NBIotHeart > 12)) {
 		TCFG_SystemData.NBIotHeart = NBIOT_HEART_DATA_HOURS;
 		TCFG_EEPROM_SetNbiotHeart(TCFG_SystemData.NBIotHeart);
 	}
@@ -1469,10 +1469,10 @@ unsigned char TCFG_EEPROM_GetMagMode(void)
 void TCFG_EEPROM_SetNbiotHeart(uint8_t val)
 {
 	if (val == 0) {
-		val = 1;
-	}
-	else if (val > 4) {
 		val = 4;
+	}
+	else if (val > 12) {
+		val = 12;
 	}
 	
 	FLASH_EEPROM_WriteByte(TCFG_NB_HEART_OFFSET, val);
@@ -1486,7 +1486,17 @@ void TCFG_EEPROM_SetNbiotHeart(uint8_t val)
 **********************************************************************************************************/
 unsigned char TCFG_EEPROM_GetNbiotHeart(void)
 {
-	return FLASH_EEPROM_ReadByte(TCFG_NB_HEART_OFFSET);
+	unsigned char val = 0;
+	
+	val = FLASH_EEPROM_ReadByte(TCFG_NB_HEART_OFFSET);
+	if (val == 0) {
+		val = 4;
+	}
+	else if (val > 12) {
+		val = 12;
+	}
+	
+	return val;
 }
 
 /**********************************************************************************************************
@@ -1942,6 +1952,21 @@ unsigned char TCFG_Utility_Get_Nbiot_WorkMode(void)
 	return NbiotClientHandler.Parameter.connectedstate;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.connectedstate;
+#endif
+}
+
+/**********************************************************************************************************
+ @Function			unsigned char TCFG_Utility_Get_Nbiot_Registered(void)
+ @Description			TCFG_Utility_Get_Nbiot_Registered				: 读取Nbiot Registered值
+ @Input				void
+ @Return				Nbiot_Registered
+**********************************************************************************************************/
+unsigned char TCFG_Utility_Get_Nbiot_Registered(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return NbiotClientHandler.Registered;
+#elif NETPROTOCAL == NETMQTTSN
+	return MqttSNClientHandler.SocketStack->NBIotStack->Registered;
 #endif
 }
 

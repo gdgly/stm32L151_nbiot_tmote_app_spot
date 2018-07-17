@@ -22,6 +22,7 @@
 #include "platform_map.h"
 #include "inspectmessageoperate.h"
 #include "hal_rtc.h"
+#include "radar_api.h"
 #include "string.h"
 
 NETCoapNeedSendCodeTypeDef	NETCoapNeedSendCode = NETCoapNeedSendCode_initializer;
@@ -127,7 +128,11 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		CoapLongStructure.HeadPacket.PacketType				= 0x05;
 		CoapLongStructure.HeadPacket.PacketNumber			= 0x00;
 		CoapLongStructure.MsgPacket.DestSN					= 0x00;
+#if NBIOT_STATUS_MSG_VERSION_TYPE == NBIOT_STATUS_MSG_VERSION_33BYTE_V1
 		CoapLongStructure.MsgPacket.Version				= 0x01;
+#elif NBIOT_STATUS_MSG_VERSION_TYPE == NBIOT_STATUS_MSG_VERSION_77BYTE_V2
+		CoapLongStructure.MsgPacket.Version				= 0x02;
+#endif
 		CoapLongStructure.MsgPacket.Type					= COAP_MSGTYPE_TYPE_LONG_STATUS;
 		CoapLongStructure.DateTime						= SpotStatusData.unixTime;
 		CoapLongStructure.SpotStatus						= SpotStatusData.spot_status;
@@ -140,6 +145,18 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		CoapLongStructure.RadarStrength					= SpotStatusData.radarData.MagVal;
 		CoapLongStructure.RadarCoverCount					= SpotStatusData.radarData.Diff_v2;
 		CoapLongStructure.RadarDiff						= SpotStatusData.radarData.Diff;
+#if NBIOT_STATUS_MSG_VERSION_TYPE == NBIOT_STATUS_MSG_VERSION_77BYTE_V2
+		CoapLongStructure.NBRssi							= TCFG_Utility_Get_Nbiot_Rssi_IntVal();
+		CoapLongStructure.NBSnr							= TCFG_Utility_Get_Nbiot_RadioSNR();
+		CoapLongStructure.MCUTemp						= TCFG_Utility_Get_Device_Temperature();
+		CoapLongStructure.QMCTemp						= Qmc5883lData.temp_now;
+		CoapLongStructure.MagneticBackX					= Qmc5883lData.X_Back;
+		CoapLongStructure.MagneticBackY					= Qmc5883lData.Y_Back;
+		CoapLongStructure.MagneticBackZ					= Qmc5883lData.Z_Back;
+		CoapLongStructure.Debugval						= SpotStatusData.radarData.timedomain_dif;
+		memcpy(CoapLongStructure.Radarval, radar_targetinfo.pMagNow, 16);
+		memcpy(CoapLongStructure.Radarback, radar_targetinfo.pMagBG, 16);
+#endif
 		NET_Coap_Message_SendDataEnqueue((unsigned char *)&CoapLongStructure, sizeof(CoapLongStructure));
 		NETCoapNeedSendCode.LongStatus = 0;
 		Inspect_Message_SpotStatusOffSet();

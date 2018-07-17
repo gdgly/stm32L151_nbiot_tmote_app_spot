@@ -202,6 +202,12 @@ void Inspect_Spot_ExistenceDetect(void)
 		
 		if (((MAG_NO_CHANGE == Inspect_Mag_Stable()) && ((time2send_spot+8) < Stm32_GetSecondTick())) || ((SpotStatusDataBackUp.timeCounter+24) < Stm32_GetSecondTick())) {
 			if (status_pre != SpotStatusDataBackUp.spot_status) {
+				/* -把此刻的雷达数据报告到服务器- */
+				SpotStatusDataBackUp.radarData.CoverNum		= sRadarData.Diff_v2;
+				SpotStatusDataBackUp.radarData.DisVal		= sRadarData.DisVal;
+				SpotStatusDataBackUp.radarData.MagVal		= sRadarData.MagVal;
+				SpotStatusDataBackUp.radarData.Diff		= sRadarData.Diff;
+				SpotStatusDataBackUp.radarData.Diff_v2		= sRadarData.Diff_v2;
 				Inspect_Message_SpotStatusEnqueue(SpotStatusDataBackUp);
 				status_pre = SpotStatusDataBackUp.spot_status;
 				time2send_spot = Stm32_GetSecondTick();

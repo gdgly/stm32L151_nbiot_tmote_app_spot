@@ -46,6 +46,7 @@
 /********************************************* DEBUG *****************************************************/
 #ifdef	DEVICE_DEBUG
 #include "pcpconfig.h"
+#include "pcptransport.h"
 #include "pcpcrccheck.h"
 #include "pcpsock.h"
 void DeBugMain(void);
@@ -250,8 +251,17 @@ void MainRollingUpwardsActived(void)
 	MainHandleRoutine();
 	
 	if (!((NETCoapNeedSendCode.WorkInfoWait > 0) && (NETMqttSNNeedSendCode.InfoWorkWait > 0))) {
-		/* NBIOT APP Task */
-		NET_NBIOT_App_Task();
+		if (ProductTest_Read()) {
+			/* NBIOT APP Task */
+			NET_NBIOT_App_Task();
+		}
+		else {
+			/* NBIOT Power OFF */
+			if (NBIOTPOWER_IO_READ()) {
+				NET_NBIOT_Initialization();
+				NBIOTPOWER(OFF);
+			}
+		}
 	}
 	
 	/* 小无线处理 */
@@ -313,8 +323,17 @@ void MainRollingEnteredDownSleepKeepActived(void)
 	MainHandleRoutine();
 	
 	if (!((NETCoapNeedSendCode.WorkInfoWait > 0) && (NETMqttSNNeedSendCode.InfoWorkWait > 0))) {
-		/* NBIOT APP Task */
-		NET_NBIOT_App_Task();
+		if (ProductTest_Read()) {
+			/* NBIOT APP Task */
+			NET_NBIOT_App_Task();
+		}
+		else {
+			/* NBIOT Power OFF */
+			if (NBIOTPOWER_IO_READ()) {
+				NET_NBIOT_Initialization();
+				NBIOTPOWER(OFF);
+			}
+		}
 	}
 }
 
@@ -490,10 +509,15 @@ void MainHandleRoutine(void)
 #ifdef	DEVICE_DEBUG
 /********************************************* DEBUG *****************************************************/
 NBIOT_StatusTypeDef NBIOT_RunStatus;
-u8 TestData[] = {0xFF, 0xFE, 0x01, 0x13, 0x4C, 0x9A, 0x00, 0x00, 0x01, 0x00, 0x00};
+u8 TestData[11] = {0xFF, 0xFE, 0x01, 0x13, 0x4C, 0x9A, 0x00, 0x00, 0x01, 0x00, 0x00};
+u8 TestCoAP[21] = {0x00, 0x00, 0x50, 0x00, 0xFE, 0x00, 0x05, 0x83, 0xBD, 0xEC, 0xF5, 0x01, 0x01, 0x37, 0xFF, 0xFF, 0xFF, 0x7F, 0x00, 0x42, 0x01};
+u8 TestRead[30];
+u16 TestReadLen;
 u16 TestCheckCode = 0;
 u16 TestReadCheckCode = 0;
 PCP_MessageDataTypeDef* PCPMessageData;
+PCP_CoAPNetTransportTypeDef PCPCoAPNetHandler;
+PCP_StatusTypeDef PCPStatus;
 /****************************************** Debug Ending *************************************************/
 /**********************************************************************************************************
  @Function			void DeBugMain(void)
@@ -504,27 +528,18 @@ PCP_MessageDataTypeDef* PCPMessageData;
 void DeBugMain(void)
 {
 	TCFG_EEPROM_SetBootCount(0);
-#if 0
+	
+#if 1
 	NBIOT_Neul_NBxx_HardwareReboot(&NbiotClientHandler, 8000);
 
 	NBIOT_RunStatus = NBIOT_Neul_NBxx_SetReportTerminationError(&NbiotClientHandler, CMEEnable);
 	NBIOT_RunStatus = NBIOT_Neul_NBxx_CheckReadReportTerminationError(&NbiotClientHandler);
 #endif
 	
-	PCPMessageData = (PCP_MessageDataTypeDef*)TestData;
-	TestReadCheckCode = PCPSock_ntohs(PCPMessageData->CRCCheckCode);
-	
-	PCPMessageData->CRCCheckCode = 0;
-	TestCheckCode = PCPCrcCheck_getCrcCheckCode(TestData, 8);
-	PCPMessageData->CRCCheckCode = TestCheckCode;
-	
-	__NOP();
-	__NOP();
+	PCP_Transport_Init(&PCPCoAPNetHandler, &NbiotClientHandler);
 	
 	while (true) {
-#if 0
-		NBIOT_RunStatus = NBIOT_Neul_NBxx_CheckReadMessageRegistrationStatus(&NbiotClientHandler);
-#endif
+		
 		__NOP();
 		
 		/* 小无线处理 */

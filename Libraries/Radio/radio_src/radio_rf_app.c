@@ -32,7 +32,8 @@
 
 #include "tmesh_algorithm.h"
 
-static uint32_t cmdtime_pre = 0;
+static int32_t cmdtime_pre = -180;
+char gateway_nearby = 10;
 
 static frameInfo_t sInFrameQ[SIZE_INFRAME_Q];
 
@@ -506,6 +507,8 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 			}
 			else if (CFG_GET_FROM_FRAME(CFG_P_FRAME_HEAD(inmsg), CFG_HEAD_TYPE_OS) == TMOTE_PLAIN_ACK)
 			{
+				gateway_nearby = 10;
+				rc = TRF_IS_ACK;
 				__NOP();
 			}
 			else {
@@ -548,6 +551,13 @@ void Radio_Trf_App_Task(void)
 		Radio_Trf_Xmit_Heartbeat();
 	}
 	else if (cmdtime_pre + 180 > Stm32_GetSecondTick()) {
+		hearttime_pre = Stm32_GetSecondTick();
+		Radio_Rf_Interface_Init();
+		Radio_Rf_Interrupt_Init();
+		/* 发送心跳包 */
+		Radio_Trf_Xmit_Heartbeat();
+	}
+	else if ((gateway_nearby > 0) && (hearttime_pre+5 < Stm32_GetSecondTick())) {
 		hearttime_pre = Stm32_GetSecondTick();
 		Radio_Rf_Interface_Init();
 		Radio_Rf_Interrupt_Init();
@@ -644,6 +654,9 @@ uint8_t Radio_Trf_Get_Workmode(void)
 	else if (DeviceActivedMode != true) {
 		return NOTACTIVE_WORK;
 	}
+	else if (gateway_nearby == 0) {
+		return NORMAL_WORK;
+	}
 	else {
 		return TCFG_SystemData.WorkMode;
 	}
@@ -674,6 +687,10 @@ void Radio_Trf_Xmit_Heartbeat(void)
 		return;
 	}
 	
+	if (gateway_nearby) {
+		gateway_nearby--;
+	}
+	
 	memset((void*)pHeartBeat, 0, sizeof(trf_heartbeat_s));
 	pHeartBeat->head.destSN		= 0xFFFFFFFF;
 	pHeartBeat->head.version		= TRF_MSG_VERSION;
@@ -690,6 +707,8 @@ void Radio_Trf_Xmit_Heartbeat(void)
 	}
 	/* 0=free, 1=occupy */
 	pHeartBeat->status			= talgo_get_spotstatus();
+	/* 0=sending,1=sent */
+	pHeartBeat->nbstate			= TCFG_Utility_Get_Nbiot_Registered();
 	
 	Radio_Trf_Cfg_Buildframe((uint8_t *)pHeartBeat, TMOTE_PLAIN_PUB, Radio_Trf_Xmit_Get_Pktnum(), TCFG_EEPROM_Get_MAC_SN(), TRF_SendBuf, sizeof(trf_heartbeat_s));
 	Radio_Rf_Send(TRF_SendBuf, TRF_SendBuf[0]);
@@ -724,8 +743,8 @@ void Radio_Trf_Do_Rf_Pintf(char* info)
 	trf_msg_s *pMsg = (trf_msg_s*)(TRF_SendBuf + 32);
 	
 	infolen = strlen(info);
-	if (infolen > 46) {
-		infolen = 46;
+	if (infolen > 44) {
+		infolen = 44;
 	}
 	
 	Radio_Rf_Interface_Init();
@@ -738,7 +757,7 @@ void Radio_Trf_Do_Rf_Pintf(char* info)
 	pMsg->head.destSN			= 0xFFFFFFFF;
 	pMsg->head.version			= TRF_MSG_VERSION;
 	pMsg->head.type			= TRF_MSG_DEBUG_INFO;
-	strncpy(pMsg->pData, info, infolen);
+	memcpy(pMsg->pData, info, infolen);
 	
 	Radio_Trf_Cfg_Buildframe((uint8_t *)pMsg, TMOTE_PLAIN_PUB, Radio_Trf_Xmit_Get_Pktnum(), TCFG_EEPROM_Get_MAC_SN(), TRF_SendBuf, sizeof(trf_msghead_s) + infolen);
 	Radio_Rf_Send(TRF_SendBuf, TRF_SendBuf[0]);
