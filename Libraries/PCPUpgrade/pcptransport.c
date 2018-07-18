@@ -36,7 +36,7 @@ PCP_StatusTypeDef PCP_Transport_Write(PCP_CoAPNetTransportTypeDef* NetCoAP, cons
 	memcpy(NetCoAP->NBIotStack->Sendbuf, buf, sendlen);
 	NetCoAP->NBIotStack->Sendlen = sendlen;
 	
-	NBStatus = NBIOT_Neul_NBxx_SendCOAPPayload(NetCoAP->NBIotStack);
+	NBStatus = NBIOT_Neul_NBxx_SendCOAPPayloadFlag(NetCoAP->NBIotStack, "0x0100");
 	if (NBStatus != NBIOT_OK) {
 		PCPStatus = (PCP_StatusTypeDef)NBStatus;
 		goto exit;

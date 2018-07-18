@@ -15,6 +15,7 @@
 
 #include "net_nbiot_app.h"
 #include "net_coap_app.h"
+#include "net_pcp_app.h"
 #include "net_mqttsn_app.h"
 #include "net_dns_app.h"
 #include "stm32l1xx_config.h"

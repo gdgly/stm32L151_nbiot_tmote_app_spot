@@ -240,4 +240,4 @@ unsigned char NET_MqttSN_Message_InfoDynamicRear(void);
 unsigned char NET_MqttSN_Message_InfoRadarRear(void);
 unsigned char NET_MqttSN_Message_InfoResponseRear(void);
 
-#endif
+#endif /* __NET_MQTTSN_MESSAGE_OPERATE_H */

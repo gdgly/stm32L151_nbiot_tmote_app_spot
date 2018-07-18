@@ -4,7 +4,15 @@
 #include "sys.h"
 #include "nbiotconfig.h"
 
+#define PCP_COMMAND_TIMEOUT_SEC			30
+#define PCP_COMMAND_FAILURE_CNT			3
+
+/* PCP 协议栈开辟缓存大小 */
+#define PCP_BUFFER_SIZE					512
+#define PCP_DATASTACK_SIZE				512
+
 typedef struct PCP_CoAPNetTransportTypeDef	PCP_CoAPNetTransportTypeDef;
+typedef struct PCP_ClientsTypeDef			PCP_ClientsTypeDef;
 
 /* PCP Status */
 typedef enum
@@ -77,15 +85,27 @@ struct PCP_CoAPNetTransportTypeDef
 	PCP_StatusTypeDef					(*Read)(PCP_CoAPNetTransportTypeDef*, char*, u16*);
 };
 
+/* MQTTSN Clients */
+struct PCP_ClientsTypeDef
+{
+	unsigned char*						Sendbuf;
+	unsigned char*						Recvbuf;
+	size_t							Sendbuf_size;
+	size_t							Recvbuf_size;
+	short							Sendlen;
+	short							Recvlen;
+	unsigned char*						DataProcessStack;
+	size_t							DataProcessStack_size;
+	unsigned short						Command_Timeout_Sec;
+	unsigned short						Command_Failure_Cnt;
+	
+	PCP_CoAPNetTransportTypeDef*			CoAPStack;
+	NET_NBIOT_ClientsTypeDef*			NetNbiotStack;
+};
 
 
-
-
-
-
-
-
-
+/* Application Programming Interface */
+void PCP_Client_Init(PCP_ClientsTypeDef* pClient, PCP_CoAPNetTransportTypeDef* NetSock, NET_NBIOT_ClientsTypeDef* NetNbiotStack);	//PCP客户端初始化
 
 
 

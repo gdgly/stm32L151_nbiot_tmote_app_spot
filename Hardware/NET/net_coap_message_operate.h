@@ -122,4 +122,4 @@ bool NET_Coap_Message_RecvDataOffSet(void);																//接收数据队列(
 unsigned char NET_Coap_Message_SendDataRear(void);														//发送数据队尾值
 unsigned char NET_Coap_Message_RecvDataRear(void);														//接收数据队尾值
 
-#endif
+#endif /* __NET_COAP_MESSAGE_OPERATE_H */

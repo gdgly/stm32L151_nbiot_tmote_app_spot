@@ -42,4 +42,4 @@ void NET_DNS_Event_RecvDnsStructData(DNS_ClientsTypeDef* pClient);				//RecvDnsS
 void NET_DNS_Event_CloseUDPSocket(DNS_ClientsTypeDef* pClient);					//CloseUDPSocket
 void NET_DNS_Event_OverDnsAnalysis(DNS_ClientsTypeDef* pClient);					//OverDnsAnalysis
 
-#endif
+#endif /* __NET_DNS_APP_H */

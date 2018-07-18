@@ -48,4 +48,4 @@ void NET_COAP_NBIOT_Listen_Event_EnterIdleMode(NBIOT_ClientsTypeDef* pClient);		
 void NET_COAP_NBIOT_Listen_Enable_EnterParameter(NBIOT_ClientsTypeDef* pClient);	//使能(进入NBIOT运行信息)监听
 void NET_COAP_NBIOT_Listen_Event_EnterParameter(NBIOT_ClientsTypeDef* pClient);		//事件(进入NBIOT运行信息)监听
 
-#endif
+#endif /* __NET_COAP_APP_H */

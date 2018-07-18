@@ -39,6 +39,9 @@ MQTTSN_InfoResponseTypeDef	MqttSNInfoResponseStructure;						//MqttSN Response I
 NET_NBIOT_ClientsTypeDef		NetNbiotClientHandler;							//NET NBIOT Clinet Handler
 NBIOT_ATCmdTypeDef			NbiotATCmdHandler;								//NBIOT AT Cmd Handler
 NBIOT_ClientsTypeDef		NbiotClientHandler;								//Coap Clinet Handler
+
+
+
 MQTTSN_SocketNetTypeDef		MqttSNSocketNetHandler;							//MqttSN Net Handler
 MQTTSN_ClientsTypeDef		MqttSNClientHandler;							//MqttSN Clinet Handler
 DNS_SocketNetTypeDef		DNSSocketNetHandler;							//DNS Net Handler

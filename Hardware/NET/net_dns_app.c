@@ -16,10 +16,7 @@
 #include "net_dns_app.h"
 #include "hal_rtc.h"
 #include "string.h"
-
-#ifdef DNS_DEBUG_LOG_RF_PRINT
 #include "radio_rf_app.h"
-#endif
 
 /**********************************************************************************************************
  @Function			void NET_DNS_APP_PollExecution(DNS_ClientsTypeDef* pClient)

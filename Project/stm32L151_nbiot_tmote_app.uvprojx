@@ -1082,6 +1082,16 @@
               <FilePath>..\Hardware\NET\net_coap_app.c</FilePath>
             </File>
             <File>
+              <FileName>net_pcp_message_operate.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardware\NET\net_pcp_message_operate.c</FilePath>
+            </File>
+            <File>
+              <FileName>net_pcp_app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardware\NET\net_pcp_app.c</FilePath>
+            </File>
+            <File>
               <FileName>net_mqttsn_message_operate.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Hardware\NET\net_mqttsn_message_operate.c</FilePath>
