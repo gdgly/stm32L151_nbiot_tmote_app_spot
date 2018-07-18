@@ -76,9 +76,9 @@ typedef __packed struct
 }COAP_PacketInfoTypeDef;													//Info包254Byte
 
 #define COAP_SEND_BUFFER_SIZE				256
-#define COAP_RECV_BUFFER_SIZE				256
+#define COAP_RECV_BUFFER_SIZE				512
 #define COAP_SEND_PARK_NUM				10
-#define COAP_RECV_PARK_NUM				5
+#define COAP_RECV_PARK_NUM				3
 
 /* 发送数据队列 */
 typedef struct

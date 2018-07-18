@@ -43,7 +43,8 @@ typedef enum
 {
 	NET_POLL_EXECUTION_COAP				= 0x00,
 	NET_POLL_EXECUTION_DNS				= 0x01,
-	NET_POLL_EXECUTION_MQTTSN			= 0x02
+	NET_POLL_EXECUTION_MQTTSN			= 0x02,
+	NET_POLL_EXECUTION_PCP				= 0x03
 }NET_NBIOT_PollExecutionTypeDef;
 
 /* NET Clients */
@@ -51,7 +52,6 @@ struct NET_NBIOT_ClientsTypeDef
 {
 	NET_NBIOT_PollExecutionTypeDef		PollExecution;
 };
-
 
 void NET_NBIOT_Client_Init(NET_NBIOT_ClientsTypeDef* pClient);					//初始化NET NBIOT客户端
 

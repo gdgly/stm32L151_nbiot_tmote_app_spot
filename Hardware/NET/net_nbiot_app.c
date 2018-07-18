@@ -45,6 +45,11 @@ void NET_NBIOT_Initialization(void)
 	/* NBIOT客户端初始化 */
 	NBIOT_Client_Init(&NbiotClientHandler, &NbiotATCmdHandler, &NetNbiotClientHandler);
 	
+	/* PCP数据传输接口初始化 */
+	PCP_Transport_Init(&PCPCoAPNetHandler, &NbiotClientHandler);
+	/* PCP客户端初始化 */
+	PCP_Client_Init(&PCPClientHandler, &PCPCoAPNetHandler, &NetNbiotClientHandler);
+	
 	/* DNS数据传输接口初始化 */
 	DNS_Transport_Init(&DNSSocketNetHandler, &NbiotClientHandler, DNS_SERVER_LOCAL_PORT, DNS_SERVER_HOST_IP, DNS_SERVER_TELE_PORT);
 	/* DNS客户端初始化 */
@@ -374,6 +379,10 @@ void NET_NBIOT_TaskProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 	case NET_POLL_EXECUTION_MQTTSN:
 		pClient->PollExecution = NET_POLL_EXECUTION_COAP;
 		break;
+	
+	case NET_POLL_EXECUTION_PCP:
+		
+		break;
 	}
 	
 #elif NETPROTOCAL == NETMQTTSN
@@ -390,6 +399,10 @@ void NET_NBIOT_TaskProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 	
 	case NET_POLL_EXECUTION_MQTTSN:
 		NET_MQTTSN_APP_PollExecution(&MqttSNClientHandler);
+		break;
+	
+	case NET_POLL_EXECUTION_PCP:
+		pClient->PollExecution = NET_POLL_EXECUTION_DNS;
 		break;
 	}
 	

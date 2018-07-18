@@ -66,6 +66,25 @@ typedef enum
 	PCP_Cid_is_not_defined				= 521
 }PCP_StatusTypeDef;
 
+/* PCP Result Code */
+typedef enum
+{
+	PCP_ExecuteSuccess					= 0x00,											//处理成功
+	PCP_EquipmentUse					= 0x01,											//设备使用中
+	PCP_SignalqualityDifference			= 0x02,											//信号质量差
+	PCP_LatestVsrsion					= 0x03,											//已经是最新版本
+	PCP_LackofElectricity				= 0x04,											//电量不足
+	PCP_LackofSpace					= 0x05,											//剩余空间不足
+	PCP_DownloadTimeout					= 0x06,											//下载超时
+	PCP_UpgradePacketCheckFail			= 0x07,											//升级包校验失败
+	PCP_UpgradePacketTypeNonsupport		= 0x08,											//升级包类型不支持
+	PCP_InsufficientMemory				= 0x09,											//内存不足
+	PCP_InstallationFailure				= 0x0A,											//安装升级包失败
+	PCP_InternalAnomaly					= 0x7F,											//内部异常
+	PCP_UpgradeTaskFail					= 0x80,											//升级任务不存在
+	PCP_SliceNotFound					= 0x81											//指定分片不存在
+}PCP_ResultCodeTypeDef;
+
 /* PCP Message Data Structure */
 typedef __packed struct
 {
@@ -103,9 +122,9 @@ struct PCP_ClientsTypeDef
 	NET_NBIOT_ClientsTypeDef*			NetNbiotStack;
 };
 
-
 /* Application Programming Interface */
 void PCP_Client_Init(PCP_ClientsTypeDef* pClient, PCP_CoAPNetTransportTypeDef* NetSock, NET_NBIOT_ClientsTypeDef* NetNbiotStack);	//PCP客户端初始化
+
 
 
 

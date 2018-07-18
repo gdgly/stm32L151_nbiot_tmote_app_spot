@@ -1924,15 +1924,19 @@ void NET_COAP_NBIOT_Event_RecvDataRANormal(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 {
+	bool recvPCPUpgradeFlag = false;
 	u16 recvBufOffset = 0;
 	u16 recvMagicNum = 0;
 	u8 ret = NETIP_OK;
 	
 	if (NET_Coap_Message_RecvDataDequeue(pClient->Recvbuf, (unsigned short*)&pClient->Recvlen) == true) {
 		pClient->Recvbuf[pClient->Recvlen] = '\0';
+		
+		/* 私有普通下行数据 */
 		for (int i = 0; i < pClient->Recvlen; i++) {
 			if ((pClient->Recvbuf[i] == 'T') && (pClient->Recvbuf[i+1] == 'C') && (pClient->Recvbuf[i+2] == 'L') && (pClient->Recvbuf[i+3] == 'D')) {
 				recvBufOffset = i;
+				break;
 			}
 		}
 		
@@ -2256,6 +2260,20 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 		else {
 			/* Not Valid */
 			ret = NETIP_NOTVALID;
+		}
+		
+		/* PCP升级协议下行数据 */
+		for (int i = 0; i < pClient->Recvlen; i++) {
+			if ((pClient->Recvbuf[i] == 0xFF) && (pClient->Recvbuf[i+1] == 0xFE)) {
+				recvBufOffset = i;
+				recvPCPUpgradeFlag = true;
+				break;
+			}
+		}
+		
+		if (recvPCPUpgradeFlag != false) {
+			/* Find "0xFFFE" */
+			NET_PCP_Message_RecvDataEnqueue(pClient->Recvbuf + recvBufOffset, pClient->Recvlen - recvBufOffset);
 		}
 		
 		NET_Coap_Message_RecvDataOffSet();

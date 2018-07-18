@@ -6,6 +6,7 @@
 #include "nbiotfunc.h"
 #include "nbiottransport.h"
 #include "net_coap_message_operate.h"
+#include "net_pcp_message_operate.h"
 #include "platform_map.h"
 
 #define COAP_DEBUG_LOG_RF_PRINT											//定义开启RF输出DEBUG信息

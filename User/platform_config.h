@@ -44,7 +44,7 @@
 #define	RADAR_MODEL_TYPE				RADAR_MODEL_V2						//雷达类型
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					100								//从固件版本
+#define	SOFTWARESUB					101								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 
@@ -89,6 +89,8 @@ extern MQTTSN_InfoResponseTypeDef			MqttSNInfoResponseStructure;			//MqttSN Resp
 extern NET_NBIOT_ClientsTypeDef			NetNbiotClientHandler;				//NET NBIOT Clinet Handler
 extern NBIOT_ATCmdTypeDef				NbiotATCmdHandler;					//NBIOT AT Cmd Handler
 extern NBIOT_ClientsTypeDef				NbiotClientHandler;					//Coap Clinet Handler
+extern PCP_CoAPNetTransportTypeDef			PCPCoAPNetHandler;					//PCP Net Handler
+extern PCP_ClientsTypeDef				PCPClientHandler;					//PCP Clinet Handler
 extern MQTTSN_SocketNetTypeDef			MqttSNSocketNetHandler;				//MqttSN Net Handler
 extern MQTTSN_ClientsTypeDef				MqttSNClientHandler;				//MqttSN Clinet Handler
 extern DNS_SocketNetTypeDef				DNSSocketNetHandler;				//DNS Net Handler

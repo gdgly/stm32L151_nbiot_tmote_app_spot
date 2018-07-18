@@ -295,7 +295,7 @@
         <Ww>
           <count>15</count>
           <WinNumber>2</WinNumber>
-          <ItemText>TestRead</ItemText>
+          <ItemText>TestRead,0x10</ItemText>
         </Ww>
         <Ww>
           <count>16</count>
@@ -306,6 +306,16 @@
           <count>17</count>
           <WinNumber>2</WinNumber>
           <ItemText>PCPStatus,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>18</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>NETPcpMessageSendPark</ItemText>
+        </Ww>
+        <Ww>
+          <count>19</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>NETPcpMessageRecvPark</ItemText>
         </Ww>
       </WatchWindow2>
       <MemoryWindow1>

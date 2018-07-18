@@ -29,10 +29,11 @@
 #include "hal_vptat.h"
 #include "hal_temperature.h"
 #include "hal_qmc5883l.h"
-#include "net_dns_app.h"
-#include "net_coap_app.h"
-#include "net_mqttsn_app.h"
 #include "net_nbiot_app.h"
+#include "net_coap_app.h"
+#include "net_pcp_app.h"
+#include "net_dns_app.h"
+#include "net_mqttsn_app.h"
 #include "radar_api.h"
 #include "radio_hal_rf.h"
 #include "radio_rf_app.h"
@@ -516,7 +517,7 @@ u16 TestReadLen;
 u16 TestCheckCode = 0;
 u16 TestReadCheckCode = 0;
 PCP_MessageDataTypeDef* PCPMessageData;
-PCP_CoAPNetTransportTypeDef PCPCoAPNetHandler;
+PCP_CoAPNetTransportTypeDef tPCPCoAPNetHandler;
 PCP_StatusTypeDef PCPStatus;
 /****************************************** Debug Ending *************************************************/
 /**********************************************************************************************************
@@ -527,6 +528,8 @@ PCP_StatusTypeDef PCPStatus;
 **********************************************************************************************************/
 void DeBugMain(void)
 {
+	int one = 1;
+	
 	TCFG_EEPROM_SetBootCount(0);
 	
 #if 1
@@ -536,9 +539,24 @@ void DeBugMain(void)
 	NBIOT_RunStatus = NBIOT_Neul_NBxx_CheckReadReportTerminationError(&NbiotClientHandler);
 #endif
 	
-	PCP_Transport_Init(&PCPCoAPNetHandler, &NbiotClientHandler);
+	PCP_Transport_Init(&tPCPCoAPNetHandler, &NbiotClientHandler);
 	
 	while (true) {
+		
+		if (NbiotClientHandler.Parameter.netstate != Attach) {
+			NBIOT_Neul_NBxx_CheckReadAttachOrDetach(&NbiotClientHandler);
+		}
+		else {
+			if (one) {
+				PCPStatus = PCP_Transport_Write(&tPCPCoAPNetHandler, (char*)TestCoAP, 21);
+				if (PCPStatus == PCP_OK) {
+					one = 0;
+				}
+			}
+			else {
+				PCPStatus = PCP_Transport_Read(&tPCPCoAPNetHandler, (char*)TestRead, &TestReadLen);
+			}
+		}
 		
 		__NOP();
 		
