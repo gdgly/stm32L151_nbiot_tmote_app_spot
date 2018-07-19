@@ -35,7 +35,7 @@ void NET_COAP_APP_PollExecution(NBIOT_ClientsTypeDef* pClient)
 	case STOP_MODE:
 		NET_COAP_NBIOT_Event_StopMode(pClient);
 		break;
-		
+	
 	case HARDWARE_REBOOT:
 		NET_COAP_NBIOT_Event_HardwareReboot(pClient);
 		break;
@@ -2481,6 +2481,7 @@ void NET_COAP_NBIOT_Listen_Event_EnterParameter(NBIOT_ClientsTypeDef* pClient)
 	pClient->DictateRunCtl.dictateEnable = false;
 	pClient->DictateRunCtl.dictateEvent = NBCOAP_SENDMODE_TYPE;
 	pClient->ListenRunCtl.listenEvent = ENTER_IDLE_MODE;
+	pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
 }
 
 /********************************************** END OF FLEE **********************************************/

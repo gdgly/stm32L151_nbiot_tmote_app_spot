@@ -29,7 +29,7 @@ PCP_SwapRecvDataTypeDef		NETPcpMessageRecvPark;
  @Return				true							: 已满
 					false						: 未满
 **********************************************************************************************************/
-static bool NET_PCP_Message_SendDataisFull(void)
+bool NET_PCP_Message_SendDataisFull(void)
 {
 	bool MessageState;
 	
@@ -50,7 +50,7 @@ static bool NET_PCP_Message_SendDataisFull(void)
  @Return				true							: 已满
 					false						: 未满
 **********************************************************************************************************/
-static bool NET_PCP_Message_RecvDataisFull(void)
+bool NET_PCP_Message_RecvDataisFull(void)
 {
 	bool MessageState;
 	
@@ -71,7 +71,7 @@ static bool NET_PCP_Message_RecvDataisFull(void)
  @Return				true							: 已空
 					false						: 未空
 **********************************************************************************************************/
-static bool NET_PCP_Message_SendDataisEmpty(void)
+bool NET_PCP_Message_SendDataisEmpty(void)
 {
 	bool MessageState;
 	
@@ -92,7 +92,7 @@ static bool NET_PCP_Message_SendDataisEmpty(void)
  @Return				true							: 已空
 					false						: 未空
 **********************************************************************************************************/
-static bool NET_PCP_Message_RecvDataisEmpty(void)
+bool NET_PCP_Message_RecvDataisEmpty(void)
 {
 	bool MessageState;
 	

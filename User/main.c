@@ -47,6 +47,7 @@
 /********************************************* DEBUG *****************************************************/
 #ifdef	DEVICE_DEBUG
 #include "pcpconfig.h"
+#include "pcpfunc.h"
 #include "pcptransport.h"
 #include "pcpcrccheck.h"
 #include "pcpsock.h"

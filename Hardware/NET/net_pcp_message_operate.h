@@ -6,7 +6,7 @@
 #define PCP_SEND_BUFFER_SIZE				512
 #define PCP_RECV_BUFFER_SIZE				512
 #define PCP_SEND_PACK_NUM				2
-#define PCP_RECV_PACK_NUM				2
+#define PCP_RECV_PACK_NUM				3
 
 /* 发送数据队列 */
 typedef struct
@@ -35,6 +35,10 @@ typedef struct
 }PCP_SwapRecvDataTypeDef;
 
 
+bool NET_PCP_Message_SendDataisFull(void);																//检查发送队列是否已满
+bool NET_PCP_Message_RecvDataisFull(void);																//检查接收队列是否已满
+bool NET_PCP_Message_SendDataisEmpty(void);																//检查发送队列是否已空
+bool NET_PCP_Message_RecvDataisEmpty(void);																//检查接收队列是否已空
 void NET_PCP_Message_SendDataEnqueue(unsigned char* dataBuf, unsigned short dataLength);							//发送数据写入队列
 void NET_PCP_Message_RecvDataEnqueue(unsigned char* dataBuf, unsigned short dataLength);							//接收数据写入队列
 bool NET_PCP_Message_SendDataDequeue(unsigned char* dataBuf, unsigned short* dataLength);							//发送数据读出队列

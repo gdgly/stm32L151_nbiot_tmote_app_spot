@@ -11,6 +11,7 @@
 #define PCP_BUFFER_SIZE					512
 #define PCP_DATASTACK_SIZE				512
 
+typedef struct PCP_ParameterTypeDef		PCP_ParameterTypeDef;
 typedef struct PCP_CoAPNetTransportTypeDef	PCP_CoAPNetTransportTypeDef;
 typedef struct PCP_ClientsTypeDef			PCP_ClientsTypeDef;
 
@@ -63,8 +64,24 @@ typedef enum
 	PCP_Incorrect_State_for_Command		= 516,
 	PCP_Cid_is_invalid					= 517,
 	PCP_Deactive_last_active_cid			= 520,
-	PCP_Cid_is_not_defined				= 521
+	PCP_Cid_is_not_defined				= 521,
+	
+	/* -PCP Private error codes- */
+	PCP_Frame_Format_Error				= 600,
+	PCP_Frame_CheckCode_Error			= 601,
+	PCP_Frame_None						= 602
 }PCP_StatusTypeDef;
+
+/* PCP Message Code */
+typedef enum
+{
+	PCP_QueryDeviceVersion				= 0x13,											//查询设备版本
+	PCP_NewVersionNotice				= 0x14,											//新版本通知
+	PCP_RequestUpgradePackage			= 0x15,											//请求升级包
+	PCP_ReportDownloadStatus				= 0x16,											//上报升级包下载状态
+	PCP_PerformUpgrade					= 0x17,											//执行升级
+	PCP_ReportUpgrades					= 0x18											//上报升级结果
+}PCP_MessageCodeTypeDef;
 
 /* PCP Result Code */
 typedef enum
@@ -85,6 +102,18 @@ typedef enum
 	PCP_SliceNotFound					= 0x81											//指定分片不存在
 }PCP_ResultCodeTypeDef;
 
+/* PCP Dictate Event */
+typedef enum
+{
+	PCP_EVENT_STOP						= 0x00,											//Stop
+	PCP_EVENT_INITIALIZED				= 0x01,											//Initialized
+	PCP_EVENT_READY					= 0x02,											//Ready
+	PCP_EVENT_FRAME_RECV				= 0x03,											//RECV
+	PCP_EVENT_FRAME_SEND				= 0x04,											//SEND
+	PCP_EVENT_EXECUTE					= 0x05,											//Execute
+	PCP_EVENT_ACTIVEUPLOAD				= 0x06											//ActiveUpload
+}PCP_DictateEventTypeDef;
+
 /* PCP Message Data Structure */
 typedef __packed struct
 {
@@ -95,6 +124,18 @@ typedef __packed struct
 	unsigned short						PacketDataLength;									//数据区长度
 	unsigned char						pPacketData[1];									//数据区
 }PCP_MessageDataTypeDef;
+
+/* PCP Parameter */
+struct PCP_ParameterTypeDef
+{
+	unsigned char						ProtocolType;										//版本号
+	unsigned char						MessageType;										//消息码
+	unsigned char						PlatformSoftVersion[16];								//目的版本号
+	unsigned short						UpgradePackSliceSize;								//升级包分片大小
+	unsigned short						UpgradePackSliceNum;								//升级包分片总数
+	unsigned short						UpgradePackCheckCode;								//升级包校验码
+	unsigned short						UpgradePackSliceIndex;								//升级包分片序号
+};
 
 /* PCP CoAP Transport */
 struct PCP_CoAPNetTransportTypeDef
@@ -118,6 +159,19 @@ struct PCP_ClientsTypeDef
 	unsigned short						Command_Timeout_Sec;
 	unsigned short						Command_Failure_Cnt;
 	
+	struct PCPDictateRuningCtlTypeDef
+	{
+		bool							dictateEnable;
+		unsigned int					dictateTimeoutSec;
+		unsigned char					dictateInitializedFailureCnt;
+		unsigned char					dictateReadyFailureCnt;
+		unsigned char					dictateRecvFailureCnt;
+		unsigned char					dictateExecuteFailureCnt;
+		Stm32_CalculagraphTypeDef		dictateRunTime;
+		PCP_DictateEventTypeDef			dictateEvent;
+	}DictateRunCtl;
+	
+	PCP_ParameterTypeDef				Parameter;
 	PCP_CoAPNetTransportTypeDef*			CoAPStack;
 	NET_NBIOT_ClientsTypeDef*			NetNbiotStack;
 };

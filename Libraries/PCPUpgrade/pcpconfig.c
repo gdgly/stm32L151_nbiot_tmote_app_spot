@@ -14,6 +14,7 @@
   */
 
 #include "pcpconfig.h"
+#include "pcpfunc.h"
 #include "pcptransport.h"
 #include "pcpcrccheck.h"
 #include "pcpsock.h"
@@ -44,6 +45,13 @@ void PCP_Client_Init(PCP_ClientsTypeDef* pClient, PCP_CoAPNetTransportTypeDef* N
 	pClient->Command_Timeout_Sec							= PCP_COMMAND_TIMEOUT_SEC;
 	pClient->Command_Failure_Cnt							= PCP_COMMAND_FAILURE_CNT;
 	
+	pClient->DictateRunCtl.dictateEnable					= false;
+	pClient->DictateRunCtl.dictateTimeoutSec				= 0;
+	pClient->DictateRunCtl.dictateInitializedFailureCnt		= 0;
+	pClient->DictateRunCtl.dictateReadyFailureCnt			= 0;
+	pClient->DictateRunCtl.dictateRecvFailureCnt				= 0;
+	pClient->DictateRunCtl.dictateExecuteFailureCnt			= 0;
+	pClient->DictateRunCtl.dictateEvent					= PCP_EVENT_INITIALIZED;
 	
 	pClient->CoAPStack									= NetSock;
 	pClient->NetNbiotStack								= NetNbiotStack;

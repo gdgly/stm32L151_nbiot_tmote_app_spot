@@ -381,7 +381,7 @@ void NET_NBIOT_TaskProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		break;
 	
 	case NET_POLL_EXECUTION_PCP:
-		
+		NET_PCP_APP_PollExecution(&PCPClientHandler);
 		break;
 	}
 	

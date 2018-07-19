@@ -952,6 +952,11 @@
               <FilePath>..\Libraries\PCPUpgrade\pcpconfig.c</FilePath>
             </File>
             <File>
+              <FileName>pcpfunc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\PCPUpgrade\pcpfunc.c</FilePath>
+            </File>
+            <File>
               <FileName>pcptransport.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Libraries\PCPUpgrade\pcptransport.c</FilePath>
