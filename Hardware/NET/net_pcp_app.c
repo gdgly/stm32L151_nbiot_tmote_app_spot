@@ -46,7 +46,7 @@ void NET_PCP_APP_PollExecution(PCP_ClientsTypeDef* pClient)
 		break;
 	
 	case PCP_EVENT_FRAME_SEND:
-		
+		NET_PCP_NBIOT_Event_Send(pClient);
 		break;
 	
 	case PCP_EVENT_EXECUTE:
@@ -165,12 +165,19 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Ready(PCP_ClientsTypeDef* pClient)
 	/* 平台----->设备 */
 	if (NET_PCP_Message_RecvDataisEmpty() != true) {											//接收到平台下发设备数据
 		pClient->DictateRunCtl.dictateEnable = false;
-		pClient->DictateRunCtl.dictateEvent = PCP_EVENT_FRAME_RECV;
+		pClient->DictateRunCtl.dictateEvent = PCP_EVENT_EXECUTE;
+		pClient->DictateRunCtl.dictateReadyFailureCnt = 0;
+		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_COAP;
+	}
+	/* 设备----->平台 */
+	else if (NET_PCP_Message_SendDataisEmpty() != true) {										//需要发送数据到平台
+		pClient->DictateRunCtl.dictateEnable = false;
+		pClient->DictateRunCtl.dictateEvent = PCP_EVENT_FRAME_SEND;
 		pClient->DictateRunCtl.dictateReadyFailureCnt = 0;
 		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_COAP;
 	}
 	/* 平台--x-->设备 */
-	else {
+	else {																			//等待数据交互
 		pClient->DictateRunCtl.dictateEnable = false;
 		pClient->DictateRunCtl.dictateEvent = PCP_EVENT_READY;
 		pClient->DictateRunCtl.dictateReadyFailureCnt = 0;
@@ -190,18 +197,36 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Recv(PCP_ClientsTypeDef* pClient)
 {
 	PCP_StatusTypeDef PCPStatus = PCP_OK;
 	
-	/* Data has been received */
-	if (NET_PCP_Message_RecvDataisEmpty() != true) {
-		pClient->DictateRunCtl.dictateEnable = false;
-		pClient->DictateRunCtl.dictateEvent = PCP_EVENT_EXECUTE;
-		pClient->DictateRunCtl.dictateRecvFailureCnt = 0;
-		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_COAP;
+	PCP_NBIOT_DictateEvent_SetTime(pClient, 60);
+	
+	if (NBIOT_Neul_NBxx_CheckReadCONDataStatus(pClient->CoAPStack->NBIotStack) == NBIOT_OK) {
+		/* Dictate execute is Success */
+		pClient->DictateRunCtl.dictateEvent = PCP_EVENT_FRAME_RECV;
 	}
-	/* Receiving data */
 	else {
-		PCP_NBIOT_DictateEvent_SetTime(pClient, 60);
-		
-		if (NBIOT_Neul_NBxx_CheckReadCONDataStatus(pClient->CoAPStack->NBIotStack) == NBIOT_OK) {
+		/* Dictate execute is Fail */
+		if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
+			/* Dictate TimeOut */
+			pClient->DictateRunCtl.dictateEnable = false;
+			pClient->DictateRunCtl.dictateEvent = PCP_EVENT_READY;
+			pClient->DictateRunCtl.dictateRecvFailureCnt++;
+			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
+			if (pClient->DictateRunCtl.dictateRecvFailureCnt > 3) {
+				pClient->DictateRunCtl.dictateRecvFailureCnt = 0;
+				pClient->DictateRunCtl.dictateEvent = PCP_EVENT_STOP;
+			}
+		}
+		else {
+			/* Dictate isn't TimeOut */
+			pClient->DictateRunCtl.dictateEvent = PCP_EVENT_FRAME_RECV;
+			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
+		}
+		goto exit;
+	}
+	
+	if (pClient->CoAPStack->NBIotStack->Parameter.condatastate == SendSussess) {
+		/* Send Data To Server Success */
+		if (NBIOT_Neul_NBxx_QueryReadMessageCOAPPayload(pClient->CoAPStack->NBIotStack) == NBIOT_OK) {
 			/* Dictate execute is Success */
 			pClient->DictateRunCtl.dictateEvent = PCP_EVENT_FRAME_RECV;
 		}
@@ -226,23 +251,164 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Recv(PCP_ClientsTypeDef* pClient)
 			goto exit;
 		}
 		
+		/* 检查是否有下行数据 */
+		if (pClient->CoAPStack->NBIotStack->Parameter.coapReadMessage.buffered != 0) {
+			/* Has Data Need Receive */
+			for (int index = 0; index < pClient->CoAPStack->NBIotStack->Parameter.coapReadMessage.buffered; index++) {
+				/* 读取负载数据 */
+				if ((PCPStatus = pClient->CoAPStack->Read(pClient->CoAPStack, (char *)pClient->Recvbuf, (u16 *)&pClient->Recvlen)) != PCP_OK) {
+					/* Dictate execute is Success */
+					pClient->DictateRunCtl.dictateEvent = pClient->DictateRunCtl.dictateEvent;
+				}
+				else {
+					/* Dictate execute is Fail */
+					if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
+						/* Dictate TimeOut */
+						pClient->DictateRunCtl.dictateEnable = false;
+						pClient->DictateRunCtl.dictateEvent = PCP_EVENT_READY;
+						pClient->DictateRunCtl.dictateRecvFailureCnt++;
+						pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
+						if (pClient->DictateRunCtl.dictateRecvFailureCnt > 3) {
+							pClient->DictateRunCtl.dictateRecvFailureCnt = 0;
+							pClient->DictateRunCtl.dictateEvent = PCP_EVENT_STOP;
+						}
+					}
+					else {
+						/* Dictate isn't TimeOut */
+						pClient->DictateRunCtl.dictateEvent = PCP_EVENT_FRAME_RECV;
+						pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
+					}
+					goto exit;
+				}
+				
+				NET_Coap_Message_RecvDataEnqueue(pClient->Recvbuf, pClient->Recvlen);
+			}
+		}
 		
-		
-		
-		
-		
-		
-		
-		
-		
+		NET_PCP_Message_SendDataOffSet();
+		pClient->DictateRunCtl.dictateEnable = false;
+		pClient->DictateRunCtl.dictateEvent = PCP_EVENT_READY;
+		pClient->DictateRunCtl.dictateRecvFailureCnt = 0;
+		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
+	}
+	else {
+		/* Not yet Send Data Success */
+		if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
+			/* Dictate TimeOut */
+			pClient->DictateRunCtl.dictateEnable = false;
+			pClient->DictateRunCtl.dictateEvent = PCP_EVENT_READY;
+			pClient->DictateRunCtl.dictateRecvFailureCnt++;
+			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
+			if (pClient->DictateRunCtl.dictateRecvFailureCnt > 3) {
+				pClient->DictateRunCtl.dictateRecvFailureCnt = 0;
+				pClient->DictateRunCtl.dictateEvent = PCP_EVENT_STOP;
+			}
+		}
+		else {
+			/* Dictate isn't TimeOut */
+			pClient->DictateRunCtl.dictateEvent = PCP_EVENT_FRAME_RECV;
+			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
+		}
 	}
 	
+exit:
+	return PCPStatus;
+}
+
+/**********************************************************************************************************
+ @Function			PCP_StatusTypeDef NET_PCP_NBIOT_Event_Send(PCP_ClientsTypeDef* pClient)
+ @Description			NET_PCP_NBIOT_Event_Send				: PCP发送数据
+ @Input				pClient							: PCP客户端实例
+ @Return				void
+**********************************************************************************************************/
+PCP_StatusTypeDef NET_PCP_NBIOT_Event_Send(PCP_ClientsTypeDef* pClient)
+{
+	PCP_StatusTypeDef PCPStatus = PCP_OK;
 	
+	PCP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
-	
-	
-	
-	
+	/* Data packets need to be sent*/
+	if (NET_PCP_Message_SendDataDequeue(pClient->Sendbuf, (unsigned short *)&pClient->Sendlen) == true) {
+		/* Connect Check */
+		if (NBIOT_Neul_NBxx_CheckReadAttachOrDetach(pClient->CoAPStack->NBIotStack) == NBIOT_OK) {
+			/* Dictate execute is Success */
+			pClient->DictateRunCtl.dictateEvent = PCP_EVENT_FRAME_SEND;
+		}
+		else {
+			/* Dictate execute is Fail */
+			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
+				/* Dictate TimeOut */
+				pClient->DictateRunCtl.dictateEnable = false;
+				pClient->DictateRunCtl.dictateEvent = PCP_EVENT_READY;
+				pClient->DictateRunCtl.dictateSendFailureCnt++;
+				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
+				if (pClient->DictateRunCtl.dictateSendFailureCnt > 3) {
+					pClient->DictateRunCtl.dictateSendFailureCnt = 0;
+					pClient->DictateRunCtl.dictateEvent = PCP_EVENT_STOP;
+				}
+			}
+			else {
+				/* Dictate isn't TimeOut */
+				pClient->DictateRunCtl.dictateEvent = PCP_EVENT_FRAME_SEND;
+				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
+			}
+			goto exit;
+		}
+		
+		if (pClient->CoAPStack->NBIotStack->Parameter.netstate != Attach) {
+			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
+				pClient->DictateRunCtl.dictateEnable = false;
+				pClient->DictateRunCtl.dictateEvent = PCP_EVENT_READY;
+				pClient->DictateRunCtl.dictateSendFailureCnt++;
+				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
+				if (pClient->DictateRunCtl.dictateSendFailureCnt > 3) {
+					pClient->DictateRunCtl.dictateSendFailureCnt = 0;
+					pClient->DictateRunCtl.dictateEvent = PCP_EVENT_STOP;
+				}
+			}
+			else {
+				pClient->DictateRunCtl.dictateEvent = PCP_EVENT_FRAME_SEND;
+				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
+			}
+			goto exit;
+		}
+		
+		/* 发送负载数据 */
+		if ((PCPStatus = pClient->CoAPStack->Write(pClient->CoAPStack, (char *)pClient->Sendbuf, pClient->Sendlen)) != PCP_OK) {
+			/* Dictate execute is Fail */
+			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
+				/* Dictate TimeOut */
+				pClient->DictateRunCtl.dictateEnable = false;
+				pClient->DictateRunCtl.dictateEvent = PCP_EVENT_READY;
+				pClient->DictateRunCtl.dictateSendFailureCnt++;
+				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
+				if (pClient->DictateRunCtl.dictateSendFailureCnt > 3) {
+					pClient->DictateRunCtl.dictateSendFailureCnt = 0;
+					pClient->DictateRunCtl.dictateEvent = PCP_EVENT_STOP;
+				}
+			}
+			else {
+				/* Dictate isn't TimeOut */
+				pClient->DictateRunCtl.dictateEvent = PCP_EVENT_FRAME_SEND;
+				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
+			}
+			goto exit;
+		}
+		else {
+			/* Send Data Success */
+			pClient->DictateRunCtl.dictateEnable = false;
+			pClient->DictateRunCtl.dictateEvent = PCP_EVENT_FRAME_RECV;
+			pClient->DictateRunCtl.dictateSendFailureCnt = 0;
+			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
+		}
+	}
+	/* No packets need to be sent */
+	else {
+		pClient->DictateRunCtl.dictateEnable = false;
+		pClient->DictateRunCtl.dictateEvent = PCP_EVENT_READY;
+		pClient->DictateRunCtl.dictateSendFailureCnt = 0;
+		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
+	}
 	
 exit:
 	return PCPStatus;
@@ -258,6 +424,7 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Execute(PCP_ClientsTypeDef* pClient)
 {
 	PCP_StatusTypeDef PCPStatus = PCP_OK;
 	
+	/* 读取接收区数据 */
 	if (NET_PCP_Message_RecvDataDequeue(pClient->Recvbuf, (unsigned short *)&pClient->Recvlen) != true) {
 		PCPStatus = PCP_Frame_None;
 		pClient->DictateRunCtl.dictateEnable = false;
@@ -267,6 +434,7 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Execute(PCP_ClientsTypeDef* pClient)
 		goto exit;
 	}
 	
+	/* 检测数据帧并校验数据帧 */
 	if ((PCPStatus = PCP_Func_FrameCheck(pClient->Recvbuf, pClient->Recvlen)) != PCP_OK) {
 		NET_PCP_Message_RecvDataOffSet();
 		pClient->DictateRunCtl.dictateEnable = false;
@@ -276,11 +444,21 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Execute(PCP_ClientsTypeDef* pClient)
 		goto exit;
 	}
 	
+	/* 判断不同消息码处理不同命令 */
+	if ((PCPStatus = PCP_Func_SelectMessageExecuteCmd(pClient)) != PCP_OK) {
+		NET_PCP_Message_RecvDataOffSet();
+		pClient->DictateRunCtl.dictateEnable = false;
+		pClient->DictateRunCtl.dictateEvent = PCP_EVENT_READY;
+		pClient->DictateRunCtl.dictateExecuteFailureCnt = 0;
+		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_COAP;
+		goto exit;
+	}
 	
-	
-	
-	
-	
+	/* 命令处理完成 */
+	pClient->DictateRunCtl.dictateEnable = false;
+	pClient->DictateRunCtl.dictateEvent = PCP_EVENT_READY;
+	pClient->DictateRunCtl.dictateExecuteFailureCnt = 0;
+	pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_COAP;
 	
 exit:
 	return PCPStatus;

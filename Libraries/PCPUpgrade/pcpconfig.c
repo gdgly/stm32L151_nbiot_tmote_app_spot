@@ -50,6 +50,7 @@ void PCP_Client_Init(PCP_ClientsTypeDef* pClient, PCP_CoAPNetTransportTypeDef* N
 	pClient->DictateRunCtl.dictateInitializedFailureCnt		= 0;
 	pClient->DictateRunCtl.dictateReadyFailureCnt			= 0;
 	pClient->DictateRunCtl.dictateRecvFailureCnt				= 0;
+	pClient->DictateRunCtl.dictateSendFailureCnt				= 0;
 	pClient->DictateRunCtl.dictateExecuteFailureCnt			= 0;
 	pClient->DictateRunCtl.dictateEvent					= PCP_EVENT_INITIALIZED;
 	

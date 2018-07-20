@@ -11,6 +11,9 @@
 #define PCP_BUFFER_SIZE					512
 #define PCP_DATASTACK_SIZE				512
 
+#define PCP_START_X						0xFFFE
+#define PCP_PROTOCOL_TYPE				0x01
+
 typedef struct PCP_ParameterTypeDef		PCP_ParameterTypeDef;
 typedef struct PCP_CoAPNetTransportTypeDef	PCP_CoAPNetTransportTypeDef;
 typedef struct PCP_ClientsTypeDef			PCP_ClientsTypeDef;
@@ -69,7 +72,8 @@ typedef enum
 	/* -PCP Private error codes- */
 	PCP_Frame_Format_Error				= 600,
 	PCP_Frame_CheckCode_Error			= 601,
-	PCP_Frame_None						= 602
+	PCP_Frame_None						= 602,
+	PCP_MessageType_Error				= 603
 }PCP_StatusTypeDef;
 
 /* PCP Message Code */
@@ -166,6 +170,7 @@ struct PCP_ClientsTypeDef
 		unsigned char					dictateInitializedFailureCnt;
 		unsigned char					dictateReadyFailureCnt;
 		unsigned char					dictateRecvFailureCnt;
+		unsigned char					dictateSendFailureCnt;
 		unsigned char					dictateExecuteFailureCnt;
 		Stm32_CalculagraphTypeDef		dictateRunTime;
 		PCP_DictateEventTypeDef			dictateEvent;

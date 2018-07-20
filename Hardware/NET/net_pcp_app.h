@@ -11,6 +11,7 @@
 #include "nbiotfunc.h"
 #include "nbiottransport.h"
 #include "net_pcp_message_operate.h"
+#include "net_coap_message_operate.h"
 #include "platform_map.h"
 
 
@@ -22,6 +23,7 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_StopMode(PCP_ClientsTypeDef* pClient);		//
 PCP_StatusTypeDef NET_PCP_NBIOT_Event_Initialized(PCP_ClientsTypeDef* pClient);		//初始化PCP
 PCP_StatusTypeDef NET_PCP_NBIOT_Event_Ready(PCP_ClientsTypeDef* pClient);			//PCP准备中
 PCP_StatusTypeDef NET_PCP_NBIOT_Event_Recv(PCP_ClientsTypeDef* pClient);			//PCP接收数据
+PCP_StatusTypeDef NET_PCP_NBIOT_Event_Send(PCP_ClientsTypeDef* pClient);			//PCP发送数据
 PCP_StatusTypeDef NET_PCP_NBIOT_Event_Execute(PCP_ClientsTypeDef* pClient);		//PCP数据处理
 
 

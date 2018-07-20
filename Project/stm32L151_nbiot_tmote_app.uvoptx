@@ -280,7 +280,7 @@
         <Ww>
           <count>12</count>
           <WinNumber>2</WinNumber>
-          <ItemText>NETCoapMessageRecvPark</ItemText>
+          <ItemText>NETCoapMessageRecvPark,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>13</count>
@@ -290,32 +290,37 @@
         <Ww>
           <count>14</count>
           <WinNumber>2</WinNumber>
-          <ItemText>NBIOT_RunStatus</ItemText>
+          <ItemText>NETPcpMessageSendPark</ItemText>
         </Ww>
         <Ww>
           <count>15</count>
           <WinNumber>2</WinNumber>
-          <ItemText>TestRead,0x10</ItemText>
+          <ItemText>NETPcpMessageRecvPark</ItemText>
         </Ww>
         <Ww>
           <count>16</count>
           <WinNumber>2</WinNumber>
-          <ItemText>TestReadLen,0x0A</ItemText>
+          <ItemText>PCP_SendBuf</ItemText>
         </Ww>
         <Ww>
           <count>17</count>
           <WinNumber>2</WinNumber>
-          <ItemText>PCPStatus,0x0A</ItemText>
+          <ItemText>PCP_RecvBuf</ItemText>
         </Ww>
         <Ww>
           <count>18</count>
           <WinNumber>2</WinNumber>
-          <ItemText>NETPcpMessageSendPark</ItemText>
+          <ItemText>PCP_DataStack</ItemText>
         </Ww>
         <Ww>
           <count>19</count>
           <WinNumber>2</WinNumber>
-          <ItemText>NETPcpMessageRecvPark</ItemText>
+          <ItemText>PCPCoAPNetHandler</ItemText>
+        </Ww>
+        <Ww>
+          <count>20</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>PCPClientHandler,0x0A</ItemText>
         </Ww>
       </WatchWindow2>
       <MemoryWindow1>
