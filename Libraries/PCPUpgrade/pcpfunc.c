@@ -19,6 +19,7 @@
 #include "stm32l1xx_config.h"
 #include "delay.h"
 #include "usart.h"
+#include "radio_rf_app.h"
 
 /**********************************************************************************************************
  @Function			PCP_StatusTypeDef PCP_Func_FrameCheck(unsigned char* DataFrame, short DataLength)
@@ -55,6 +56,7 @@ exit:
 	return PCPStatus;
 }
 
+
 /**********************************************************************************************************
  @Function			PCP_StatusTypeDef PCP_Func_SelectMessageExecuteCmd(PCP_ClientsTypeDef* pClient)
  @Description			PCP_Func_SelectMessageExecuteCmd		: PCP判断不同消息码处理不同命令
@@ -72,14 +74,36 @@ PCP_StatusTypeDef PCP_Func_SelectMessageExecuteCmd(PCP_ClientsTypeDef* pClient)
 	/* 查询设备版本 */
 	if (pClient->Parameter.MessageType == PCP_QueryDeviceVersion) {
 		PCPStatus = PCP_Func_AckQueryDeviceVersion(pClient);
+#ifdef PCP_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("PCP AckQDevVer %d", PCPStatus);
+#endif
 		goto exit;
 	}
 	
 	/* 新版本通知 */
 	if (pClient->Parameter.MessageType == PCP_NewVersionNotice) {
 		PCPStatus = PCP_Func_AckNewVersionNotice(pClient);
+#ifdef PCP_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("PCP AckNVerNotice %d", PCPStatus);
+		Radio_Trf_Debug_Printf_Level2("PlatVer %s", pClient->Parameter.PlatformSoftVersion);
+		Radio_Trf_Debug_Printf_Level2("SliceSize %d", pClient->Parameter.UpgradePackSliceSize);
+		Radio_Trf_Debug_Printf_Level2("SliceNum %d", pClient->Parameter.UpgradePackSliceNum);
+		Radio_Trf_Debug_Printf_Level2("CheckCode %d", pClient->Parameter.UpgradePackCheckCode);
+#endif
 		goto exit;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -92,7 +116,6 @@ PCP_StatusTypeDef PCP_Func_SelectMessageExecuteCmd(PCP_ClientsTypeDef* pClient)
 exit:
 	return PCPStatus;
 }
-
 
 /**********************************************************************************************************
  @Function			PCP_StatusTypeDef PCP_Func_AckQueryDeviceVersion(PCP_ClientsTypeDef* pClient)
@@ -116,7 +139,7 @@ PCP_StatusTypeDef PCP_Func_AckQueryDeviceVersion(PCP_ClientsTypeDef* pClient)
 	PCPMessageProcess->PacketDataLength = PCPSock_htons(sizeof(PCP_AckQueryDeviceVersionTypeDef));
 	
 	PCPAckQueryDeviceVersion->ResultCode = 0x00;
-	memcpy(PCPAckQueryDeviceVersion->DeviceSoftVersion, "V0.8", 4);
+	memcpy(PCPAckQueryDeviceVersion->DeviceSoftVersion, pClient->UpgradeExecution.DeviceSoftVersion, 16);
 	
 	PCPMessageProcess->CRCCheckCode = PCPSock_htons(PCPCrcCheck_getCrcCheckCode(pClient->DataProcessStack, sizeof(PCP_MessageDataTypeDef) + sizeof(PCP_AckQueryDeviceVersionTypeDef) - 1));
 	
@@ -147,6 +170,14 @@ PCP_StatusTypeDef PCP_Func_AckNewVersionNotice(PCP_ClientsTypeDef* pClient)
 	pClient->Parameter.UpgradePackSliceNum = PCPSock_ntohs(PCPRckNewVersionNotice->UpgradePackSliceNum);
 	pClient->Parameter.UpgradePackCheckCode = PCPSock_ntohs(PCPRckNewVersionNotice->UpgradePackCheckCode);
 	
+	/* 参数写入升级运行管理器 */
+	pClient->UpgradeExecution.upgradeStatus = PCP_UPGRADE_DOWNLOAD;
+	memcpy(pClient->UpgradeExecution.PlatformSoftVersion, pClient->Parameter.PlatformSoftVersion, sizeof(pClient->UpgradeExecution.PlatformSoftVersion));
+	pClient->UpgradeExecution.PackSliceIndex = 0;
+	pClient->UpgradeExecution.PackSliceSize = pClient->Parameter.UpgradePackSliceSize;
+	pClient->UpgradeExecution.PackSliceNum = pClient->Parameter.UpgradePackSliceNum;
+	pClient->UpgradeExecution.PackCheckCode = pClient->Parameter.UpgradePackCheckCode;
+	
 	/* 写入新版本通知应答 */
 	PCPMessageProcess->StartX = PCPSock_htons(PCP_START_X);
 	PCPMessageProcess->ProtocolType = PCP_PROTOCOL_TYPE;
@@ -162,6 +193,43 @@ PCP_StatusTypeDef PCP_Func_AckNewVersionNotice(PCP_ClientsTypeDef* pClient)
 	
 	return PCPStatus;
 }
+
+
+/**********************************************************************************************************
+ @Function			PCP_StatusTypeDef PCP_Func_SelectUpgradeStatusExecuteCmd(PCP_ClientsTypeDef* pClient)
+ @Description			PCP_Func_SelectUpgradeStatusExecuteCmd	: PCP判断不同主动上传数据码处理不同命令
+ @Input				pClient							: PCP客户端实例
+ @Return				void
+**********************************************************************************************************/
+PCP_StatusTypeDef PCP_Func_SelectUpgradeStatusExecuteCmd(PCP_ClientsTypeDef* pClient)
+{
+	PCP_StatusTypeDef PCPStatus = PCP_OK;
+	
+	/* 请求升级包 */
+	if (pClient->UpgradeExecution.upgradeStatus == PCP_UPGRADE_DOWNLOAD) {
+		
+		goto exit;
+	}
+	
+	
+	
+	
+	
+exit:
+	return PCPStatus;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

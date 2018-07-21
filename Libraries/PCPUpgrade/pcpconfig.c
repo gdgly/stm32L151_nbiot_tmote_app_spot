@@ -18,6 +18,8 @@
 #include "pcptransport.h"
 #include "pcpcrccheck.h"
 #include "pcpsock.h"
+#include "platform_config.h"
+#include "platform_map.h"
 
 unsigned char PCP_SendBuf[PCP_BUFFER_SIZE];
 unsigned char PCP_RecvBuf[PCP_BUFFER_SIZE];
@@ -53,6 +55,14 @@ void PCP_Client_Init(PCP_ClientsTypeDef* pClient, PCP_CoAPNetTransportTypeDef* N
 	pClient->DictateRunCtl.dictateSendFailureCnt				= 0;
 	pClient->DictateRunCtl.dictateExecuteFailureCnt			= 0;
 	pClient->DictateRunCtl.dictateEvent					= PCP_EVENT_INITIALIZED;
+	
+	pClient->UpgradeExecution.upgradeStatus					= PCP_UPGRADE_COMPLETE;
+	sprintf((char*)pClient->UpgradeExecution.DeviceSoftVersion, "V%d.%d", TCFG_Utility_Get_Major_Softnumber(), TCFG_Utility_Get_Sub_Softnumber());
+	sprintf((char*)pClient->UpgradeExecution.PlatformSoftVersion, "V%d.%d", TCFG_Utility_Get_Major_Softnumber(), TCFG_Utility_Get_Sub_Softnumber());
+	pClient->UpgradeExecution.PackSliceIndex				= 0;
+	pClient->UpgradeExecution.PackSliceSize					= 0;
+	pClient->UpgradeExecution.PackSliceNum					= 0;
+	pClient->UpgradeExecution.PackCheckCode					= 0;
 	
 	pClient->CoAPStack									= NetSock;
 	pClient->NetNbiotStack								= NetNbiotStack;

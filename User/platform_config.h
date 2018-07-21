@@ -27,6 +27,10 @@
 #define	NBCOAP_SENDMODE_RAIDLE			SEND_DATA_RA_NORMAL
 #define	NBCOAP_SENDMODE_TYPE			NBCOAP_SENDMODE_RAIDLE				//COAP发送模式
 
+#define	NBCOAP_RASENDMODE_NORMAL			0
+#define	NBCOAP_RASENDMODE_IDLE			1
+#define	NBCOAP_RASENDMODE_TYPE			NBCOAP_RASENDMODE_NORMAL				//COAP发送RA模式
+
 #define	NBCOAP_QUOTA_TIME_3YEAR			1972
 #define	NBCOAP_QUOTA_TIME_5YEAR			1183
 #define	NBCOAP_COAP_QUOTA_TIME_TYPE		NBCOAP_QUOTA_TIME_3YEAR				//Coap一天使用配额时间
@@ -44,7 +48,7 @@
 #define	RADAR_MODEL_TYPE				RADAR_MODEL_V2						//雷达类型
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					103								//从固件版本
+#define	SOFTWARESUB					104								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 

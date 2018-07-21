@@ -22,14 +22,14 @@ typedef __packed struct
 
 
 
-
-
-
 PCP_StatusTypeDef PCP_Func_FrameCheck(unsigned char* DataFrame, short DataLength);				//PCP数据帧检查
-PCP_StatusTypeDef PCP_Func_SelectMessageExecuteCmd(PCP_ClientsTypeDef* pClient);				//PCP判断不同消息码处理不同命令
 
+PCP_StatusTypeDef PCP_Func_SelectMessageExecuteCmd(PCP_ClientsTypeDef* pClient);				//PCP判断不同消息码处理不同命令
 PCP_StatusTypeDef PCP_Func_AckQueryDeviceVersion(PCP_ClientsTypeDef* pClient);					//PCP查询设备版本应答
 PCP_StatusTypeDef PCP_Func_AckNewVersionNotice(PCP_ClientsTypeDef* pClient);					//PCP新版本通知应答
+
+PCP_StatusTypeDef PCP_Func_SelectUpgradeStatusExecuteCmd(PCP_ClientsTypeDef* pClient);			//PCP判断不同主动上传数据码处理不同命令
+
 
 
 

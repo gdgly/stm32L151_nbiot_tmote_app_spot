@@ -4,6 +4,8 @@
 #include "sys.h"
 #include "nbiotconfig.h"
 
+#define PCP_DEBUG_LOG_RF_PRINT															//定义开启RF输出DEBUG信息
+
 #define PCP_COMMAND_TIMEOUT_SEC			30
 #define PCP_COMMAND_FAILURE_CNT			3
 
@@ -118,6 +120,16 @@ typedef enum
 	PCP_EVENT_ACTIVEUPLOAD				= 0x06											//ActiveUpload
 }PCP_DictateEventTypeDef;
 
+/* PCP Upgrade Status */
+typedef enum
+{
+	PCP_UPGRADE_COMPLETE				= 0x00,											//升级完成
+	PCP_UPGRADE_DOWNLOAD				= 0x01,											//升级下载数据包
+	PCP_UPGRADE_ASSEMBLE				= 0x02,											//升级组装升级包
+	PCP_UPGRADE_INSTALL					= 0x03,											//升级版本
+	PCP_UPGRADE_FAILED					= 0x04											//升级错误
+}PCP_UpgradeStatusTypeDef;
+
 /* PCP Message Data Structure */
 typedef __packed struct
 {
@@ -149,7 +161,7 @@ struct PCP_CoAPNetTransportTypeDef
 	PCP_StatusTypeDef					(*Read)(PCP_CoAPNetTransportTypeDef*, char*, u16*);
 };
 
-/* MQTTSN Clients */
+/* PCP Clients */
 struct PCP_ClientsTypeDef
 {
 	unsigned char*						Sendbuf;
@@ -175,6 +187,17 @@ struct PCP_ClientsTypeDef
 		Stm32_CalculagraphTypeDef		dictateRunTime;
 		PCP_DictateEventTypeDef			dictateEvent;
 	}DictateRunCtl;
+	
+	struct PCPUpgradeExecutionTypeDef
+	{
+		PCP_UpgradeStatusTypeDef			upgradeStatus;
+		unsigned char					DeviceSoftVersion[16];
+		unsigned char					PlatformSoftVersion[16];
+		unsigned short					PackSliceIndex;
+		unsigned short					PackSliceSize;
+		unsigned short					PackSliceNum;
+		unsigned short					PackCheckCode;
+	}UpgradeExecution;
 	
 	PCP_ParameterTypeDef				Parameter;
 	PCP_CoAPNetTransportTypeDef*			CoAPStack;

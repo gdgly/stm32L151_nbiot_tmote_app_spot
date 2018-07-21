@@ -1692,12 +1692,16 @@ void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
 		
 		SendSentNum = pClient->Parameter.coapSendMessage.sent;
 		
+#if NBCOAP_RASENDMODE_TYPE == NBCOAP_RASENDMODE_NORMAL
+		RAState = RANormal;
+#elif NBCOAP_RASENDMODE_TYPE == NBCOAP_RASENDMODE_IDLE
 		if (NBIOT_COAP_RA_NORMAL_GET_STATE(pClient) == true) {
 			RAState = RANormal;
 		}
 		else {
 			RAState = RAIdle;
 		}
+#endif
 		
 		/* 发送负载数据 */
 		if ((NBStatus = NBIOT_Neul_NBxx_SendCOAPPayloadFlag(pClient, RAState)) == NBIOT_OK) {
