@@ -510,16 +510,6 @@ void MainHandleRoutine(void)
 
 #ifdef	DEVICE_DEBUG
 /********************************************* DEBUG *****************************************************/
-NBIOT_StatusTypeDef NBIOT_RunStatus;
-u8 TestData[11] = {0xFF, 0xFE, 0x01, 0x13, 0x4C, 0x9A, 0x00, 0x00, 0x01, 0x00, 0x00};
-u8 TestCoAP[21] = {0x00, 0x00, 0x50, 0x00, 0xFE, 0x00, 0x05, 0x83, 0xBD, 0xEC, 0xF5, 0x01, 0x01, 0x37, 0xFF, 0xFF, 0xFF, 0x7F, 0x00, 0x42, 0x01};
-u8 TestRead[30];
-u16 TestReadLen;
-u16 TestCheckCode = 0;
-u16 TestReadCheckCode = 0;
-PCP_MessageDataTypeDef* PCPMessageData;
-PCP_CoAPNetTransportTypeDef tPCPCoAPNetHandler;
-PCP_StatusTypeDef PCPStatus;
 /****************************************** Debug Ending *************************************************/
 /**********************************************************************************************************
  @Function			void DeBugMain(void)
@@ -529,37 +519,13 @@ PCP_StatusTypeDef PCPStatus;
 **********************************************************************************************************/
 void DeBugMain(void)
 {
-	int one = 1;
-	
 	TCFG_EEPROM_SetBootCount(0);
 	
 #if 1
 	NBIOT_Neul_NBxx_HardwareReboot(&NbiotClientHandler, 8000);
-
-	NBIOT_RunStatus = NBIOT_Neul_NBxx_SetReportTerminationError(&NbiotClientHandler, CMEEnable);
-	NBIOT_RunStatus = NBIOT_Neul_NBxx_CheckReadReportTerminationError(&NbiotClientHandler);
 #endif
 	
-	PCP_Transport_Init(&tPCPCoAPNetHandler, &NbiotClientHandler);
-	
 	while (true) {
-		
-		if (NbiotClientHandler.Parameter.netstate != Attach) {
-			NBIOT_Neul_NBxx_CheckReadAttachOrDetach(&NbiotClientHandler);
-		}
-		else {
-			if (one) {
-				PCPStatus = PCP_Transport_Write(&tPCPCoAPNetHandler, (char*)TestCoAP, 21);
-				if (PCPStatus == PCP_OK) {
-					one = 0;
-				}
-			}
-			else {
-				PCPStatus = PCP_Transport_Read(&tPCPCoAPNetHandler, (char*)TestRead, &TestReadLen);
-			}
-		}
-		
-		__NOP();
 		
 		/* 小无线处理 */
 		Radio_Trf_App_Task();

@@ -75,7 +75,8 @@ typedef enum
 	PCP_Frame_Format_Error				= 600,
 	PCP_Frame_CheckCode_Error			= 601,
 	PCP_Frame_None						= 602,
-	PCP_MessageType_Error				= 603
+	PCP_MessageType_Error				= 603,
+	PCP_UpgradePack_Error				= 604
 }PCP_StatusTypeDef;
 
 /* PCP Message Code */
@@ -184,6 +185,7 @@ struct PCP_ClientsTypeDef
 		unsigned char					dictateRecvFailureCnt;
 		unsigned char					dictateSendFailureCnt;
 		unsigned char					dictateExecuteFailureCnt;
+		unsigned char					dictateActiveUploadFailureCnt;
 		Stm32_CalculagraphTypeDef		dictateRunTime;
 		PCP_DictateEventTypeDef			dictateEvent;
 	}DictateRunCtl;
@@ -206,7 +208,7 @@ struct PCP_ClientsTypeDef
 
 /* Application Programming Interface */
 void PCP_Client_Init(PCP_ClientsTypeDef* pClient, PCP_CoAPNetTransportTypeDef* NetSock, NET_NBIOT_ClientsTypeDef* NetNbiotStack);	//PCP客户端初始化
-
+void PCP_UpgradeDataDownload_Callback(PCP_ClientsTypeDef* pClient, u16 SliceIndex, u8* UpgradeData, u16 UpgradeDataLength);		//PCP升级包处理回调
 
 
 

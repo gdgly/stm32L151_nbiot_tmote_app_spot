@@ -20,6 +20,29 @@ typedef __packed struct
 	unsigned short						UpgradePackCheckCode;							//升级包校验码
 }PCP_RckNewVersionNoticeTypeDef;
 
+/* Request Upgrade Package */
+typedef __packed struct
+{
+	unsigned char						PlatformSoftVersion[16];							//目的版本号
+	unsigned short						UpgradePackSliceIndex;							//升级包分片序号
+}PCP_RequestUpgradePackageTypeDef;
+
+/* Ack Request Upgrade Package */
+typedef __packed struct
+{
+	unsigned char						ResultCode;									//结果码
+	unsigned short						UpgradePackSliceIndex;							//升级包分片序号
+	unsigned char						pUpgradeData[1];								//分片数据
+}PCP_AckRequestUpgradePackageTypeDef;
+
+
+
+
+
+
+
+
+
 
 
 PCP_StatusTypeDef PCP_Func_FrameCheck(unsigned char* DataFrame, short DataLength);				//PCP数据帧检查
@@ -27,9 +50,10 @@ PCP_StatusTypeDef PCP_Func_FrameCheck(unsigned char* DataFrame, short DataLength
 PCP_StatusTypeDef PCP_Func_SelectMessageExecuteCmd(PCP_ClientsTypeDef* pClient);				//PCP判断不同消息码处理不同命令
 PCP_StatusTypeDef PCP_Func_AckQueryDeviceVersion(PCP_ClientsTypeDef* pClient);					//PCP查询设备版本应答
 PCP_StatusTypeDef PCP_Func_AckNewVersionNotice(PCP_ClientsTypeDef* pClient);					//PCP新版本通知应答
+PCP_StatusTypeDef PCP_Func_AckRequestUpgradePackage(PCP_ClientsTypeDef* pClient);				//PCP请求升级包应答
 
 PCP_StatusTypeDef PCP_Func_SelectUpgradeStatusExecuteCmd(PCP_ClientsTypeDef* pClient);			//PCP判断不同主动上传数据码处理不同命令
-
+PCP_StatusTypeDef PCP_Func_RequestUpgradePackage(PCP_ClientsTypeDef* pClient);					//PCP请求升级包
 
 
 

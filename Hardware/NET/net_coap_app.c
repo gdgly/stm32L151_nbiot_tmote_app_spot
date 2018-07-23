@@ -347,7 +347,7 @@ void NET_COAP_NBIOT_Event_ModuleCheck(NBIOT_ClientsTypeDef* pClient)
 			pClient->DictateRunCtl.dictateEvent = MODULE_CHECK;
 		}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("NB Module Check Fail ErrorCode %d", NBStatus);
+		Radio_Trf_Debug_Printf_Level2("NB Module Check Fail ECde %d", NBStatus);
 #endif
 	}
 }
@@ -390,7 +390,7 @@ void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 			pClient->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
 		}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("NB Parameter Config Read Fail ErrorCode %d", NBStatus);
+		Radio_Trf_Debug_Printf_Level2("NB Parameter Config Read Fail ECde %d", NBStatus);
 #endif
 		return;
 	}
@@ -632,7 +632,7 @@ void NET_COAP_NBIOT_Event_SimICCIDCheck(NBIOT_ClientsTypeDef* pClient)
 			pClient->DictateRunCtl.dictateEvent = ICCID_CHECK;
 		}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("NB ICCID Check Fail ErrorCode %d", NBStatus);
+		Radio_Trf_Debug_Printf_Level2("NB ICCID Check Fail ECde %d", NBStatus);
 #endif
 	}
 }
@@ -675,7 +675,7 @@ void NET_COAP_NBIOT_Event_FullFunctionality(NBIOT_ClientsTypeDef* pClient)
 			pClient->DictateRunCtl.dictateEvent = FULL_FUNCTIONALITY;
 		}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("Coap FullFunc Check Fail ErrorCode %d", NBStatus);
+		Radio_Trf_Debug_Printf_Level2("Coap FullFunc Check Fail ECde %d", NBStatus);
 #endif
 		return;
 	}
@@ -707,7 +707,7 @@ void NET_COAP_NBIOT_Event_FullFunctionality(NBIOT_ClientsTypeDef* pClient)
 				pClient->DictateRunCtl.dictateEvent = FULL_FUNCTIONALITY;
 			}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("Coap FullFunc Set Fail ErrorCode %d", NBStatus);
+			Radio_Trf_Debug_Printf_Level2("Coap FullFunc Set Fail ECde %d", NBStatus);
 #endif
 			return;
 		}
@@ -752,7 +752,7 @@ void NET_COAP_NBIOT_Event_MinimumFunctionality(NBIOT_ClientsTypeDef* pClient)
 			pClient->DictateRunCtl.dictateEvent = MINIMUM_FUNCTIONALITY;
 		}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("Coap MinFunc Check Fail ErrorCode %d", NBStatus);
+		Radio_Trf_Debug_Printf_Level2("Coap MinFunc Check Fail ECde %d", NBStatus);
 #endif
 		return;
 	}
@@ -784,7 +784,7 @@ void NET_COAP_NBIOT_Event_MinimumFunctionality(NBIOT_ClientsTypeDef* pClient)
 				pClient->DictateRunCtl.dictateEvent = MINIMUM_FUNCTIONALITY;
 			}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("Coap MinFunc Set Fail ErrorCode %d", NBStatus);
+			Radio_Trf_Debug_Printf_Level2("Coap MinFunc Set Fail ECde %d", NBStatus);
 #endif
 			return;
 		}
@@ -829,7 +829,7 @@ void NET_COAP_NBIOT_Event_CDPServerCheck(NBIOT_ClientsTypeDef* pClient)
 			pClient->DictateRunCtl.dictateEvent = CDP_SERVER_CHECK;
 		}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("Coap CDP Read Fail ErrorCode %d", NBStatus);
+		Radio_Trf_Debug_Printf_Level2("Coap CDP Read Fail ECde %d", NBStatus);
 #endif
 	}
 	
@@ -881,7 +881,7 @@ void NET_COAP_NBIOT_Event_CDPServerConfig(NBIOT_ClientsTypeDef* pClient)
 			pClient->DictateRunCtl.dictateEvent = CDP_SERVER_CONFIG;
 		}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("Coap CDP Read Fail ErrorCode %d", NBStatus);
+		Radio_Trf_Debug_Printf_Level2("Coap CDP Read Fail ECde %d", NBStatus);
 #endif
 	}
 	
@@ -913,7 +913,7 @@ void NET_COAP_NBIOT_Event_CDPServerConfig(NBIOT_ClientsTypeDef* pClient)
 				pClient->DictateRunCtl.dictateEvent = CDP_SERVER_CONFIG;
 			}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("Coap CDP Set %s:%d Fail ErrorCode %d", TCFG_EEPROM_Get_ServerIP_String(), TCFG_EEPROM_GetServerPort(), NBStatus);
+			Radio_Trf_Debug_Printf_Level2("Coap CDP Set %s:%d Fail ECde %d", TCFG_EEPROM_Get_ServerIP_String(), TCFG_EEPROM_GetServerPort(), NBStatus);
 #endif
 			return;
 		}
@@ -964,7 +964,7 @@ void NET_COAP_NBIOT_Event_MiscEquipConfig(NBIOT_ClientsTypeDef* pClient)
 			pClient->DictateRunCtl.dictateEvent = MISC_EQUIP_CONFIG;
 		}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("Coap MiscEquip Read Fail ErrorCode %d", NBStatus);
+		Radio_Trf_Debug_Printf_Level2("Coap MiscEquip Read Fail ECde %d", NBStatus);
 #endif
 		return;
 	}
@@ -996,7 +996,7 @@ void NET_COAP_NBIOT_Event_MiscEquipConfig(NBIOT_ClientsTypeDef* pClient)
 				pClient->DictateRunCtl.dictateEvent = MISC_EQUIP_CONFIG;
 			}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("Coap Band Set %d Fail ErrorCode %d", COAP_NBIOT_BAND, NBStatus);
+			Radio_Trf_Debug_Printf_Level2("Coap Band Set %d Fail ECde %d", COAP_NBIOT_BAND, NBStatus);
 #endif
 			return;
 		}
@@ -1029,7 +1029,7 @@ void NET_COAP_NBIOT_Event_MiscEquipConfig(NBIOT_ClientsTypeDef* pClient)
 				pClient->DictateRunCtl.dictateEvent = MISC_EQUIP_CONFIG;
 			}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("Coap NNMI Set %d Fail ErrorCode %d", CloseFunc, NBStatus);
+			Radio_Trf_Debug_Printf_Level2("Coap NNMI Set %d Fail ECde %d", CloseFunc, NBStatus);
 #endif
 			return;
 		}
@@ -1062,7 +1062,7 @@ void NET_COAP_NBIOT_Event_MiscEquipConfig(NBIOT_ClientsTypeDef* pClient)
 				pClient->DictateRunCtl.dictateEvent = MISC_EQUIP_CONFIG;
 			}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("Coap NSMI Set %d Fail ErrorCode %d", CloseFunc, NBStatus);
+			Radio_Trf_Debug_Printf_Level2("Coap NSMI Set %d Fail ECde %d", CloseFunc, NBStatus);
 #endif
 			return;
 		}
@@ -1107,7 +1107,7 @@ void NET_COAP_NBIOT_Event_AttachCheck(NBIOT_ClientsTypeDef* pClient)
 			pClient->DictateRunCtl.dictateEvent = ATTACH_CHECK;
 		}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("Coap CGATT %d Fail ErrorCode %d", pClient->Parameter.netstate, NBStatus);
+		Radio_Trf_Debug_Printf_Level2("Coap CGATT %d Fail ECde %d", pClient->Parameter.netstate, NBStatus);
 #endif
 		return;
 	}
@@ -1158,7 +1158,7 @@ void NET_COAP_NBIOT_Event_AttachExecute(NBIOT_ClientsTypeDef* pClient)
 			pClient->DictateRunCtl.dictateEvent = ATTACH_EXECUTE;
 		}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("Coap Set CGATT %d Fail ErrorCode %d", Attach, NBStatus);
+		Radio_Trf_Debug_Printf_Level2("Coap Set CGATT %d Fail ECde %d", Attach, NBStatus);
 #endif
 	}
 }
@@ -1199,7 +1199,7 @@ void NET_COAP_NBIOT_Event_AttachInquire(NBIOT_ClientsTypeDef* pClient)
 			pClient->DictateRunCtl.dictateEvent = ATTACH_INQUIRE;
 		}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("Coap CGATT %d Fail ErrorCode %d", pClient->Parameter.netstate, NBStatus);
+		Radio_Trf_Debug_Printf_Level2("Coap CGATT %d Fail ECde %d", pClient->Parameter.netstate, NBStatus);
 #endif
 		return;
 	}
@@ -1271,7 +1271,7 @@ void NET_COAP_NBIOT_Event_ParameterCheckOut(NBIOT_ClientsTypeDef* pClient)
 			pClient->DictateRunCtl.dictateEvent = PARAMETER_CHECKOUT;
 		}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("Coap Parameter Check Fail ErrorCode %d", NBStatus);
+		Radio_Trf_Debug_Printf_Level2("Coap Parameter Check Fail ECde %d", NBStatus);
 #endif
 		return;
 	}
@@ -1332,7 +1332,7 @@ void NET_COAP_NBIOT_Event_SendData(NBIOT_ClientsTypeDef* pClient)
 				pClient->DictateRunCtl.dictateEvent = SEND_DATA;
 			}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("Coap CGATT %d Fail ErrorCode %d", pClient->Parameter.netstate, NBStatus);
+			Radio_Trf_Debug_Printf_Level2("Coap CGATT %d Fail ECde %d", pClient->Parameter.netstate, NBStatus);
 #endif
 			return;
 		}
@@ -1378,7 +1378,7 @@ void NET_COAP_NBIOT_Event_SendData(NBIOT_ClientsTypeDef* pClient)
 				pClient->DictateRunCtl.dictateEvent = SEND_DATA;
 			}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("Coap NQMGS NQMGR Fail ErrorCode %d", NBStatus);
+			Radio_Trf_Debug_Printf_Level2("Coap NQMGS NQMGR Fail ECde %d", NBStatus);
 #endif
 			return;
 		}
@@ -1410,7 +1410,7 @@ void NET_COAP_NBIOT_Event_SendData(NBIOT_ClientsTypeDef* pClient)
 				pClient->DictateRunCtl.dictateEvent = SEND_DATA;
 			}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("Coap Send Payload Fail ErrorCode %d", NBStatus);
+			Radio_Trf_Debug_Printf_Level2("Coap Send Payload Fail ECde %d", NBStatus);
 #endif
 			return;
 		}
@@ -1639,7 +1639,7 @@ void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
 				pClient->DictateRunCtl.dictateEvent = SEND_DATA_RA_NORMAL;
 			}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("Coap CGATT %d Fail ErrorCode %d", pClient->Parameter.netstate, NBStatus);
+			Radio_Trf_Debug_Printf_Level2("Coap CGATT %d Fail ECde %d", pClient->Parameter.netstate, NBStatus);
 #endif
 			return;
 		}
@@ -1685,7 +1685,7 @@ void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
 				pClient->DictateRunCtl.dictateEvent = SEND_DATA_RA_NORMAL;
 			}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("Coap NQMGS NQMGR Fail ErrorCode %d", NBStatus);
+			Radio_Trf_Debug_Printf_Level2("Coap NQMGS NQMGR Fail ECde %d", NBStatus);
 #endif
 			return;
 		}
@@ -1729,7 +1729,7 @@ void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
 				pClient->DictateRunCtl.dictateEvent = SEND_DATA_RA_NORMAL;
 			}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("Coap Send Payload Fail ErrorCode %d", NBStatus);
+			Radio_Trf_Debug_Printf_Level2("Coap Send Payload Fail ECde %d", NBStatus);
 #endif
 			return;
 		}
