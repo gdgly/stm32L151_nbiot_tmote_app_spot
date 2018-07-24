@@ -21,4 +21,4 @@ extern ADC_HandleTypeDef		TEMPERATURE_ADC_Handler;							//内部温度传感器
 void  TEMPERATURE_ADC_Init(void);											//电压ADC初始化
 short TEMPERATURE_ADC_Read(u32 timeout);									//内部温度传感器温度ADC读取
 
-#endif
+#endif /* __HAL_TEMPERATURE_ADC_H */

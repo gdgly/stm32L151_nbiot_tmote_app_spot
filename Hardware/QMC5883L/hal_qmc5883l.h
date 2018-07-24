@@ -71,4 +71,4 @@ void QMC5883L_Interrupt_Selection(u8 interrupt);								//QMC5883L引脚中断�
 void QMC5883L_Softwart_Reset(void);										//QMC5883L复位
 short QMC5883L_Temperature_Read(void);										//QMC5883L温度读取
 
-#endif
+#endif /* __BSP_QMC5883L_H */

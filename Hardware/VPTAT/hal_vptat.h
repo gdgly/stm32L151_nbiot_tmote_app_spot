@@ -15,4 +15,4 @@ extern ADC_HandleTypeDef		VPTAT_ADC_Handler;								//VPTAT电压ADC句柄
 void VPTAT_ADC_Init(void);												//VPTAT电压ADC初始化
 u16  VPTAT_ADC_Read(u32 timeout);											//VPTAT电压ADC读取
 
-#endif
+#endif /* __HAL_VPTAT_ADC_H */

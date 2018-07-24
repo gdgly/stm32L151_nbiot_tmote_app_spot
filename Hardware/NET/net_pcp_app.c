@@ -99,6 +99,7 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_StopMode(PCP_ClientsTypeDef* pClient)
 		pClient->DictateRunCtl.dictateTimeoutSec = 1800;
 		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
 		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
+		pClient->UpgradeExecution.upgradeStatus = PCP_UPGRADE_FAILED;
 		/* Send Message Index */
 		PcpSendMessageIndex = NET_PCP_Message_SendDataRear();
 		/* Recv Message Index */

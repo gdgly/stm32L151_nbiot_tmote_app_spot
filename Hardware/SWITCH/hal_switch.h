@@ -18,4 +18,4 @@
 u8 Mercury_Read(void);													//水银开关读取状态
 u8 ProductTest_Read(void);												//产品测试读取状态
 
-#endif
+#endif /* __HAL_SWITCH_H */

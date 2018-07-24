@@ -31,4 +31,4 @@ void FLASH_EEPROM_WriteBuffer(unsigned int Address, unsigned char* buf, unsigned
 void EEPROM_EnterCriticalSection(void);										//进入关键操作,关闭中断,等待中断结束返回
 void EEPROM_ExitCriticalSection(void);										//退出关键操作,开启中断
 
-#endif
+#endif /* __HAL_EEPROM_H */

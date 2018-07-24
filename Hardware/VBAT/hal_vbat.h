@@ -15,4 +15,4 @@ extern ADC_HandleTypeDef		VBAT_ADC_Handler;								//电池电压ADC句柄
 void VBAT_ADC_Init(void);												//电压ADC初始化
 u16  VBAT_ADC_Read(u32 timeout);											//电源电压ADC读取
 
-#endif
+#endif /* __HAL_VBAT_ADC_H */

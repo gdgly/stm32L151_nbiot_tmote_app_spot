@@ -33,4 +33,4 @@ void IIC_NAck(void);													//不产生ACK应答
 void IIC_Send_Byte(u8 txd);												//IIC发送一个字节
 u8   IIC_Read_Byte(unsigned char ack);										//IIC读取一个字节
 
-#endif
+#endif /* __HAL_IIC_H */

@@ -43,14 +43,9 @@
 #include "inspectmessageoperate.h"
 
 /****************************************** Select DEBUG *************************************************/
-//#define	DEVICE_DEBUG													//定义开启设备调试
+//#define	DEVICE_DEBUG																	//定义开启设备调试
 /********************************************* DEBUG *****************************************************/
 #ifdef	DEVICE_DEBUG
-#include "pcpconfig.h"
-#include "pcpfunc.h"
-#include "pcptransport.h"
-#include "pcpcrccheck.h"
-#include "pcpsock.h"
 void DeBugMain(void);
 #endif
 /****************************************** Debug Ending *************************************************/
