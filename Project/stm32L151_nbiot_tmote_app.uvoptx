@@ -260,7 +260,7 @@
         <Ww>
           <count>8</count>
           <WinNumber>2</WinNumber>
-          <ItemText>NbiotATCmdHandler</ItemText>
+          <ItemText>NbiotATCmdHandler,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>9</count>
@@ -295,32 +295,32 @@
         <Ww>
           <count>15</count>
           <WinNumber>2</WinNumber>
-          <ItemText>NETPcpMessageRecvPark,0x0A</ItemText>
+          <ItemText>\\stm32L151_nbiot_tmote_app\../Hardware/NET/net_pcp_message_operate.c\NETPcpMessageRecvPark,0x10</ItemText>
         </Ww>
         <Ww>
           <count>16</count>
           <WinNumber>2</WinNumber>
-          <ItemText>PCP_SendBuf</ItemText>
+          <ItemText>\\stm32L151_nbiot_tmote_app\../Libraries/PCPUpgrade/pcpconfig.c\PCP_SendBuf</ItemText>
         </Ww>
         <Ww>
           <count>17</count>
           <WinNumber>2</WinNumber>
-          <ItemText>PCP_RecvBuf</ItemText>
+          <ItemText>\\stm32L151_nbiot_tmote_app\../Libraries/PCPUpgrade/pcpconfig.c\PCP_RecvBuf</ItemText>
         </Ww>
         <Ww>
           <count>18</count>
           <WinNumber>2</WinNumber>
-          <ItemText>PCP_DataStack</ItemText>
+          <ItemText>\\stm32L151_nbiot_tmote_app\../Libraries/PCPUpgrade/pcpconfig.c\PCP_DataStack</ItemText>
         </Ww>
         <Ww>
           <count>19</count>
           <WinNumber>2</WinNumber>
-          <ItemText>PCPCoAPNetHandler</ItemText>
+          <ItemText>\\stm32L151_nbiot_tmote_app\../User/platform_config.c\PCPCoAPNetHandler</ItemText>
         </Ww>
         <Ww>
           <count>20</count>
           <WinNumber>2</WinNumber>
-          <ItemText>PCPClientHandler,0x0A</ItemText>
+          <ItemText>\\stm32L151_nbiot_tmote_app\../User/platform_config.c\PCPClientHandler,0x0A</ItemText>
         </Ww>
       </WatchWindow2>
       <MemoryWindow1>
@@ -1662,7 +1662,7 @@
 
   <Group>
     <GroupName>NBIot</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
