@@ -330,7 +330,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 		GPIO_Initure.Alternate = GPIO_AF7_USART1;							//复用为串口1
 		HAL_GPIO_Init(GPIOA, &GPIO_Initure);								//初始化PA9|PA10
 		
-		HAL_NVIC_SetPriority(USART1_IRQn, 1, 0);							//抢占优先级1, 子优先级0
+		HAL_NVIC_SetPriority(USART1_IRQn, 0, 0);							//抢占优先级0, 子优先级0
 		HAL_NVIC_EnableIRQ(USART1_IRQn);									//使能USART1中断通道
 	}
 	
@@ -346,7 +346,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 		GPIO_Initure.Alternate = GPIO_AF7_USART2;							//复用为串口2
 		HAL_GPIO_Init(GPIOA, &GPIO_Initure);								//初始化PA2|PA3
 		
-		HAL_NVIC_SetPriority(USART2_IRQn, 1, 1);							//抢占优先级1, 子优先级1
+		HAL_NVIC_SetPriority(USART2_IRQn, 0, 1);							//抢占优先级0, 子优先级1
 		HAL_NVIC_EnableIRQ(USART2_IRQn);									//使能USART2中断通道
 	}
 }

@@ -138,19 +138,21 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if (huart->Instance == USART1)										//如果是串口1
 	{
+		USART1_RX_STA |= 0x2000;											//接收中
 		if ((USART1_RX_STA & 0x8000) == 0) {								//接收未完成
 			if (USART1_RX_STA & 0x4000) {									//接收到了0x0D
 				if (USART1_aRxBuffer[0] != 0x0a) {							//还未接收到\r\n
 					USART1_RX_STA &= 0xBFFF;
-					USART1_RX_BUF[USART1_RX_STA & 0X3FFF] = USART1_aRxBuffer[0];
+					USART1_RX_BUF[USART1_RX_STA & 0X1FFF] = USART1_aRxBuffer[0];
 					USART1_RX_STA++;
-					if ((USART1_RX_STA & 0X3FFF) > (USART1_REC_LEN-1)) USART1_RX_STA = 0;		//接收数据错误, 重新开始接收
+					if ((USART1_RX_STA & 0X1FFF) > (USART1_REC_LEN-1)) USART1_RX_STA = 0;		//接收数据错误, 重新开始接收
 				}
 				else {												//接收完成了
-					USART1_RX_BUF[USART1_RX_STA & 0X3FFF] = USART1_aRxBuffer[0];
+					USART1_RX_BUF[USART1_RX_STA & 0X1FFF] = USART1_aRxBuffer[0];
 					USART1_RX_STA++;
-					if ((USART1_RX_STA & 0X3FFF) > (USART1_REC_LEN-1)) USART1_RX_STA = 0;		//接收数据错误, 重新开始接收
+					if ((USART1_RX_STA & 0X1FFF) > (USART1_REC_LEN-1)) USART1_RX_STA = 0;		//接收数据错误, 重新开始接收
 					USART1_RX_STA |= 0x8000;
+					USART1_RX_STA &= 0xDFFF;								//接收完成
 					
 					/* NBIOT波特率计算 */
 					if (NBIOTBaudRate.EnBaudRateState != false) {
@@ -164,22 +166,22 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			}
 			else {													//还没收到0x0D
 				if (USART1_aRxBuffer[0] == 0x0d) {
-					USART1_RX_BUF[USART1_RX_STA & 0X3FFF] = USART1_aRxBuffer[0];
+					USART1_RX_BUF[USART1_RX_STA & 0X1FFF] = USART1_aRxBuffer[0];
 					USART1_RX_STA++;
-					if ((USART1_RX_STA & 0X3FFF) > (USART1_REC_LEN-1)) USART1_RX_STA = 0;		//接收数据错误, 重新开始接收
+					if ((USART1_RX_STA & 0X1FFF) > (USART1_REC_LEN-1)) USART1_RX_STA = 0;		//接收数据错误, 重新开始接收
 					USART1_RX_STA |= 0x4000;
 				}
 				else {
 					/* NBIOT波特率计算 */
 					if (NBIOTBaudRate.EnBaudRateState != false) {
-						if ((USART1_RX_STA & 0X3FFF) == 0) {
+						if ((USART1_RX_STA & 0X1FFF) == 0) {
 							NBIOTBaudRate.NBIOTBaudRateNow.StartMs = HAL_GetTick();
 							if ((SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk) != 0U) {
 								NBIOTBaudRate.NBIOTBaudRateNow.StartMs++;
 							}
 							NBIOTBaudRate.NBIOTBaudRateNow.StartClock = SysTick->VAL;
 						}
-						else if ((USART1_RX_STA & 0X3FFF) == BAUDRATE_CAL_MIDDLE_NUM) {
+						else if ((USART1_RX_STA & 0X1FFF) == BAUDRATE_CAL_MIDDLE_NUM) {
 							NBIOTBaudRate.NBIOTBaudRateNow.MiddleMs = HAL_GetTick();
 							if ((SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk) != 0U) {
 								NBIOTBaudRate.NBIOTBaudRateNow.MiddleMs++;
@@ -189,9 +191,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 						}
 					}
 					
-					USART1_RX_BUF[USART1_RX_STA & 0X3FFF] = USART1_aRxBuffer[0];
+					USART1_RX_BUF[USART1_RX_STA & 0X1FFF] = USART1_aRxBuffer[0];
 					USART1_RX_STA++;
-					if ((USART1_RX_STA & 0X3FFF) > (USART1_REC_LEN-1)) USART1_RX_STA = 0;		//接收数据错误, 重新开始接收
+					if ((USART1_RX_STA & 0X1FFF) > (USART1_REC_LEN-1)) USART1_RX_STA = 0;		//接收数据错误, 重新开始接收
 				}
 			}
 		}
@@ -199,32 +201,34 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	
 	if (huart->Instance == USART2)										//如果是串口2
 	{
+		USART2_RX_STA |= 0x2000;											//接收中
 		if ((USART2_RX_STA & 0x8000) == 0) {								//接收未完成
 			if (USART2_RX_STA & 0x4000) {									//接收到了0x0D
 				if (USART2_aRxBuffer[0] != 0x0a) {							//还未接收到\r\n
 					USART2_RX_STA &= 0xBFFF;
-					USART2_RX_BUF[USART2_RX_STA & 0X3FFF] = USART2_aRxBuffer[0];
+					USART2_RX_BUF[USART2_RX_STA & 0X1FFF] = USART2_aRxBuffer[0];
 					USART2_RX_STA++;
-					if ((USART2_RX_STA & 0X3FFF) > (USART2_REC_LEN-1)) USART2_RX_STA = 0;		//接收数据错误, 重新开始接收
+					if ((USART2_RX_STA & 0X1FFF) > (USART2_REC_LEN-1)) USART2_RX_STA = 0;		//接收数据错误, 重新开始接收
 				}
 				else {												//接收完成了
-					USART2_RX_BUF[USART2_RX_STA & 0X3FFF] = USART2_aRxBuffer[0];
+					USART2_RX_BUF[USART2_RX_STA & 0X1FFF] = USART2_aRxBuffer[0];
 					USART2_RX_STA++;
-					if ((USART2_RX_STA & 0X3FFF) > (USART2_REC_LEN-1)) USART2_RX_STA = 0;		//接收数据错误, 重新开始接收
+					if ((USART2_RX_STA & 0X1FFF) > (USART2_REC_LEN-1)) USART2_RX_STA = 0;		//接收数据错误, 重新开始接收
 					USART2_RX_STA |= 0x8000;
+					USART2_RX_STA &= 0xDFFF;								//接收完成
 				}
 			}
 			else {													//还没收到0x0D
 				if (USART2_aRxBuffer[0] == 0x0d) {
-					USART2_RX_BUF[USART2_RX_STA & 0X3FFF] = USART2_aRxBuffer[0];
+					USART2_RX_BUF[USART2_RX_STA & 0X1FFF] = USART2_aRxBuffer[0];
 					USART2_RX_STA++;
-					if ((USART2_RX_STA & 0X3FFF) > (USART2_REC_LEN-1)) USART2_RX_STA = 0;		//接收数据错误, 重新开始接收
+					if ((USART2_RX_STA & 0X1FFF) > (USART2_REC_LEN-1)) USART2_RX_STA = 0;		//接收数据错误, 重新开始接收
 					USART2_RX_STA |= 0x4000;
 				}
 				else {
-					USART2_RX_BUF[USART2_RX_STA & 0X3FFF] = USART2_aRxBuffer[0];
+					USART2_RX_BUF[USART2_RX_STA & 0X1FFF] = USART2_aRxBuffer[0];
 					USART2_RX_STA++;
-					if ((USART2_RX_STA & 0X3FFF) > (USART2_REC_LEN-1)) USART2_RX_STA = 0;		//接收数据错误, 重新开始接收
+					if ((USART2_RX_STA & 0X1FFF) > (USART2_REC_LEN-1)) USART2_RX_STA = 0;		//接收数据错误, 重新开始接收
 				}
 			}
 		}

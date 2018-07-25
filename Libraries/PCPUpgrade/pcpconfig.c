@@ -83,10 +83,15 @@ void PCP_Client_Init(PCP_ClientsTypeDef* pClient, PCP_CoAPNetTransportTypeDef* N
 **********************************************************************************************************/
 void PCP_UpgradeDataDownload_Callback(PCP_ClientsTypeDef* pClient, u16 SliceIndex, u8* UpgradeData, u16 UpgradeDataLength)
 {
-	u8 TempBuf[21];
-	memset(TempBuf, 0, 21);
-	memcpy(TempBuf, UpgradeData, 20);
-	Radio_Trf_Debug_Printf_Level2("Down : %s", TempBuf);
+	char TempBuf[40];
+	int lengthaa;
+	memset(TempBuf, 0, 40);
+	sprintf(TempBuf, "Down%d:", SliceIndex);
+	lengthaa = strlen(TempBuf);
+	for (int i = 0; i < 30; i++) {
+		sprintf(TempBuf + lengthaa + i, "%X", UpgradeData[i]);
+	}
+	Radio_Trf_Debug_Printf_Level2("%s", TempBuf);
 }
 
 /********************************************** END OF FLEE **********************************************/

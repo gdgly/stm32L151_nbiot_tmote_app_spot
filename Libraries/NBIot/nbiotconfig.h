@@ -14,8 +14,8 @@
 
 /* NBIOT 协议栈开辟缓存大小 */
 #define NBIOT_BUFFER_SIZE				512
-#define NBIOT_ATBUFFER_SIZE				1024
-#define NBIOT_DATASTACK_SIZE				1024
+#define NBIOT_ATBUFFER_SIZE				1100
+#define NBIOT_DATASTACK_SIZE				1100
 
 /* NCONFIG配置参数 */
 #define AutoConnect						"AUTOCONNECT"										//自动注网模式
@@ -445,6 +445,7 @@ struct NBIOT_ATCmdTypeDef
 	char*							ATack;
 	char*							ATNack;
 	Stm32_CalculagraphTypeDef			CmdWaitTime;
+	Stm32_CalculagraphTypeDef			SerialWaitTime;
 	NBIOT_StatusTypeDef					(*Write)(NBIOT_ATCmdTypeDef*);
 	NBIOT_StatusTypeDef 				(*Read)(NBIOT_ATCmdTypeDef*);
 };

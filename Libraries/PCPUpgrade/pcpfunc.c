@@ -234,7 +234,7 @@ PCP_StatusTypeDef PCP_Func_AckRequestUpgradePackage(PCP_ClientsTypeDef* pClient)
 									  PCPMessageRecv->PacketDataLength - (sizeof(PCP_AckRequestUpgradePackageTypeDef) - 1));
 	
 	NET_PCP_Message_RecvDataOffSet();
-	pClient->UpgradeExecution.PackSliceIndex += 1;
+	pClient->UpgradeExecution.PackSliceIndex = pClient->Parameter.UpgradePackSliceIndex + 1;
 	/* 判断升级包是否下载完成 */
 	if (pClient->UpgradeExecution.PackSliceIndex >= pClient->UpgradeExecution.PackSliceNum) {
 		pClient->UpgradeExecution.upgradeStatus = PCP_UPGRADE_ASSEMBLE;

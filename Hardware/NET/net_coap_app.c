@@ -152,6 +152,62 @@ static void COAP_NBIOT_DictateEvent_SetTime(NBIOT_ClientsTypeDef* pClient, unsig
 }
 
 /**********************************************************************************************************
+ @Function			static void COAP_NBIOT_DictateEvent_FailExecute(NBIOT_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateTimeOut, \
+																				    NBIOT_DictateEventTypeDef dictateFail, \
+																				    NBIOT_DictateEventTypeDef dictateNoTimeOut)
+ @Description			COAP_NBIOT_DictateEvent_FailExecute	: 事件运行控制器出错执行(内部使用)
+ @Input				pClient							: NBIOT客户端实例
+					dictateTimeOut						: 事假处理错误超时
+					dictateFail						: 事件处理错误次数溢出
+					dictateNoTimeOut					: 事假处理错误未超时
+ @Return				void
+**********************************************************************************************************/
+static void COAP_NBIOT_DictateEvent_FailExecute(NBIOT_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateTimeOut, \
+															    NBIOT_DictateEventTypeDef dictateFail, \
+															    NBIOT_DictateEventTypeDef dictateNoTimeOut)
+{
+	unsigned char* dictateFailureCnt;
+	
+	switch (dictateNoTimeOut)
+	{
+	case HARDWARE_REBOOT:
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateRebootFailureCnt;
+		break;
+	
+	case REPORT_ERROE:
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateReportErrorFailureCnt;
+		break;
+	
+	case MODULE_CHECK:
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateModuleCheckFailureCnt;
+		break;
+	
+	case PARAMETER_CONFIG:
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateParameterConfigFailureCnt;
+		break;
+	
+	default :
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateRebootFailureCnt;
+		break;
+	}
+	
+	if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
+		/* Dictate TimeOut */
+		pClient->DictateRunCtl.dictateEnable = false;
+		pClient->DictateRunCtl.dictateEvent = dictateTimeOut;
+		*dictateFailureCnt += 1;
+		if (*dictateFailureCnt > 3) {
+			*dictateFailureCnt = 0;
+			pClient->DictateRunCtl.dictateEvent = dictateFail;
+		}
+	}
+	else {
+		/* Dictate isn't TimeOut */
+		pClient->DictateRunCtl.dictateEvent = dictateNoTimeOut;
+	}
+}
+
+/**********************************************************************************************************
  @Function			void NET_COAP_NBIOT_Event_StopMode(NBIOT_ClientsTypeDef* pClient)
  @Description			NET_COAP_NBIOT_Event_StopMode			: 停止模式
  @Input				pClient							: NBIOT客户端实例
@@ -246,20 +302,8 @@ void NET_COAP_NBIOT_Event_HardwareReboot(NBIOT_ClientsTypeDef* pClient)
 	}
 	else {
 		/* Dictate execute is Fail */
-		if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-			/* Dictate TimeOut */
-			pClient->DictateRunCtl.dictateEnable = false;
-			pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-			pClient->DictateRunCtl.dictateRebootFailureCnt++;
-			if (pClient->DictateRunCtl.dictateRebootFailureCnt > 3) {
-				pClient->DictateRunCtl.dictateRebootFailureCnt = 0;
-				pClient->DictateRunCtl.dictateEvent = STOP_MODE;
-			}
-		}
-		else {
-			/* Dictate isn't TimeOut */
-			pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-		}
+		COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, HARDWARE_REBOOT);
+		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("NB HDRBT Fail");
 #endif
@@ -287,20 +331,8 @@ void NET_COAP_NBIOT_Event_ReportError(NBIOT_ClientsTypeDef* pClient)
 	}
 	else {
 		/* Dictate execute is Fail */
-		if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-			/* Dictate TimeOut */
-			pClient->DictateRunCtl.dictateEnable = false;
-			pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-			pClient->DictateRunCtl.dictateReportErrorFailureCnt++;
-			if (pClient->DictateRunCtl.dictateReportErrorFailureCnt > 3) {
-				pClient->DictateRunCtl.dictateReportErrorFailureCnt = 0;
-				pClient->DictateRunCtl.dictateEvent = STOP_MODE;
-			}
-		}
-		else {
-			/* Dictate isn't TimeOut */
-			pClient->DictateRunCtl.dictateEvent = REPORT_ERROE;
-		}
+		COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, REPORT_ERROE);
+		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("NB ReportErrorCode Set %d Fail", CMEEnable);
 #endif
@@ -332,20 +364,8 @@ void NET_COAP_NBIOT_Event_ModuleCheck(NBIOT_ClientsTypeDef* pClient)
 	}
 	else {
 		/* Dictate execute is Fail */
-		if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-			/* Dictate TimeOut */
-			pClient->DictateRunCtl.dictateEnable = false;
-			pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-			pClient->DictateRunCtl.dictateModuleCheckFailureCnt++;
-			if (pClient->DictateRunCtl.dictateModuleCheckFailureCnt > 3) {
-				pClient->DictateRunCtl.dictateModuleCheckFailureCnt = 0;
-				pClient->DictateRunCtl.dictateEvent = STOP_MODE;
-			}
-		}
-		else {
-			/* Dictate isn't TimeOut */
-			pClient->DictateRunCtl.dictateEvent = MODULE_CHECK;
-		}
+		COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, MODULE_CHECK);
+		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("NB Module Check Fail ECde %d", NBStatus);
 #endif
@@ -375,20 +395,8 @@ void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 	}
 	else {
 		/* Dictate execute is Fail */
-		if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-			/* Dictate TimeOut */
-			pClient->DictateRunCtl.dictateEnable = false;
-			pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-			pClient->DictateRunCtl.dictateParameterConfigFailureCnt++;
-			if (pClient->DictateRunCtl.dictateParameterConfigFailureCnt > 3) {
-				pClient->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
-				pClient->DictateRunCtl.dictateEvent = STOP_MODE;
-			}
-		}
-		else {
-			/* Dictate isn't TimeOut */
-			pClient->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
-		}
+		COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, PARAMETER_CONFIG);
+		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("NB Parameter Config Read Fail ECde %d", NBStatus);
 #endif
@@ -407,20 +415,8 @@ void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 		}
 		else {
 			/* Dictate execute is Fail */
-			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-				/* Dictate TimeOut */
-				pClient->DictateRunCtl.dictateEnable = false;
-				pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-				pClient->DictateRunCtl.dictateParameterConfigFailureCnt++;
-				if (pClient->DictateRunCtl.dictateParameterConfigFailureCnt > 3) {
-					pClient->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
-					pClient->DictateRunCtl.dictateEvent = STOP_MODE;
-				}
-			}
-			else {
-				/* Dictate isn't TimeOut */
-				pClient->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
-			}
+			COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, PARAMETER_CONFIG);
+			
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("NB %s %d Fail", AutoConnect, AutoConnectVal);
 #endif
@@ -440,20 +436,8 @@ void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 		}
 		else {
 			/* Dictate execute is Fail */
-			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-				/* Dictate TimeOut */
-				pClient->DictateRunCtl.dictateEnable = false;
-				pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-				pClient->DictateRunCtl.dictateParameterConfigFailureCnt++;
-				if (pClient->DictateRunCtl.dictateParameterConfigFailureCnt > 3) {
-					pClient->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
-					pClient->DictateRunCtl.dictateEvent = STOP_MODE;
-				}
-			}
-			else {
-				/* Dictate isn't TimeOut */
-				pClient->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
-			}
+			COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, PARAMETER_CONFIG);
+			
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("NB %s %d Fail", CrScrambling, CrScramblingVal);
 #endif
@@ -473,20 +457,8 @@ void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 		}
 		else {
 			/* Dictate execute is Fail */
-			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-				/* Dictate TimeOut */
-				pClient->DictateRunCtl.dictateEnable = false;
-				pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-				pClient->DictateRunCtl.dictateParameterConfigFailureCnt++;
-				if (pClient->DictateRunCtl.dictateParameterConfigFailureCnt > 3) {
-					pClient->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
-					pClient->DictateRunCtl.dictateEvent = STOP_MODE;
-				}
-			}
-			else {
-				/* Dictate isn't TimeOut */
-				pClient->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
-			}
+			COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, PARAMETER_CONFIG);
+			
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("NB %s %d Fail", CrSiAvoid, CrSiAvoidVal);
 #endif
@@ -506,20 +478,8 @@ void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 		}
 		else {
 			/* Dictate execute is Fail */
-			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-				/* Dictate TimeOut */
-				pClient->DictateRunCtl.dictateEnable = false;
-				pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-				pClient->DictateRunCtl.dictateParameterConfigFailureCnt++;
-				if (pClient->DictateRunCtl.dictateParameterConfigFailureCnt > 3) {
-					pClient->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
-					pClient->DictateRunCtl.dictateEvent = STOP_MODE;
-				}
-			}
-			else {
-				/* Dictate isn't TimeOut */
-				pClient->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
-			}
+			COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, PARAMETER_CONFIG);
+			
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("NB %s %d Fail", CombineAttach, CombineAttachVal);
 #endif
@@ -539,20 +499,8 @@ void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 		}
 		else {
 			/* Dictate execute is Fail */
-			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-				/* Dictate TimeOut */
-				pClient->DictateRunCtl.dictateEnable = false;
-				pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-				pClient->DictateRunCtl.dictateParameterConfigFailureCnt++;
-				if (pClient->DictateRunCtl.dictateParameterConfigFailureCnt > 3) {
-					pClient->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
-					pClient->DictateRunCtl.dictateEvent = STOP_MODE;
-				}
-			}
-			else {
-				/* Dictate isn't TimeOut */
-				pClient->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
-			}
+			COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, PARAMETER_CONFIG);
+			
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("NB %s %d Fail", CellReselection, CellReselectionVal);
 #endif
@@ -572,20 +520,8 @@ void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 		}
 		else {
 			/* Dictate execute is Fail */
-			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-				/* Dictate TimeOut */
-				pClient->DictateRunCtl.dictateEnable = false;
-				pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-				pClient->DictateRunCtl.dictateParameterConfigFailureCnt++;
-				if (pClient->DictateRunCtl.dictateParameterConfigFailureCnt > 3) {
-					pClient->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
-					pClient->DictateRunCtl.dictateEvent = STOP_MODE;
-				}
-			}
-			else {
-				/* Dictate isn't TimeOut */
-				pClient->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
-			}
+			COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, PARAMETER_CONFIG);
+			
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("NB %s %d Fail", EnableBip, EnableBipVal);
 #endif

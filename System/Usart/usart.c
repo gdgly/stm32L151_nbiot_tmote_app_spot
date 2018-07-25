@@ -18,8 +18,14 @@
 u8 USART1_RX_BUF[USART1_REC_LEN];    										//USART1接收缓冲,最大USART1_REC_LEN个字节
 u8 USART2_RX_BUF[USART2_REC_LEN];    										//USART2接收缓冲,最大USART2_REC_LEN个字节
 
-u16 USART1_RX_STA = 0;													//USART1接收状态标记 bit15,接收完成标志 bit14,接收到0x0d(\n)
-u16 USART2_RX_STA = 0;													//USART2接收状态标记 bit15,接收完成标志 bit14,接收到0x0d(\n)
+u8 USART1_RX_CACHE_BUF[USART1_CACHE_LEN];									//USART1接收缓存2,最大USART1_CACHE_LEN个字节
+u8 USART2_RX_CACHE_BUF[USART2_CACHE_LEN];									//USART2接收缓存2,最大USART2_CACHE_LEN个字节
+
+u16 USART1_RX_STA = 0;													//USART1接收状态标记 bit15,接收完成标志 bit14,接收到0x0d(\n) bit13,接收中标志
+u16 USART2_RX_STA = 0;													//USART2接收状态标记 bit15,接收完成标志 bit14,接收到0x0d(\n) bit13,接收中标志
+
+u16 USART1_RX_CACHE_STA = 0;												//USART1接收状态标记 bit15,接收完成标志 bit14,接收到0x0d(\n) bit13,接收中标志
+u16 USART2_RX_CACHE_STA = 0;												//USART2接收状态标记 bit15,接收完成标志 bit14,接收到0x0d(\n) bit13,接收中标志
 
 u8 USART1_aRxBuffer[USART1_RXBUFFERSIZE];									//HAL库使用的串口接收缓冲
 u8 USART2_aRxBuffer[USART2_RXBUFFERSIZE];									//HAL库使用的串口接收缓冲
