@@ -22,6 +22,7 @@
 #include "radar_adc.h"
 #include "radar_dac.h"
 #include "radio_hal_rf.h"
+#include "hal_spiflash.h"
 
 /**********************************************************************************************************
  @Function			void HAL_MspInit(void)
@@ -405,7 +406,7 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
 {
 	GPIO_InitTypeDef GPIO_Initure;
 	
-	if (hspi->Instance == SPIx)
+	if (hspi == &SPI_Handler)
 	{
 		SPIx_NSS_GPIO_CLK_ENABLE();
 		SPIx_SCK_GPIO_CLK_ENABLE();
@@ -438,6 +439,42 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
 		GPIO_Initure.Alternate	= SPIx_MISO_AF;
 		HAL_GPIO_Init(SPIx_MISO_GPIO_PORT, &GPIO_Initure);
 	}
+	
+	if (hspi == &GD25Q_SPIFLASH_Handler)
+	{
+		GD25Q_FLASH_SPIx_NSS_GPIO_CLK_ENABLE();
+		GD25Q_FLASH_SPIx_SCK_GPIO_CLK_ENABLE();
+		GD25Q_FLASH_SPIx_MOSI_GPIO_CLK_ENABLE();
+		GD25Q_FLASH_SPIx_MISO_GPIO_CLK_ENABLE();
+		
+		GD25Q_FLASH_SPIx_RCC_CLK_ENABLE();
+		
+		/* GD25Q_FLASH_NSS */
+		GPIO_Initure.Pin		= GD25Q_FLASH_SPIx_NSS_PIN;
+		GPIO_Initure.Mode		= GPIO_MODE_OUTPUT_PP;
+		GPIO_Initure.Speed		= GPIO_SPEED_HIGH;
+		HAL_GPIO_Init(GD25Q_FLASH_SPIx_NSS_GPIO_PORT, &GPIO_Initure);
+		
+		/* GD25Q_FLASH_SCK */
+		GPIO_Initure.Pin		= GD25Q_FLASH_SPIx_SCK_PIN;
+		GPIO_Initure.Mode		= GPIO_MODE_AF_PP;
+		GPIO_Initure.Pull		= GPIO_PULLUP;
+		GPIO_Initure.Speed		= GPIO_SPEED_HIGH;
+		GPIO_Initure.Alternate	= GD25Q_FLASH_SPIx_SCK_AF;
+		HAL_GPIO_Init(GD25Q_FLASH_SPIx_SCK_GPIO_PORT, &GPIO_Initure);
+		
+		/* GD25Q_FLASH_MOSI */
+		GPIO_Initure.Pin		= GD25Q_FLASH_SPIx_MOSI_PIN;
+		GPIO_Initure.Alternate	= GD25Q_FLASH_SPIx_MOSI_AF;
+		HAL_GPIO_Init(GD25Q_FLASH_SPIx_MOSI_GPIO_PORT, &GPIO_Initure);
+		
+		/* GD25Q_FLASH_MISO */
+		GPIO_Initure.Pin		= GD25Q_FLASH_SPIx_MISO_PIN;
+		GPIO_Initure.Alternate	= GD25Q_FLASH_SPIx_MISO_AF;
+		HAL_GPIO_Init(GD25Q_FLASH_SPIx_MISO_GPIO_PORT, &GPIO_Initure);
+		
+		GD25Q_FLASH_SPIx_NSS_DISABLE();
+	}
 }
 
 /**********************************************************************************************************
@@ -451,7 +488,7 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* hspi)
 {
 	GPIO_InitTypeDef GPIO_Initure;
 	
-	if (hspi->Instance == SPIx)
+	if (hspi == &SPI_Handler)
 	{
 		SPIx_FORCE_RESET();
 		SPIx_RELEASE_RESET();
@@ -460,7 +497,7 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* hspi)
 		HAL_GPIO_DeInit(SPIx_MOSI_GPIO_PORT, SPIx_MOSI_PIN);
 		HAL_GPIO_DeInit(SPIx_MISO_GPIO_PORT, SPIx_MISO_PIN);
 		
-		GPIO_Initure.Pin		= SPIx_SCK_PIN | SPIx_MOSI_PIN;
+		GPIO_Initure.Pin		= SPIx_SCK_PIN;
 		GPIO_Initure.Mode		= GPIO_MODE_INPUT;
 		GPIO_Initure.Pull		= GPIO_PULLDOWN;
 		GPIO_Initure.Speed		= GPIO_SPEED_HIGH;
@@ -477,6 +514,34 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* hspi)
 		GPIO_Initure.Pull		= GPIO_NOPULL;
 		GPIO_Initure.Speed		= GPIO_SPEED_HIGH;
 		HAL_GPIO_Init(SPIx_MISO_GPIO_PORT, &GPIO_Initure);
+	}
+	
+	if (hspi == &GD25Q_SPIFLASH_Handler)
+	{
+		GD25Q_FLASH_SPIx_FORCE_RESET();
+		GD25Q_FLASH_SPIx_RELEASE_RESET();
+		
+		HAL_GPIO_DeInit(GD25Q_FLASH_SPIx_SCK_GPIO_PORT, GD25Q_FLASH_SPIx_SCK_PIN);
+		HAL_GPIO_DeInit(GD25Q_FLASH_SPIx_MOSI_GPIO_PORT, GD25Q_FLASH_SPIx_MOSI_PIN);
+		HAL_GPIO_DeInit(GD25Q_FLASH_SPIx_MISO_GPIO_PORT, GD25Q_FLASH_SPIx_MISO_PIN);
+		
+		GPIO_Initure.Pin		= GD25Q_FLASH_SPIx_SCK_PIN;
+		GPIO_Initure.Mode		= GPIO_MODE_INPUT;
+		GPIO_Initure.Pull		= GPIO_PULLDOWN;
+		GPIO_Initure.Speed		= GPIO_SPEED_HIGH;
+		HAL_GPIO_Init(GD25Q_FLASH_SPIx_SCK_GPIO_PORT, &GPIO_Initure);
+		
+		GPIO_Initure.Pin		= GD25Q_FLASH_SPIx_MOSI_PIN;
+		GPIO_Initure.Mode		= GPIO_MODE_INPUT;
+		GPIO_Initure.Pull		= GPIO_PULLDOWN;
+		GPIO_Initure.Speed		= GPIO_SPEED_HIGH;
+		HAL_GPIO_Init(GD25Q_FLASH_SPIx_MOSI_GPIO_PORT, &GPIO_Initure);
+		
+		GPIO_Initure.Pin		= GD25Q_FLASH_SPIx_MISO_PIN;
+		GPIO_Initure.Mode		= GPIO_MODE_INPUT;
+		GPIO_Initure.Pull		= GPIO_NOPULL;
+		GPIO_Initure.Speed		= GPIO_SPEED_HIGH;
+		HAL_GPIO_Init(GD25Q_FLASH_SPIx_MISO_GPIO_PORT, &GPIO_Initure);
 	}
 }
 

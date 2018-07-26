@@ -29,6 +29,7 @@
 #include "hal_vptat.h"
 #include "hal_temperature.h"
 #include "hal_qmc5883l.h"
+#include "hal_spiflash.h"
 #include "net_nbiot_app.h"
 #include "net_coap_app.h"
 #include "net_pcp_app.h"
@@ -505,6 +506,7 @@ void MainHandleRoutine(void)
 
 #ifdef	DEVICE_DEBUG
 /********************************************* DEBUG *****************************************************/
+u32 GD25QDeviceID = 0;
 /****************************************** Debug Ending *************************************************/
 /**********************************************************************************************************
  @Function			void DeBugMain(void)
@@ -516,11 +518,15 @@ void DeBugMain(void)
 {
 	TCFG_EEPROM_SetBootCount(0);
 	
-#if 1
+#if 0
 	NBIOT_Neul_NBxx_HardwareReboot(&NbiotClientHandler, 8000);
 #endif
 	
 	while (true) {
+		
+		GD25Q_SPIFLASH_Init();
+		GD25QDeviceID = GD25Q_SPIFLASH_ReadDeviceID();
+		Radio_Trf_Printf("GD25Q80CSIG DeviceID : %X", GD25QDeviceID);
 		
 		/* 小无线处理 */
 		Radio_Trf_App_Task();
