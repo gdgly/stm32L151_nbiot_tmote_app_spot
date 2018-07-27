@@ -506,7 +506,6 @@ void MainHandleRoutine(void)
 
 #ifdef	DEVICE_DEBUG
 /********************************************* DEBUG *****************************************************/
-u32 GD25QDeviceID = 0;
 /****************************************** Debug Ending *************************************************/
 /**********************************************************************************************************
  @Function			void DeBugMain(void)
@@ -523,10 +522,6 @@ void DeBugMain(void)
 #endif
 	
 	while (true) {
-		
-		GD25Q_SPIFLASH_Init();
-		GD25QDeviceID = GD25Q_SPIFLASH_ReadDeviceID();
-		Radio_Trf_Printf("GD25Q80CSIG DeviceID : %X", GD25QDeviceID);
 		
 		/* 小无线处理 */
 		Radio_Trf_App_Task();

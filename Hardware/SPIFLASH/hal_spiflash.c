@@ -17,6 +17,8 @@
 #include "hal_spiflash.h"
 #include "platform_config.h"
 #include "platform_map.h"
+#include "delay.h"
+#include "usart.h"
 
 SPI_HandleTypeDef GD25Q_SPIFLASH_Handler;
 
@@ -92,7 +94,7 @@ u8 GD25Q_SPI_FLASH_SendByte(u8 byte)
 
 /**********************************************************************************************************
  @Function			u32 GD25Q_SPIFLASH_ReadDeviceID(void)
- @Description			GD25Q_SPIFLASH_ReadDeviceID	: GD25Q SPIFLASH 读取设备ID
+ @Description			GD25Q_SPIFLASH_ReadDeviceID			: GD25Q SPIFLASH 读取设备ID
  @Input				void
  @Return				设备ID
 **********************************************************************************************************/
@@ -116,34 +118,416 @@ u32 GD25Q_SPIFLASH_ReadDeviceID(void)
 	return deviceID;
 }
 
+/**********************************************************************************************************
+ @Function			u32 GD25Q_SPIFLASH_ReadManufactureID(void)
+ @Description			GD25Q_SPIFLASH_ReadManufactureID		: GD25Q SPIFLASH 读取厂商ID
+ @Input				void
+ @Return				厂商ID
+**********************************************************************************************************/
+u32 GD25Q_SPIFLASH_ReadManufactureID(void)
+{
+	u32 manufactureID = 0;
+	
+	/* 选择SPI FLASH, NSS使能 */
+	GD25Q_FLASH_SPIx_NSS_ENABLE();
+	
+	GD25Q_SPI_FLASH_SendByte(GD25Q_ManufactDeviceID);
+	GD25Q_SPI_FLASH_SendByte(0x00);
+	GD25Q_SPI_FLASH_SendByte(0x00);
+	GD25Q_SPI_FLASH_SendByte(0x00);
+	manufactureID |= GD25Q_SPI_FLASH_SendByte(GD25Q_Dummy_Byte) << 8;
+	manufactureID |= GD25Q_SPI_FLASH_SendByte(GD25Q_Dummy_Byte);
+	
+	/* 禁用SPI FLASH, NSS失能 */
+	GD25Q_FLASH_SPIx_NSS_DISABLE();
+	
+	return manufactureID;
+}
 
+/**********************************************************************************************************
+ @Function			u32 GD25Q_SPIFLASH_ReadIdentificationID(void)
+ @Description			GD25Q_SPIFLASH_ReadIdentificationID	: GD25Q SPIFLASH 读取型号ID
+ @Input				void
+ @Return				型号ID
+**********************************************************************************************************/
+u32 GD25Q_SPIFLASH_ReadIdentificationID(void)
+{
+	u32 identificationID = 0, Temp0 = 0, Temp1 = 0, Temp2 = 0;
+	
+	/* 选择SPI FLASH, NSS使能 */
+	GD25Q_FLASH_SPIx_NSS_ENABLE();
+	
+	GD25Q_SPI_FLASH_SendByte(GD25Q_JedecDeviceID);
+	Temp0 = GD25Q_SPI_FLASH_SendByte(GD25Q_Dummy_Byte);
+	Temp1 = GD25Q_SPI_FLASH_SendByte(GD25Q_Dummy_Byte);
+	Temp2 = GD25Q_SPI_FLASH_SendByte(GD25Q_Dummy_Byte);
+	
+	/* 禁用SPI FLASH, NSS失能 */
+	GD25Q_FLASH_SPIx_NSS_DISABLE();
+	
+	identificationID = (Temp0 << 16) | (Temp1 << 8) | Temp2;
+	
+	return identificationID;
+}
 
+/**********************************************************************************************************
+ @Function			void GD25Q_SPIFLASH_WriteEnable(void)
+ @Description			GD25Q_SPIFLASH_WriteEnable	: GD25Q SPIFLASH 写使能
+ @Input				void
+ @Return				void
+ @attention			WEL置位
+**********************************************************************************************************/
+void GD25Q_SPIFLASH_WriteEnable(void)
+{
+	/* 选择SPI FLASH, NSS使能 */
+	GD25Q_FLASH_SPIx_NSS_ENABLE();
+	
+	GD25Q_SPI_FLASH_SendByte(GD25Q_WriteEnable);
+	
+	/* 禁用SPI FLASH, NSS失能 */
+	GD25Q_FLASH_SPIx_NSS_DISABLE();
+}
 
+/**********************************************************************************************************
+ @Function			void GD25Q_SPIFLASH_WriteDisable(void)
+ @Description			GD25Q_SPIFLASH_WriteDisable	: GD25Q SPIFLASH 写禁止
+ @Input				void
+ @Return				void
+ @attention			WEL清零
+**********************************************************************************************************/
+void GD25Q_SPIFLASH_WriteDisable(void)
+{
+	/* 选择SPI FLASH, NSS使能 */
+	GD25Q_FLASH_SPIx_NSS_ENABLE();
+	
+	GD25Q_SPI_FLASH_SendByte(GD25Q_WriteDisable);
+	
+	/* 禁用SPI FLASH, NSS失能 */
+	GD25Q_FLASH_SPIx_NSS_DISABLE();
+}
 
+/**********************************************************************************************************
+ @Function			u8 GD25Q_SPIFLASH_ReadStatusRegister(u8 statusRegister)
+ @Description			GD25Q_SPIFLASH_ReadStatusRegister	: GD25Q SPIFLASH 读状态寄存器
+ @Input				状态寄存器地址
+ @Return				状态寄存器值
+**********************************************************************************************************/
+u8 GD25Q_SPIFLASH_ReadStatusRegister(u8 statusRegister)
+{
+	u8 readByte = 0;
+	
+	/* 选择SPI FLASH, NSS使能 */
+	GD25Q_FLASH_SPIx_NSS_ENABLE();
+	
+	GD25Q_SPI_FLASH_SendByte(statusRegister);
+	readByte = GD25Q_SPI_FLASH_SendByte(GD25Q_Dummy_Byte);
+	
+	/* 禁用SPI FLASH, NSS失能 */
+	GD25Q_FLASH_SPIx_NSS_DISABLE();
+	
+	return readByte;
+}
 
+/**********************************************************************************************************
+ @Function			void GD25Q_SPIFLASH_WriteStatusRegister(u8 srLow, u8 srHigh)
+ @Description			GD25Q_SPIFLASH_WriteStatusRegister	: GD25Q SPIFLASH 写状态寄存器
+ @Input				srLow						: 状态寄存器低字节
+					srHigh						: 状态寄存器高字节
+ @Return				void
+**********************************************************************************************************/
+void GD25Q_SPIFLASH_WriteStatusRegister(u8 srLow, u8 srHigh)
+{
+	/* 选择SPI FLASH, NSS使能 */
+	GD25Q_FLASH_SPIx_NSS_ENABLE();
+	
+	GD25Q_SPI_FLASH_SendByte(GD25Q_WriteStatusReg);
+	GD25Q_SPI_FLASH_SendByte(srLow);
+	GD25Q_SPI_FLASH_SendByte(srHigh);
+	
+	/* 禁用SPI FLASH, NSS失能 */
+	GD25Q_FLASH_SPIx_NSS_DISABLE();
+}
 
+/**********************************************************************************************************
+ @Function			void GD25Q_SPIFLASH_WaitForBusy(void)
+ @Description			GD25Q_SPIFLASH_WaitForBusy		: GD25Q SPIFLASH 等待设备空闲
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+void GD25Q_SPIFLASH_WaitForBusy(void)
+{
+	u8 flashStatus = 0;
+	
+	/* 选择SPI FLASH, NSS使能 */
+	GD25Q_FLASH_SPIx_NSS_ENABLE();
+	
+	/* Send "Read Status Register" instruction */
+	GD25Q_SPI_FLASH_SendByte(GD25Q_ReadStatusReg1);
+	
+	/* Loop as long as the memory is busy with a write cycle */
+	do {
+		flashStatus = GD25Q_SPI_FLASH_SendByte(GD25Q_Dummy_Byte);
+	}
+	while ((flashStatus & 0x01) == 0x01);
+	
+	/* 禁用SPI FLASH, NSS失能 */
+	GD25Q_FLASH_SPIx_NSS_DISABLE();
+}
 
+/**********************************************************************************************************
+ @Function			void GD25Q_SPIFLASH_PowerDown(void)
+ @Description			GD25Q_SPIFLASH_PowerDown			: GD25Q SPIFLASH 进入掉电模式
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+void GD25Q_SPIFLASH_PowerDown(void)
+{
+	/* Select the FLASH: Chip Select low */
+	GD25Q_FLASH_SPIx_NSS_ENABLE();
+	
+	/* Send "Power Down" instruction */
+	GD25Q_SPI_FLASH_SendByte(GD25Q_PowerDown);
+	
+	/* Deselect the FLASH: Chip Select high */
+	GD25Q_FLASH_SPIx_NSS_DISABLE();
+	
+	/* Wait for TDP */
+	Delay_US(3);
+}
 
+/**********************************************************************************************************
+ @Function			void GD25Q_SPIFLASH_WakeUp(void)
+ @Description			GD25Q_SPIFLASH_WakeUp			: GD25Q SPIFLASH 唤醒
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+void GD25Q_SPIFLASH_WakeUp(void)
+{
+	/* Select the FLASH: Chip Select low */
+	GD25Q_FLASH_SPIx_NSS_ENABLE();
+	
+	/* Send "Release Power Down" instruction */
+	GD25Q_SPI_FLASH_SendByte(GD25Q_ReleasePowerDown);
+	
+	/* Deselect the FLASH: Chip Select high */
+	GD25Q_FLASH_SPIx_NSS_DISABLE();
+	
+	/* Wait for TRES1 */
+	Delay_US(5);
+}
 
+/**********************************************************************************************************
+ @Function			void GD25Q_SPIFLASH_EraseChip(void)
+ @Description			GD25Q_SPIFLASH_EraseChip			: GD25Q SPIFLASH 擦除Chip
+ @Input				void
+ @Return				void
+ @attention			800MS
+**********************************************************************************************************/
+void GD25Q_SPIFLASH_EraseChip(void)
+{
+	/* 发送FLASH写使能命令 */
+	GD25Q_SPIFLASH_WriteEnable();
+	
+	/* 等待FLASH空闲 */
+	GD25Q_SPIFLASH_WaitForBusy();
+	
+	/* Select the FLASH: Chip Select low */
+	GD25Q_FLASH_SPIx_NSS_ENABLE();
+	
+	/* 发送片擦除命令 */
+	GD25Q_SPI_FLASH_SendByte(GD25Q_ChipErase);
+	
+	/* Deselect the FLASH: Chip Select high */
+	GD25Q_FLASH_SPIx_NSS_DISABLE();
+	
+	/* 等待擦除完毕 */
+	GD25Q_SPIFLASH_WaitForBusy();
+}
 
+/**********************************************************************************************************
+ @Function			void GD25Q_SPIFLASH_EraseBlock(u32 BlockAddr)
+ @Description			GD25Q_SPIFLASH_EraseBlock		: GD25Q SPIFLASH 擦除Block
+ @Input				BlockAddr						: 块地址(0x10000倍数)
+ @Return				void
+ @attention			GD25Q80CSIG SPI FLASH 擦除块大小为64KB(65536Byte),即一个块区大小,在写入数据之前要求先擦除空间
+					50MS
+**********************************************************************************************************/
+void GD25Q_SPIFLASH_EraseBlock(u32 BlockAddr)
+{
+	/* 发送FLASH写使能命令 */
+	GD25Q_SPIFLASH_WriteEnable();
+	
+	/* 等待FLASH空闲 */
+	GD25Q_SPIFLASH_WaitForBusy();
+	
+	/* Select the FLASH: Chip Select low */
+	GD25Q_FLASH_SPIx_NSS_ENABLE();
+	
+	/* 发送块区擦除命令 */
+	GD25Q_SPI_FLASH_SendByte(GD25Q_BlockErase);
+	
+	/* 发送块区擦除地址高位 */
+	GD25Q_SPI_FLASH_SendByte((BlockAddr & 0xFF0000) >> 16);
+	
+	/* 发送块区擦除地址中位 */
+	GD25Q_SPI_FLASH_SendByte((BlockAddr & 0xFF00) >> 8);
+	
+	/* 发送块区擦除地址低位 */
+	GD25Q_SPI_FLASH_SendByte(BlockAddr & 0xFF);
+	
+	/* Deselect the FLASH: Chip Select high */
+	GD25Q_FLASH_SPIx_NSS_DISABLE();
+	
+	/* 等待擦除完毕 */
+	GD25Q_SPIFLASH_WaitForBusy();
+}
 
+/**********************************************************************************************************
+ @Function			void GD25Q_SPIFLASH_EraseSector(u32 SectorAddr)
+ @Description			GD25Q_SPIFLASH_EraseSector		: GD25Q SPIFLASH 擦除Sector
+ @Input				SectorAddr					: 扇区地址(0x1000倍数)
+ @Return				void
+ @attention			GD25Q80CSIG SPI FLASH 最小擦除块大小为4KB(4096Byte),即一个扇区大小,在写入数据之前要求先擦除空间
+					20MS
+**********************************************************************************************************/
+void GD25Q_SPIFLASH_EraseSector(u32 SectorAddr)
+{
+	/* 发送FLASH写使能命令 */
+	GD25Q_SPIFLASH_WriteEnable();
+	
+	/* 等待FLASH空闲 */
+	GD25Q_SPIFLASH_WaitForBusy();
+	
+	/* Select the FLASH: Chip Select low */
+	GD25Q_FLASH_SPIx_NSS_ENABLE();
+	
+	/* 发送扇区擦除命令 */
+	GD25Q_SPI_FLASH_SendByte(GD25Q_SectorErase);
+	
+	/* 发送扇区擦除地址高位 */
+	GD25Q_SPI_FLASH_SendByte((SectorAddr & 0xFF0000) >> 16);
+	
+	/* 发送扇区擦除地址中位 */
+	GD25Q_SPI_FLASH_SendByte((SectorAddr & 0xFF00) >> 8);
+	
+	/* 发送扇区擦除地址低位 */
+	GD25Q_SPI_FLASH_SendByte(SectorAddr & 0xFF);
+	
+	/* Deselect the FLASH: Chip Select high */
+	GD25Q_FLASH_SPIx_NSS_DISABLE();
+	
+	/* 等待擦除完毕 */
+	GD25Q_SPIFLASH_WaitForBusy();
+}
 
+/**********************************************************************************************************
+ @Function			void GD25Q_SPIFLASH_ReadBuffer(u8* pBuffer, u32 ReadAddr, u16 NumByteToRead)
+ @Description			GD25Q_SPIFLASH_ReadBuffer		: GD25Q SPIFLASH 读取SPI FLASH数据
+ @Input				pBuffer						: 数据存储区
+					ReadAddr						: 数据读取地址
+					NumByteToRead					: 读取数据长度
+ @Return				void
+**********************************************************************************************************/
+void GD25Q_SPIFLASH_ReadBuffer(u8* pBuffer, u32 ReadAddr, u16 NumByteToRead)
+{
+	/* Select the FLASH: Chip Select low */
+	GD25Q_FLASH_SPIx_NSS_ENABLE();
+	
+	/* 发送读指令 */
+	GD25Q_SPI_FLASH_SendByte(GD25Q_ReadData);
+	
+	/* 发送读地址高位 */
+	GD25Q_SPI_FLASH_SendByte((ReadAddr & 0xFF0000) >> 16);
+	
+	/* 发送读地址中位 */
+	GD25Q_SPI_FLASH_SendByte((ReadAddr & 0xFF00) >> 8);
+	
+	/* 发送读地址低位 */
+	GD25Q_SPI_FLASH_SendByte(ReadAddr & 0xFF);
+	
+	/* 读取数据 */
+	while (NumByteToRead--) {
+		*pBuffer = GD25Q_SPI_FLASH_SendByte(GD25Q_Dummy_Byte);
+		pBuffer++;
+	}
+	
+	/* Deselect the FLASH: Chip Select high */
+	GD25Q_FLASH_SPIx_NSS_DISABLE();
+}
 
+/**********************************************************************************************************
+ @Function			void GD25Q_SPIFLASH_WritePage(u8* pBuffer, u32 WriteAddr, u16 NumByteToWrite)
+ @Description			GD25Q_SPIFLASH_WritePage			: GD25Q SPIFLASH 写入SPI FLASH数据Page
+ @Input				pBuffer						: 数据存储区
+					WriteAddr						: 数据写入地址
+					NumByteToWrite					: 写入数据长度
+ @Return				void
+ @attention			写入字节数不得超过该页写入剩余字节数
+**********************************************************************************************************/
+void GD25Q_SPIFLASH_WritePage(u8* pBuffer, u32 WriteAddr, u16 NumByteToWrite)
+{
+	/* 发送FLASH写使能命令 */
+	GD25Q_SPIFLASH_WriteEnable();
+	
+	/* 等待FLASH空闲 */
+	GD25Q_SPIFLASH_WaitForBusy();
+	
+	/* Select the FLASH: Chip Select low */
+	GD25Q_FLASH_SPIx_NSS_ENABLE();
+	
+	/* 发送页写命令 */
+	GD25Q_SPI_FLASH_SendByte(GD25Q_PageProgram);
+	
+	/* 发送写地址高位 */
+	GD25Q_SPI_FLASH_SendByte((WriteAddr & 0xFF0000) >> 16);
+	
+	/* 发送写地址中位 */
+	GD25Q_SPI_FLASH_SendByte((WriteAddr & 0xFF00) >> 8);
+	
+	/* 发送写地址低位 */
+	GD25Q_SPI_FLASH_SendByte(WriteAddr & 0xFF);
+	
+	/* 写入数据 */
+	while (NumByteToWrite--) {
+		GD25Q_SPI_FLASH_SendByte(*pBuffer);
+		pBuffer++;
+	}
+	
+	/* Deselect the FLASH: Chip Select high */
+	GD25Q_FLASH_SPIx_NSS_DISABLE();
+	
+	/* 等待写入完毕 */
+	GD25Q_SPIFLASH_WaitForBusy();
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/**********************************************************************************************************
+ @Function			void GD25Q_SPIFLASH_WriteBuffer(u8* pBuffer, u32 WriteAddr, u16 NumByteToWrite)
+ @Description			GD25Q_SPIFLASH_WriteBuffer		: GD25Q SPIFLASH 写入SPI FLASH数据
+ @Input				pBuffer						: 数据存储区
+					WriteAddr						: 数据写入地址
+					NumByteToWrite					: 写入数据长度
+ @Return				void
+ @attention			具有自动换页功能
+**********************************************************************************************************/
+void GD25Q_SPIFLASH_WriteBuffer(u8* pBuffer, u32 WriteAddr, u16 NumByteToWrite)
+{
+	u16 pagereMain;
+	
+	pagereMain = GD25Q80_PAGE_BYTE_SIZE - WriteAddr % GD25Q80_PAGE_BYTE_SIZE;
+	if (NumByteToWrite <= pagereMain) pagereMain = NumByteToWrite;
+	
+	while (true) {
+		GD25Q_SPIFLASH_WritePage(pBuffer, WriteAddr, pagereMain);
+		if (NumByteToWrite == pagereMain) break;
+		else {
+			pBuffer += pagereMain;
+			WriteAddr += pagereMain;
+			
+			NumByteToWrite -= pagereMain;
+			if (NumByteToWrite > GD25Q80_PAGE_BYTE_SIZE) pagereMain = GD25Q80_PAGE_BYTE_SIZE;
+			else pagereMain = NumByteToWrite;
+		}
+	}
+}
 
 /********************************************** END OF FLEE **********************************************/
