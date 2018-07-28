@@ -113,6 +113,7 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_StopMode(PCP_ClientsTypeDef* pClient)
 		/* Dictate TimeOut */
 		pClient->DictateRunCtl.dictateEnable = false;
 		pClient->DictateRunCtl.dictateEvent = PCP_EVENT_READY;
+		pClient->UpgradeExecution.upgradeStatus = PCP_UPGRADE_STANDBY;
 		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_COAP;
 	}
 	else {
@@ -121,10 +122,12 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_StopMode(PCP_ClientsTypeDef* pClient)
 			/* Have new pcp message need to execute */
 			pClient->DictateRunCtl.dictateEnable = false;
 			pClient->DictateRunCtl.dictateEvent = PCP_EVENT_READY;
+			pClient->UpgradeExecution.upgradeStatus = PCP_UPGRADE_STANDBY;
 			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_COAP;
 		}
 		else {
 			pClient->DictateRunCtl.dictateEvent = PCP_EVENT_STOP;
+			pClient->UpgradeExecution.upgradeStatus = PCP_UPGRADE_STANDBY;
 			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_COAP;
 		}
 	}
@@ -153,10 +156,6 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Initialized(PCP_ClientsTypeDef* pClient)
 	pClient->DictateRunCtl.dictateInitializedFailureCnt = 0;
 	pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_COAP;
 	
-#ifdef PCP_DEBUG_LOG_RF_PRINT
-	Radio_Trf_Debug_Printf_Level2("PCP Initialized");
-#endif
-	
 	return PCPStatus;
 }
 
@@ -176,9 +175,6 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Ready(PCP_ClientsTypeDef* pClient)
 		pClient->DictateRunCtl.dictateEvent = PCP_EVENT_EXECUTE;
 		pClient->DictateRunCtl.dictateReadyFailureCnt = 0;
 		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_COAP;
-#ifdef PCP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("PCP PlatToDev");
-#endif
 	}
 	/* 设备----->平台 */
 	else if (NET_PCP_Message_SendDataisEmpty() != true) {										//需要发送数据到平台
@@ -186,19 +182,16 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Ready(PCP_ClientsTypeDef* pClient)
 		pClient->DictateRunCtl.dictateEvent = PCP_EVENT_FRAME_SEND;
 		pClient->DictateRunCtl.dictateReadyFailureCnt = 0;
 		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_COAP;
-#ifdef PCP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("PCP DevToPlat");
-#endif
 	}
 	/* 设备--ActiveUpload-->平台 */
-	else if (pClient->UpgradeExecution.upgradeStatus == PCP_UPGRADE_DOWNLOAD) {					//需要主动发送数据到平台
+	else if ((pClient->UpgradeExecution.upgradeStatus == PCP_UPGRADE_QUERYVERSION) || 
+		    (pClient->UpgradeExecution.upgradeStatus == PCP_UPGRADE_DOWNLOAD) || 
+		    (pClient->UpgradeExecution.upgradeStatus == PCP_UPGRADE_ASSEMBLE) || 
+		    (pClient->UpgradeExecution.upgradeStatus == PCP_UPGRADE_INSTALL)) {					//需要主动发送数据到平台
 		pClient->DictateRunCtl.dictateEnable = false;
 		pClient->DictateRunCtl.dictateEvent = PCP_EVENT_ACTIVEUPLOAD;
 		pClient->DictateRunCtl.dictateReadyFailureCnt = 0;
 		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_COAP;
-#ifdef PCP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("PCP ActiveToPlat");
-#endif
 	}
 	/* 平台--x-->设备 */
 	else {																			//等待数据交互
@@ -234,7 +227,8 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Recv(PCP_ClientsTypeDef* pClient)
 			pClient->DictateRunCtl.dictateEnable = false;
 			pClient->DictateRunCtl.dictateEvent = PCP_EVENT_READY;
 			pClient->DictateRunCtl.dictateRecvFailureCnt++;
-			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
+			pClient->CoAPStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_COAP;
 			if (pClient->DictateRunCtl.dictateRecvFailureCnt > 3) {
 				pClient->DictateRunCtl.dictateRecvFailureCnt = 0;
 				pClient->DictateRunCtl.dictateEvent = PCP_EVENT_STOP;
@@ -261,7 +255,8 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Recv(PCP_ClientsTypeDef* pClient)
 				pClient->DictateRunCtl.dictateEnable = false;
 				pClient->DictateRunCtl.dictateEvent = PCP_EVENT_READY;
 				pClient->DictateRunCtl.dictateRecvFailureCnt++;
-				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
+				pClient->CoAPStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_COAP;
 				if (pClient->DictateRunCtl.dictateRecvFailureCnt > 3) {
 					pClient->DictateRunCtl.dictateRecvFailureCnt = 0;
 					pClient->DictateRunCtl.dictateEvent = PCP_EVENT_STOP;
@@ -291,7 +286,8 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Recv(PCP_ClientsTypeDef* pClient)
 						pClient->DictateRunCtl.dictateEnable = false;
 						pClient->DictateRunCtl.dictateEvent = PCP_EVENT_READY;
 						pClient->DictateRunCtl.dictateRecvFailureCnt++;
-						pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
+						pClient->CoAPStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+						pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_COAP;
 						if (pClient->DictateRunCtl.dictateRecvFailureCnt > 3) {
 							pClient->DictateRunCtl.dictateRecvFailureCnt = 0;
 							pClient->DictateRunCtl.dictateEvent = PCP_EVENT_STOP;
@@ -330,7 +326,8 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Recv(PCP_ClientsTypeDef* pClient)
 			pClient->DictateRunCtl.dictateEnable = false;
 			pClient->DictateRunCtl.dictateEvent = PCP_EVENT_READY;
 			pClient->DictateRunCtl.dictateRecvFailureCnt++;
-			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
+			pClient->CoAPStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_COAP;
 			if (pClient->DictateRunCtl.dictateRecvFailureCnt > 3) {
 				pClient->DictateRunCtl.dictateRecvFailureCnt = 0;
 				pClient->DictateRunCtl.dictateEvent = PCP_EVENT_STOP;
@@ -380,7 +377,8 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Send(PCP_ClientsTypeDef* pClient)
 				pClient->DictateRunCtl.dictateEnable = false;
 				pClient->DictateRunCtl.dictateEvent = PCP_EVENT_READY;
 				pClient->DictateRunCtl.dictateSendFailureCnt++;
-				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
+				pClient->CoAPStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_COAP;
 				if (pClient->DictateRunCtl.dictateSendFailureCnt > 3) {
 					pClient->DictateRunCtl.dictateSendFailureCnt = 0;
 					pClient->DictateRunCtl.dictateEvent = PCP_EVENT_STOP;
@@ -402,7 +400,8 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Send(PCP_ClientsTypeDef* pClient)
 				pClient->DictateRunCtl.dictateEnable = false;
 				pClient->DictateRunCtl.dictateEvent = PCP_EVENT_READY;
 				pClient->DictateRunCtl.dictateSendFailureCnt++;
-				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
+				pClient->CoAPStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_COAP;
 				if (pClient->DictateRunCtl.dictateSendFailureCnt > 3) {
 					pClient->DictateRunCtl.dictateSendFailureCnt = 0;
 					pClient->DictateRunCtl.dictateEvent = PCP_EVENT_STOP;
@@ -423,7 +422,8 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Send(PCP_ClientsTypeDef* pClient)
 				pClient->DictateRunCtl.dictateEnable = false;
 				pClient->DictateRunCtl.dictateEvent = PCP_EVENT_READY;
 				pClient->DictateRunCtl.dictateSendFailureCnt++;
-				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
+				pClient->CoAPStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_COAP;
 				if (pClient->DictateRunCtl.dictateSendFailureCnt > 3) {
 					pClient->DictateRunCtl.dictateSendFailureCnt = 0;
 					pClient->DictateRunCtl.dictateEvent = PCP_EVENT_STOP;
@@ -472,10 +472,6 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Execute(PCP_ClientsTypeDef* pClient)
 {
 	PCP_StatusTypeDef PCPStatus = PCP_OK;
 	
-#ifdef PCP_DEBUG_LOG_RF_PRINT
-	Radio_Trf_Debug_Printf_Level2("PCP ExecuteCmding");
-#endif
-	
 	/* 读取接收区数据 */
 	if (NET_PCP_Message_RecvDataDequeue(pClient->Recvbuf, (unsigned short *)&pClient->Recvlen) != true) {
 		PCPStatus = PCP_Frame_None;
@@ -512,10 +508,6 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Execute(PCP_ClientsTypeDef* pClient)
 	pClient->DictateRunCtl.dictateExecuteFailureCnt = 0;
 	pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_COAP;
 	
-#ifdef PCP_DEBUG_LOG_RF_PRINT
-	Radio_Trf_Debug_Printf_Level2("PCP ExecuteCmd Ok");
-#endif
-	
 exit:
 	return PCPStatus;
 }
@@ -548,47 +540,5 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_ActiveUpload(PCP_ClientsTypeDef* pClient)
 exit:
 	return PCPStatus;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /********************************************** END OF FLEE **********************************************/

@@ -58,9 +58,13 @@ void PCP_Client_Init(PCP_ClientsTypeDef* pClient, PCP_CoAPNetTransportTypeDef* N
 	pClient->DictateRunCtl.dictateSendFailureCnt				= 0;
 	pClient->DictateRunCtl.dictateExecuteFailureCnt			= 0;
 	pClient->DictateRunCtl.dictateActiveUploadFailureCnt		= 0;
+	pClient->DictateRunCtl.dictateUpgradeQueryVersionCnt		= 0;
+	pClient->DictateRunCtl.dictateUpgradeDownloadCnt			= 0;
+	pClient->DictateRunCtl.dictateUpgradeAssembleCnt			= 0;
+	pClient->DictateRunCtl.dictateUpgradeInstallCnt			= 0;
 	pClient->DictateRunCtl.dictateEvent					= PCP_EVENT_INITIALIZED;
 	
-	pClient->UpgradeExecution.upgradeStatus					= PCP_UPGRADE_COMPLETE;
+	pClient->UpgradeExecution.upgradeStatus					= PCP_UPGRADE_STANDBY;
 	sprintf((char*)pClient->UpgradeExecution.DeviceSoftVersion, "V%d.%d", TCFG_Utility_Get_Major_Softnumber(), TCFG_Utility_Get_Sub_Softnumber());
 	sprintf((char*)pClient->UpgradeExecution.PlatformSoftVersion, "V%d.%d", TCFG_Utility_Get_Major_Softnumber(), TCFG_Utility_Get_Sub_Softnumber());
 	pClient->UpgradeExecution.PackSliceIndex				= 0;
@@ -74,7 +78,7 @@ void PCP_Client_Init(PCP_ClientsTypeDef* pClient, PCP_CoAPNetTransportTypeDef* N
 
 /**********************************************************************************************************
  @Function			void PCP_UpgradeDataDownload_Callback(PCP_ClientsTypeDef* pClient, u16 SliceIndex, u8* UpgradeData, u16 UpgradeDataLength)
- @Description			PCP_UpgradeDataDownload_Callback		: PCP升级包处理回调函数
+ @Description			PCP_UpgradeDataDownload_Callback		: PCP升级包下载处理回调函数
  @Input				pClient							: PCP客户端实例
 					SliceIndex						: PCP分片序号
 					UpgradeData						: 升级包数据
@@ -83,15 +87,26 @@ void PCP_Client_Init(PCP_ClientsTypeDef* pClient, PCP_CoAPNetTransportTypeDef* N
 **********************************************************************************************************/
 void PCP_UpgradeDataDownload_Callback(PCP_ClientsTypeDef* pClient, u16 SliceIndex, u8* UpgradeData, u16 UpgradeDataLength)
 {
-	char TempBuf[40];
+	char TempBuf[50];
 	int lengthaa;
 	memset(TempBuf, 0, 40);
 	sprintf(TempBuf, "Down%d:", SliceIndex);
 	lengthaa = strlen(TempBuf);
-	for (int i = 0; i < 30; i++) {
-		sprintf(TempBuf + lengthaa + i, "%X", UpgradeData[i]);
+	for (int i = 0; i < 20; i++) {
+		sprintf(TempBuf + lengthaa + i * 2, "%02X", UpgradeData[i]);
 	}
 	Radio_Trf_Debug_Printf_Level2("%s", TempBuf);
+}
+
+/**********************************************************************************************************
+ @Function			void PCP_UpgradeDataAssemble_Callback(PCP_ClientsTypeDef* pClient)
+ @Description			PCP_UpgradeDataAssemble_Callback		: PCP升级包组装处理回调函数
+ @Input				pClient							: PCP客户端实例
+ @Return				void
+**********************************************************************************************************/
+void PCP_UpgradeDataAssemble_Callback(PCP_ClientsTypeDef* pClient)
+{
+	Radio_Trf_Debug_Printf_Level2("Download Over!!");
 }
 
 /********************************************** END OF FLEE **********************************************/

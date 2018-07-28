@@ -76,7 +76,9 @@ typedef enum
 	PCP_Frame_CheckCode_Error			= 601,
 	PCP_Frame_None						= 602,
 	PCP_MessageType_Error				= 603,
-	PCP_UpgradePack_Error				= 604
+	PCP_UpgradePack_Error				= 604,
+	PCP_UpgradeDown_Error				= 605,
+	PCP_Upgrade_Error					= 606
 }PCP_StatusTypeDef;
 
 /* PCP Message Code */
@@ -124,11 +126,12 @@ typedef enum
 /* PCP Upgrade Status */
 typedef enum
 {
-	PCP_UPGRADE_COMPLETE				= 0x00,											//升级完成
-	PCP_UPGRADE_DOWNLOAD				= 0x01,											//升级下载数据包
-	PCP_UPGRADE_ASSEMBLE				= 0x02,											//升级组装升级包
-	PCP_UPGRADE_INSTALL					= 0x03,											//升级版本
-	PCP_UPGRADE_FAILED					= 0x04											//升级错误
+	PCP_UPGRADE_STANDBY					= 0x00,											//升级准备
+	PCP_UPGRADE_QUERYVERSION				= 0x01,											//升级查询设备版本
+	PCP_UPGRADE_DOWNLOAD				= 0x02,											//升级下载数据包
+	PCP_UPGRADE_ASSEMBLE				= 0x03,											//升级组装升级包
+	PCP_UPGRADE_INSTALL					= 0x04,											//升级版本
+	PCP_UPGRADE_FAILED					= 0x05											//升级错误
 }PCP_UpgradeStatusTypeDef;
 
 /* PCP Message Data Structure */
@@ -186,6 +189,10 @@ struct PCP_ClientsTypeDef
 		unsigned char					dictateSendFailureCnt;
 		unsigned char					dictateExecuteFailureCnt;
 		unsigned char					dictateActiveUploadFailureCnt;
+		unsigned char					dictateUpgradeQueryVersionCnt;
+		unsigned char					dictateUpgradeDownloadCnt;
+		unsigned char					dictateUpgradeAssembleCnt;
+		unsigned char					dictateUpgradeInstallCnt;
 		Stm32_CalculagraphTypeDef		dictateRunTime;
 		PCP_DictateEventTypeDef			dictateEvent;
 	}DictateRunCtl;
@@ -208,21 +215,7 @@ struct PCP_ClientsTypeDef
 
 /* Application Programming Interface */
 void PCP_Client_Init(PCP_ClientsTypeDef* pClient, PCP_CoAPNetTransportTypeDef* NetSock, NET_NBIOT_ClientsTypeDef* NetNbiotStack);	//PCP客户端初始化
-void PCP_UpgradeDataDownload_Callback(PCP_ClientsTypeDef* pClient, u16 SliceIndex, u8* UpgradeData, u16 UpgradeDataLength);		//PCP升级包处理回调
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+void PCP_UpgradeDataDownload_Callback(PCP_ClientsTypeDef* pClient, u16 SliceIndex, u8* UpgradeData, u16 UpgradeDataLength);		//PCP升级包下载回调
+void PCP_UpgradeDataAssemble_Callback(PCP_ClientsTypeDef* pClient);													//PCP升级包组装回调
 
 #endif /* __PCP_CONFIG_H */
