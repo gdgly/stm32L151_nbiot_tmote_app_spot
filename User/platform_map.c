@@ -559,18 +559,18 @@ unsigned short TCFG_EEPROM_GetMagBackgroud(char axis)
 }
 
 /**********************************************************************************************************
- @Function			void TCFG_EEPROM_SetMagTempCoef(char coef_x, char coef_y, char coef_z)
+ @Function			void TCFG_EEPROM_SetMagTempCoef(signed char coef_x, signed char coef_y, signed char coef_z)
  @Description			TCFG_EEPROM_SetMagTempCoef					: 保存地磁温飘计算值
  @Input				coef_x
 					coef_y
 					coef_z
  @Return				void
 **********************************************************************************************************/
-void TCFG_EEPROM_SetMagTempCoef(char coef_x, char coef_y, char coef_z)
+void TCFG_EEPROM_SetMagTempCoef(signed char coef_x, signed char coef_y, signed char coef_z)
 {
 	int sval32;
 	
-	sval32 = Qmc5883lData.X_Back*(10000+coef_x*Qmc5883lData.temp_back)/(10000+Qmc5883lData.X_Coef*Qmc5883lData.temp_back);
+	sval32 = Qmc5883lData.X_Back*(10000+Qmc5883lData.X_Coef*Qmc5883lData.temp_back)/(10000+coef_x*Qmc5883lData.temp_back);
 	if (sval32 > 32767)
 		Qmc5883lData.X_Back = 32767;
 	else if (sval32 < -32768)
@@ -578,7 +578,7 @@ void TCFG_EEPROM_SetMagTempCoef(char coef_x, char coef_y, char coef_z)
 	else
 		Qmc5883lData.X_Back = sval32;
 	
-	sval32 = Qmc5883lData.Y_Back*(10000+coef_y*Qmc5883lData.temp_back)/(10000+Qmc5883lData.Y_Coef*Qmc5883lData.temp_back);
+	sval32 = Qmc5883lData.Y_Back*(10000+Qmc5883lData.Y_Coef*Qmc5883lData.temp_back)/(10000+coef_y*Qmc5883lData.temp_back);
 	if (sval32 > 32767)
 		Qmc5883lData.Y_Back = 32767;
 	else if (sval32 < -32768)
@@ -586,7 +586,7 @@ void TCFG_EEPROM_SetMagTempCoef(char coef_x, char coef_y, char coef_z)
 	else
 		Qmc5883lData.Y_Back = sval32;
 	
-	sval32 = Qmc5883lData.Z_Back*(10000+coef_z*Qmc5883lData.temp_back)/(10000+Qmc5883lData.Z_Coef*Qmc5883lData.temp_back);
+	sval32 = Qmc5883lData.Z_Back*(10000+Qmc5883lData.Z_Coef*Qmc5883lData.temp_back)/(10000+coef_z*Qmc5883lData.temp_back);
 	if (sval32 > 32767)
 		Qmc5883lData.Z_Back = 32767;
 	else if (sval32 < -32768)
@@ -604,14 +604,14 @@ void TCFG_EEPROM_SetMagTempCoef(char coef_x, char coef_y, char coef_z)
 }
 
 /**********************************************************************************************************
- @Function			void TCFG_EEPROM_GetMagTempCoef(char* coef_x, char* coef_y, char* coef_z)
+ @Function			void TCFG_EEPROM_GetMagTempCoef(signed char* coef_x, signed char* coef_y, signed char* coef_z)
  @Description			TCFG_EEPROM_GetMagTempCoef					: 读取地磁温飘计算值
  @Input				*coef_x
 					*coef_y
 					*coef_z
  @Return				val
 **********************************************************************************************************/
-void TCFG_EEPROM_GetMagTempCoef(char* coef_x, char* coef_y, char* coef_z)
+void TCFG_EEPROM_GetMagTempCoef(signed char* coef_x, signed char* coef_y, signed char* coef_z)
 {
 	*coef_x = FLASH_EEPROM_ReadByte(TCFG_MAG_COEF_X_OFFSET);
 	*coef_y = FLASH_EEPROM_ReadByte(TCFG_MAG_COEF_Y_OFFSET);

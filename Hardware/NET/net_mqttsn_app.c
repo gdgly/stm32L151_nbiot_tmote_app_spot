@@ -19,6 +19,7 @@
 #include "hal_rtc.h"
 #include "hal_beep.h"
 #include "radar_api.h"
+#include "hal_qmc5883l.h"
 #include "string.h"
 #include "radio_rf_app.h"
 
@@ -169,7 +170,7 @@ void NET_MQTTSN_APP_ProcessExecution(MQTTSN_ClientsTypeDef* pClient)
 /**********************************************************************************************************
  @Function			static void MQTTSN_NBIOT_DictateEvent_SetTime(MQTTSN_ClientsTypeDef* pClient, unsigned int TimeoutSec)
  @Description			MQTTSN_NBIOT_DictateEvent_SetTime		: 事件运行控制器注入时间(内部使用)
- @Input				pClient							: NBIOT客户端实例
+ @Input				pClient							: MQTTSN客户端实例
 					TimeoutSec						: 注入超时时间
  @Return				void
  @attention			事件运行之前判断是否需要注入时间
@@ -184,6 +185,27 @@ static void MQTTSN_NBIOT_DictateEvent_SetTime(MQTTSN_ClientsTypeDef* pClient, un
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateTimeoutSec = TimeoutSec;
 		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->SocketStack->NBIotStack->DictateRunCtl.dictateTimeoutSec);
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateRunTime = dictateRunTime;
+	}
+}
+
+/**********************************************************************************************************
+ @Function			static void MQTTSN_DictateEvent_SetTime(MQTTSN_ClientsTypeDef* pClient, unsigned int TimeoutSec)
+ @Description			MQTTSN_DictateEvent_SetTime			: 事件运行控制器注入时间(内部使用)
+ @Input				pClient							: MQTTSN客户端实例
+					TimeoutSec						: 注入超时时间
+ @Return				void
+ @attention			事件运行之前判断是否需要注入时间
+**********************************************************************************************************/
+static void MQTTSN_DictateEvent_SetTime(MQTTSN_ClientsTypeDef* pClient, unsigned int TimeoutSec)
+{
+	Stm32_CalculagraphTypeDef dictateRunTime;
+	
+	/* It is the first time to execute */
+	if (pClient->DictateRunCtl.dictateEnable != true) {
+		pClient->DictateRunCtl.dictateEnable = true;
+		pClient->DictateRunCtl.dictateTimeoutSec = TimeoutSec;
+		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
+		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
 	}
 }
 
@@ -779,13 +801,7 @@ void NET_MQTTSN_Event_Init(MQTTSN_ClientsTypeDef* pClient)
 {
 	Stm32_CalculagraphTypeDef dictateRunTime;
 	
-	/* It is the first time to execute */
-	if (pClient->DictateRunCtl.dictateEnable != true) {
-		pClient->DictateRunCtl.dictateEnable = true;
-		pClient->DictateRunCtl.dictateTimeoutSec = 30;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
-		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	MQTTSN_DictateEvent_SetTime(pClient, 30);
 	
 	/* Creat UDP Socket */
 	if (pClient->SocketStack->Open(pClient->SocketStack) == MQTTSN_OK) {
@@ -844,15 +860,8 @@ void NET_MQTTSN_Event_Init(MQTTSN_ClientsTypeDef* pClient)
 void NET_MQTTSN_Event_Disconnect(MQTTSN_ClientsTypeDef* pClient)
 {
 	MQTTSNPacket_connectData options = MQTTSNPacket_connectData_initializer;
-	Stm32_CalculagraphTypeDef dictateRunTime;
 	
-	/* It is the first time to execute */
-	if (pClient->DictateRunCtl.dictateEnable != true) {
-		pClient->DictateRunCtl.dictateEnable = true;
-		pClient->DictateRunCtl.dictateTimeoutSec = 60;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
-		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	MQTTSN_DictateEvent_SetTime(pClient, 60);
 	
 	/* Connecting MQTTSN Server */
 	options.clientID.cstring = MQTTSN_CLIENT_ID;
@@ -905,15 +914,7 @@ void NET_MQTTSN_Event_Disconnect(MQTTSN_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
-	
-	/* It is the first time to execute */
-	if (pClient->DictateRunCtl.dictateEnable != true) {
-		pClient->DictateRunCtl.dictateEnable = true;
-		pClient->DictateRunCtl.dictateTimeoutSec = 60;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
-		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	MQTTSN_DictateEvent_SetTime(pClient, 60);
 	
 	/* Subscribing Topic */
 	if (pClient->DictateRunCtl.dictateSubscribeStatus != true) {
@@ -1306,15 +1307,8 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 void NET_MQTTSN_Event_Sleep(MQTTSN_ClientsTypeDef* pClient)
 {
 	MQTTSNPacket_connectData options = MQTTSNPacket_connectData_initializer;
-	Stm32_CalculagraphTypeDef dictateRunTime;
 	
-	/* It is the first time to execute */
-	if (pClient->DictateRunCtl.dictateEnable != true) {
-		pClient->DictateRunCtl.dictateEnable = true;
-		pClient->DictateRunCtl.dictateTimeoutSec = 60;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
-		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	MQTTSN_DictateEvent_SetTime(pClient, 60);
 	
 	/* Whether the query has data needs to be sent */
 	if (NET_MqttSN_Message_StatusBasicisEmpty() != true) {
@@ -1406,13 +1400,7 @@ void NET_MQTTSN_Event_Aweak(MQTTSN_ClientsTypeDef* pClient)
 	MQTTSNString clientid = MQTTSNString_initializer;
 	Stm32_CalculagraphTypeDef dictateRunTime;
 	
-	/* It is the first time to execute */
-	if (pClient->DictateRunCtl.dictateEnable != true) {
-		pClient->DictateRunCtl.dictateEnable = true;
-		pClient->DictateRunCtl.dictateTimeoutSec = 60;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
-		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	MQTTSN_DictateEvent_SetTime(pClient, 60);
 	
 	/* Pingreqing MQTTSN Server */
 	clientid.cstring = MQTTSN_CLIENT_ID;
@@ -1725,6 +1713,16 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					else {
 						ret = NETIP_UNKNOWNERROR;
 					}
+					__NOP();
+				}
+				/* SetQmcCoef */
+				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "SetQmcCoef") != NULL) {
+					short magTempCoefX, magTempCoefY, magTempCoefZ;
+					QMC5883L_measure_qmc_coef((signed char*)&magTempCoefX, (signed char*)&magTempCoefY, (signed char*)&magTempCoefZ);
+					TCFG_SystemData.MagCoefX = magTempCoefX;
+					TCFG_SystemData.MagCoefY = magTempCoefY;
+					TCFG_SystemData.MagCoefZ = magTempCoefZ;
+					TCFG_EEPROM_SetMagTempCoef(TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
 					__NOP();
 				}
 				/* ...... */

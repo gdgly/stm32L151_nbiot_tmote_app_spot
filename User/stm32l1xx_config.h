@@ -40,6 +40,11 @@
 #define VBAT_POWER_RCC_GPIO_CLK_ENABLE()	__HAL_RCC_GPIOA_CLK_ENABLE()
 #define VBAT_POWER_RCC_GPIO_CLK_DISABLE()	__HAL_RCC_GPIOA_CLK_DISABLE()
 
+#define QMC_WARMUP_POWER_GPIOx			GPIOB
+#define QMC_WARMUP_POWER_PIN				GPIO_PIN_9
+#define QMC_WARMUP_RCC_GPIO_CLK_ENABLE()	__HAL_RCC_GPIOB_CLK_ENABLE()
+#define QMC_WARMUP_RCC_GPIO_CLK_DISABLE()	__HAL_RCC_GPIOB_CLK_DISABLE();
+
 #define MODELPOWER(n)	(n?HAL_GPIO_WritePin(MODEL_POWER_GPIOx, MODEL_POWER_PIN, GPIO_PIN_RESET):HAL_GPIO_WritePin(MODEL_POWER_GPIOx, MODEL_POWER_PIN, GPIO_PIN_SET))
 #define RADARPOWER(n)	(n?HAL_GPIO_WritePin(RADAR_POWER_GPIOx, RADAR_POWER_PIN, GPIO_PIN_SET):HAL_GPIO_WritePin(RADAR_POWER_GPIOx, RADAR_POWER_PIN, GPIO_PIN_RESET))
 #define NBIOTPOWER(n)	(n?HAL_GPIO_WritePin(NBIOT_POWER_GPIOx, NBIOT_POWER_PIN, GPIO_PIN_SET):HAL_GPIO_WritePin(NBIOT_POWER_GPIOx, NBIOT_POWER_PIN, GPIO_PIN_RESET))
@@ -70,6 +75,7 @@ RCC_RESET_FLAG_TypeDef RCC_ResetFlag_GetStatus(void);							//获取复位标志
 void LowPowerCtrlIO_Init(void);											//低功耗控制IO初始化
 void ModulePowerReset_Init(void);											//模块复位电源控制
 void PowerCtrlIO_Init(void);												//电源控制IO初始化
+void QmsWarmupPower(signed char val);										//Qmc加热控制IO设置
 
 void LowPowerEnterStop(void);												//进入低功耗stop模式
 void LowPowerBeforeSleepInit(void);										//进入低功耗stop模式之前初始化

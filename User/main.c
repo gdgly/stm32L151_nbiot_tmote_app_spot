@@ -347,6 +347,7 @@ void MainRollingEnteringDownSleep(void)
 	if (NBIOTPOWER_IO_READ()) {
 		NET_NBIOT_Initialization();
 		NBIOTPOWER(OFF);
+		MODELPOWER(OFF);
 	}
 }
 
@@ -362,6 +363,7 @@ void MainRollingDownSleep(void)
 	if (NBIOTPOWER_IO_READ()) {
 		NET_NBIOT_Initialization();
 		NBIOTPOWER(OFF);
+		MODELPOWER(OFF);
 	}
 }
 

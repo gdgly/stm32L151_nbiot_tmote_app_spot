@@ -19,6 +19,7 @@
 #include "hal_rtc.h"
 #include "hal_beep.h"
 #include "radar_api.h"
+#include "hal_qmc5883l.h"
 #include "string.h"
 #include "radio_rf_app.h"
 
@@ -1860,6 +1861,16 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						else {
 							ret = NETIP_UNKNOWNERROR;
 						}
+						__NOP();
+					}
+					/* SetQmcCoef */
+					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "SetQmcCoef") != NULL) {
+						short magTempCoefX, magTempCoefY, magTempCoefZ;
+						QMC5883L_measure_qmc_coef((signed char*)&magTempCoefX, (signed char*)&magTempCoefY, (signed char*)&magTempCoefZ);
+						TCFG_SystemData.MagCoefX = magTempCoefX;
+						TCFG_SystemData.MagCoefY = magTempCoefY;
+						TCFG_SystemData.MagCoefZ = magTempCoefZ;
+						TCFG_EEPROM_SetMagTempCoef(TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
 						__NOP();
 					}
 					/* ...... */

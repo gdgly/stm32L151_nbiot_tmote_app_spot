@@ -35,7 +35,7 @@ MQTTSN_SwapInfoResponseTypeDef	NETMqttSNMessageParkInfoResponse;
  @Description			NET_Message_Operate_Creat_Json_MoteStatus_Basic
  @Input				outBuffer
  @Return				Length
- @attention			!!<<< MaxLength 256Byte >>>!!
+ @attention			!!<<< MaxLength 512Byte >>>!!
 **********************************************************************************************************/
 int NET_Message_Operate_Creat_Json_MoteStatus_Basic(char* outBuffer)
 {
@@ -75,7 +75,7 @@ int NET_Message_Operate_Creat_Json_MoteStatus_Basic(char* outBuffer)
  @Description			NET_Message_Operate_Creat_Json_MoteStatus_Extend
  @Input				outBuffer
  @Return				Length
- @attention			!!<<< MaxLength 256Byte >>>!!
+ @attention			!!<<< MaxLength 512Byte >>>!!
 **********************************************************************************************************/
 int NET_Message_Operate_Creat_Json_MoteStatus_Extend(char* outBuffer)
 {
@@ -100,11 +100,27 @@ int NET_Message_Operate_Creat_Json_MoteStatus_Extend(char* outBuffer)
 				"\"x\":%d,"
 				"\"y\":%d,"
 				"\"z\":%d,"
+#if MQTTSN_STATUS_MSG_VERSION_TYPE == MQTTSN_STATUS_MSG_VERSION_V2
+				"\"xBack\":%d,"
+				"\"yBack\":%d,"
+				"\"zBack\":%d,"
+#endif
 				"\"MagDiff\":%d,"
 				"\"Distance\":%d,"
 				"\"Strength\":%d,"
 				"\"CoverCount\":%d,"
+#if MQTTSN_STATUS_MSG_VERSION_TYPE == MQTTSN_STATUS_MSG_VERSION_V1
 				"\"RadarDiff\":%d"
+#elif MQTTSN_STATUS_MSG_VERSION_TYPE == MQTTSN_STATUS_MSG_VERSION_V2
+				"\"RadarDiff\":%d,"
+				"\"RadarVal\":\"%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\","
+				"\"RadarBack\":\"%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\","
+				"\"Rssi\":%d,"
+				"\"Snr\":%d,"
+				"\"TempCore\":%d,"
+				"\"TempQmc\":%d,"
+				"\"DebugVal\":%d"
+#endif
 			"}"
 		"}",
 		
@@ -116,11 +132,33 @@ int NET_Message_Operate_Creat_Json_MoteStatus_Extend(char* outBuffer)
 		dataBuf.MagX,
 		dataBuf.MagY,
 		dataBuf.MagZ,
+#if MQTTSN_STATUS_MSG_VERSION_TYPE == MQTTSN_STATUS_MSG_VERSION_V2
+		dataBuf.MagneticBackX,
+		dataBuf.MagneticBackY,
+		dataBuf.MagneticBackZ,
+#endif
 		dataBuf.MagDiff,
 		dataBuf.Distance,
 		dataBuf.Strength,
 		dataBuf.CoverCount,
+#if MQTTSN_STATUS_MSG_VERSION_TYPE == MQTTSN_STATUS_MSG_VERSION_V1
 		dataBuf.RadarDiff
+#elif MQTTSN_STATUS_MSG_VERSION_TYPE == MQTTSN_STATUS_MSG_VERSION_V2
+		dataBuf.RadarDiff,
+		dataBuf.Radarval[0], dataBuf.Radarval[1], dataBuf.Radarval[2], dataBuf.Radarval[3],
+		dataBuf.Radarval[4], dataBuf.Radarval[5], dataBuf.Radarval[6], dataBuf.Radarval[7],
+		dataBuf.Radarval[8], dataBuf.Radarval[9], dataBuf.Radarval[10],dataBuf.Radarval[11],
+		dataBuf.Radarval[12],dataBuf.Radarval[13],dataBuf.Radarval[14],dataBuf.Radarval[15],
+		dataBuf.Radarback[0], dataBuf.Radarback[1], dataBuf.Radarback[2], dataBuf.Radarback[3],
+		dataBuf.Radarback[4], dataBuf.Radarback[5], dataBuf.Radarback[6], dataBuf.Radarback[7],
+		dataBuf.Radarback[8], dataBuf.Radarback[9], dataBuf.Radarback[10],dataBuf.Radarback[11],
+		dataBuf.Radarback[12],dataBuf.Radarback[13],dataBuf.Radarback[14],dataBuf.Radarback[15],
+		dataBuf.NBRssi,
+		dataBuf.NBSnr,
+		dataBuf.MCUTemp,
+		dataBuf.QMCTemp,
+		dataBuf.Debugval
+#endif
 	);
 	
 	return strlen(outBuffer);
@@ -131,7 +169,7 @@ int NET_Message_Operate_Creat_Json_MoteStatus_Extend(char* outBuffer)
  @Description			NET_Message_Operate_Creat_Json_MoteInfo_Work
  @Input				outBuffer
  @Return				Length
- @attention			!!<<< MaxLength 256Byte >>>!!
+ @attention			!!<<< MaxLength 512Byte >>>!!
 **********************************************************************************************************/
 int NET_Message_Operate_Creat_Json_MoteInfo_Work(char* outBuffer)
 {
@@ -178,7 +216,7 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Work(char* outBuffer)
  @Description			NET_Message_Operate_Creat_Json_MoteInfo_Basic
  @Input				outBuffer
  @Return				Length
- @attention			!!<<< MaxLength 256Byte >>>!!
+ @attention			!!<<< MaxLength 512Byte >>>!!
 **********************************************************************************************************/
 int NET_Message_Operate_Creat_Json_MoteInfo_Basic(char* outBuffer)
 {
@@ -231,7 +269,7 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Basic(char* outBuffer)
  @Description			NET_Message_Operate_Creat_Json_MoteInfo_Dynamic
  @Input				outBuffer
  @Return				Length
- @attention			!!<<< MaxLength 256Byte >>>!!
+ @attention			!!<<< MaxLength 512Byte >>>!!
 **********************************************************************************************************/
 int NET_Message_Operate_Creat_Json_MoteInfo_Dynamic(char* outBuffer)
 {
@@ -292,7 +330,7 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Dynamic(char* outBuffer)
  @Description			NET_Message_Operate_Creat_Json_MoteInfo_Radar
  @Input				outBuffer
  @Return				Length
- @attention			!!<<< MaxLength 256Byte >>>!!
+ @attention			!!<<< MaxLength 512Byte >>>!!
 **********************************************************************************************************/
 int NET_Message_Operate_Creat_Json_MoteInfo_Radar(char* outBuffer)
 {
@@ -352,7 +390,7 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Radar(char* outBuffer)
  @Input				outBuffer
 					errcode
  @Return				Length
- @attention			!!<<< MaxLength 256Byte >>>!!
+ @attention			!!<<< MaxLength 512Byte >>>!!
 **********************************************************************************************************/
 int NET_Message_Operate_Creat_Json_MoteInfo_Response(char* outBuffer)
 {
@@ -683,20 +721,14 @@ bool NET_MqttSN_Message_InfoResponseisEmpty(void)
 **********************************************************************************************************/
 void NET_MqttSN_Message_StatusBasicEnqueue(MQTTSN_StatusBasicTypeDef dataBuf)
 {
+	NETMqttSNMessageParkStatusBasic.Rear = (NETMqttSNMessageParkStatusBasic.Rear + 1) % MQTTSN_STATUS_BASIC_PARK_NUM;			//队尾偏移1
+	NETMqttSNMessageParkStatusBasic.StatusBasic[NETMqttSNMessageParkStatusBasic.Rear].DeviceSN = dataBuf.DeviceSN;
+	NETMqttSNMessageParkStatusBasic.StatusBasic[NETMqttSNMessageParkStatusBasic.Rear].Status = dataBuf.Status;
+	NETMqttSNMessageParkStatusBasic.StatusBasic[NETMqttSNMessageParkStatusBasic.Rear].Count = dataBuf.Count;
+	NETMqttSNMessageParkStatusBasic.StatusBasic[NETMqttSNMessageParkStatusBasic.Rear].DateTime = dataBuf.DateTime;
+	
 	if (NET_MqttSN_Message_StatusBasicisFull() == true) {															//队列已满
-		NETMqttSNMessageParkStatusBasic.Rear = (NETMqttSNMessageParkStatusBasic.Rear + 1) % MQTTSN_STATUS_BASIC_PARK_NUM;		//队尾偏移1
-		NETMqttSNMessageParkStatusBasic.StatusBasic[NETMqttSNMessageParkStatusBasic.Rear].DeviceSN = dataBuf.DeviceSN;
-		NETMqttSNMessageParkStatusBasic.StatusBasic[NETMqttSNMessageParkStatusBasic.Rear].Status = dataBuf.Status;
-		NETMqttSNMessageParkStatusBasic.StatusBasic[NETMqttSNMessageParkStatusBasic.Rear].Count = dataBuf.Count;
-		NETMqttSNMessageParkStatusBasic.StatusBasic[NETMqttSNMessageParkStatusBasic.Rear].DateTime = dataBuf.DateTime;
 		NETMqttSNMessageParkStatusBasic.Front = (NETMqttSNMessageParkStatusBasic.Front + 1) % MQTTSN_STATUS_BASIC_PARK_NUM;	//队头偏移1
-	}
-	else {																								//队列未满
-		NETMqttSNMessageParkStatusBasic.Rear = (NETMqttSNMessageParkStatusBasic.Rear + 1) % MQTTSN_STATUS_BASIC_PARK_NUM;		//队尾偏移1
-		NETMqttSNMessageParkStatusBasic.StatusBasic[NETMqttSNMessageParkStatusBasic.Rear].DeviceSN = dataBuf.DeviceSN;
-		NETMqttSNMessageParkStatusBasic.StatusBasic[NETMqttSNMessageParkStatusBasic.Rear].Status = dataBuf.Status;
-		NETMqttSNMessageParkStatusBasic.StatusBasic[NETMqttSNMessageParkStatusBasic.Rear].Count = dataBuf.Count;
-		NETMqttSNMessageParkStatusBasic.StatusBasic[NETMqttSNMessageParkStatusBasic.Rear].DateTime = dataBuf.DateTime;
 	}
 }
 
@@ -708,36 +740,36 @@ void NET_MqttSN_Message_StatusBasicEnqueue(MQTTSN_StatusBasicTypeDef dataBuf)
 **********************************************************************************************************/
 void NET_MqttSN_Message_StatusExtendEnqueue(MQTTSN_StatusExtendTypeDef dataBuf)
 {
-	if (NET_MqttSN_Message_StatusExtendisFull() == true) {															//队列已满
-		NETMqttSNMessageParkStatusExtend.Rear = (NETMqttSNMessageParkStatusExtend.Rear + 1) % MQTTSN_STATUS_EXTEND_PARK_NUM;	//队尾偏移1
-		NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].DeviceSN = dataBuf.DeviceSN;
-		NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].Status = dataBuf.Status;
-		NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].Count = dataBuf.Count;
-		NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].DateTime = dataBuf.DateTime;
-		NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].MagX = dataBuf.MagX;
-		NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].MagY = dataBuf.MagY;
-		NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].MagZ = dataBuf.MagZ;
-		NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].MagDiff = dataBuf.MagDiff;
-		NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].Distance = dataBuf.Distance;
-		NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].Strength = dataBuf.Strength;
-		NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].CoverCount = dataBuf.CoverCount;
-		NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].RadarDiff = dataBuf.RadarDiff;
-		NETMqttSNMessageParkStatusExtend.Front = (NETMqttSNMessageParkStatusExtend.Front + 1) % MQTTSN_STATUS_EXTEND_PARK_NUM;	//队头偏移1
+	NETMqttSNMessageParkStatusExtend.Rear = (NETMqttSNMessageParkStatusExtend.Rear + 1) % MQTTSN_STATUS_EXTEND_PARK_NUM;		//队尾偏移1
+	NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].DeviceSN = dataBuf.DeviceSN;
+	NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].Status = dataBuf.Status;
+	NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].Count = dataBuf.Count;
+	NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].DateTime = dataBuf.DateTime;
+	NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].MagX = dataBuf.MagX;
+	NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].MagY = dataBuf.MagY;
+	NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].MagZ = dataBuf.MagZ;
+	NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].MagDiff = dataBuf.MagDiff;
+	NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].Distance = dataBuf.Distance;
+	NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].Strength = dataBuf.Strength;
+	NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].CoverCount = dataBuf.CoverCount;
+	NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].RadarDiff = dataBuf.RadarDiff;
+#if MQTTSN_STATUS_MSG_VERSION_TYPE == MQTTSN_STATUS_MSG_VERSION_V2
+	NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].NBRssi = dataBuf.NBRssi;
+	NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].NBSnr = dataBuf.NBSnr;
+	NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].MCUTemp = dataBuf.MCUTemp;
+	NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].QMCTemp = dataBuf.QMCTemp;
+	NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].MagneticBackX = dataBuf.MagneticBackX;
+	NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].MagneticBackY = dataBuf.MagneticBackY;
+	NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].MagneticBackZ = dataBuf.MagneticBackZ;
+	NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].Debugval = dataBuf.Debugval;
+	for (int i = 0; i < 16; i++) {
+		NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].Radarval[i] = dataBuf.Radarval[i];
+		NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].Radarback[i] = dataBuf.Radarback[i];
 	}
-	else {																								//队列未满
-		NETMqttSNMessageParkStatusExtend.Rear = (NETMqttSNMessageParkStatusExtend.Rear + 1) % MQTTSN_STATUS_EXTEND_PARK_NUM;	//队尾偏移1
-		NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].DeviceSN = dataBuf.DeviceSN;
-		NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].Status = dataBuf.Status;
-		NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].Count = dataBuf.Count;
-		NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].DateTime = dataBuf.DateTime;
-		NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].MagX = dataBuf.MagX;
-		NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].MagY = dataBuf.MagY;
-		NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].MagZ = dataBuf.MagZ;
-		NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].MagDiff = dataBuf.MagDiff;
-		NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].Distance = dataBuf.Distance;
-		NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].Strength = dataBuf.Strength;
-		NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].CoverCount = dataBuf.CoverCount;
-		NETMqttSNMessageParkStatusExtend.StatusExtend[NETMqttSNMessageParkStatusExtend.Rear].RadarDiff = dataBuf.RadarDiff;
+#endif
+	
+	if (NET_MqttSN_Message_StatusExtendisFull() == true) {															//队列已满
+		NETMqttSNMessageParkStatusExtend.Front = (NETMqttSNMessageParkStatusExtend.Front + 1) % MQTTSN_STATUS_EXTEND_PARK_NUM;	//队头偏移1
 	}
 }
 
@@ -749,14 +781,11 @@ void NET_MqttSN_Message_StatusExtendEnqueue(MQTTSN_StatusExtendTypeDef dataBuf)
 **********************************************************************************************************/
 void NET_MqttSN_Message_InfoWorkEnqueue(MQTTSN_InfoWorkTypeDef dataBuf)
 {
+	NETMqttSNMessageParkInfoWork.Rear = (NETMqttSNMessageParkInfoWork.Rear + 1) % MQTTSN_INFO_WORK_PARK_NUM;					//队尾偏移1
+	NETMqttSNMessageParkInfoWork.InfoWork[NETMqttSNMessageParkInfoWork.Rear].DeviceSN = dataBuf.DeviceSN;
+	
 	if (NET_MqttSN_Message_InfoWorkisFull() == true) {															//队列已满
-		NETMqttSNMessageParkInfoWork.Rear = (NETMqttSNMessageParkInfoWork.Rear + 1) % MQTTSN_INFO_WORK_PARK_NUM;				//队尾偏移1
-		NETMqttSNMessageParkInfoWork.InfoWork[NETMqttSNMessageParkInfoWork.Rear].DeviceSN = dataBuf.DeviceSN;
 		NETMqttSNMessageParkInfoWork.Front = (NETMqttSNMessageParkInfoWork.Front + 1) % MQTTSN_INFO_WORK_PARK_NUM;			//队头偏移1
-	}
-	else {																								//队列未满
-		NETMqttSNMessageParkInfoWork.Rear = (NETMqttSNMessageParkInfoWork.Rear + 1) % MQTTSN_INFO_WORK_PARK_NUM;				//队尾偏移1
-		NETMqttSNMessageParkInfoWork.InfoWork[NETMqttSNMessageParkInfoWork.Rear].DeviceSN = dataBuf.DeviceSN;
 	}
 }
 
@@ -768,14 +797,11 @@ void NET_MqttSN_Message_InfoWorkEnqueue(MQTTSN_InfoWorkTypeDef dataBuf)
 **********************************************************************************************************/
 void NET_MqttSN_Message_InfoBasicEnqueue(MQTTSN_InfoBasicTypeDef dataBuf)
 {
+	NETMqttSNMessageParkInfoBasic.Rear = (NETMqttSNMessageParkInfoBasic.Rear + 1) % MQTTSN_INFO_BASIC_PARK_NUM;				//队尾偏移1
+	NETMqttSNMessageParkInfoBasic.InfoBasic[NETMqttSNMessageParkInfoBasic.Rear].DeviceSN = dataBuf.DeviceSN;
+	
 	if (NET_MqttSN_Message_InfoBasicisFull() == true) {															//队列已满
-		NETMqttSNMessageParkInfoBasic.Rear = (NETMqttSNMessageParkInfoBasic.Rear + 1) % MQTTSN_INFO_BASIC_PARK_NUM;			//队尾偏移1
-		NETMqttSNMessageParkInfoBasic.InfoBasic[NETMqttSNMessageParkInfoBasic.Rear].DeviceSN = dataBuf.DeviceSN;
 		NETMqttSNMessageParkInfoBasic.Front = (NETMqttSNMessageParkInfoBasic.Front + 1) % MQTTSN_INFO_BASIC_PARK_NUM;			//队头偏移1
-	}
-	else {																								//队列未满
-		NETMqttSNMessageParkInfoBasic.Rear = (NETMqttSNMessageParkInfoBasic.Rear + 1) % MQTTSN_INFO_BASIC_PARK_NUM;			//队尾偏移1
-		NETMqttSNMessageParkInfoBasic.InfoBasic[NETMqttSNMessageParkInfoBasic.Rear].DeviceSN = dataBuf.DeviceSN;
 	}
 }
 
@@ -787,14 +813,11 @@ void NET_MqttSN_Message_InfoBasicEnqueue(MQTTSN_InfoBasicTypeDef dataBuf)
 **********************************************************************************************************/
 void NET_MqttSN_Message_InfoDynamicEnqueue(MQTTSN_InfoDynamicTypeDef dataBuf)
 {
+	NETMqttSNMessageParkInfoDynamic.Rear = (NETMqttSNMessageParkInfoDynamic.Rear + 1) % MQTTSN_INFO_DYNAMIC_PARK_NUM;			//队尾偏移1
+	NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].DeviceSN = dataBuf.DeviceSN;
+	
 	if (NET_MqttSN_Message_InfoDynamicisFull() == true) {															//队列已满
-		NETMqttSNMessageParkInfoDynamic.Rear = (NETMqttSNMessageParkInfoDynamic.Rear + 1) % MQTTSN_INFO_DYNAMIC_PARK_NUM;		//队尾偏移1
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].DeviceSN = dataBuf.DeviceSN;
 		NETMqttSNMessageParkInfoDynamic.Front = (NETMqttSNMessageParkInfoDynamic.Front + 1) % MQTTSN_INFO_DYNAMIC_PARK_NUM;	//队头偏移1
-	}
-	else {																								//队列未满
-		NETMqttSNMessageParkInfoDynamic.Rear = (NETMqttSNMessageParkInfoDynamic.Rear + 1) % MQTTSN_INFO_DYNAMIC_PARK_NUM;		//队尾偏移1
-		NETMqttSNMessageParkInfoDynamic.InfoDynamic[NETMqttSNMessageParkInfoDynamic.Rear].DeviceSN = dataBuf.DeviceSN;
 	}
 }
 
@@ -806,14 +829,11 @@ void NET_MqttSN_Message_InfoDynamicEnqueue(MQTTSN_InfoDynamicTypeDef dataBuf)
 **********************************************************************************************************/
 void NET_MqttSN_Message_InfoRadarEnqueue(MQTTSN_InfoRadarTypeDef dataBuf)
 {
+	NETMqttSNMessageParkInfoRadar.Rear = (NETMqttSNMessageParkInfoRadar.Rear + 1) % MQTTSN_INFO_RADAR_PARK_NUM;				//队尾偏移1
+	NETMqttSNMessageParkInfoRadar.InfoRadar[NETMqttSNMessageParkInfoRadar.Rear].DeviceSN = dataBuf.DeviceSN;
+	
 	if (NET_MqttSN_Message_InfoRadarisFull() == true) {															//队列已满
-		NETMqttSNMessageParkInfoRadar.Rear = (NETMqttSNMessageParkInfoRadar.Rear + 1) % MQTTSN_INFO_RADAR_PARK_NUM;			//队尾偏移1
-		NETMqttSNMessageParkInfoRadar.InfoRadar[NETMqttSNMessageParkInfoRadar.Rear].DeviceSN = dataBuf.DeviceSN;
 		NETMqttSNMessageParkInfoRadar.Front = (NETMqttSNMessageParkInfoRadar.Front + 1) % MQTTSN_INFO_RADAR_PARK_NUM;			//队头偏移1
-	}
-	else {																								//队列未满
-		NETMqttSNMessageParkInfoRadar.Rear = (NETMqttSNMessageParkInfoRadar.Rear + 1) % MQTTSN_INFO_RADAR_PARK_NUM;			//队尾偏移1
-		NETMqttSNMessageParkInfoRadar.InfoRadar[NETMqttSNMessageParkInfoRadar.Rear].DeviceSN = dataBuf.DeviceSN;
 	}
 }
 
@@ -825,16 +845,12 @@ void NET_MqttSN_Message_InfoRadarEnqueue(MQTTSN_InfoRadarTypeDef dataBuf)
 **********************************************************************************************************/
 void NET_MqttSN_Message_InfoResponseEnqueue(MQTTSN_InfoResponseTypeDef dataBuf)
 {
+	NETMqttSNMessageParkInfoResponse.Rear = (NETMqttSNMessageParkInfoResponse.Rear + 1) % MQTTSN_INFO_RESPONSE_PARK_NUM;		//队尾偏移1
+	NETMqttSNMessageParkInfoResponse.InfoResponse[NETMqttSNMessageParkInfoResponse.Rear].DeviceSN = dataBuf.DeviceSN;
+	NETMqttSNMessageParkInfoResponse.InfoResponse[NETMqttSNMessageParkInfoResponse.Rear].Errcode = dataBuf.Errcode;
+	
 	if (NET_MqttSN_Message_InfoResponseisFull() == true) {															//队列已满
-		NETMqttSNMessageParkInfoResponse.Rear = (NETMqttSNMessageParkInfoResponse.Rear + 1) % MQTTSN_INFO_RESPONSE_PARK_NUM;	//队尾偏移1
-		NETMqttSNMessageParkInfoResponse.InfoResponse[NETMqttSNMessageParkInfoResponse.Rear].DeviceSN = dataBuf.DeviceSN;
-		NETMqttSNMessageParkInfoResponse.InfoResponse[NETMqttSNMessageParkInfoResponse.Rear].Errcode = dataBuf.Errcode;
 		NETMqttSNMessageParkInfoResponse.Front = (NETMqttSNMessageParkInfoResponse.Front + 1) % MQTTSN_INFO_RESPONSE_PARK_NUM;	//队头偏移1
-	}
-	else {																								//队列未满
-		NETMqttSNMessageParkInfoResponse.Rear = (NETMqttSNMessageParkInfoResponse.Rear + 1) % MQTTSN_INFO_RESPONSE_PARK_NUM;	//队尾偏移1
-		NETMqttSNMessageParkInfoResponse.InfoResponse[NETMqttSNMessageParkInfoResponse.Rear].DeviceSN = dataBuf.DeviceSN;
-		NETMqttSNMessageParkInfoResponse.InfoResponse[NETMqttSNMessageParkInfoResponse.Rear].Errcode = dataBuf.Errcode;
 	}
 }
 
@@ -895,6 +911,20 @@ bool NET_MqttSN_Message_StatusExtendDequeue(MQTTSN_StatusExtendTypeDef* dataBuf)
 		dataBuf->Strength = NETMqttSNMessageParkStatusExtend.StatusExtend[front].Strength;
 		dataBuf->CoverCount = NETMqttSNMessageParkStatusExtend.StatusExtend[front].CoverCount;
 		dataBuf->RadarDiff = NETMqttSNMessageParkStatusExtend.StatusExtend[front].RadarDiff;
+#if MQTTSN_STATUS_MSG_VERSION_TYPE == MQTTSN_STATUS_MSG_VERSION_V2
+		dataBuf->NBRssi = NETMqttSNMessageParkStatusExtend.StatusExtend[front].NBRssi;
+		dataBuf->NBSnr = NETMqttSNMessageParkStatusExtend.StatusExtend[front].NBSnr;
+		dataBuf->MCUTemp = NETMqttSNMessageParkStatusExtend.StatusExtend[front].MCUTemp;
+		dataBuf->QMCTemp = NETMqttSNMessageParkStatusExtend.StatusExtend[front].QMCTemp;
+		dataBuf->MagneticBackX = NETMqttSNMessageParkStatusExtend.StatusExtend[front].MagneticBackX;
+		dataBuf->MagneticBackY = NETMqttSNMessageParkStatusExtend.StatusExtend[front].MagneticBackY;
+		dataBuf->MagneticBackZ = NETMqttSNMessageParkStatusExtend.StatusExtend[front].MagneticBackZ;
+		dataBuf->Debugval = NETMqttSNMessageParkStatusExtend.StatusExtend[front].Debugval;
+		for (int i = 0; i < 16; i++) {
+			dataBuf->Radarval[i] = NETMqttSNMessageParkStatusExtend.StatusExtend[front].Radarval[i];
+			dataBuf->Radarback[i] = NETMqttSNMessageParkStatusExtend.StatusExtend[front].Radarback[i];
+		}
+#endif
 		MessageState = true;
 	}
 	

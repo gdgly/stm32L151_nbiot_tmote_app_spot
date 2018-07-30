@@ -3,6 +3,10 @@
 
 #include "sys.h"
 
+#define MQTTSN_STATUS_MSG_VERSION_V1		0
+#define MQTTSN_STATUS_MSG_VERSION_V2		1
+#define MQTTSN_STATUS_MSG_VERSION_TYPE		MQTTSN_STATUS_MSG_VERSION_V1			//MQTTSN状态包版本
+
 #define NET_MESSAGE_GET_MAGICNUM(Byte)		{Byte[0]='T';Byte[1]='C';Byte[2]='L';Byte[3]='D';}
 #define MESSAGE_VERSION					'1'
 
@@ -108,6 +112,18 @@ typedef __packed struct
 	int								Strength;
 	int								CoverCount;
 	int								RadarDiff;
+#if MQTTSN_STATUS_MSG_VERSION_TYPE == MQTTSN_STATUS_MSG_VERSION_V2
+	unsigned char						NBRssi;
+	signed char						NBSnr;
+	signed char						MCUTemp;
+	signed char						QMCTemp;
+	signed short						MagneticBackX;
+	signed short						MagneticBackY;
+	signed short						MagneticBackZ;
+	signed short						Debugval;
+	unsigned char						Radarval[16];
+	unsigned char						Radarback[16];
+#endif
 }MQTTSN_StatusExtendTypeDef;
 
 typedef struct

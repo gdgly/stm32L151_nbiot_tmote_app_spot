@@ -1,6 +1,8 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang
 
+* 2018-07-18 :
+	* status上传的雷达信息从谱线2开始。
 * 2018-07-17 :
 	* 默认NB心跳时间为4小时。
 	* 心跳间隔默认4小时,可以1~12小时进行设置。

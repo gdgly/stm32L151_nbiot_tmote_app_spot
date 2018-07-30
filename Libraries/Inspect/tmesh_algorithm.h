@@ -79,9 +79,9 @@ typedef __packed struct
 	
 	signed short int					temp_back;
 	
-	char								X_Coef;
-	char								Y_Coef;
-	char								Z_Coef;
+	signed char						X_Coef;
+	signed char						Y_Coef;
+	signed char						Z_Coef;
 }QMC5883L_TypeDef;
 
 typedef __packed struct

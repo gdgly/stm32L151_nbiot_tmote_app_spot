@@ -70,5 +70,6 @@ void QMC5883L_Osr_Selection(u8 osr);										//QMC5883L内置滤波器带宽选
 void QMC5883L_Interrupt_Selection(u8 interrupt);								//QMC5883L引脚中断选择
 void QMC5883L_Softwart_Reset(void);										//QMC5883L复位
 short QMC5883L_Temperature_Read(void);										//QMC5883L温度读取
+void QMC5883L_measure_qmc_coef(signed char* kx, signed char* ky, signed char* kz);	//测量qmc5883的温度系数,temp = 1/100 度
 
 #endif /* __BSP_QMC5883L_H */

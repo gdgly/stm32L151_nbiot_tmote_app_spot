@@ -404,6 +404,15 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					TCFG_EEPROM_SetMagTempCoef(TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
 					__NOP();
 				}
+				/* SetQmcCoef */
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "SetQmcCoef")) {
+					QMC5883L_measure_qmc_coef((signed char*)&magTempCoefX, (signed char*)&magTempCoefY, (signed char*)&magTempCoefZ);
+					TCFG_SystemData.MagCoefX = magTempCoefX;
+					TCFG_SystemData.MagCoefY = magTempCoefY;
+					TCFG_SystemData.MagCoefZ = magTempCoefZ;
+					TCFG_EEPROM_SetMagTempCoef(TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
+					__NOP();
+				}
 				/* WorkInfo */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "workinfo")) {
 					NETCoapNeedSendCode.WorkInfo = 1;

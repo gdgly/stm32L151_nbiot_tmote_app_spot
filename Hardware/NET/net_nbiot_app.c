@@ -160,8 +160,10 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		CoapLongStructure.MagneticBackY					= Qmc5883lData.Y_Back;
 		CoapLongStructure.MagneticBackZ					= Qmc5883lData.Z_Back;
 		CoapLongStructure.Debugval						= SpotStatusData.radarData.timedomain_dif;
-		memcpy(CoapLongStructure.Radarval, radar_targetinfo.pMagNow, 16);
-		memcpy(CoapLongStructure.Radarback, radar_targetinfo.pMagBG, 16);
+		for (int i = 0; i < 16; i++) {
+			CoapLongStructure.Radarval[i] = radar_targetinfo.pMagNow[i+2]>255?255:radar_targetinfo.pMagNow[i+2];
+			CoapLongStructure.Radarback[i] = radar_targetinfo.pMagBG[i+2]>255?255:radar_targetinfo.pMagBG[i+2];
+		}
 #endif
 		NET_Coap_Message_SendDataEnqueue((unsigned char *)&CoapLongStructure, sizeof(CoapLongStructure));
 		NETCoapNeedSendCode.LongStatus = 0;
@@ -311,6 +313,20 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		MqttSNStatusExtendStructure.Strength				= SpotStatusData.radarData.MagVal;
 		MqttSNStatusExtendStructure.CoverCount				= SpotStatusData.radarData.Diff_v2;
 		MqttSNStatusExtendStructure.RadarDiff				= SpotStatusData.radarData.Diff;
+#if MQTTSN_STATUS_MSG_VERSION_TYPE == MQTTSN_STATUS_MSG_VERSION_V2
+		MqttSNStatusExtendStructure.NBRssi					= TCFG_Utility_Get_Nbiot_Rssi_IntVal();
+		MqttSNStatusExtendStructure.NBSnr					= TCFG_Utility_Get_Nbiot_RadioSNR();
+		MqttSNStatusExtendStructure.MCUTemp				= TCFG_Utility_Get_Device_Temperature();
+		MqttSNStatusExtendStructure.QMCTemp				= Qmc5883lData.temp_now;
+		MqttSNStatusExtendStructure.MagneticBackX			= Qmc5883lData.X_Back;
+		MqttSNStatusExtendStructure.MagneticBackY			= Qmc5883lData.Y_Back;
+		MqttSNStatusExtendStructure.MagneticBackZ			= Qmc5883lData.Z_Back;
+		MqttSNStatusExtendStructure.Debugval				= SpotStatusData.radarData.timedomain_dif;
+		for (int i = 0; i < 16; i++) {
+			MqttSNStatusExtendStructure.Radarval[i] = radar_targetinfo.pMagNow[i+2]>255?255:radar_targetinfo.pMagNow[i+2];
+			MqttSNStatusExtendStructure.Radarback[i] = radar_targetinfo.pMagBG[i+2]>255?255:radar_targetinfo.pMagBG[i+2];
+		}
+#endif
 		NET_MqttSN_Message_StatusExtendEnqueue(MqttSNStatusExtendStructure);
 		NETMqttSNNeedSendCode.StatusExtend = 0;
 		Inspect_Message_SpotStatusOffSet();

@@ -161,7 +161,7 @@ void NET_DNS_APP_ProcessExecution(DNS_ClientsTypeDef* pClient)
 /**********************************************************************************************************
  @Function			static void DNS_NBIOT_DictateEvent_SetTime(DNS_ClientsTypeDef* pClient, unsigned int TimeoutSec)
  @Description			DNS_NBIOT_DictateEvent_SetTime		: 事件运行控制器注入时间(内部使用)
- @Input				pClient							: NBIOT客户端实例
+ @Input				pClient							: DNS客户端实例
 					TimeoutSec						: 注入超时时间
  @Return				void
  @attention			事件运行之前判断是否需要注入时间
@@ -176,6 +176,27 @@ static void DNS_NBIOT_DictateEvent_SetTime(DNS_ClientsTypeDef* pClient, unsigned
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateTimeoutSec = TimeoutSec;
 		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->SocketStack->NBIotStack->DictateRunCtl.dictateTimeoutSec);
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateRunTime = dictateRunTime;
+	}
+}
+
+/**********************************************************************************************************
+ @Function			static void DNS_DictateEvent_SetTime(DNS_ClientsTypeDef* pClient, unsigned int TimeoutSec)
+ @Description			DNS_DictateEvent_SetTime				: 事件运行控制器注入时间(内部使用)
+ @Input				pClient							: DNS客户端实例
+					TimeoutSec						: 注入超时时间
+ @Return				void
+ @attention			事件运行之前判断是否需要注入时间
+**********************************************************************************************************/
+static void DNS_DictateEvent_SetTime(DNS_ClientsTypeDef* pClient, unsigned int TimeoutSec)
+{
+	Stm32_CalculagraphTypeDef dictateRunTime;
+	
+	/* It is the first time to execute */
+	if (pClient->DictateRunCtl.dictateEnable != true) {
+		pClient->DictateRunCtl.dictateEnable = true;
+		pClient->DictateRunCtl.dictateTimeoutSec = TimeoutSec;
+		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
+		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
 	}
 }
 
@@ -769,15 +790,7 @@ void NET_DNS_NBIOT_Event_ParameterCheckOut(DNS_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_DNS_Event_CreatUDPSocket(DNS_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
-	
-	/* It is the first time to execute */
-	if (pClient->DictateRunCtl.dictateEnable != true) {
-		pClient->DictateRunCtl.dictateEnable = true;
-		pClient->DictateRunCtl.dictateTimeoutSec = 30;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
-		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	DNS_DictateEvent_SetTime(pClient, 30);
 	
 	/* Creat UDP Socket */
 	if (pClient->SocketStack->Open(pClient->SocketStack) == DNS_OK) {
@@ -824,19 +837,12 @@ void NET_DNS_Event_CreatUDPSocket(DNS_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_DNS_Event_SendDnsStructData(DNS_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
 	unsigned char Sendhostname[DNS_HOSTNAME_SIZE];
 	
 	if (pClient->AnalysisTick < DNS_ANALYSIS_DATA) {
 		/* Have Domain name need to resolution */
 		
-		/* It is the first time to execute */
-		if (pClient->DictateRunCtl.dictateEnable != true) {
-			pClient->DictateRunCtl.dictateEnable = true;
-			pClient->DictateRunCtl.dictateTimeoutSec = 30;
-			Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
-			pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
-		}
+		DNS_DictateEvent_SetTime(pClient, 30);
 		
 		/* Serialize dnsDataStructure Command Buffer */
 		memset((void*)Sendhostname, 0, sizeof(Sendhostname));
@@ -896,20 +902,13 @@ void NET_DNS_Event_SendDnsStructData(DNS_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_DNS_Event_RecvDnsStructData(DNS_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
 	int Rlength = 0;													//读取数据长度
 	int Rleftlength = 0;												//剩余读取数据长度
 	
 	if (pClient->AnalysisTick < DNS_ANALYSIS_DATA) {
 		/* Have Domain name need to resolution */
 		
-		/* It is the first time to execute */
-		if (pClient->DictateRunCtl.dictateEnable != true) {
-			pClient->DictateRunCtl.dictateEnable = true;
-			pClient->DictateRunCtl.dictateTimeoutSec = 60;
-			Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
-			pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
-		}
+		DNS_DictateEvent_SetTime(pClient, 60);
 		
 		/* Recv dnsDataStructure Command Buffer to DNS Server */
 		if (pClient->SocketStack->Read(pClient->SocketStack, (char *)pClient->Recvbuf, pClient->Recvbuf_size, &Rlength, &Rleftlength) != DNS_OK) {
@@ -1012,15 +1011,7 @@ void NET_DNS_Event_RecvDnsStructData(DNS_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_DNS_Event_CloseUDPSocket(DNS_ClientsTypeDef* pClient)
 {
-	Stm32_CalculagraphTypeDef dictateRunTime;
-	
-	/* It is the first time to execute */
-	if (pClient->DictateRunCtl.dictateEnable != true) {
-		pClient->DictateRunCtl.dictateEnable = true;
-		pClient->DictateRunCtl.dictateTimeoutSec = 30;
-		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
-		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
-	}
+	DNS_DictateEvent_SetTime(pClient, 30);
 	
 	/* Close UDP Socket */
 	if (pClient->SocketStack->Close(pClient->SocketStack) == DNS_OK) {

@@ -184,9 +184,9 @@ typedef struct
 	unsigned short						MagBackgroundY;									//地磁背景值Y
 	unsigned short						MagBackgroundZ;									//地磁背景值Z
 	short							MagBackgroudTemp;									//地磁背景温度值
-	char								MagCoefX;											//地磁温飘计算值X
-	char								MagCoefY;											//地磁温飘计算值Y
-	char								MagCoefZ;											//地磁温飘计算值Z
+	signed char						MagCoefX;											//地磁温飘计算值X
+	signed char						MagCoefY;											//地磁温飘计算值Y
+	signed char						MagCoefZ;											//地磁温飘计算值Z
 	unsigned char						WorkMode;											//工作模式
 	unsigned char						WorkModeStr[10];									//工作模式名
 	unsigned char						RFChannel;										//无线通道
@@ -243,8 +243,8 @@ unsigned char	TCFG_EEPROM_GetBootVersion(void);												//读取BootVersion
 void			TCFG_EEPROM_SetMagBackgroud(int16_t x_axis, int16_t y_axis, int16_t z_axis);			//保存地磁背景值
 unsigned short	TCFG_EEPROM_GetMagBackgroud(char axis);											//读取地磁背景值
 
-void			TCFG_EEPROM_SetMagTempCoef(char coef_x, char coef_y, char coef_z);					//保存地磁温飘计算值
-void			TCFG_EEPROM_GetMagTempCoef(char* coef_x, char* coef_y, char* coef_z);					//读取地磁温飘计算值
+void			TCFG_EEPROM_SetMagTempCoef(signed char coef_x, signed char coef_y, signed char coef_z);	//保存地磁温飘计算值
+void			TCFG_EEPROM_GetMagTempCoef(signed char* coef_x, signed char* coef_y, signed char* coef_z);//读取地磁温飘计算值
 
 void			TCFG_EEPROM_SetMagBackgroudTemp(short temp);										//保存MagBackgroudTemp
 short		TCFG_EEPROM_GetMagBackgroudTemp(void);											//读取MagBackgroudTemp

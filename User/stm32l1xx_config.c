@@ -228,6 +228,7 @@ void ModulePowerReset_Init(void)
 	NBIOTPower_Init();																//NBIOT电源初始化
 	VbatPower_Init();																//电压检测电源初始化
 	
+	QmsWarmupPower(OFF);															//关闭QMC加热
 	MODELPOWER(OFF);																//关闭模块总电源
 	RADARPOWER(OFF);																//关闭雷达电源
 	NBIOTPOWER(OFF);																//关闭NBIOT电源
@@ -306,10 +307,41 @@ void PowerCtrlIO_Init(void)
 	NBIOTPower_Init();																//NBIOT电源初始化
 	VbatPower_Init();																//电压检测电源初始化
 	
+	QmsWarmupPower(OFF);															//关闭QMC加热
 	MODELPOWER(ON);																//开启模块总电源
 	RADARPOWER(OFF);																//关闭雷达电源
 	NBIOTPOWER(OFF);																//关闭NBIOT电源
 	VBATPOWER(OFF);																//关闭电源电压检测电源
+}
+
+/**********************************************************************************************************
+ @Function			void QmsWarmupPower(signed char val)
+ @Description			Qmc加热控制IO设置
+ @Input				void
+ @Return				val			: ON
+								  OFF
+**********************************************************************************************************/
+void QmsWarmupPower(signed char val)
+{
+	GPIO_InitTypeDef GPIO_Initure;
+	
+	QMC_WARMUP_RCC_GPIO_CLK_ENABLE();
+	
+	GPIO_Initure.Pin = QMC_WARMUP_POWER_PIN;
+	
+	if (val == OFF) {
+		GPIO_Initure.Mode = GPIO_MODE_INPUT;
+		GPIO_Initure.Pull = GPIO_NOPULL;
+		GPIO_Initure.Speed = GPIO_SPEED_HIGH;
+		HAL_GPIO_Init(QMC_WARMUP_POWER_GPIOx, &GPIO_Initure);
+	}
+	else {
+		GPIO_Initure.Mode = GPIO_MODE_OUTPUT_PP;
+		GPIO_Initure.Pull = GPIO_NOPULL;
+		GPIO_Initure.Speed = GPIO_SPEED_HIGH;
+		HAL_GPIO_Init(QMC_WARMUP_POWER_GPIOx, &GPIO_Initure);
+		HAL_GPIO_WritePin(QMC_WARMUP_POWER_GPIOx, QMC_WARMUP_POWER_PIN, GPIO_PIN_RESET);
+	}
 }
 
 /**********************************************************************************************************

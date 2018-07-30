@@ -19,6 +19,8 @@
 #include "platform_config.h"
 #include "platform_map.h"
 #include "stm32l1xx_config.h"
+#include "hal_beep.h"
+#include "hal_iwdg.h"
 #include "delay.h"
 #include <stdlib.h>
 
@@ -574,11 +576,96 @@ short QMC5883L_Temperature_Read(void)
 	
 	temp_l = QMC5883L_ReadByte(QMC_TEMPERATURE_L);
 	temp_h = QMC5883L_ReadByte(QMC_TEMPERATURE_H);
-	i16 = ((int16_t)(temp_h << 8)|temp_l)/100;
+	i16 = ((int16_t)(temp_h << 8)|temp_l);
 	
-	Qmc5883lData.temp_now = i16;
+	Qmc5883lData.temp_now = i16/100;
 	
-	return Qmc5883lData.temp_now;
+	return i16;
+}
+
+/**********************************************************************************************************
+ @Function			void QMC5883L_measure_qmc_coef(signed char* kx, signed char* ky, signed char* kz)
+ @Description			测量qmc5883的温度系数,temp = 1/100 度
+ @Input				void
+ @Return				void
+ @attention			val0 = val*(1+k*temp0);
+					val1 = val*(1+k*temp1);
+					k = (v0-v1)/(v1t0-v0t1);
+					第一步:计算常温下的磁场值,读取三次,当磁场值和温度值都无波动则记录.
+					第二步:计算加热后的磁场值,加热,然后关闭加热器,读取三次,当磁场值和温度值都无波动,则记录.
+					第三步:计算温度系数.
+**********************************************************************************************************/
+void QMC5883L_measure_qmc_coef(signed char* kx, signed char* ky, signed char* kz)
+{
+	short x[5],y[5],z[5],x0,y0,z0,x1,y1,z1;
+	short t[5],t0,t1;
+	char i;
+	//short x0=5141,y0=444,z0=5775,x1=5558,y1=469,z1=6297;
+	//short t0=-3500,t1=-6300;
+	uint32_t time_start;
+	float coef;
+	
+	//---------\|/计算初始温度和地磁值--------------------
+	x0=0;y0=0;z0=0;t0=0;
+	for (i = 0; i < 5; i++) {
+		QMC5883L_ReadData_Single(&x[i], &y[i], &z[i]);
+		t[i] = QMC5883L_Temperature_Read();
+		x0 += abs(x[i]/5);
+		y0 += abs(y[i]/5);
+		z0 += abs(z[i]/5);
+		t0 += t[i]/5;
+	}
+	
+	//---------\|/加热,最多加热时间5秒--------------------
+	time_start = Stm32_GetSecondTick();
+	QmsWarmupPower(ON);
+	while ((time_start + 30) > Stm32_GetSecondTick()) {
+		//Delay_MS(100);
+		BEEP_CtrlRepeat_Extend(1,30,70);
+		if ((t0 + 2000) < QMC5883L_Temperature_Read()) {
+			break;
+		}
+		IWDG_Feed();
+	}
+	QmsWarmupPower(OFF);
+	Delay_MS(100);
+	
+	//---------\|/计算加热后的温度和地磁值----------------
+	//QMC5883L_ReadData_Single(&x1,&y1,&z1);
+	x1=0;y1=0;z1=0;t1=0;
+	for (i = 0; i < 5; i++) {
+		QMC5883L_ReadData_Single(&x[i], &y[i], &z[i]);
+		t[i] = QMC5883L_Temperature_Read();
+		x1 += abs(x[i]/5);
+		y1 += abs(y[i]/5);
+		z1 += abs(z[i]/5);
+		t1 += t[i]/5;
+	}
+	
+	coef = ((float)(x0-x1)/(x1*t0-x0*t1))*100*10000;
+	if (coef > 0)
+		coef+=0.5;
+	else
+		coef-=0.5;
+	*kx = coef;
+	
+	coef = ((float)(y0-y1)/(y1*t0-y0*t1))*100*10000;
+	if (coef > 0)
+		coef+=0.5;
+	else
+		coef-=0.5;
+	*ky = coef;
+	
+	coef = ((float)(z0-z1)/(z1*t0-z0*t1))*100*10000;
+	if (coef > 0)
+		coef+=0.5;
+	else
+		coef-=0.5;
+	*kz = coef;
+	
+	__NOP();
+	
+	return ;
 }
 
 /********************************************** END OF FLEE **********************************************/
