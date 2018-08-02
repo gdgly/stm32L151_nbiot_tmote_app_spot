@@ -100,6 +100,9 @@ int main(void)
 	Uart1_Init(9700);																	//串口1初始化
 	Uart2_Init(9600);																	//串口2初始化
 	
+	GD25Q_SPIFLASH_Init();																//SPI FLASH初始化
+	GD25Q_SPIFLASH_PowerDown();															//SPI FLASH休眠
+	
 #ifdef RADIO_SI4438
 	tmesh_securityInit();																//XTEA加密初始化
 	Radio_Rf_Init();																	//SI4438初始化
@@ -508,6 +511,12 @@ void MainHandleRoutine(void)
 
 #ifdef	DEVICE_DEBUG
 /********************************************* DEBUG *****************************************************/
+void STMFLASH_ReadBuffer(uint32_t addr, uint8_t *buf, uint32_t length)
+{
+	while (length--) {
+		*buf++ = *(__IO uint8_t *)addr++;
+	}
+}
 /****************************************** Debug Ending *************************************************/
 /**********************************************************************************************************
  @Function			void DeBugMain(void)
@@ -517,6 +526,10 @@ void MainHandleRoutine(void)
 **********************************************************************************************************/
 void DeBugMain(void)
 {
+#if 0
+	u16 RunTimes = 30;
+#endif
+	
 	TCFG_EEPROM_SetBootCount(0);
 	
 #if 0
@@ -524,6 +537,36 @@ void DeBugMain(void)
 #endif
 	
 	while (true) {
+		
+		
+		
+#if 0
+		RunTimes--;
+		Radio_Trf_Printf("Right Now Upgrade %d ...", RunTimes);
+		if (RunTimes == 0) {
+			Radio_Trf_Printf("This is Upgrade Download ...");
+			RunTimes = 30;
+			IWDG_Feed();
+			GD25Q_SPIFLASH_Init();
+			GD25Q_SPIFLASH_ReadDeviceID();
+			GD25Q_SPIFLASH_EraseBlock(GD25Q80_BLOCK_ADDRESS0);
+			GD25Q_SPIFLASH_EraseBlock(GD25Q80_BLOCK_ADDRESS1);
+			for (int i = 0; i < 150; i++) {
+				GD25Q_SPIFLASH_Init();
+				STMFLASH_ReadBuffer(APP_LOWEST_ADDRESS + i * 500, UpdateBuffer, 500);
+				GD25Q_SPIFLASH_WriteBuffer((u8*)UpdateBuffer, GD25Q80_BASE_ADDR + i * 512, 500);
+				Delay_MS(1);
+				IWDG_Feed();
+			}
+			TCFG_EEPROM_SetUpgradeBaseAddr(GD25Q80_BASE_ADDR);
+			TCFG_EEPROM_SetUpgradeBlockNum(150);
+			TCFG_EEPROM_SetUpgradeBlockLen(512);
+			TCFG_EEPROM_SetUpgradeDataLen(500);
+			TCFG_EEPROM_SetBootMode(TCFG_ENV_BOOTMODE_SPIFLASH_UPGRADE);
+			BEEP_CtrlRepeat_Extend(5, 25, 25);
+			Stm32_System_Software_Reboot();
+		}
+#endif
 		
 		/* 小无线处理 */
 		Radio_Trf_App_Task();

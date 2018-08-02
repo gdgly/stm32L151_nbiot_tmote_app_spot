@@ -20,6 +20,7 @@
 #include "pcpsock.h"
 #include "platform_config.h"
 #include "platform_map.h"
+#include "hal_spiflash.h"
 #include "delay.h"
 #include "usart.h"
 #include "radio_rf_app.h"
@@ -74,6 +75,20 @@ void PCP_Client_Init(PCP_ClientsTypeDef* pClient, PCP_CoAPNetTransportTypeDef* N
 	
 	pClient->CoAPStack									= NetSock;
 	pClient->NetNbiotStack								= NetNbiotStack;
+}
+
+/**********************************************************************************************************
+ @Function			void PCP_UpgradeDataNewVersionNotice_Callback(PCP_ClientsTypeDef* pClient)
+ @Description			PCP_UpgradeDataNewVersionNotice_Callback: PCP新版本通知处理回调函数
+ @Input				pClient							: PCP客户端实例
+ @Return				void
+**********************************************************************************************************/
+void PCP_UpgradeDataNewVersionNotice_Callback(PCP_ClientsTypeDef* pClient)
+{
+	Radio_Trf_Debug_Printf_Level2("PlatSoftVer : %s", pClient->Parameter.PlatformSoftVersion);
+	Radio_Trf_Debug_Printf_Level2("PackSliceSize : %d", pClient->Parameter.UpgradePackSliceSize);
+	Radio_Trf_Debug_Printf_Level2("PackSliceNum : %d", pClient->Parameter.UpgradePackSliceNum);
+	Radio_Trf_Debug_Printf_Level2("PackCheckCode : %d", pClient->Parameter.UpgradePackCheckCode);
 }
 
 /**********************************************************************************************************

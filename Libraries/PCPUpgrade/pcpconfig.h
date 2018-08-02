@@ -215,6 +215,7 @@ struct PCP_ClientsTypeDef
 
 /* Application Programming Interface */
 void PCP_Client_Init(PCP_ClientsTypeDef* pClient, PCP_CoAPNetTransportTypeDef* NetSock, NET_NBIOT_ClientsTypeDef* NetNbiotStack);	//PCP客户端初始化
+void PCP_UpgradeDataNewVersionNotice_Callback(PCP_ClientsTypeDef* pClient);											//PCP新版本通知处理
 void PCP_UpgradeDataDownload_Callback(PCP_ClientsTypeDef* pClient, u16 SliceIndex, u8* UpgradeData, u16 UpgradeDataLength);		//PCP升级包下载回调
 void PCP_UpgradeDataAssemble_Callback(PCP_ClientsTypeDef* pClient);													//PCP升级包组装回调
 

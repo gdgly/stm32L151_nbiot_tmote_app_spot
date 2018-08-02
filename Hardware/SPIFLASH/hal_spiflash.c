@@ -530,4 +530,104 @@ void GD25Q_SPIFLASH_WriteBuffer(u8* pBuffer, u32 WriteAddr, u16 NumByteToWrite)
 	}
 }
 
+/**********************************************************************************************************
+ @Function			unsigned char GD25Q_SPIFLASH_GetByte(u32 ReadAddr)
+ @Description			GD25Q_SPIFLASH_GetByte						: GD25Q SPIFLASH 读取1个Byte
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned char GD25Q_SPIFLASH_GetByte(u32 ReadAddr)
+{
+	unsigned char val = 0;
+	
+	GD25Q_SPIFLASH_ReadBuffer(&val, ReadAddr, 1);
+	
+	return val;
+}
+
+/**********************************************************************************************************
+ @Function			unsigned short GD25Q_SPIFLASH_GetHalfWord(u32 ReadAddr)
+ @Description			GD25Q_SPIFLASH_GetHalfWord					: GD25Q SPIFLASH 读取2个Byte
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned short GD25Q_SPIFLASH_GetHalfWord(u32 ReadAddr)
+{
+	unsigned short val = 0;
+	unsigned char tmpval[2];
+	
+	GD25Q_SPIFLASH_ReadBuffer(tmpval, ReadAddr, 2);
+	
+	val |= tmpval[0];
+	val |= tmpval[1] << 8;
+	
+	return val;
+}
+
+/**********************************************************************************************************
+ @Function			unsigned int GD25Q_SPIFLASH_GetWord(u32 ReadAddr)
+ @Description			GD25Q_SPIFLASH_GetWord						: GD25Q SPIFLASH 读取4个Byte
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned int GD25Q_SPIFLASH_GetWord(u32 ReadAddr)
+{
+	unsigned int val = 0;
+	unsigned char tmpval[4];
+	
+	GD25Q_SPIFLASH_ReadBuffer(tmpval, ReadAddr, 4);
+	
+	val |= tmpval[0];
+	val |= tmpval[1] << 8;
+	val |= tmpval[2] << 16;
+	val |= tmpval[3] << 24;
+	
+	return val;
+}
+
+/**********************************************************************************************************
+ @Function			void GD25Q_SPIFLASH_SetByte(u32 WriteAddr, unsigned char val)
+ @Description			GD25Q_SPIFLASH_SetByte						: GD25Q SPIFLASH 写入1个Byte
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void GD25Q_SPIFLASH_SetByte(u32 WriteAddr, unsigned char val)
+{
+	GD25Q_SPIFLASH_WriteBuffer(&val, WriteAddr, 1);
+}
+
+/**********************************************************************************************************
+ @Function			void GD25Q_SPIFLASH_SetHalfWord(u32 WriteAddr, unsigned short val)
+ @Description			GD25Q_SPIFLASH_SetHalfWord					: GD25Q SPIFLASH 写入2个Byte
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void GD25Q_SPIFLASH_SetHalfWord(u32 WriteAddr, unsigned short val)
+{
+	unsigned char tmpval[2];
+	
+	tmpval[0] = val & 0xFF;
+	tmpval[1] = (val >> 8) & 0xFF;
+	
+	GD25Q_SPIFLASH_WriteBuffer(tmpval, WriteAddr, 2);
+}
+
+/**********************************************************************************************************
+ @Function			void GD25Q_SPIFLASH_SetWord(u32 WriteAddr, unsigned int val)
+ @Description			GD25Q_SPIFLASH_SetWord						: GD25Q SPIFLASH 写入4个Byte
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void GD25Q_SPIFLASH_SetWord(u32 WriteAddr, unsigned int val)
+{
+	unsigned char tmpval[4];
+	
+	tmpval[0] = val & 0xFF;
+	tmpval[1] = (val >> 8) & 0xFF;
+	tmpval[2] = (val >> 16) & 0xFF;
+	tmpval[3] = (val >> 24) & 0xFF;
+	
+	GD25Q_SPIFLASH_WriteBuffer(tmpval, WriteAddr, 4);
+}
+
 /********************************************** END OF FLEE **********************************************/

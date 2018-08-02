@@ -4,9 +4,12 @@
 #include "sys.h"
 #include "platform_config.h"
 
+#define APP_LOWEST_ADDRESS				0x08003800
+
 #define TCFG_ENV_BOOTMODE_TOUPDATE			1
 #define TCFG_ENV_BOOTMODE_NORMAL			2
 #define TCFG_ENV_BOOTMODE_UPDATING			3
+#define TCFG_ENV_BOOTMODE_SPIFLASH_UPGRADE	4
 
 #define TCFG_FLAGTYPE_GENERAL				0
 #define TCFG_FLAGTYPE_MAGAlGORITHM			1
@@ -26,8 +29,8 @@
 #define TCFG_FACTORY_MAC_SN_OFFSET			0x0C04
 #define TCFG_FACTORY_MAC_SN_LENGTH			4
 
-#define EEPROM_CONFIG_PAGE1_ADDRESS		0x08080400
-#define EEPROM_CONFIG_PAGE1_SIZE			0x0800
+#define EEPROM_CONFIG_PAGE1_ADDRESS		0x08080400										//配置页1起始地址 EEPROM_BASE_ADD + 0x0400(1K)
+#define EEPROM_CONFIG_PAGE1_SIZE			0x0800											//配置页1大小     0x0800(2K)
 
 #define TCFG_FACTORY_BRAND_SN_OFFSET		0x0400											//0x08080400
 #define TCFG_FACTORY_BRAND_SN_LENGTH		8												//Brand SN	4:Brand+4:SN
@@ -64,7 +67,7 @@
 #define TCFG_SECUFLAG_OFFSET				TCFG_MAG_BACK_Z_OFFSET + TCFG_MAG_BACK_Z_LENGTH			//0x08080430
 #define TCFG_SECUFLAG_LENGTH				1												//'T' = 0x54			状态码
 #define TCFG_SECU_BRAND_OFFSET			TCFG_SECUFLAG_OFFSET + TCFG_SECUFLAG_LENGTH				//0x08080431
-#define TCFG_SECU_BRAND_LENGTH			6												//BrandCode			产生码
+#define TCFG_SECU_BRAND_LENGTH			6												//BrandCode			生产码
 #define TCFG_SECU_BRANDKEY_OFFSET			TCFG_SECU_BRAND_OFFSET + TCFG_SECU_BRAND_LENGTH			//0x08080437
 #define TCFG_SECU_BRANDKEY_LENGTH			32												//Reserved			未使用
 #define TCFG_SECU_BRANCHKEY_OFFSET			TCFG_SECU_BRANDKEY_OFFSET + TCFG_SECU_BRANDKEY_LENGTH		//0x08080457
@@ -74,7 +77,7 @@
 #define TCFG_RECORD_RUNTIME_LENGTH			4												//Reserved			未使用
 
 #define TCFG_RECORD_BOOTCNT_OFFSET			TCFG_RECORD_RUNTIME_OFFSET + TCFG_RECORD_RUNTIME_LENGTH	//0x0808047B
-#define TCFG_RECORD_BOOTCNT_LENGTH			1												//BootCnt				正常运行标志
+#define TCFG_RECORD_BOOTCNT_LENGTH			1												//BootCnt				正常运行标志(Boot启动次数)
 
 #define TCFG_APP_ENV0_OFFSET				TCFG_RECORD_BOOTCNT_OFFSET + TCFG_RECORD_BOOTCNT_LENGTH	//0x0808047C	偏移地址
 #define TCFG_APP_ENV0_ADDRESS				EEPROM_BASE_ADDRESS + TCFG_APP_ENV0_OFFSET				//0x0808047C	绝对地址
@@ -141,8 +144,8 @@
 #define TCFG_COAP_QUOTA_TIME_LENGTH		2												//CoapQuotaTime		Coap一天使用配额时间
 
 /************************************** The environment parameters are used both by extend ***************************************/
-#define EEPROM_CONFIG_PAGE2_ADDRESS		0x08080E00
-#define EEPROM_CONFIG_PAGE2_SIZE			0x0200
+#define EEPROM_CONFIG_PAGE2_ADDRESS		0x08080E00										//配置页2起始地址 EEPROM_BASE_ADD + 0x0E00(3.5K)
+#define EEPROM_CONFIG_PAGE2_SIZE			0x0200											//配置页2大小     0x0200(512Byte)
 #define TCFG_EEPROM_CONFIG_PAGE2_OFFSET		0x0E00
 
 #define TCFG_COAP_SENTCNT_OFFSET			TCFG_EEPROM_CONFIG_PAGE2_OFFSET						//0x08080E00
@@ -158,6 +161,15 @@
 #define TCFG_RF_DPRINT_LV_LENGTH			1												//RFDPrintLv			RF调试信息输出等级
 #define TCFG_COAP_RA_TIME_OFFSET			TCFG_RF_DPRINT_LV_OFFSET + TCFG_RF_DPRINT_LV_LENGTH		//0x08080E11
 #define TCFG_COAP_RA_TIME_LENGTH			1												//CoapRATime			RA间隔发送普通包时间
+
+#define TCFG_UPGRADE_BASEADDR_OFFSET		TCFG_COAP_RA_TIME_OFFSET + TCFG_COAP_RA_TIME_LENGTH		//0x08080E12
+#define TCFG_UPGRADE_BASEADDR_LENGTH		4												//UpgradeSpiFlashBaseAdde升级APP起始地址
+#define TCFG_UPGRADE_BLOCKNUM_OFFSET		TCFG_UPGRADE_BASEADDR_OFFSET + TCFG_UPGRADE_BASEADDR_LENGTH	//0x08080E16
+#define TCFG_UPGRADE_BLOCKNUM_LENGTH		2												//UpgradeSpiFlashBlockNum升级APP存放块数
+#define TCFG_UPGRADE_BLOCKLEN_OFFSET		TCFG_UPGRADE_BLOCKNUM_OFFSET + TCFG_UPGRADE_BLOCKNUM_LENGTH	//0x08080E18
+#define TCFG_UPGRADE_BLOCKLEN_LENGTH		2												//UpgradeSpiFlashBlockLen升级APP块长度
+#define TCFG_UPGRADE_DATALEN_OFFSET		TCFG_UPGRADE_BLOCKLEN_OFFSET + TCFG_UPGRADE_BLOCKLEN_LENGTH	//0x08080E1A
+#define TCFG_UPGRADE_DATALEN_LENGTH		2												//UpgradeSpiFlashDataLen	升级APP块有效长度
 /************************************************************** End **************************************************************/
 
 enum TCFG_SENSITIVITY																	//传感器灵敏度
@@ -371,6 +383,18 @@ unsigned short	TCFG_EEPROM_GetCoapIdleDayTime(void);											//读取CoapIdleD
 
 void			TCFG_EEPROM_SetCoapQuotaTime(unsigned short val);									//保存CoapQuotaTime
 unsigned short	TCFG_EEPROM_GetCoapQuotaTime(void);											//读取CoapQuotaTime
+
+void			TCFG_EEPROM_SetUpgradeBaseAddr(unsigned int BaseAddr);								//保存UpgradeBaseAddr
+unsigned int	TCFG_EEPROM_GetUpgradeBaseAddr(void);											//读取UpgradeBaseAddr
+
+void			TCFG_EEPROM_SetUpgradeBlockNum(unsigned short val);								//保存UpgradeBlockNum
+unsigned short	TCFG_EEPROM_GetUpgradeBlockNum(void);											//读取UpgradeBlockNum
+
+void			TCFG_EEPROM_SetUpgradeBlockLen(unsigned short val);								//保存UpgradeBlockLen
+unsigned short TCFG_EEPROM_GetUpgradeBlockLen(void);											//读取UpgradeBlockLen
+
+void			TCFG_EEPROM_SetUpgradeDataLen(unsigned short val);								//保存UpgradeDataLen
+unsigned short	TCFG_EEPROM_GetUpgradeDataLen(void);											//读取UpgradeDataLen
 
 void			TCFG_Utility_Add_Device_BootCount(void);										//Device重启次数累加
 unsigned short TCFG_Utility_Get_Device_BootCount(void);										//Device重启次数获取

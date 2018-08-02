@@ -184,6 +184,9 @@ PCP_StatusTypeDef PCP_Func_AckNewVersionNotice(PCP_ClientsTypeDef* pClient)
 	pClient->Parameter.UpgradePackSliceNum = PCPSock_ntohs(PCPRckNewVersionNotice->UpgradePackSliceNum);
 	pClient->Parameter.UpgradePackCheckCode = PCPSock_ntohs(PCPRckNewVersionNotice->UpgradePackCheckCode);
 	
+	/* 新版本通知处理回调函数 */
+	PCP_UpgradeDataNewVersionNotice_Callback(pClient);
+	
 	/* 参数写入升级运行管理器 */
 	pClient->DictateRunCtl.dictateUpgradeQueryVersionCnt = 0;
 	pClient->UpgradeExecution.upgradeStatus = PCP_UPGRADE_DOWNLOAD;

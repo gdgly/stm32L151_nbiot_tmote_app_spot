@@ -792,6 +792,7 @@ void Radio_Trf_Debug_Printf_Level3(const char *fmt, ...)
 		vsprintf((char*)TRF_PrintfBuf, fmt, args);
 		va_end (args);
 		Radio_Trf_Do_Rf_Pintf((char*)TRF_PrintfBuf);
+		Delay_US(100);
 #endif
 	}
 }
@@ -813,6 +814,7 @@ void Radio_Trf_Debug_Printf_Level2(const char *fmt, ...)
 		vsprintf((char*)TRF_PrintfBuf, fmt, args);
 		va_end (args);
 		Radio_Trf_Do_Rf_Pintf((char*)TRF_PrintfBuf);
+		Delay_US(100);
 #endif
 	}
 }
@@ -834,6 +836,7 @@ void Radio_Trf_Debug_Printf_Level1(const char *fmt, ...)
 		vsprintf((char*)TRF_PrintfBuf, fmt, args);
 		va_end (args);
 		Radio_Trf_Do_Rf_Pintf((char*)TRF_PrintfBuf);
+		Delay_US(100);
 #endif
 	}
 }
@@ -855,6 +858,7 @@ void Radio_Trf_Debug_Printf_Level0(const char *fmt, ...)
 		vsprintf((char*)TRF_PrintfBuf, fmt, args);
 		va_end (args);
 		Radio_Trf_Do_Rf_Pintf((char*)TRF_PrintfBuf);
+		Delay_US(100);
 #endif
 	}
 }
@@ -875,6 +879,7 @@ void Radio_Trf_Printf(const char *fmt, ...)
 	vsprintf ((char*)TRF_PrintfBuf, fmt, args);
 	va_end (args);
 	Radio_Trf_Do_Rf_Pintf((char*)TRF_PrintfBuf);
+	Delay_US(100);
 #endif
 }
 
