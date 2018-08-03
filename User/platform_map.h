@@ -161,15 +161,6 @@
 #define TCFG_RF_DPRINT_LV_LENGTH			1												//RFDPrintLv			RF调试信息输出等级
 #define TCFG_COAP_RA_TIME_OFFSET			TCFG_RF_DPRINT_LV_OFFSET + TCFG_RF_DPRINT_LV_LENGTH		//0x08080E11
 #define TCFG_COAP_RA_TIME_LENGTH			1												//CoapRATime			RA间隔发送普通包时间
-
-#define TCFG_UPGRADE_BASEADDR_OFFSET		TCFG_COAP_RA_TIME_OFFSET + TCFG_COAP_RA_TIME_LENGTH		//0x08080E12
-#define TCFG_UPGRADE_BASEADDR_LENGTH		4												//UpgradeSpiFlashBaseAdde升级APP起始地址
-#define TCFG_UPGRADE_BLOCKNUM_OFFSET		TCFG_UPGRADE_BASEADDR_OFFSET + TCFG_UPGRADE_BASEADDR_LENGTH	//0x08080E16
-#define TCFG_UPGRADE_BLOCKNUM_LENGTH		2												//UpgradeSpiFlashBlockNum升级APP存放块数
-#define TCFG_UPGRADE_BLOCKLEN_OFFSET		TCFG_UPGRADE_BLOCKNUM_OFFSET + TCFG_UPGRADE_BLOCKNUM_LENGTH	//0x08080E18
-#define TCFG_UPGRADE_BLOCKLEN_LENGTH		2												//UpgradeSpiFlashBlockLen升级APP块长度
-#define TCFG_UPGRADE_DATALEN_OFFSET		TCFG_UPGRADE_BLOCKLEN_OFFSET + TCFG_UPGRADE_BLOCKLEN_LENGTH	//0x08080E1A
-#define TCFG_UPGRADE_DATALEN_LENGTH		2												//UpgradeSpiFlashDataLen	升级APP块有效长度
 /************************************************************** End **************************************************************/
 
 enum TCFG_SENSITIVITY																	//传感器灵敏度
@@ -383,18 +374,6 @@ unsigned short	TCFG_EEPROM_GetCoapIdleDayTime(void);											//读取CoapIdleD
 
 void			TCFG_EEPROM_SetCoapQuotaTime(unsigned short val);									//保存CoapQuotaTime
 unsigned short	TCFG_EEPROM_GetCoapQuotaTime(void);											//读取CoapQuotaTime
-
-void			TCFG_EEPROM_SetUpgradeBaseAddr(unsigned int BaseAddr);								//保存UpgradeBaseAddr
-unsigned int	TCFG_EEPROM_GetUpgradeBaseAddr(void);											//读取UpgradeBaseAddr
-
-void			TCFG_EEPROM_SetUpgradeBlockNum(unsigned short val);								//保存UpgradeBlockNum
-unsigned short	TCFG_EEPROM_GetUpgradeBlockNum(void);											//读取UpgradeBlockNum
-
-void			TCFG_EEPROM_SetUpgradeBlockLen(unsigned short val);								//保存UpgradeBlockLen
-unsigned short TCFG_EEPROM_GetUpgradeBlockLen(void);											//读取UpgradeBlockLen
-
-void			TCFG_EEPROM_SetUpgradeDataLen(unsigned short val);								//保存UpgradeDataLen
-unsigned short	TCFG_EEPROM_GetUpgradeDataLen(void);											//读取UpgradeDataLen
 
 void			TCFG_Utility_Add_Device_BootCount(void);										//Device重启次数累加
 unsigned short TCFG_Utility_Get_Device_BootCount(void);										//Device重启次数获取

@@ -509,6 +509,7 @@ void MainHandleRoutine(void)
 	}
 }
 
+
 #ifdef	DEVICE_DEBUG
 /********************************************* DEBUG *****************************************************/
 void STMFLASH_ReadBuffer(uint32_t addr, uint8_t *buf, uint32_t length)
@@ -518,6 +519,8 @@ void STMFLASH_ReadBuffer(uint32_t addr, uint8_t *buf, uint32_t length)
 	}
 }
 /****************************************** Debug Ending *************************************************/
+unsigned char UpdateBuffer[512];
+unsigned char CheckreadBuffer[512];
 /**********************************************************************************************************
  @Function			void DeBugMain(void)
  @Description			DeBugMain
@@ -528,6 +531,7 @@ void DeBugMain(void)
 {
 #if 0
 	u16 RunTimes = 30;
+	u16 Flash_Error = 0;
 #endif
 	
 	TCFG_EEPROM_SetBootCount(0);
@@ -535,6 +539,15 @@ void DeBugMain(void)
 #if 0
 	NBIOT_Neul_NBxx_HardwareReboot(&NbiotClientHandler, 8000);
 #endif
+	
+//	for (int i = 0; i < 15; i++) {
+//		Radio_Trf_Printf("%d", i);
+//		Delay_MS(1000);
+//		IWDG_Feed();
+//	}
+	
+//	GD25Q_SPIFLASH_WakeUp();
+//	GD25Q_SPIFLASH_EraseBlock(APP1_BASE_ADDR);
 	
 	while (true) {
 		
@@ -544,27 +557,46 @@ void DeBugMain(void)
 		RunTimes--;
 		Radio_Trf_Printf("Right Now Upgrade %d ...", RunTimes);
 		if (RunTimes == 0) {
-			Radio_Trf_Printf("This is Upgrade Download ...");
 			RunTimes = 30;
-			IWDG_Feed();
-			GD25Q_SPIFLASH_Init();
-			GD25Q_SPIFLASH_ReadDeviceID();
-			GD25Q_SPIFLASH_EraseBlock(GD25Q80_BLOCK_ADDRESS0);
-			GD25Q_SPIFLASH_EraseBlock(GD25Q80_BLOCK_ADDRESS1);
-			for (int i = 0; i < 150; i++) {
-				GD25Q_SPIFLASH_Init();
-				STMFLASH_ReadBuffer(APP_LOWEST_ADDRESS + i * 500, UpdateBuffer, 500);
-				GD25Q_SPIFLASH_WriteBuffer((u8*)UpdateBuffer, GD25Q80_BASE_ADDR + i * 512, 500);
-				Delay_MS(1);
-				IWDG_Feed();
+			GD25Q_SPIFLASH_WakeUp();
+			if (((GD25Q_SPIFLASH_GetByte(APP1_INFO_UPGRADE_STATUS_OFFSET) & 0xF0) >> 4) == 0x06) {
+				/* 已有升级包 */
+				Radio_Trf_Printf("APP1 has been APP!!");
 			}
-			TCFG_EEPROM_SetUpgradeBaseAddr(GD25Q80_BASE_ADDR);
-			TCFG_EEPROM_SetUpgradeBlockNum(150);
-			TCFG_EEPROM_SetUpgradeBlockLen(512);
-			TCFG_EEPROM_SetUpgradeDataLen(500);
-			TCFG_EEPROM_SetBootMode(TCFG_ENV_BOOTMODE_SPIFLASH_UPGRADE);
-			BEEP_CtrlRepeat_Extend(5, 25, 25);
-			Stm32_System_Software_Reboot();
+			else {
+				/* 还没升级包 */
+				GD25Q_SPIFLASH_Init();
+				GD25Q_SPIFLASH_WakeUp();
+flasherror:
+				GD25Q_SPIFLASH_EraseBlock(GD25Q80_BLOCK_ADDRESS0);
+				GD25Q_SPIFLASH_EraseBlock(GD25Q80_BLOCK_ADDRESS1);
+				GD25Q_SPIFLASH_EraseBlock(GD25Q80_BLOCK_ADDRESS2);
+				GD25Q_SPIFLASH_EraseBlock(GD25Q80_BLOCK_ADDRESS3);
+				for (int i = 0; i < 160; i++) {
+					STMFLASH_ReadBuffer(APP_LOWEST_ADDRESS + i * 500, UpdateBuffer, 500);
+					GD25Q_SPIFLASH_WriteBuffer(UpdateBuffer, APP1_DATA_ADDR + i * 512, 500);
+					IWDG_Feed();
+					GD25Q_SPIFLASH_ReadBuffer(CheckreadBuffer, APP1_DATA_ADDR + i * 512, 500);
+					if (memcmp(UpdateBuffer, CheckreadBuffer, 500) != 0) {
+						Flash_Error++;
+						goto flasherror;
+					}
+				}
+				GD25Q_SPIFLASH_SetByte(APP1_INFO_UPGRADE_STATUS_OFFSET, 0x55);					//标识有升级包且可升级
+				GD25Q_SPIFLASH_SetWord(APP1_INFO_UPGRADE_BASEADDR_OFFSET, APP1_DATA_ADDR);			//升级包基地址
+				GD25Q_SPIFLASH_SetHalfWord(APP1_INFO_UPGRADE_BLOCKNUM_OFFSET, 160);				//升级包块数
+				GD25Q_SPIFLASH_SetHalfWord(APP1_INFO_UPGRADE_BLOCKLEN_OFFSET, 512);				//升级包块长度
+				GD25Q_SPIFLASH_SetHalfWord(APP1_INFO_UPGRADE_DATALEN_OFFSET, 500);				//升级包块有效数据长度
+				GD25Q_SPIFLASH_SetWord(APP1_INFO_UPGRADE_INDEX_OFFSET, 0);
+				GD25Q_SPIFLASH_SetWord(APP1_INFO_UPGRADE_SOFTVER_OFFSET, (20<<16)|(108<<0));
+				GD25Q_SPIFLASH_SetWord(APP1_INFO_DOWNLOAD_TIME_OFFSET, RTC_GetUnixTimeToStamp());
+				
+				Radio_Trf_Printf("Down OK FlashError : %d", Flash_Error);
+				
+				TCFG_EEPROM_SetBootMode(TCFG_ENV_BOOTMODE_SPIFLASH_UPGRADE);
+				BEEP_CtrlRepeat_Extend(5, 50, 50);
+				Stm32_System_Software_Reboot();
+			}
 		}
 #endif
 		
