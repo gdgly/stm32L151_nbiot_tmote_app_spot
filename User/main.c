@@ -100,8 +100,10 @@ int main(void)
 	Uart1_Init(9700);																	//串口1初始化
 	Uart2_Init(9600);																	//串口2初始化
 	
+#ifdef GD25Q_80CSIG
 	GD25Q_SPIFLASH_Init();																//SPI FLASH初始化
 	GD25Q_SPIFLASH_PowerDown();															//SPI FLASH休眠
+#endif
 	
 #ifdef RADIO_SI4438
 	tmesh_securityInit();																//XTEA加密初始化
@@ -548,33 +550,37 @@ void DeBugMain(void)
 		if (RunTimes == 0) {
 			RunTimes = 30;
 			GD25Q_SPIFLASH_WakeUp();
-			if (((GD25Q_SPIFLASH_GetByte(APP1_INFO_UPGRADE_STATUS_OFFSET) & 0xF0) >> 4) == 0x05) {
+			if (((GD25Q_SPIFLASH_GetByte(APP2_INFO_UPGRADE_STATUS_OFFSET) & 0xF0) >> 4) == 0x05) {
 				/* 已有升级包 */
-				Radio_Trf_Printf("APP1 has been APP!!");
+				Radio_Trf_Printf("APP2 has been APP!!");
+				
+				TCFG_EEPROM_SetBootMode(TCFG_ENV_BOOTMODE_SPIFLASH_UPGRADE);
+				BEEP_CtrlRepeat_Extend(5, 50, 50);
+				Stm32_System_Software_Reboot();
 			}
 			else {
 				/* 还没升级包 */
-				Radio_Trf_Printf("APP1 Upgrade");
+				Radio_Trf_Printf("APP2 Upgrade");
 				Radio_Rf_Interrupt_Deinit();
 				GD25Q_SPIFLASH_Init();
 				GD25Q_SPIFLASH_WakeUp();
-				GD25Q_SPIFLASH_EraseBlock(GD25Q80_BLOCK_ADDRESS0);
-				GD25Q_SPIFLASH_EraseBlock(GD25Q80_BLOCK_ADDRESS1);
-				GD25Q_SPIFLASH_EraseBlock(GD25Q80_BLOCK_ADDRESS2);
-				GD25Q_SPIFLASH_EraseBlock(GD25Q80_BLOCK_ADDRESS3);
+				GD25Q_SPIFLASH_EraseBlock(GD25Q80_BLOCK_ADDRESS4);
+				GD25Q_SPIFLASH_EraseBlock(GD25Q80_BLOCK_ADDRESS5);
+				GD25Q_SPIFLASH_EraseBlock(GD25Q80_BLOCK_ADDRESS6);
+				GD25Q_SPIFLASH_EraseBlock(GD25Q80_BLOCK_ADDRESS7);
 				for (int i = 0; i < 160; i++) {
 					STMFLASH_ReadBuffer(APP_LOWEST_ADDRESS + i * 500, UpdateBuffer, 500);
-					GD25Q_SPIFLASH_WriteBuffer(UpdateBuffer, APP1_DATA_ADDR + i * 512, 500);
+					GD25Q_SPIFLASH_WriteBuffer(UpdateBuffer, APP2_DATA_ADDR + i * 512, 500);
 					IWDG_Feed();
 				}
-				GD25Q_SPIFLASH_SetByte(APP1_INFO_UPGRADE_STATUS_OFFSET, 0x55);					//标识有升级包且可升级
-				GD25Q_SPIFLASH_SetWord(APP1_INFO_UPGRADE_BASEADDR_OFFSET, APP1_DATA_ADDR);			//升级包基地址
-				GD25Q_SPIFLASH_SetHalfWord(APP1_INFO_UPGRADE_BLOCKNUM_OFFSET, 160);				//升级包块数
-				GD25Q_SPIFLASH_SetHalfWord(APP1_INFO_UPGRADE_BLOCKLEN_OFFSET, 512);				//升级包块长度
-				GD25Q_SPIFLASH_SetHalfWord(APP1_INFO_UPGRADE_DATALEN_OFFSET, 500);				//升级包块有效数据长度
-				GD25Q_SPIFLASH_SetWord(APP1_INFO_UPGRADE_INDEX_OFFSET, 0);
-				GD25Q_SPIFLASH_SetWord(APP1_INFO_UPGRADE_SOFTVER_OFFSET, (20<<16)|(108<<0));
-				GD25Q_SPIFLASH_SetWord(APP1_INFO_DOWNLOAD_TIME_OFFSET, RTC_GetUnixTimeToStamp());
+				GD25Q_SPIFLASH_SetByte(APP2_INFO_UPGRADE_STATUS_OFFSET, 0x55);					//标识有升级包且可升级
+				GD25Q_SPIFLASH_SetWord(APP2_INFO_UPGRADE_BASEADDR_OFFSET, APP1_DATA_ADDR);			//升级包基地址
+				GD25Q_SPIFLASH_SetHalfWord(APP2_INFO_UPGRADE_BLOCKNUM_OFFSET, 160);				//升级包块数
+				GD25Q_SPIFLASH_SetHalfWord(APP2_INFO_UPGRADE_BLOCKLEN_OFFSET, 512);				//升级包块长度
+				GD25Q_SPIFLASH_SetHalfWord(APP2_INFO_UPGRADE_DATALEN_OFFSET, 500);				//升级包块有效数据长度
+				GD25Q_SPIFLASH_SetWord(APP2_INFO_UPGRADE_INDEX_OFFSET, 0);
+				GD25Q_SPIFLASH_SetWord(APP2_INFO_UPGRADE_SOFTVER_OFFSET, (20<<16)|(108<<0));
+				GD25Q_SPIFLASH_SetWord(APP2_INFO_DOWNLOAD_TIME_OFFSET, RTC_GetUnixTimeToStamp());
 				
 				TCFG_EEPROM_SetBootMode(TCFG_ENV_BOOTMODE_SPIFLASH_UPGRADE);
 				BEEP_CtrlRepeat_Extend(5, 50, 50);

@@ -55,6 +55,8 @@
 #define	RADIO_SI4438													//无线开启
 #define	RF_DPRINT_LV					2								//无线调试信息输出等级
 
+#define	GD25Q_80CSIG													//SPIFLASH开启
+
 #define	IDLE_WORK						4								//休眠
 #define	NOTACTIVE_WORK					3								//不工作
 

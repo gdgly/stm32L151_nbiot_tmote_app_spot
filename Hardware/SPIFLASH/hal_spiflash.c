@@ -21,6 +21,7 @@
 #include "usart.h"
 
 SPI_HandleTypeDef GD25Q_SPIFLASH_Handler;
+GD25Q_StatusTypeDef GD25QStatus = GD25Q80CSIG_OK;
 
 /**********************************************************************************************************
  @Function			void GD25Q_SPIFLASH_Init(void)
@@ -57,7 +58,28 @@ void GD25Q_SPIFLASH_Init(void)
 	
 	if (HAL_SPI_Init(&GD25Q_SPIFLASH_Handler) != HAL_OK) {
 		/* Initialization Error */
+		GD25QStatus = GD25Q80CSIG_ERROR;
 	}
+	
+	GD25Q_SPIFLASH_WakeUp();
+	if (GD25Q_SPIFLASH_ReadIdentificationID() != GD25Q80CSIGIdentificationID) {
+		GD25QStatus = GD25Q80CSIG_ERROR;
+	}
+}
+
+/**********************************************************************************************************
+ @Function			GD25Q_StatusTypeDef GD25Q_SPIFLASH_Get_Status(void)
+ @Description			GD25Q_SPIFLASH_Get_Status	: GD25Q SPIFLASH 状态
+ @Input				void
+ @Return				GD25Q_StatusTypeDef
+**********************************************************************************************************/
+GD25Q_StatusTypeDef GD25Q_SPIFLASH_Get_Status(void)
+{
+#ifdef	GD25Q_80CSIG
+	return GD25QStatus;
+#else
+	return GD25Q80CSIG_ERROR;
+#endif
 }
 
 /**********************************************************************************************************

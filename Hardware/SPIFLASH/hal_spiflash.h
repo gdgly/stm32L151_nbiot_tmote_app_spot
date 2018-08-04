@@ -177,9 +177,17 @@
 #define GD25Q_JedecDeviceID						0x9F
 /* GD25Q80CSIG End Command */
 
+typedef enum
+{
+	GD25Q80CSIG_OK								= 0x00,
+	GD25Q80CSIG_ERROR							= 0x01
+}GD25Q_StatusTypeDef;
+
 extern SPI_HandleTypeDef GD25Q_SPIFLASH_Handler;
+extern GD25Q_StatusTypeDef GD25QStatus;
 
 void GD25Q_SPIFLASH_Init(void);														//GD25Q SPIFLASH 初始化
+GD25Q_StatusTypeDef GD25Q_SPIFLASH_Get_Status(void);										//GD25Q SPIFLASH 状态
 
 u8 GD25Q_SPI_FLASH_ReadByte(void);														//SPI FLASH 读取一个字节数据
 u8 GD25Q_SPI_FLASH_SendByte(u8 byte);													//SPI FLASH 发送一个字节数据
