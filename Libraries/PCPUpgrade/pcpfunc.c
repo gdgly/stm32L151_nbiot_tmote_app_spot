@@ -344,6 +344,8 @@ PCP_StatusTypeDef PCP_Func_AckReportUpgrades(PCP_ClientsTypeDef* pClient)
 	
 	pClient->UpgradeExecution.upgradeStatus = PCP_UPGRADE_STANDBY;
 	
+	PCP_UpgradeDataReportUpgrades_Callback(pClient);
+	
 exit:
 	return PCPStatus;
 }
@@ -413,9 +415,10 @@ PCP_StatusTypeDef PCP_Func_QueryDeviceVersion(PCP_ClientsTypeDef* pClient)
 	
 	/* 查询设备版本应答包尝试次数 */
 	pClient->DictateRunCtl.dictateUpgradeQueryVersionCnt++;
-	if (pClient->DictateRunCtl.dictateUpgradeQueryVersionCnt > 5) {
+	if (pClient->DictateRunCtl.dictateUpgradeQueryVersionCnt > 2) {
+		/* 确实没有需要升级包 */
 		pClient->DictateRunCtl.dictateUpgradeQueryVersionCnt = 0;
-		pClient->UpgradeExecution.upgradeStatus = PCP_UPGRADE_FAILED;
+		pClient->UpgradeExecution.upgradeStatus = PCP_UPGRADE_STANDBY;
 		goto exit;
 	}
 	

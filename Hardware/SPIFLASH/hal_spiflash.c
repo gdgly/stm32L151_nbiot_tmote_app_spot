@@ -304,6 +304,11 @@ void GD25Q_SPIFLASH_WaitForBusy(void)
 **********************************************************************************************************/
 void GD25Q_SPIFLASH_PowerDown(void)
 {
+#ifdef GD25Q_80CSIG
+	if (GD25Q80CSIG_OK != GD25Q_SPIFLASH_Get_Status()) {
+		return;
+	}
+	
 	/* Select the FLASH: Chip Select low */
 	GD25Q_FLASH_SPIx_NSS_ENABLE();
 	
@@ -315,6 +320,7 @@ void GD25Q_SPIFLASH_PowerDown(void)
 	
 	/* Wait for TDP */
 	Delay_US(3);
+#endif
 }
 
 /**********************************************************************************************************
@@ -325,6 +331,11 @@ void GD25Q_SPIFLASH_PowerDown(void)
 **********************************************************************************************************/
 void GD25Q_SPIFLASH_WakeUp(void)
 {
+#ifdef GD25Q_80CSIG
+	if (GD25Q80CSIG_OK != GD25Q_SPIFLASH_Get_Status()) {
+		return;
+	}
+	
 	/* Select the FLASH: Chip Select low */
 	GD25Q_FLASH_SPIx_NSS_ENABLE();
 	
@@ -336,6 +347,7 @@ void GD25Q_SPIFLASH_WakeUp(void)
 	
 	/* Wait for TRES1 */
 	Delay_US(5);
+#endif
 }
 
 /**********************************************************************************************************
@@ -347,6 +359,11 @@ void GD25Q_SPIFLASH_WakeUp(void)
 **********************************************************************************************************/
 void GD25Q_SPIFLASH_EraseChip(void)
 {
+#ifdef GD25Q_80CSIG
+	if (GD25Q80CSIG_OK != GD25Q_SPIFLASH_Get_Status()) {
+		return;
+	}
+	
 	/* 发送FLASH写使能命令 */
 	GD25Q_SPIFLASH_WriteEnable();
 	
@@ -364,6 +381,7 @@ void GD25Q_SPIFLASH_EraseChip(void)
 	
 	/* 等待擦除完毕 */
 	GD25Q_SPIFLASH_WaitForBusy();
+#endif
 }
 
 /**********************************************************************************************************
@@ -376,6 +394,11 @@ void GD25Q_SPIFLASH_EraseChip(void)
 **********************************************************************************************************/
 void GD25Q_SPIFLASH_EraseBlock(u32 BlockAddr)
 {
+#ifdef GD25Q_80CSIG
+	if (GD25Q80CSIG_OK != GD25Q_SPIFLASH_Get_Status()) {
+		return;
+	}
+	
 	/* 发送FLASH写使能命令 */
 	GD25Q_SPIFLASH_WriteEnable();
 	
@@ -402,6 +425,7 @@ void GD25Q_SPIFLASH_EraseBlock(u32 BlockAddr)
 	
 	/* 等待擦除完毕 */
 	GD25Q_SPIFLASH_WaitForBusy();
+#endif
 }
 
 /**********************************************************************************************************
@@ -414,6 +438,11 @@ void GD25Q_SPIFLASH_EraseBlock(u32 BlockAddr)
 **********************************************************************************************************/
 void GD25Q_SPIFLASH_EraseSector(u32 SectorAddr)
 {
+#ifdef GD25Q_80CSIG
+	if (GD25Q80CSIG_OK != GD25Q_SPIFLASH_Get_Status()) {
+		return;
+	}
+	
 	/* 发送FLASH写使能命令 */
 	GD25Q_SPIFLASH_WriteEnable();
 	
@@ -440,6 +469,7 @@ void GD25Q_SPIFLASH_EraseSector(u32 SectorAddr)
 	
 	/* 等待擦除完毕 */
 	GD25Q_SPIFLASH_WaitForBusy();
+#endif
 }
 
 /**********************************************************************************************************
@@ -452,6 +482,11 @@ void GD25Q_SPIFLASH_EraseSector(u32 SectorAddr)
 **********************************************************************************************************/
 void GD25Q_SPIFLASH_ReadBuffer(u8* pBuffer, u32 ReadAddr, u16 NumByteToRead)
 {
+#ifdef GD25Q_80CSIG
+	if (GD25Q80CSIG_OK != GD25Q_SPIFLASH_Get_Status()) {
+		return;
+	}
+	
 	/* Select the FLASH: Chip Select low */
 	GD25Q_FLASH_SPIx_NSS_ENABLE();
 	
@@ -475,6 +510,7 @@ void GD25Q_SPIFLASH_ReadBuffer(u8* pBuffer, u32 ReadAddr, u16 NumByteToRead)
 	
 	/* Deselect the FLASH: Chip Select high */
 	GD25Q_FLASH_SPIx_NSS_DISABLE();
+#endif
 }
 
 /**********************************************************************************************************
@@ -488,6 +524,11 @@ void GD25Q_SPIFLASH_ReadBuffer(u8* pBuffer, u32 ReadAddr, u16 NumByteToRead)
 **********************************************************************************************************/
 void GD25Q_SPIFLASH_WritePage(u8* pBuffer, u32 WriteAddr, u16 NumByteToWrite)
 {
+#ifdef GD25Q_80CSIG
+	if (GD25Q80CSIG_OK != GD25Q_SPIFLASH_Get_Status()) {
+		return;
+	}
+	
 	/* 发送FLASH写使能命令 */
 	GD25Q_SPIFLASH_WriteEnable();
 	
@@ -520,6 +561,7 @@ void GD25Q_SPIFLASH_WritePage(u8* pBuffer, u32 WriteAddr, u16 NumByteToWrite)
 	
 	/* 等待写入完毕 */
 	GD25Q_SPIFLASH_WaitForBusy();
+#endif
 }
 
 /**********************************************************************************************************
@@ -533,7 +575,12 @@ void GD25Q_SPIFLASH_WritePage(u8* pBuffer, u32 WriteAddr, u16 NumByteToWrite)
 **********************************************************************************************************/
 void GD25Q_SPIFLASH_WriteBuffer(u8* pBuffer, u32 WriteAddr, u16 NumByteToWrite)
 {
+#ifdef GD25Q_80CSIG
 	u16 pagereMain;
+	
+	if (GD25Q80CSIG_OK != GD25Q_SPIFLASH_Get_Status()) {
+		return;
+	}
 	
 	pagereMain = GD25Q80_PAGE_BYTE_SIZE - WriteAddr % GD25Q80_PAGE_BYTE_SIZE;
 	if (NumByteToWrite <= pagereMain) pagereMain = NumByteToWrite;
@@ -550,6 +597,7 @@ void GD25Q_SPIFLASH_WriteBuffer(u8* pBuffer, u32 WriteAddr, u16 NumByteToWrite)
 			else pagereMain = NumByteToWrite;
 		}
 	}
+#endif
 }
 
 /**********************************************************************************************************
@@ -560,11 +608,13 @@ void GD25Q_SPIFLASH_WriteBuffer(u8* pBuffer, u32 WriteAddr, u16 NumByteToWrite)
 **********************************************************************************************************/
 unsigned char GD25Q_SPIFLASH_GetByte(u32 ReadAddr)
 {
+#ifdef GD25Q_80CSIG
 	unsigned char val = 0;
 	
 	GD25Q_SPIFLASH_ReadBuffer(&val, ReadAddr, 1);
 	
 	return val;
+#endif
 }
 
 /**********************************************************************************************************
@@ -575,6 +625,7 @@ unsigned char GD25Q_SPIFLASH_GetByte(u32 ReadAddr)
 **********************************************************************************************************/
 unsigned short GD25Q_SPIFLASH_GetHalfWord(u32 ReadAddr)
 {
+#ifdef GD25Q_80CSIG
 	unsigned short val = 0;
 	unsigned char tmpval[2];
 	
@@ -584,6 +635,7 @@ unsigned short GD25Q_SPIFLASH_GetHalfWord(u32 ReadAddr)
 	val |= tmpval[1] << 8;
 	
 	return val;
+#endif
 }
 
 /**********************************************************************************************************
@@ -594,6 +646,7 @@ unsigned short GD25Q_SPIFLASH_GetHalfWord(u32 ReadAddr)
 **********************************************************************************************************/
 unsigned int GD25Q_SPIFLASH_GetWord(u32 ReadAddr)
 {
+#ifdef GD25Q_80CSIG
 	unsigned int val = 0;
 	unsigned char tmpval[4];
 	
@@ -605,6 +658,7 @@ unsigned int GD25Q_SPIFLASH_GetWord(u32 ReadAddr)
 	val |= tmpval[3] << 24;
 	
 	return val;
+#endif
 }
 
 /**********************************************************************************************************
@@ -615,7 +669,9 @@ unsigned int GD25Q_SPIFLASH_GetWord(u32 ReadAddr)
 **********************************************************************************************************/
 void GD25Q_SPIFLASH_SetByte(u32 WriteAddr, unsigned char val)
 {
+#ifdef GD25Q_80CSIG
 	GD25Q_SPIFLASH_WriteBuffer(&val, WriteAddr, 1);
+#endif
 }
 
 /**********************************************************************************************************
@@ -626,12 +682,14 @@ void GD25Q_SPIFLASH_SetByte(u32 WriteAddr, unsigned char val)
 **********************************************************************************************************/
 void GD25Q_SPIFLASH_SetHalfWord(u32 WriteAddr, unsigned short val)
 {
+#ifdef GD25Q_80CSIG
 	unsigned char tmpval[2];
 	
 	tmpval[0] = val & 0xFF;
 	tmpval[1] = (val >> 8) & 0xFF;
 	
 	GD25Q_SPIFLASH_WriteBuffer(tmpval, WriteAddr, 2);
+#endif
 }
 
 /**********************************************************************************************************
@@ -642,6 +700,7 @@ void GD25Q_SPIFLASH_SetHalfWord(u32 WriteAddr, unsigned short val)
 **********************************************************************************************************/
 void GD25Q_SPIFLASH_SetWord(u32 WriteAddr, unsigned int val)
 {
+#ifdef GD25Q_80CSIG
 	unsigned char tmpval[4];
 	
 	tmpval[0] = val & 0xFF;
@@ -650,6 +709,7 @@ void GD25Q_SPIFLASH_SetWord(u32 WriteAddr, unsigned int val)
 	tmpval[3] = (val >> 24) & 0xFF;
 	
 	GD25Q_SPIFLASH_WriteBuffer(tmpval, WriteAddr, 4);
+#endif
 }
 
 /********************************************** END OF FLEE **********************************************/

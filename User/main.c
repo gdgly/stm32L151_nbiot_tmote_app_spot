@@ -126,7 +126,7 @@ int main(void)
 	BEEP_CtrlRepeat_Extend(10, 50, 25);													//蜂鸣器
 	IWDG_Feed();																		//喂狗
 	
-	Radio_Trf_Printf(" Device Reboot: %d Cause: %d", TCFG_SystemData.DeviceBootCount, SoftResetFlag);	//启动信息
+	Radio_Trf_Printf(" Device Reboot: %d Cause: %d Nor: %s", TCFG_SystemData.DeviceBootCount, SoftResetFlag, GD25Q_SPIFLASH_Get_Status()?"None":"Ok");
 	Radio_Trf_Printf(" Copyright (C) 2018 Movebroad Version:%d.%d", TCFG_Utility_Get_Major_Softnumber(), TCFG_Utility_Get_Sub_Softnumber());
 	
 	while (true) {
@@ -514,14 +514,7 @@ void MainHandleRoutine(void)
 
 #ifdef	DEVICE_DEBUG
 /********************************************* DEBUG *****************************************************/
-void STMFLASH_ReadBuffer(uint32_t addr, uint8_t *buf, uint32_t length)
-{
-	while (length--) {
-		*buf++ = *(__IO uint8_t *)addr++;
-	}
-}
 /****************************************** Debug Ending *************************************************/
-unsigned char UpdateBuffer[512];
 /**********************************************************************************************************
  @Function			void DeBugMain(void)
  @Description			DeBugMain
@@ -530,10 +523,6 @@ unsigned char UpdateBuffer[512];
 **********************************************************************************************************/
 void DeBugMain(void)
 {
-#if 0
-	u16 RunTimes = 30;
-#endif
-	
 	TCFG_EEPROM_SetBootCount(0);
 	
 #if 0
@@ -543,51 +532,6 @@ void DeBugMain(void)
 	while (true) {
 		
 		
-		
-#if 0
-		RunTimes--;
-		Radio_Trf_Printf("Right Now Upgrade %d ...", RunTimes);
-		if (RunTimes == 0) {
-			RunTimes = 30;
-			GD25Q_SPIFLASH_WakeUp();
-			if (((GD25Q_SPIFLASH_GetByte(APP2_INFO_UPGRADE_STATUS_OFFSET) & 0xF0) >> 4) == 0x05) {
-				/* 已有升级包 */
-				Radio_Trf_Printf("APP2 has been APP!!");
-				
-				TCFG_EEPROM_SetBootMode(TCFG_ENV_BOOTMODE_SPIFLASH_UPGRADE);
-				BEEP_CtrlRepeat_Extend(5, 50, 50);
-				Stm32_System_Software_Reboot();
-			}
-			else {
-				/* 还没升级包 */
-				Radio_Trf_Printf("APP2 Upgrade");
-				Radio_Rf_Interrupt_Deinit();
-				GD25Q_SPIFLASH_Init();
-				GD25Q_SPIFLASH_WakeUp();
-				GD25Q_SPIFLASH_EraseBlock(GD25Q80_BLOCK_ADDRESS4);
-				GD25Q_SPIFLASH_EraseBlock(GD25Q80_BLOCK_ADDRESS5);
-				GD25Q_SPIFLASH_EraseBlock(GD25Q80_BLOCK_ADDRESS6);
-				GD25Q_SPIFLASH_EraseBlock(GD25Q80_BLOCK_ADDRESS7);
-				for (int i = 0; i < 160; i++) {
-					STMFLASH_ReadBuffer(APP_LOWEST_ADDRESS + i * 500, UpdateBuffer, 500);
-					GD25Q_SPIFLASH_WriteBuffer(UpdateBuffer, APP2_DATA_ADDR + i * 512, 500);
-					IWDG_Feed();
-				}
-				GD25Q_SPIFLASH_SetByte(APP2_INFO_UPGRADE_STATUS_OFFSET, 0x55);					//标识有升级包且可升级
-				GD25Q_SPIFLASH_SetWord(APP2_INFO_UPGRADE_BASEADDR_OFFSET, APP1_DATA_ADDR);			//升级包基地址
-				GD25Q_SPIFLASH_SetHalfWord(APP2_INFO_UPGRADE_BLOCKNUM_OFFSET, 160);				//升级包块数
-				GD25Q_SPIFLASH_SetHalfWord(APP2_INFO_UPGRADE_BLOCKLEN_OFFSET, 512);				//升级包块长度
-				GD25Q_SPIFLASH_SetHalfWord(APP2_INFO_UPGRADE_DATALEN_OFFSET, 500);				//升级包块有效数据长度
-				GD25Q_SPIFLASH_SetWord(APP2_INFO_UPGRADE_INDEX_OFFSET, 0);
-				GD25Q_SPIFLASH_SetWord(APP2_INFO_UPGRADE_SOFTVER_OFFSET, (20<<16)|(108<<0));
-				GD25Q_SPIFLASH_SetWord(APP2_INFO_DOWNLOAD_TIME_OFFSET, RTC_GetUnixTimeToStamp());
-				
-				TCFG_EEPROM_SetBootMode(TCFG_ENV_BOOTMODE_SPIFLASH_UPGRADE);
-				BEEP_CtrlRepeat_Extend(5, 50, 50);
-				Stm32_System_Software_Reboot();
-			}
-		}
-#endif
 		
 		/* 小无线处理 */
 		Radio_Trf_App_Task();

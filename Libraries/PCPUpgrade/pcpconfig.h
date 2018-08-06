@@ -218,5 +218,6 @@ void PCP_Client_Init(PCP_ClientsTypeDef* pClient, PCP_CoAPNetTransportTypeDef* N
 void PCP_UpgradeDataNewVersionNotice_Callback(PCP_ClientsTypeDef* pClient);											//PCP新版本通知处理
 void PCP_UpgradeDataDownload_Callback(PCP_ClientsTypeDef* pClient, u16 SliceIndex, u8* UpgradeData, u16 UpgradeDataLength);		//PCP升级包下载回调
 void PCP_UpgradeDataAssemble_Callback(PCP_ClientsTypeDef* pClient);													//PCP升级包组装回调
+void PCP_UpgradeDataReportUpgrades_Callback(PCP_ClientsTypeDef* pClient);												//PCP上报升级结果回调
 
 #endif /* __PCP_CONFIG_H */

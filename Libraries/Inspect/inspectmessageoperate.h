@@ -4,7 +4,7 @@
 #include "sys.h"
 #include "tmesh_algorithm.h"
 
-#define INSPECT_SPOT_STATUS_PACK_NUM		5
+#define INSPECT_SPOT_STATUS_PACK_NUM		3
 
 /* Inspect Spot Status */
 typedef struct

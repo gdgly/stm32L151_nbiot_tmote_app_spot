@@ -209,20 +209,7 @@ static void MQTTSN_DictateEvent_SetTime(MQTTSN_ClientsTypeDef* pClient, unsigned
 	}
 }
 
-/**********************************************************************************************************
- @Function			static void MQTTSN_NBIOT_DictateEvent_FailExecute(MQTTSN_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateTimeOut, \
-																					  NBIOT_DictateEventTypeDef dictateFail, \
-																					  NBIOT_DictateEventTypeDef dictateNoTimeOut)
- @Description			MQTTSN_NBIOT_DictateEvent_FailExecute	: 事件运行控制器出错执行(内部使用)
- @Input				pClient							: MQTTSN客户端实例
-					dictateTimeOut						: 事假处理错误超时
-					dictateFail						: 事件处理错误次数溢出
-					dictateNoTimeOut					: 事假处理错误未超时
- @Return				void
-**********************************************************************************************************/
-static void MQTTSN_NBIOT_DictateEvent_FailExecute(MQTTSN_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateTimeOut, \
-																  NBIOT_DictateEventTypeDef dictateFail, \
-																  NBIOT_DictateEventTypeDef dictateNoTimeOut)
+static unsigned char* MQTTSN_NBIOT_GetDictateFailureCnt(MQTTSN_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateNoTimeOut)
 {
 	unsigned char* dictateFailureCnt;
 	
@@ -269,6 +256,28 @@ static void MQTTSN_NBIOT_DictateEvent_FailExecute(MQTTSN_ClientsTypeDef* pClient
 		break;
 	}
 	
+	return dictateFailureCnt;
+}
+
+/**********************************************************************************************************
+ @Function			static void MQTTSN_NBIOT_DictateEvent_FailExecute(MQTTSN_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateTimeOut, \
+																					  NBIOT_DictateEventTypeDef dictateFail, \
+																					  NBIOT_DictateEventTypeDef dictateNoTimeOut)
+ @Description			MQTTSN_NBIOT_DictateEvent_FailExecute	: 事件运行控制器出错执行(内部使用)
+ @Input				pClient							: MQTTSN客户端实例
+					dictateTimeOut						: 事假处理错误超时
+					dictateFail						: 事件处理错误次数溢出
+					dictateNoTimeOut					: 事假处理错误未超时
+ @Return				void
+**********************************************************************************************************/
+static void MQTTSN_NBIOT_DictateEvent_FailExecute(MQTTSN_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateTimeOut, \
+																  NBIOT_DictateEventTypeDef dictateFail, \
+																  NBIOT_DictateEventTypeDef dictateNoTimeOut)
+{
+	unsigned char* dictateFailureCnt;
+	
+	dictateFailureCnt = MQTTSN_NBIOT_GetDictateFailureCnt(pClient, dictateNoTimeOut);
+	
 	if (Stm32_Calculagraph_IsExpiredSec(&pClient->SocketStack->NBIotStack->DictateRunCtl.dictateRunTime) == true) {
 		/* Dictate TimeOut */
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
@@ -283,6 +292,27 @@ static void MQTTSN_NBIOT_DictateEvent_FailExecute(MQTTSN_ClientsTypeDef* pClient
 		/* Dictate isn't TimeOut */
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = dictateNoTimeOut;
 	}
+}
+
+/**********************************************************************************************************
+ @Function			static void MQTTSN_NBIOT_DictateEvent_SuccessExecute(MQTTSN_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateSuccess, \
+																						NBIOT_DictateEventTypeDef dictateNoTimeOut)
+ @Description			MQTTSN_NBIOT_DictateEvent_SuccessExecute: 事件运行控制器正确执行(内部使用)
+ @Input				pClient							: MQTTSN客户端实例
+					dictateSuccess						: 事假处理正确
+					dictateNoTimeOut					: 事假处理错误未超时
+ @Return				void
+**********************************************************************************************************/
+static void MQTTSN_NBIOT_DictateEvent_SuccessExecute(MQTTSN_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateSuccess, \
+																	NBIOT_DictateEventTypeDef dictateNoTimeOut)
+{
+	unsigned char* dictateFailureCnt;
+	
+	dictateFailureCnt = MQTTSN_NBIOT_GetDictateFailureCnt(pClient, dictateNoTimeOut);
+	
+	pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
+	pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = dictateSuccess;
+	*dictateFailureCnt = 0;
 }
 
 /**********************************************************************************************************
@@ -362,9 +392,8 @@ void NET_MQTTSN_NBIOT_Event_HardwareReboot(MQTTSN_ClientsTypeDef* pClient)
 	
 	if (NBIOT_Neul_NBxx_HardwareReboot(pClient->SocketStack->NBIotStack, 8000) == NBIOT_OK) {
 		/* Dictate execute is Success */
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MODULE_CHECK;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateRebootFailureCnt = 0;
+		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, MODULE_CHECK, HARDWARE_REBOOT);
+		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 		Radio_Trf_Debug_Printf_Level2("NB HDRBT Ok, Baud:%d", NBIOTBaudRate.Baud);
 #endif
@@ -393,9 +422,8 @@ void NET_MQTTSN_NBIOT_Event_ModuleCheck(MQTTSN_ClientsTypeDef* pClient)
 	    (NBIOT_Neul_NBxx_CheckReadManufacturerModel(pClient->SocketStack->NBIotStack) == NBIOT_OK) && 
 	    (NBIOT_Neul_NBxx_CheckReadModuleVersion(pClient->SocketStack->NBIotStack) == NBIOT_OK)) {
 		/* Dictate execute is Success */
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = PARAMETER_CONFIG;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateModuleCheckFailureCnt = 0;
+		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, PARAMETER_CONFIG, MODULE_CHECK);
+		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 		Radio_Trf_Debug_Printf_Level2("NB Module Check Ok");
 #endif
@@ -422,9 +450,8 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 	
 	if (NBIOT_Neul_NBxx_CheckReadConfigUE(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
 		/* Dictate execute is Success */
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ICCID_CHECK;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
+		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, ICCID_CHECK, PARAMETER_CONFIG);
+		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 		Radio_Trf_Debug_Printf_Level2("NB Parameter Config Read Ok");
 #endif
@@ -442,9 +469,8 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 	if (pClient->SocketStack->NBIotStack->Parameter.nconfig.autoConnect != AutoConnectVal) {
 		if (NBIOT_Neul_NBxx_SetConfigUE(pClient->SocketStack->NBIotStack, AutoConnect, AutoConnectVal) == NBIOT_OK) {
 			/* Dictate execute is Success */
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ICCID_CHECK;
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
+			MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, ICCID_CHECK, PARAMETER_CONFIG);
+			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 			Radio_Trf_Debug_Printf_Level2("NB %s %d Ok", AutoConnect, AutoConnectVal);
 #endif
@@ -463,9 +489,8 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 	if (pClient->SocketStack->NBIotStack->Parameter.nconfig.crScrambling != CrScramblingVal) {
 		if (NBIOT_Neul_NBxx_SetConfigUE(pClient->SocketStack->NBIotStack, CrScrambling, CrScramblingVal) == NBIOT_OK) {
 			/* Dictate execute is Success */
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ICCID_CHECK;
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
+			MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, ICCID_CHECK, PARAMETER_CONFIG);
+			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 			Radio_Trf_Debug_Printf_Level2("NB %s %d Ok", CrScrambling, CrScramblingVal);
 #endif
@@ -484,9 +509,8 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 	if (pClient->SocketStack->NBIotStack->Parameter.nconfig.crSiAvoid != CrSiAvoidVal) {
 		if (NBIOT_Neul_NBxx_SetConfigUE(pClient->SocketStack->NBIotStack, CrSiAvoid, CrSiAvoidVal) == NBIOT_OK) {
 			/* Dictate execute is Success */
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ICCID_CHECK;
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
+			MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, ICCID_CHECK, PARAMETER_CONFIG);
+			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 			Radio_Trf_Debug_Printf_Level2("NB %s %d Ok", CrSiAvoid, CrSiAvoidVal);
 #endif
@@ -505,9 +529,8 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 	if (pClient->SocketStack->NBIotStack->Parameter.nconfig.combineAttach != CombineAttachVal) {
 		if (NBIOT_Neul_NBxx_SetConfigUE(pClient->SocketStack->NBIotStack, CombineAttach, CombineAttachVal) == NBIOT_OK) {
 			/* Dictate execute is Success */
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ICCID_CHECK;
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
+			MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, ICCID_CHECK, PARAMETER_CONFIG);
+			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 			Radio_Trf_Debug_Printf_Level2("NB %s %d Ok", CombineAttach, CombineAttachVal);
 #endif
@@ -526,9 +549,8 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 	if (pClient->SocketStack->NBIotStack->Parameter.nconfig.cellReselection != CellReselectionVal) {
 		if (NBIOT_Neul_NBxx_SetConfigUE(pClient->SocketStack->NBIotStack, CellReselection, CellReselectionVal) == NBIOT_OK) {
 			/* Dictate execute is Success */
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ICCID_CHECK;
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
+			MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, ICCID_CHECK, PARAMETER_CONFIG);
+			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 			Radio_Trf_Debug_Printf_Level2("NB %s %d Ok", CellReselection, CellReselectionVal);
 #endif
@@ -547,9 +569,8 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 	if (pClient->SocketStack->NBIotStack->Parameter.nconfig.enableBip != EnableBipVal) {
 		if (NBIOT_Neul_NBxx_SetConfigUE(pClient->SocketStack->NBIotStack, EnableBip, EnableBipVal) == NBIOT_OK) {
 			/* Dictate execute is Success */
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ICCID_CHECK;
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateParameterConfigFailureCnt = 0;
+			MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, ICCID_CHECK, PARAMETER_CONFIG);
+			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 			Radio_Trf_Debug_Printf_Level2("NB %s %d Ok", EnableBip, EnableBipVal);
 #endif
@@ -578,9 +599,8 @@ void NET_MQTTSN_NBIOT_Event_SimICCIDCheck(MQTTSN_ClientsTypeDef* pClient)
 	
 	if (NBIOT_Neul_NBxx_CheckReadICCID(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
 		/* Dictate execute is Success */
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MISC_EQUIP_CONFIG;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateSimICCIDCheckFailureCnt = 0;
+		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, MISC_EQUIP_CONFIG, ICCID_CHECK);
+		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 		Radio_Trf_Debug_Printf_Level2("NB ICCID Check Ok");
 #endif
@@ -607,9 +627,8 @@ void NET_MQTTSN_NBIOT_Event_MiscEquipConfig(MQTTSN_ClientsTypeDef* pClient)
 	
 	if (NBIOT_Neul_NBxx_CheckReadSupportedBands(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
 		/* Dictate execute is Success */
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ATTACH_CHECK;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateMiscEquipConfigFailureCnt = 0;
+		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, ATTACH_CHECK, MISC_EQUIP_CONFIG);
+		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("NB MiscEquip Read Ok");
 #endif
@@ -627,9 +646,8 @@ void NET_MQTTSN_NBIOT_Event_MiscEquipConfig(MQTTSN_ClientsTypeDef* pClient)
 	if (pClient->SocketStack->NBIotStack->Parameter.band != MQTTSN_NBIOT_BAND) {
 		if (NBIOT_Neul_NBxx_SetSupportedBands(pClient->SocketStack->NBIotStack, MQTTSN_NBIOT_BAND) == NBIOT_OK) {
 			/* Dictate execute is Success */
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ATTACH_CHECK;
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateMiscEquipConfigFailureCnt = 0;
+			MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, ATTACH_CHECK, MISC_EQUIP_CONFIG);
+			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("NB Band Set %d Ok", MQTTSN_NBIOT_BAND);
 #endif
@@ -658,9 +676,8 @@ void NET_MQTTSN_NBIOT_Event_AttachCheck(MQTTSN_ClientsTypeDef* pClient)
 	
 	if (NBIOT_Neul_NBxx_CheckReadAttachOrDetach(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
 		/* Dictate execute is Success */
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ATTACH_CHECK;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateAttachCheckFailureCnt = 0;
+		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, ATTACH_CHECK, ATTACH_CHECK);
+		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("NB CGATT %d Ok", pClient->SocketStack->NBIotStack->Parameter.netstate);
 #endif
@@ -695,9 +712,8 @@ void NET_MQTTSN_NBIOT_Event_AttachExecute(MQTTSN_ClientsTypeDef* pClient)
 	
 	if (NBIOT_Neul_NBxx_SetAttachOrDetach(pClient->SocketStack->NBIotStack, Attach) == NBIOT_OK) {
 		/* Dictate execute is Success */
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ATTACH_INQUIRE;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateAttachExecuteFailureCnt = 0;
+		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, ATTACH_INQUIRE, ATTACH_EXECUTE);
+		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("NB Set CGATT %d Ok", Attach);
 #endif
@@ -743,9 +759,7 @@ void NET_MQTTSN_NBIOT_Event_AttachInquire(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, ATTACH_INQUIRE);
 	}
 	else {
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = PARAMETER_CHECKOUT;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateAttachInquireFailureCnt = 0;
+		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, PARAMETER_CHECKOUT, ATTACH_INQUIRE);
 	}
 }
 
@@ -769,9 +783,8 @@ void NET_MQTTSN_NBIOT_Event_ParameterCheckOut(MQTTSN_ClientsTypeDef* pClient)
 	    (NBIOT_Neul_NBxx_CheckReadStatisticsCELL(pClient->SocketStack->NBIotStack) == NBIOT_OK) && 
 	    (NBIOT_Neul_NBxx_CheckReadDateTime(pClient->SocketStack->NBIotStack) == NBIOT_OK)) {
 		/* Dictate execute is Success */
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictatePatameterCheckOutFailureCnt = 0;
+		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, PARAMETER_CHECKOUT);
+		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("NB Parameter Check Ok");
 #endif

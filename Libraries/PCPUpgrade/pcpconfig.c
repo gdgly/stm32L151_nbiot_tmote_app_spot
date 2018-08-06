@@ -21,6 +21,8 @@
 #include "platform_config.h"
 #include "platform_map.h"
 #include "hal_spiflash.h"
+#include "hal_rtc.h"
+#include "hal_beep.h"
 #include "delay.h"
 #include "usart.h"
 #include "radio_rf_app.h"
@@ -104,10 +106,10 @@ void PCP_UpgradeDataDownload_Callback(PCP_ClientsTypeDef* pClient, u16 SliceInde
 {
 	char TempBuf[50];
 	int lengthaa;
-	memset(TempBuf, 0, 40);
-	sprintf(TempBuf, "Down%d:", SliceIndex);
+	memset(TempBuf, 0, 50);
+	sprintf(TempBuf, "Down%d.%d:", SliceIndex, UpgradeDataLength);
 	lengthaa = strlen(TempBuf);
-	for (int i = 0; i < 20; i++) {
+	for (int i = 0; i < 15; i++) {
 		sprintf(TempBuf + lengthaa + i * 2, "%02X", UpgradeData[i]);
 	}
 	Radio_Trf_Debug_Printf_Level2("%s", TempBuf);
@@ -122,6 +124,17 @@ void PCP_UpgradeDataDownload_Callback(PCP_ClientsTypeDef* pClient, u16 SliceInde
 void PCP_UpgradeDataAssemble_Callback(PCP_ClientsTypeDef* pClient)
 {
 	Radio_Trf_Debug_Printf_Level2("Download Over!!");
+}
+
+/**********************************************************************************************************
+ @Function			void PCP_UpgradeDataReportUpgrades_Callback(PCP_ClientsTypeDef* pClient)
+ @Description			PCP_UpgradeDataReportUpgrades_Callback	: PCP上报升级结果处理回调函数
+ @Input				pClient							: PCP客户端实例
+ @Return				void
+**********************************************************************************************************/
+void PCP_UpgradeDataReportUpgrades_Callback(PCP_ClientsTypeDef* pClient)
+{
+	Radio_Trf_Debug_Printf_Level2("Upgrade Over!!");
 }
 
 /********************************************** END OF FLEE **********************************************/
