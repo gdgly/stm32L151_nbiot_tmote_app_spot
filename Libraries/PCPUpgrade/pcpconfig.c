@@ -15,6 +15,7 @@
 
 #include "pcpconfig.h"
 #include "pcpfunc.h"
+#include "pcpupgrade.h"
 #include "pcptransport.h"
 #include "pcpcrccheck.h"
 #include "pcpsock.h"

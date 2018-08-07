@@ -962,6 +962,11 @@
               <FilePath>..\Libraries\PCPUpgrade\pcpfunc.c</FilePath>
             </File>
             <File>
+              <FileName>pcpupgrade.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\PCPUpgrade\pcpupgrade.c</FilePath>
+            </File>
+            <File>
               <FileName>pcptransport.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Libraries\PCPUpgrade\pcptransport.c</FilePath>

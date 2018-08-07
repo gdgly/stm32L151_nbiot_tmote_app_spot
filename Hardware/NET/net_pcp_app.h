@@ -3,6 +3,7 @@
 
 #include "sys.h"
 #include "pcpconfig.h"
+#include "pcpupgrade.h"
 #include "pcpfunc.h"
 #include "pcptransport.h"
 #include "pcpcrccheck.h"
