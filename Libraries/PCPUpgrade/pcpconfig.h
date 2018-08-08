@@ -98,7 +98,7 @@ typedef enum
 	PCP_ExecuteSuccess					= 0x00,											//处理成功
 	PCP_EquipmentUse					= 0x01,											//设备使用中
 	PCP_SignalqualityDifference			= 0x02,											//信号质量差
-	PCP_LatestVsrsion					= 0x03,											//已经是最新版本
+	PCP_LatestVersion					= 0x03,											//已经是最新版本
 	PCP_LackofElectricity				= 0x04,											//电量不足
 	PCP_LackofSpace					= 0x05,											//剩余空间不足
 	PCP_DownloadTimeout					= 0x06,											//下载超时
@@ -214,10 +214,10 @@ struct PCP_ClientsTypeDef
 };
 
 /* Application Programming Interface */
-void PCP_Client_Init(PCP_ClientsTypeDef* pClient, PCP_CoAPNetTransportTypeDef* NetSock, NET_NBIOT_ClientsTypeDef* NetNbiotStack);	//PCP客户端初始化
-void PCP_UpgradeDataNewVersionNotice_Callback(PCP_ClientsTypeDef* pClient);											//PCP新版本通知处理
-void PCP_UpgradeDataDownload_Callback(PCP_ClientsTypeDef* pClient, u16 SliceIndex, u8* UpgradeData, u16 UpgradeDataLength);		//PCP升级包下载回调
-void PCP_UpgradeDataAssemble_Callback(PCP_ClientsTypeDef* pClient);													//PCP升级包组装回调
-void PCP_UpgradeDataReportUpgrades_Callback(PCP_ClientsTypeDef* pClient);												//PCP上报升级结果回调
+void PCP_Client_Init(PCP_ClientsTypeDef* pClient, PCP_CoAPNetTransportTypeDef* NetSock, NET_NBIOT_ClientsTypeDef* NetNbiotStack);				//PCP客户端初始化
+PCP_ResultCodeTypeDef PCP_UpgradeDataNewVersionNotice_Callback(PCP_ClientsTypeDef* pClient);											//PCP新版本通知处理
+PCP_ResultCodeTypeDef PCP_UpgradeDataDownload_Callback(PCP_ClientsTypeDef* pClient, u16 SliceIndex, u8* UpgradeData, u16 UpgradeDataLength);	//PCP升级包下载回调
+PCP_ResultCodeTypeDef PCP_UpgradeDataAssemble_Callback(PCP_ClientsTypeDef* pClient);													//PCP升级包组装回调
+PCP_ResultCodeTypeDef PCP_UpgradeDataReportUpgrades_Callback(PCP_ClientsTypeDef* pClient);											//PCP上报升级结果回调
 
 #endif /* __PCP_CONFIG_H */

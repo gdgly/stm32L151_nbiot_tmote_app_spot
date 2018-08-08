@@ -36,6 +36,8 @@
 #define GD25Q80_SECTOR_NUM						256
 #define GD25Q80_PAGE_NUM							4096
 
+#define APP_PACKSLICE_NUM						300														//升级APP分片最大分片数
+
 /* APP1 FLASH ADDRESS TABLE */
 #define APP1_BASE_ADDR							0x000000U
 #define APP1_BYTE_SIZE							0x040000U
@@ -61,6 +63,8 @@
 #define APP1_INFO_DOWNLOAD_TIME_LENGTH				4														//升级包下载时间
 #define APP1_DATA_CHECK_CODE_OFFSET				APP1_INFO_DOWNLOAD_TIME_OFFSET + APP1_INFO_DOWNLOAD_TIME_LENGTH
 #define APP1_DATA_CHECK_CODE_LENGTH				4														//升级包校验码
+#define APP1_PACKSLICE_STATUS_OFFSET				APP1_DATA_CHECK_CODE_OFFSET + APP1_DATA_CHECK_CODE_LENGTH
+#define APP1_PACKSLICE_STATUS_LENGTH				APP_PACKSLICE_NUM											//升级包分片下载状态(0x00有 0xFF无)
 /* END APP1 ADDRESS TABLE */
 
 /* APP2 FLASH ADDRESS TABLE */
@@ -88,6 +92,8 @@
 #define APP2_INFO_DOWNLOAD_TIME_LENGTH				4														//升级包下载时间
 #define APP2_DATA_CHECK_CODE_OFFSET				APP2_INFO_DOWNLOAD_TIME_OFFSET + APP2_INFO_DOWNLOAD_TIME_LENGTH
 #define APP2_DATA_CHECK_CODE_LENGTH				4														//升级包校验码
+#define APP2_PACKSLICE_STATUS_OFFSET				APP2_DATA_CHECK_CODE_OFFSET + APP2_DATA_CHECK_CODE_LENGTH
+#define APP2_PACKSLICE_STATUS_LENGTH				APP_PACKSLICE_NUM											//升级包分片下载状态(0x00有 0xFF无)
 /* END APP2 ADDRESS TABLE */
 
 /* Definition for SPIx clock resources */
@@ -194,5 +200,7 @@ unsigned int GD25Q_SPIFLASH_GetWord(u32 ReadAddr);										//GD25Q SPIFLASH 读
 void GD25Q_SPIFLASH_SetByte(u32 WriteAddr, unsigned char val);								//GD25Q SPIFLASH 写入1个Byte
 void GD25Q_SPIFLASH_SetHalfWord(u32 WriteAddr, unsigned short val);							//GD25Q SPIFLASH 写入2个Byte
 void GD25Q_SPIFLASH_SetWord(u32 WriteAddr, unsigned int val);								//GD25Q SPIFLASH 写入4个Byte
+
+unsigned int GD25Q_SPIFLASH_GetNumofByte(u32 ReadAddr, u16 AllNum, u8 ByteVal);					//GD25Q SPIFLASH 读取指定地址中指定字节中有该值的个数
 
 #endif /* __HAL_SPI_FLASH_H */

@@ -712,4 +712,50 @@ void GD25Q_SPIFLASH_SetWord(u32 WriteAddr, unsigned int val)
 #endif
 }
 
+/**********************************************************************************************************
+ @Function			unsigned int GD25Q_SPIFLASH_GetNumofByte(u32 ReadAddr, u16 AllNum, u8 ByteVal)
+ @Description			GD25Q_SPIFLASH_GetNumofByte					: GD25Q SPIFLASH 读取指定地址中指定字节中有该值的个数
+ @Input				ReadAddr									: 读取地址
+					AllNum									: 读取字节数
+					ByteVal									: 匹配值
+ @Return				val
+**********************************************************************************************************/
+unsigned int GD25Q_SPIFLASH_GetNumofByte(u32 ReadAddr, u16 AllNum, u8 ByteVal)
+{
+#ifdef GD25Q_80CSIG
+	unsigned int ReadByteval = 0;
+	
+	if (GD25Q80CSIG_OK != GD25Q_SPIFLASH_Get_Status()) {
+		return 0;
+	}
+	
+	/* Select the FLASH: Chip Select low */
+	GD25Q_FLASH_SPIx_NSS_ENABLE();
+	
+	/* 发送读指令 */
+	GD25Q_SPI_FLASH_SendByte(GD25Q_ReadData);
+	
+	/* 发送读地址高位 */
+	GD25Q_SPI_FLASH_SendByte((ReadAddr & 0xFF0000) >> 16);
+	
+	/* 发送读地址中位 */
+	GD25Q_SPI_FLASH_SendByte((ReadAddr & 0xFF00) >> 8);
+	
+	/* 发送读地址低位 */
+	GD25Q_SPI_FLASH_SendByte(ReadAddr & 0xFF);
+	
+	/* 读取数据 */
+	while (AllNum--) {
+		if (ByteVal == GD25Q_SPI_FLASH_SendByte(GD25Q_Dummy_Byte)) {
+			ReadByteval++;
+		}
+	}
+	
+	/* Deselect the FLASH: Chip Select high */
+	GD25Q_FLASH_SPIx_NSS_DISABLE();
+	
+	return ReadByteval;
+#endif
+}
+
 /********************************************** END OF FLEE **********************************************/

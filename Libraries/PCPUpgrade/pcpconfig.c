@@ -81,21 +81,27 @@ void PCP_Client_Init(PCP_ClientsTypeDef* pClient, PCP_CoAPNetTransportTypeDef* N
 }
 
 /**********************************************************************************************************
- @Function			void PCP_UpgradeDataNewVersionNotice_Callback(PCP_ClientsTypeDef* pClient)
+ @Function			PCP_ResultCodeTypeDef PCP_UpgradeDataNewVersionNotice_Callback(PCP_ClientsTypeDef* pClient)
  @Description			PCP_UpgradeDataNewVersionNotice_Callback: PCP新版本通知处理回调函数
  @Input				pClient							: PCP客户端实例
  @Return				void
 **********************************************************************************************************/
-void PCP_UpgradeDataNewVersionNotice_Callback(PCP_ClientsTypeDef* pClient)
+PCP_ResultCodeTypeDef PCP_UpgradeDataNewVersionNotice_Callback(PCP_ClientsTypeDef* pClient)
 {
+	PCP_ResultCodeTypeDef PCPResultCodeStatus = PCP_ExecuteSuccess;
+	
 	Radio_Trf_Debug_Printf_Level2("PlatSoftVer : %s", pClient->Parameter.PlatformSoftVersion);
 	Radio_Trf_Debug_Printf_Level2("PackSliceSize : %d", pClient->Parameter.UpgradePackSliceSize);
 	Radio_Trf_Debug_Printf_Level2("PackSliceNum : %d", pClient->Parameter.UpgradePackSliceNum);
 	Radio_Trf_Debug_Printf_Level2("PackCheckCode : %d", pClient->Parameter.UpgradePackCheckCode);
+	
+	PCPResultCodeStatus = PCP_Upgrade_NewVersionNotice(pClient);
+	
+	return PCPResultCodeStatus;
 }
 
 /**********************************************************************************************************
- @Function			void PCP_UpgradeDataDownload_Callback(PCP_ClientsTypeDef* pClient, u16 SliceIndex, u8* UpgradeData, u16 UpgradeDataLength)
+ @Function			PCP_ResultCodeTypeDef PCP_UpgradeDataDownload_Callback(PCP_ClientsTypeDef* pClient, u16 SliceIndex, u8* UpgradeData, u16 UpgradeDataLength)
  @Description			PCP_UpgradeDataDownload_Callback		: PCP升级包下载处理回调函数
  @Input				pClient							: PCP客户端实例
 					SliceIndex						: PCP分片序号
@@ -103,39 +109,45 @@ void PCP_UpgradeDataNewVersionNotice_Callback(PCP_ClientsTypeDef* pClient)
 					UpgradeDataLength					: 升级包长度
  @Return				void
 **********************************************************************************************************/
-void PCP_UpgradeDataDownload_Callback(PCP_ClientsTypeDef* pClient, u16 SliceIndex, u8* UpgradeData, u16 UpgradeDataLength)
+PCP_ResultCodeTypeDef PCP_UpgradeDataDownload_Callback(PCP_ClientsTypeDef* pClient, u16 SliceIndex, u8* UpgradeData, u16 UpgradeDataLength)
 {
-	char TempBuf[50];
-	int lengthaa;
-	memset(TempBuf, 0, 50);
-	sprintf(TempBuf, "Down%d.%d:", SliceIndex, UpgradeDataLength);
-	lengthaa = strlen(TempBuf);
-	for (int i = 0; i < 15; i++) {
-		sprintf(TempBuf + lengthaa + i * 2, "%02X", UpgradeData[i]);
-	}
-	Radio_Trf_Debug_Printf_Level2("%s", TempBuf);
+	PCP_ResultCodeTypeDef PCPResultCodeStatus = PCP_ExecuteSuccess;
+	
+	Radio_Trf_Debug_Printf_Level2("Down%d.%d:OK", SliceIndex, UpgradeDataLength);
+	
+	PCPResultCodeStatus = PCP_Upgrade_DataDownload(pClient, SliceIndex, UpgradeData, UpgradeDataLength);
+	
+	return PCPResultCodeStatus;
 }
 
 /**********************************************************************************************************
- @Function			void PCP_UpgradeDataAssemble_Callback(PCP_ClientsTypeDef* pClient)
+ @Function			PCP_ResultCodeTypeDef PCP_UpgradeDataAssemble_Callback(PCP_ClientsTypeDef* pClient)
  @Description			PCP_UpgradeDataAssemble_Callback		: PCP升级包组装处理回调函数
  @Input				pClient							: PCP客户端实例
  @Return				void
 **********************************************************************************************************/
-void PCP_UpgradeDataAssemble_Callback(PCP_ClientsTypeDef* pClient)
+PCP_ResultCodeTypeDef PCP_UpgradeDataAssemble_Callback(PCP_ClientsTypeDef* pClient)
 {
+	PCP_ResultCodeTypeDef PCPResultCodeStatus = PCP_ExecuteSuccess;
+	
 	Radio_Trf_Debug_Printf_Level2("Download Over!!");
+	
+	return PCPResultCodeStatus;
 }
 
 /**********************************************************************************************************
- @Function			void PCP_UpgradeDataReportUpgrades_Callback(PCP_ClientsTypeDef* pClient)
+ @Function			PCP_ResultCodeTypeDef PCP_UpgradeDataReportUpgrades_Callback(PCP_ClientsTypeDef* pClient)
  @Description			PCP_UpgradeDataReportUpgrades_Callback	: PCP上报升级结果处理回调函数
  @Input				pClient							: PCP客户端实例
  @Return				void
 **********************************************************************************************************/
-void PCP_UpgradeDataReportUpgrades_Callback(PCP_ClientsTypeDef* pClient)
+PCP_ResultCodeTypeDef PCP_UpgradeDataReportUpgrades_Callback(PCP_ClientsTypeDef* pClient)
 {
+	PCP_ResultCodeTypeDef PCPResultCodeStatus = PCP_ExecuteSuccess;
+	
 	Radio_Trf_Debug_Printf_Level2("Upgrade Over!!");
+	
+	return PCPResultCodeStatus;
 }
 
 /********************************************** END OF FLEE **********************************************/

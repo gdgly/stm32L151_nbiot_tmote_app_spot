@@ -5,6 +5,7 @@
 #include "platform_config.h"
 
 #define APP_LOWEST_ADDRESS				0x08003800
+#define APP_LOWEST_SIZE					0x0001C800
 
 #define TCFG_ENV_BOOTMODE_TOUPDATE			1
 #define TCFG_ENV_BOOTMODE_NORMAL			2

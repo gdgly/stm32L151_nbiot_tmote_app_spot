@@ -172,11 +172,12 @@ PCP_StatusTypeDef PCP_Func_AckQueryDeviceVersion(PCP_ClientsTypeDef* pClient)
 PCP_StatusTypeDef PCP_Func_AckNewVersionNotice(PCP_ClientsTypeDef* pClient)
 {
 	PCP_StatusTypeDef PCPStatus = PCP_OK;
+	PCP_ResultCodeTypeDef PCPResultCodeStatus = PCP_ExecuteSuccess;
 	PCP_MessageDataTypeDef* PCPMessageRecv = (PCP_MessageDataTypeDef*)pClient->Recvbuf;
 	PCP_RckNewVersionNoticeTypeDef* PCPRckNewVersionNotice = (PCP_RckNewVersionNoticeTypeDef*)PCPMessageRecv->pPacketData;
 	PCP_MessageDataTypeDef* PCPMessageProcess = (PCP_MessageDataTypeDef*)pClient->DataProcessStack;
 	
-	memset((void*)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
+	pClient->DictateRunCtl.dictateUpgradeQueryVersionCnt = 0;
 	
 	/* 获取新版本通知数据 */
 	memcpy(pClient->Parameter.PlatformSoftVersion, PCPRckNewVersionNotice->PlatformSoftVersion, sizeof(pClient->Parameter.PlatformSoftVersion));
@@ -184,17 +185,23 @@ PCP_StatusTypeDef PCP_Func_AckNewVersionNotice(PCP_ClientsTypeDef* pClient)
 	pClient->Parameter.UpgradePackSliceNum = PCPSock_ntohs(PCPRckNewVersionNotice->UpgradePackSliceNum);
 	pClient->Parameter.UpgradePackCheckCode = PCPSock_ntohs(PCPRckNewVersionNotice->UpgradePackCheckCode);
 	
-	/* 新版本通知处理回调函数 */
-	PCP_UpgradeDataNewVersionNotice_Callback(pClient);
-	
 	/* 参数写入升级运行管理器 */
-	pClient->DictateRunCtl.dictateUpgradeQueryVersionCnt = 0;
-	pClient->UpgradeExecution.upgradeStatus = PCP_UPGRADE_DOWNLOAD;
 	memcpy(pClient->UpgradeExecution.PlatformSoftVersion, pClient->Parameter.PlatformSoftVersion, sizeof(pClient->UpgradeExecution.PlatformSoftVersion));
 	pClient->UpgradeExecution.PackSliceIndex = 0;
 	pClient->UpgradeExecution.PackSliceSize = pClient->Parameter.UpgradePackSliceSize;
 	pClient->UpgradeExecution.PackSliceNum = pClient->Parameter.UpgradePackSliceNum;
 	pClient->UpgradeExecution.PackCheckCode = pClient->Parameter.UpgradePackCheckCode;
+	
+	/* 新版本通知处理回调函数 */
+	PCPResultCodeStatus = PCP_UpgradeDataNewVersionNotice_Callback(pClient);
+	if (PCPResultCodeStatus != PCP_ExecuteSuccess) {
+		pClient->UpgradeExecution.upgradeStatus = PCP_UPGRADE_STANDBY;
+	}
+	else {
+		pClient->UpgradeExecution.upgradeStatus = PCP_UPGRADE_DOWNLOAD;
+	}
+	
+	memset((void*)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	
 	/* 写入新版本通知应答 */
 	PCPMessageProcess->StartX = PCPSock_htons(PCP_START_X);
@@ -202,7 +209,7 @@ PCP_StatusTypeDef PCP_Func_AckNewVersionNotice(PCP_ClientsTypeDef* pClient)
 	PCPMessageProcess->MessageType = PCP_NewVersionNotice;
 	PCPMessageProcess->CRCCheckCode = 0x0000;
 	PCPMessageProcess->PacketDataLength = PCPSock_htons(1);
-	PCPMessageProcess->pPacketData[0] = PCP_ExecuteSuccess;
+	PCPMessageProcess->pPacketData[0] = PCPResultCodeStatus;
 	
 	PCPMessageProcess->CRCCheckCode = PCPSock_htons(PCPCrcCheck_getCrcCheckCode(pClient->DataProcessStack, sizeof(PCP_MessageDataTypeDef)));
 	
@@ -220,23 +227,19 @@ PCP_StatusTypeDef PCP_Func_AckNewVersionNotice(PCP_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 PCP_StatusTypeDef PCP_Func_AckRequestUpgradePackage(PCP_ClientsTypeDef* pClient)
 {
-	static u8 UpgradePackError = 0;
-	
 	PCP_StatusTypeDef PCPStatus = PCP_OK;
 	PCP_MessageDataTypeDef* PCPMessageRecv = (PCP_MessageDataTypeDef*)pClient->Recvbuf;
 	PCP_AckRequestUpgradePackageTypeDef* PCPAckRequestUpgradePackage = (PCP_AckRequestUpgradePackageTypeDef*)PCPMessageRecv->pPacketData;
 	
+	pClient->DictateRunCtl.dictateUpgradeDownloadCnt = 0;
+	
+	/* 判断请求升级包结果码 */
 	if (PCPAckRequestUpgradePackage->ResultCode != PCP_ExecuteSuccess) {
 		NET_PCP_Message_RecvDataOffSet();
 		PCPStatus = PCP_UpgradePack_Error;
-		UpgradePackError++;
-		if (UpgradePackError >= 3) {
-			pClient->UpgradeExecution.upgradeStatus = PCP_UPGRADE_FAILED;
-		}
+		pClient->UpgradeExecution.upgradeStatus = PCP_UPGRADE_STANDBY;
 		goto exit;
 	}
-	
-	pClient->DictateRunCtl.dictateUpgradeDownloadCnt = 0;
 	
 	/* 获取请求升级包响应数据 */
 	pClient->Parameter.UpgradePackSliceIndex = PCPSock_ntohs(PCPAckRequestUpgradePackage->UpgradePackSliceIndex);
@@ -244,7 +247,9 @@ PCP_StatusTypeDef PCP_Func_AckRequestUpgradePackage(PCP_ClientsTypeDef* pClient)
 	/* 升级包下载处理回调 */
 	PCP_UpgradeDataDownload_Callback(pClient, PCPSock_ntohs(PCPAckRequestUpgradePackage->UpgradePackSliceIndex), \
 									  PCPAckRequestUpgradePackage->pUpgradeData, \
-									  PCPMessageRecv->PacketDataLength - (sizeof(PCP_AckRequestUpgradePackageTypeDef) - 1));
+									  PCPSock_ntohs(PCPMessageRecv->PacketDataLength) - (sizeof(PCP_AckRequestUpgradePackageTypeDef) - 1));
+	
+	/* Todo */
 	
 	NET_PCP_Message_RecvDataOffSet();
 	pClient->UpgradeExecution.PackSliceIndex = pClient->Parameter.UpgradePackSliceIndex + 1;
