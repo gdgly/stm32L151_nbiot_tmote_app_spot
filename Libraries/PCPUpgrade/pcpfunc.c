@@ -237,7 +237,7 @@ PCP_StatusTypeDef PCP_Func_AckRequestUpgradePackage(PCP_ClientsTypeDef* pClient)
 	if (PCPAckRequestUpgradePackage->ResultCode != PCP_ExecuteSuccess) {
 		NET_PCP_Message_RecvDataOffSet();
 		PCPStatus = PCP_UpgradePack_Error;
-		pClient->UpgradeExecution.upgradeStatus = PCP_UPGRADE_STANDBY;
+		pClient->UpgradeExecution.upgradeStatus = PCP_UPGRADE_FAILED;
 		goto exit;
 	}
 	
@@ -249,15 +249,10 @@ PCP_StatusTypeDef PCP_Func_AckRequestUpgradePackage(PCP_ClientsTypeDef* pClient)
 									  PCPAckRequestUpgradePackage->pUpgradeData, \
 									  PCPSock_ntohs(PCPMessageRecv->PacketDataLength) - (sizeof(PCP_AckRequestUpgradePackageTypeDef) - 1));
 	
-	/* Todo */
-	
 	NET_PCP_Message_RecvDataOffSet();
-	pClient->UpgradeExecution.PackSliceIndex = pClient->Parameter.UpgradePackSliceIndex + 1;
 	
 	/* 判断升级包是否下载完成 */
 	if (pClient->UpgradeExecution.PackSliceIndex >= pClient->UpgradeExecution.PackSliceNum) {
-		/* 组装升级包处理回调 */
-		PCP_UpgradeDataAssemble_Callback(pClient);
 		pClient->UpgradeExecution.upgradeStatus = PCP_UPGRADE_ASSEMBLE;
 	}
 	
@@ -496,6 +491,7 @@ exit:
 PCP_StatusTypeDef PCP_Func_ReportDownloadStatus(PCP_ClientsTypeDef* pClient)
 {
 	PCP_StatusTypeDef PCPStatus = PCP_OK;
+	PCP_ResultCodeTypeDef PCPResultCodeStatus = PCP_ExecuteSuccess;
 	PCP_MessageDataTypeDef* PCPMessageProcess = (PCP_MessageDataTypeDef*)pClient->DataProcessStack;
 	
 	/* 上报升级包下载状态尝试次数 */
@@ -506,6 +502,12 @@ PCP_StatusTypeDef PCP_Func_ReportDownloadStatus(PCP_ClientsTypeDef* pClient)
 		goto exit;
 	}
 	
+	/* 组装升级包处理回调 */
+	PCPResultCodeStatus = PCP_UpgradeDataAssemble_Callback(pClient);
+	if (PCPResultCodeStatus != PCP_ExecuteSuccess) {
+		pClient->UpgradeExecution.upgradeStatus = PCP_UPGRADE_STANDBY;
+	}
+	
 	memset((void*)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	
 	/* 写入上报升级包下载状态 */
@@ -514,7 +516,7 @@ PCP_StatusTypeDef PCP_Func_ReportDownloadStatus(PCP_ClientsTypeDef* pClient)
 	PCPMessageProcess->MessageType = PCP_ReportDownloadStatus;
 	PCPMessageProcess->CRCCheckCode = 0x0000;
 	PCPMessageProcess->PacketDataLength = PCPSock_htons(1);
-	PCPMessageProcess->pPacketData[0] = PCP_ExecuteSuccess;
+	PCPMessageProcess->pPacketData[0] = PCPResultCodeStatus;
 	
 	PCPMessageProcess->CRCCheckCode = PCPSock_htons(PCPCrcCheck_getCrcCheckCode(pClient->DataProcessStack, sizeof(PCP_MessageDataTypeDef)));
 	

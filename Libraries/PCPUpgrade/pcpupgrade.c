@@ -21,6 +21,7 @@
 #include "usart.h"
 #include "hal_spiflash.h"
 #include "hal_rtc.h"
+#include "hal_beep.h"
 #include "radio_rf_app.h"
 #include "radio_hal_rf.h"
 
@@ -115,7 +116,7 @@ PCP_ResultCodeTypeDef PCP_Upgrade_NewVersionNotice(PCP_ClientsTypeDef* pClient)
 	GD25Q_SPIFLASH_WakeUp();
 	GD25Q_SPIFLASH_Init();
 	
-	if (sscanf((const char*)pClient->Parameter.PlatformSoftVersion, "V%du.%du", &MajorVer, &SubVer) <= 0) {
+	if (sscanf((const char*)pClient->Parameter.PlatformSoftVersion, "V%d.%d", &MajorVer, &SubVer) <= 0) {
 		PCPResultCodeStatus = PCP_InternalAnomaly;
 		goto exit;
 	}
@@ -150,7 +151,7 @@ PCP_ResultCodeTypeDef PCP_Upgrade_NewVersionNotice(PCP_ClientsTypeDef* pClient)
 	/* 写入APP1INFO */
 	GD25Q_SPIFLASH_SetWord(APP1_INFO_UPGRADE_BASEADDR_OFFSET, APP1_DATA_ADDR);								//升级包基地址
 	GD25Q_SPIFLASH_SetHalfWord(APP1_INFO_UPGRADE_BLOCKNUM_OFFSET, pClient->Parameter.UpgradePackSliceNum);		//升级包块数
-	GD25Q_SPIFLASH_SetHalfWord(APP1_INFO_UPGRADE_BLOCKLEN_OFFSET, 512);									//升级包块长度
+	GD25Q_SPIFLASH_SetHalfWord(APP1_INFO_UPGRADE_BLOCKLEN_OFFSET, UPGRADE_PACK_SLICE_BLOCK_SIZE);				//升级包块长度
 	GD25Q_SPIFLASH_SetHalfWord(APP1_INFO_UPGRADE_DATALEN_OFFSET, pClient->Parameter.UpgradePackSliceSize);		//升级包块有效数据长度
 	GD25Q_SPIFLASH_SetWord(APP1_INFO_UPGRADE_SOFTVER_OFFSET, ((MajorVer<<16)|(SubVer<<0)));					//升级包版本号
 	GD25Q_SPIFLASH_SetWord(APP1_INFO_DOWNLOAD_TIME_OFFSET, RTC_GetUnixTimeToStamp());						//升级包下载时间
@@ -187,37 +188,104 @@ PCP_ResultCodeTypeDef PCP_Upgrade_DataDownload(PCP_ClientsTypeDef* pClient, u16 
 	GD25Q_SPIFLASH_WakeUp();
 	GD25Q_SPIFLASH_Init();
 	
+	if (GD25Q_SPIFLASH_GetByte(APP1_PACKSLICE_STATUS_OFFSET + SliceIndex) != 0xFF) {
+		/* 该分片数据已写入 */
+		pClient->UpgradeExecution.PackSliceIndex = SliceIndex + 1;
+		GD25Q_SPIFLASH_PowerDown();
+		Radio_Trf_Printf("PackSlice has been write");
+		goto exit;
+	}
 	
+	if (UpgradeDataLength != pClient->UpgradeExecution.PackSliceSize) {
+		/* 该分片数据长度异常 */
+		GD25Q_SPIFLASH_PowerDown();
+		Radio_Trf_Printf("PackSlice Size Fail");
+		goto exit;
+	}
 	
+	/* 分片数据写入分片地址 */
+	/* 写入APP1DATA */
+	GD25Q_SPIFLASH_WriteBuffer(UpgradeData, APP1_DATA_ADDR + SliceIndex * UPGRADE_PACK_SLICE_BLOCK_SIZE, UpgradeDataLength);
+	GD25Q_SPIFLASH_SetByte(APP1_PACKSLICE_STATUS_OFFSET + SliceIndex, 0x00);
 	
-	
-	
+	pClient->UpgradeExecution.PackSliceIndex = SliceIndex + 1;
+	GD25Q_SPIFLASH_PowerDown();
+	Radio_Trf_Printf("PackSlice write to flash");
 	
 exit:
 	return PCPResultCodeStatus;
 #endif
 }
 
+/**********************************************************************************************************
+ @Function			PCP_ResultCodeTypeDef PCP_Upgrade_DataAssemble(PCP_ClientsTypeDef* pClient)
+ @Description			PCP_Upgrade_DataAssemble				: PCP升级包组装校验处理
+ @Input				pClient							: PCP客户端实例
+ @Return				void
+**********************************************************************************************************/
+PCP_ResultCodeTypeDef PCP_Upgrade_DataAssemble(PCP_ClientsTypeDef* pClient)
+{
+#ifdef GD25Q_80CSIG
+	PCP_ResultCodeTypeDef PCPResultCodeStatus = PCP_ExecuteSuccess;
+	
+	if (GD25Q80CSIG_OK != GD25Q_SPIFLASH_Get_Status()) {
+		PCPResultCodeStatus = PCP_InternalAnomaly;
+		goto exit;
+	}
+	
+	Radio_Rf_Interrupt_Deinit();
+	GD25Q_SPIFLASH_WakeUp();
+	GD25Q_SPIFLASH_Init();
+	
+	if (pClient->UpgradeExecution.PackSliceNum != GD25Q_SPIFLASH_GetNumofByte(APP1_PACKSLICE_STATUS_OFFSET, pClient->UpgradeExecution.PackSliceNum, 0x00)) {
+		/* 数据包没有下载完全 */
+		GD25Q_SPIFLASH_EraseSector(APP1_INFORMATION_ADDR);
+		GD25Q_SPIFLASH_PowerDown();
+		Radio_Trf_Printf("Upgrade Check Fail");
+		PCPResultCodeStatus = PCP_UpgradePacketCheckFail;
+		goto exit;
+	}
+	
+	GD25Q_SPIFLASH_PowerDown();
+	Radio_Trf_Printf("Upgrade Check Ok");
+	
+exit:
+	return PCPResultCodeStatus;
+#endif
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/**********************************************************************************************************
+ @Function			PCP_ResultCodeTypeDef PCP_Upgrade_AfterUpdata(PCP_ClientsTypeDef* pClient)
+ @Description			PCP_Upgrade_AfterUpdata				: PCP升级包开始升级处理
+ @Input				pClient							: PCP客户端实例
+ @Return				void
+**********************************************************************************************************/
+PCP_ResultCodeTypeDef PCP_Upgrade_AfterUpdata(PCP_ClientsTypeDef* pClient)
+{
+#ifdef GD25Q_80CSIG
+	PCP_ResultCodeTypeDef PCPResultCodeStatus = PCP_ExecuteSuccess;
+	
+	if (GD25Q80CSIG_OK != GD25Q_SPIFLASH_Get_Status()) {
+		PCPResultCodeStatus = PCP_InternalAnomaly;
+		goto exit;
+	}
+	
+	Radio_Trf_Printf("Start Boot Upgrade APP ...");
+	Radio_Rf_Interrupt_Deinit();
+	GD25Q_SPIFLASH_WakeUp();
+	GD25Q_SPIFLASH_Init();
+	
+	if (GD25Q_SPIFLASH_GetByte(APP1_INFO_UPGRADE_STATUS_OFFSET) == 0xFF) {
+		GD25Q_SPIFLASH_SetByte(APP1_INFO_UPGRADE_STATUS_OFFSET, 0x55);									//标识有升级包且可升级
+	}
+	
+	TCFG_EEPROM_SetBootMode(TCFG_ENV_BOOTMODE_SPIFLASH_UPGRADE);										//设置升级模式
+	BEEP_CtrlRepeat_Extend(5, 50, 50);
+	Stm32_System_Software_Reboot();
+	
+exit:
+	return PCPResultCodeStatus;
+#endif
+}
 
 /********************************************** END OF FLEE **********************************************/
