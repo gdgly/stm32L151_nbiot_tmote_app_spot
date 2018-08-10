@@ -196,7 +196,7 @@ PCP_ResultCodeTypeDef PCP_Upgrade_DataDownload(PCP_ClientsTypeDef* pClient, u16 
 		goto exit;
 	}
 	
-	if (UpgradeDataLength != pClient->UpgradeExecution.PackSliceSize) {
+	if (UpgradeDataLength > pClient->UpgradeExecution.PackSliceSize) {
 		/* 该分片数据长度异常 */
 		GD25Q_SPIFLASH_PowerDown();
 		Radio_Trf_Printf("PackSlice Size Fail");

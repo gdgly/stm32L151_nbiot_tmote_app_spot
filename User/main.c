@@ -527,61 +527,11 @@ void DeBugMain(void)
 	NBIOT_Neul_NBxx_HardwareReboot(&NbiotClientHandler, 8000);
 #endif
 	
-#if 1
-	IWDG_Feed();
 	
-	Radio_Rf_Interrupt_Deinit();
-	GD25Q_SPIFLASH_WakeUp();
-	GD25Q_SPIFLASH_Init();
-	
-	Radio_Trf_Printf("Base Addr : %X", GD25Q_SPIFLASH_GetWord(APP1_INFO_UPGRADE_BASEADDR_OFFSET));
-	Delay_MS(50);
-	Radio_Trf_Printf("PackSliceNum : %d", GD25Q_SPIFLASH_GetHalfWord(APP1_INFO_UPGRADE_BLOCKNUM_OFFSET));
-	Delay_MS(50);
-	Radio_Trf_Printf("PackSliceSize : %d", GD25Q_SPIFLASH_GetHalfWord(APP1_INFO_UPGRADE_BLOCKLEN_OFFSET));
-	Delay_MS(50);
-	Radio_Trf_Printf("PackSliceLen : %d", GD25Q_SPIFLASH_GetHalfWord(APP1_INFO_UPGRADE_DATALEN_OFFSET));
-	Delay_MS(50);
-	Radio_Trf_Printf("Soft : %X", GD25Q_SPIFLASH_GetWord(APP1_INFO_UPGRADE_SOFTVER_OFFSET));
-	Delay_MS(50);
-	
-	Radio_Trf_Printf("Status 01:%x", GD25Q_SPIFLASH_GetByte(APP1_PACKSLICE_STATUS_OFFSET + 0));
-	Delay_MS(50);
-	Radio_Trf_Printf("Status 02:%x", GD25Q_SPIFLASH_GetByte(APP1_PACKSLICE_STATUS_OFFSET + 1));
-	Delay_MS(50);
-	Radio_Trf_Printf("Status 03:%x", GD25Q_SPIFLASH_GetByte(APP1_PACKSLICE_STATUS_OFFSET + 2));
-	Delay_MS(50);
-	Radio_Trf_Printf("Status 04:%x", GD25Q_SPIFLASH_GetByte(APP1_PACKSLICE_STATUS_OFFSET + 3));
-	Delay_MS(50);
-	Radio_Trf_Printf("Status 05:%x", GD25Q_SPIFLASH_GetByte(APP1_PACKSLICE_STATUS_OFFSET + 4));
-	Delay_MS(50);
-	Radio_Trf_Printf("Status 06:%x", GD25Q_SPIFLASH_GetByte(APP1_PACKSLICE_STATUS_OFFSET + 5));
-	Delay_MS(50);
-	
-	GD25Q_SPIFLASH_ReadBuffer(ReadBufTemp, APP1_DATA_ADDR + 0 * 512, 15);
-	Radio_Trf_Printf("APP01 : %s", ReadBufTemp);
-	Delay_MS(50);
-	
-	GD25Q_SPIFLASH_ReadBuffer(ReadBufTemp, APP1_DATA_ADDR + 1 * 512, 15);
-	Radio_Trf_Printf("APP02 : %s", ReadBufTemp);
-	Delay_MS(50);
-	
-	GD25Q_SPIFLASH_ReadBuffer(ReadBufTemp, APP1_DATA_ADDR + 2 * 512, 15);
-	Radio_Trf_Printf("APP03 : %s", ReadBufTemp);
-	Delay_MS(50);
-	
-	GD25Q_SPIFLASH_ReadBuffer(ReadBufTemp, APP1_DATA_ADDR + 3 * 512, 15);
-	Radio_Trf_Printf("APP04 : %s", ReadBufTemp);
-	Delay_MS(50);
-	
-	GD25Q_SPIFLASH_ReadBuffer(ReadBufTemp, APP1_DATA_ADDR + 4 * 512, 15);
-	Radio_Trf_Printf("APP05 : %s", ReadBufTemp);
-	Delay_MS(50);
-#endif
 	
 	while (true) {
 		
-		Radio_Trf_Printf("APP Updata OK");
+		
 		
 		/* 小无线处理 */
 		Radio_Trf_App_Task();
