@@ -112,6 +112,14 @@ PCP_ResultCodeTypeDef PCP_Upgrade_NewVersionNotice(PCP_ClientsTypeDef* pClient)
 	}
 	
 	Radio_Trf_Printf("NewVersion APP ...");
+	
+	/* 信号质量与信噪比低中断升级 */
+	if ((TCFG_Utility_Get_Nbiot_Rssi_IntVal() < UPGRADE_LOW_LIMIT_RSSI) || (TCFG_Utility_Get_Nbiot_RadioSNR() < UPGRADE_LOW_LIMIT_SNR)) {
+		Radio_Trf_Printf("Signal Quality Difference");
+		PCPResultCodeStatus = PCP_SignalqualityDifference;
+		goto exit;
+	}
+	
 	Radio_Rf_Interrupt_Deinit();
 	GD25Q_SPIFLASH_WakeUp();
 	GD25Q_SPIFLASH_Init();
@@ -285,6 +293,65 @@ PCP_ResultCodeTypeDef PCP_Upgrade_AfterUpdata(PCP_ClientsTypeDef* pClient)
 	
 exit:
 	return PCPResultCodeStatus;
+#endif
+}
+
+/**********************************************************************************************************
+ @Function			void PCP_Upgrade_PrintUpgradeInfo(void)
+ @Description			PCP_Upgrade_PrintUpgradeInfo			: 打印升级包信息
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+void PCP_Upgrade_PrintUpgradeInfo(void)
+{
+#ifdef GD25Q_80CSIG
+	PCP_APPInfoTypeDef APP1Info;
+	PCP_APPInfoTypeDef APP2Info;
+	
+	if (GD25Q80CSIG_OK != GD25Q_SPIFLASH_Get_Status()) {
+		Radio_Trf_Printf("SPI FLASH Fail");
+		return;
+	}
+	
+	Radio_Rf_Interrupt_Deinit();
+	GD25Q_SPIFLASH_WakeUp();
+	GD25Q_SPIFLASH_Init();
+	
+	APP1Info.Status	= GD25Q_SPIFLASH_GetByte(APP1_INFO_UPGRADE_STATUS_OFFSET);
+	APP1Info.BaseAddr	= GD25Q_SPIFLASH_GetWord(APP1_INFO_UPGRADE_BASEADDR_OFFSET);
+	APP1Info.BlockNum	= GD25Q_SPIFLASH_GetHalfWord(APP1_INFO_UPGRADE_BLOCKNUM_OFFSET);
+	APP1Info.BlockLen	= GD25Q_SPIFLASH_GetHalfWord(APP1_INFO_UPGRADE_BLOCKLEN_OFFSET);
+	APP1Info.DataLen	= GD25Q_SPIFLASH_GetHalfWord(APP1_INFO_UPGRADE_DATALEN_OFFSET);
+	APP1Info.SoftVer	= GD25Q_SPIFLASH_GetWord(APP1_INFO_UPGRADE_SOFTVER_OFFSET);
+	APP1Info.CheckCode	= GD25Q_SPIFLASH_GetWord(APP1_DATA_CHECK_CODE_OFFSET);
+	
+	APP2Info.Status	= GD25Q_SPIFLASH_GetByte(APP2_INFO_UPGRADE_STATUS_OFFSET);
+	APP2Info.BaseAddr	= GD25Q_SPIFLASH_GetWord(APP2_INFO_UPGRADE_BASEADDR_OFFSET);
+	APP2Info.BlockNum	= GD25Q_SPIFLASH_GetHalfWord(APP2_INFO_UPGRADE_BLOCKNUM_OFFSET);
+	APP2Info.BlockLen	= GD25Q_SPIFLASH_GetHalfWord(APP2_INFO_UPGRADE_BLOCKLEN_OFFSET);
+	APP2Info.DataLen	= GD25Q_SPIFLASH_GetHalfWord(APP2_INFO_UPGRADE_DATALEN_OFFSET);
+	APP2Info.SoftVer	= GD25Q_SPIFLASH_GetWord(APP2_INFO_UPGRADE_SOFTVER_OFFSET);
+	APP2Info.CheckCode	= GD25Q_SPIFLASH_GetWord(APP2_DATA_CHECK_CODE_OFFSET);
+	
+	GD25Q_SPIFLASH_PowerDown();
+	
+	Radio_Trf_Printf("APP1 Status: %02X", APP1Info.Status);
+	Radio_Trf_Printf("APP1 BaseAddr: %08X", APP1Info.BaseAddr);
+	Radio_Trf_Printf("APP1 BlockNum: %d", APP1Info.BlockNum);
+	Radio_Trf_Printf("APP1 BlockLen: %d", APP1Info.BlockLen);
+	Radio_Trf_Printf("APP1 DataLen: %d", APP1Info.DataLen);
+	Radio_Trf_Printf("APP1 SoftVer: V%d.%d", APP1Info.SoftVer>>16, APP1Info.SoftVer&0xFFFF);
+	Radio_Trf_Printf("APP1 CheckCode: %X", APP1Info.CheckCode);
+	Radio_Trf_Printf("APP2 Status: %02X", APP2Info.Status);
+	Radio_Trf_Printf("APP2 BaseAddr: %08X", APP2Info.BaseAddr);
+	Radio_Trf_Printf("APP2 BlockNum: %d", APP2Info.BlockNum);
+	Radio_Trf_Printf("APP2 BlockLen: %d", APP2Info.BlockLen);
+	Radio_Trf_Printf("APP2 DataLen: %d", APP2Info.DataLen);
+	Radio_Trf_Printf("APP2 SoftVer: V%d.%d", APP2Info.SoftVer>>16, APP2Info.SoftVer&0xFFFF);
+	Radio_Trf_Printf("APP2 CheckCode: %X", APP2Info.CheckCode);
+	
+#else
+	Radio_Trf_Printf("SPI FLASH Invalid");
 #endif
 }
 

@@ -52,6 +52,11 @@
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 
+#define	RADIO_PRINT_WORKINFO			1								//雷达输出Workinfo
+#define	RADIO_PRINT_NETINFO				1								//雷达输出NetInfo
+#define	RADIO_PRINT_DEVINFO				1								//雷达输出DeviceInfo
+#define	RADIO_PRINT_UPGRADEINFO			1								//雷达输出UpgradeInfo
+
 #define	RADIO_SI4438													//无线开启
 #define	RF_DPRINT_LV					2								//无线调试信息输出等级
 

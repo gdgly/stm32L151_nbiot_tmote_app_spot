@@ -4,9 +4,23 @@
 #include "sys.h"
 #include "pcpconfig.h"
 
+typedef __packed struct
+{
+	u8			Status;
+	u32			BaseAddr;
+	u16			BlockNum;
+	u16			BlockLen;
+	u16			DataLen;
+	u32			SoftVer;
+	u32			CheckCode;
+}PCP_APPInfoTypeDef;
+
 #define	UPGRADE_BACKUP_APP_WRITE_DISABLE	0												//控制备份
 #define	UPGRADE_BACKUP_APP_WRITE_ENABLE	1												//强制备份
 #define	UPGRADE_BACKUP_APP_WRITE_TYPE		UPGRADE_BACKUP_APP_WRITE_DISABLE						//备份区备份模式
+
+#define	UPGRADE_LOW_LIMIT_RSSI			18												//信号值限制下限
+#define	UPGRADE_LOW_LIMIT_SNR			30												//信号质量限制下限
 
 #define	UPGRADE_PACK_SLICE_BLOCK_SIZE		512												//升级包最大分片大小
 
@@ -16,8 +30,6 @@ PCP_ResultCodeTypeDef PCP_Upgrade_DataDownload(PCP_ClientsTypeDef* pClient, u16 
 PCP_ResultCodeTypeDef PCP_Upgrade_DataAssemble(PCP_ClientsTypeDef* pClient);												//升级包组装校验
 PCP_ResultCodeTypeDef PCP_Upgrade_AfterUpdata(PCP_ClientsTypeDef* pClient);												//升级包开始升级
 
-
-
-
+void PCP_Upgrade_PrintUpgradeInfo(void);																			//打印升级包信息
 
 #endif

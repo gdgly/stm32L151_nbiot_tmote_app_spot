@@ -1592,7 +1592,6 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						else {
 							ret = NETIP_UNKNOWNERROR;
 						}
-						__NOP();
 					}
 					/* 传感器灵敏度配置指令 */
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Sense") != NULL) {
@@ -1612,7 +1611,6 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						else {
 							ret = NETIP_UNKNOWNERROR;
 						}
-						__NOP();
 					}
 					/* 无线心跳间隔时间配置指令 */
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "RFHeart") != NULL) {
@@ -1632,7 +1630,6 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						else {
 							ret = NETIP_UNKNOWNERROR;
 						}
-						__NOP();
 					}
 					/* 初始化传感器指令 */
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Background") != NULL) {
@@ -1650,13 +1647,11 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						else {
 							ret = NETIP_UNKNOWNERROR;
 						}
-						__NOP();
 					}
 					/* Reboot */
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Reboot") != NULL) {
 						BEEP_CtrlRepeat_Extend(2, 500, 250);
 						Stm32_System_Software_Reboot();
-						__NOP();
 					}
 					/* NewSn */
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Newsn") != NULL) {
@@ -1668,7 +1663,6 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						else {
 							ret = NETIP_UNKNOWNERROR;
 						}
-						__NOP();
 					}
 					/* CDP Server */
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Server") != NULL) {
@@ -1694,7 +1688,6 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						else {
 							ret = NETIP_UNKNOWNERROR;
 						}
-						__NOP();
 					}
 					/* Active */
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Active") != NULL) {
@@ -1714,7 +1707,6 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						else {
 							ret = NETIP_UNKNOWNERROR;
 						}
-						__NOP();
 					}
 					/* RadarDbg */
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "RadarDbg") != NULL) {
@@ -1728,7 +1720,6 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						else {
 							ret = NETIP_UNKNOWNERROR;
 						}
-						__NOP();
 					}
 					/* MagMod */
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "MagMod") != NULL) {
@@ -1741,7 +1732,6 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						else {
 							ret = NETIP_UNKNOWNERROR;
 						}
-						__NOP();
 					}
 					/* NbHeart */
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "NbHeart") != NULL) {
@@ -1754,7 +1744,6 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						else {
 							ret = NETIP_UNKNOWNERROR;
 						}
-						__NOP();
 					}
 					/* InitRadar */
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "InitRadar") != NULL) {
@@ -1768,7 +1757,6 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						else {
 							ret = NETIP_UNKNOWNERROR;
 						}
-						__NOP();
 					}
 					/* InitMag */
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "InitMag") != NULL) {
@@ -1781,7 +1769,6 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						else {
 							ret = NETIP_UNKNOWNERROR;
 						}
-						__NOP();
 					}
 					/* DisRange */
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "DisRange") != NULL) {
@@ -1795,7 +1782,6 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						else {
 							ret = NETIP_UNKNOWNERROR;
 						}
-						__NOP();
 					}
 					/* CarInDelay */
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "InDelay") != NULL) {
@@ -1808,7 +1794,6 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						else {
 							ret = NETIP_UNKNOWNERROR;
 						}
-						__NOP();
 					}
 					/* RATime */
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "RATime") != NULL) {
@@ -1821,7 +1806,6 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						else {
 							ret = NETIP_UNKNOWNERROR;
 						}
-						__NOP();
 					}
 					/* QuotaTime */
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "QuotaTime") != NULL) {
@@ -1837,7 +1821,6 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						else {
 							ret = NETIP_UNKNOWNERROR;
 						}
-						__NOP();
 					}
 					/* MagCoef */
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "MagCoef") != NULL) {
@@ -1853,7 +1836,6 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						else {
 							ret = NETIP_UNKNOWNERROR;
 						}
-						__NOP();
 					}
 					/* SetQmcCoef */
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "SetQmcCoef") != NULL) {
@@ -1863,7 +1845,6 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						TCFG_SystemData.MagCoefY = magTempCoefY;
 						TCFG_SystemData.MagCoefZ = magTempCoefZ;
 						TCFG_EEPROM_SetMagTempCoef(TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
-						__NOP();
 					}
 					/* ...... */
 				}
@@ -1872,17 +1853,14 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 					/* Workinfo */
 					if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Workinfo") != NULL) {
 						NETCoapNeedSendCode.WorkInfo = 1;
-						__NOP();
 					}
 					/* BasicInfo */
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "BasicInfo") != NULL) {
 						NETCoapNeedSendCode.BasicInfo = 1;
-						__NOP();
 					}
 					/* DynamicInfo */
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "DynamicInfo") != NULL) {
 						NETCoapNeedSendCode.DynamicInfo = 1;
-						__NOP();
 					}
 					/* ...... */
 				}
