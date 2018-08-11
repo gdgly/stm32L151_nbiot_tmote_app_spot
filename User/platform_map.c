@@ -182,6 +182,14 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_SystemData.CoapQuotaTime = NBCOAP_COAP_QUOTA_TIME_TYPE;
 	TCFG_EEPROM_SetCoapQuotaTime(TCFG_SystemData.CoapQuotaTime);
 	
+	/* 升级信号值限制下限 */
+	TCFG_SystemData.UpgradeLimitRssi = 18;
+	TCFG_EEPROM_SetUpgradeLimitRssi(TCFG_SystemData.UpgradeLimitRssi);
+	
+	/* 升级信号质量限制下限 */
+	TCFG_SystemData.UpgradeLimitSnr = 30;
+	TCFG_EEPROM_SetUpgradeLimitSnr(TCFG_SystemData.UpgradeLimitSnr);
+	
 	/* NB核心网地址 */
 	sscanf(COAPCDPADDR, "%d.%d.%d.%d", &serverip[3], &serverip[2], &serverip[1], &serverip[0]);
 	TCFG_SystemData.NBCoapCDPServer.ip.ip8[3] = serverip[3];
@@ -1730,6 +1738,50 @@ void TCFG_EEPROM_SetCoapQuotaTime(unsigned short val)
 unsigned short TCFG_EEPROM_GetCoapQuotaTime(void)
 {
 	return FLASH_EEPROM_ReadHalfWord(TCFG_COAP_QUOTA_TIME_OFFSET);
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetUpgradeLimitRssi(short val)
+ @Description			TCFG_EEPROM_SetUpgradeLimitRssi				: 保存UpgradeLimitRssi
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetUpgradeLimitRssi(short val)
+{
+	FLASH_EEPROM_WriteHalfWord(TCFG_UPDATA_LIMITRSSI_OFFSET, val);
+}
+
+/**********************************************************************************************************
+ @Function			short TCFG_EEPROM_GetUpgradeLimitRssi(void)
+ @Description			TCFG_EEPROM_GetUpgradeLimitRssi				: 读取UpgradeLimitRssi
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+short TCFG_EEPROM_GetUpgradeLimitRssi(void)
+{
+	return FLASH_EEPROM_ReadHalfWord(TCFG_UPDATA_LIMITRSSI_OFFSET);
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetUpgradeLimitSnr(short val)
+ @Description			TCFG_EEPROM_SetUpgradeLimitSnr				: 保存UpgradeLimitSnr
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetUpgradeLimitSnr(short val)
+{
+	FLASH_EEPROM_WriteHalfWord(TCFG_UPDATA_LIMITSNR_OFFSET, val);
+}
+
+/**********************************************************************************************************
+ @Function			short TCFG_EEPROM_GetUpgradeLimitSnr(void)
+ @Description			TCFG_EEPROM_GetUpgradeLimitSnr				: 读取UpgradeLimitSnr
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+short TCFG_EEPROM_GetUpgradeLimitSnr(void)
+{
+	return FLASH_EEPROM_ReadHalfWord(TCFG_UPDATA_LIMITSNR_OFFSET);
 }
 
 /**********************************************************************************************************

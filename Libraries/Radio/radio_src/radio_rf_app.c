@@ -196,6 +196,7 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 	unsigned int uval32 = 0;
 	unsigned short int uval16 = 0;
 	short magTempCoefX, magTempCoefY, magTempCoefZ;
+	short limitRssi, limitSnr;
 	
 	mac_sn = TCFG_EEPROM_Get_MAC_SN();
 	
@@ -394,6 +395,15 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					TCFG_SystemData.MagCoefY = magTempCoefY;
 					TCFG_SystemData.MagCoefZ = magTempCoefZ;
 					TCFG_EEPROM_SetMagTempCoef(TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
+				}
+				/* UpLimit */
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "uplimit")) {
+					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "uplimit:%hd,%hd", &limitRssi, &limitSnr);
+					TCFG_SystemData.UpgradeLimitRssi = limitRssi;
+					TCFG_SystemData.UpgradeLimitSnr = limitSnr;
+					TCFG_EEPROM_SetUpgradeLimitRssi(TCFG_SystemData.UpgradeLimitRssi);
+					TCFG_EEPROM_SetUpgradeLimitSnr(TCFG_SystemData.UpgradeLimitSnr);
+					Radio_Trf_Printf("uplimit:%hd,%hd", TCFG_EEPROM_GetUpgradeLimitRssi(), TCFG_EEPROM_GetUpgradeLimitSnr());
 				}
 				/* WorkInfo */
 				#if RADIO_PRINT_WORKINFO

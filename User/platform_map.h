@@ -162,6 +162,11 @@
 #define TCFG_RF_DPRINT_LV_LENGTH			1												//RFDPrintLv			RF调试信息输出等级
 #define TCFG_COAP_RA_TIME_OFFSET			TCFG_RF_DPRINT_LV_OFFSET + TCFG_RF_DPRINT_LV_LENGTH		//0x08080E11
 #define TCFG_COAP_RA_TIME_LENGTH			1												//CoapRATime			RA间隔发送普通包时间
+
+#define TCFG_UPDATA_LIMITRSSI_OFFSET		TCFG_COAP_RA_TIME_OFFSET + TCFG_COAP_RA_TIME_LENGTH		//0x08080E12
+#define TCFG_UPDATA_LIMITRSSI_LENGTH		2												//UpdataLimitRssi		升级限制Rssi值
+#define TCFG_UPDATA_LIMITSNR_OFFSET		TCFG_UPDATA_LIMITRSSI_OFFSET + TCFG_UPDATA_LIMITRSSI_LENGTH	//0x08080E14
+#define TCFG_UPDATA_LIMITSNR_LENGTH		2												//UpdataLimitSnr		升级限制Snr值
 /************************************************************** End **************************************************************/
 
 enum TCFG_SENSITIVITY																	//传感器灵敏度
@@ -217,6 +222,8 @@ typedef struct
 	unsigned short						CoapConnectDayTime;									//Coap保持连接时间(一天)
 	unsigned short						CoapIdleDayTime;									//Coap休眠时间(一天)
 	unsigned short						CoapQuotaTime;										//Coap使用配额时间(一天)
+	short							UpgradeLimitRssi;									//信号值限制下限
+	short							UpgradeLimitSnr;									//信号质量限制下限
 	unsigned char						NBCoapCDPServerIP[16];								//NB核心网IP地址
 	unsigned char						NBCoapCDPServerPort[6];								//NB核心网IP端口
 	NBIOT_ServerAddr					NBCoapCDPServer;									//NB核心网地址
@@ -375,6 +382,12 @@ unsigned short	TCFG_EEPROM_GetCoapIdleDayTime(void);											//读取CoapIdleD
 
 void			TCFG_EEPROM_SetCoapQuotaTime(unsigned short val);									//保存CoapQuotaTime
 unsigned short	TCFG_EEPROM_GetCoapQuotaTime(void);											//读取CoapQuotaTime
+
+void			TCFG_EEPROM_SetUpgradeLimitRssi(short val);										//保存UpgradeLimitRssi
+short		TCFG_EEPROM_GetUpgradeLimitRssi(void);											//读取UpgradeLimitRssi
+
+void			TCFG_EEPROM_SetUpgradeLimitSnr(short val);										//保存UpgradeLimitSnr
+short		TCFG_EEPROM_GetUpgradeLimitSnr(void);											//读取UpgradeLimitSnr
 
 void			TCFG_Utility_Add_Device_BootCount(void);										//Device重启次数累加
 unsigned short TCFG_Utility_Get_Device_BootCount(void);										//Device重启次数获取
