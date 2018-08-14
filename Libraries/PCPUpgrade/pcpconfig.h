@@ -204,6 +204,7 @@ struct PCP_ClientsTypeDef
 		unsigned char					PlatformSoftVersion[16];
 		unsigned short					PackSliceIndex;
 		unsigned short					PackSliceSize;
+		unsigned short					PackLastSliceSize;
 		unsigned short					PackSliceNum;
 		unsigned short					PackCheckCode;
 	}UpgradeExecution;

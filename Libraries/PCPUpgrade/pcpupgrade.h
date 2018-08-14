@@ -32,4 +32,7 @@ PCP_ResultCodeTypeDef PCP_Upgrade_AfterUpdata(PCP_ClientsTypeDef* pClient);					
 
 void PCP_Upgrade_PrintUpgradeInfo(void);																			//打印升级包信息
 
+u8 CalculateSumCheckCode(u32 regCode, uint8_t* buf, uint32_t length);														//加和校验
+u8 CalculateStringToHex(u8 HighChar, u8 LowChar);																		//字符转换
+
 #endif

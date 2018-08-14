@@ -73,6 +73,7 @@ void PCP_Client_Init(PCP_ClientsTypeDef* pClient, PCP_CoAPNetTransportTypeDef* N
 	sprintf((char*)pClient->UpgradeExecution.PlatformSoftVersion, "V%d.%d", TCFG_Utility_Get_Major_Softnumber(), TCFG_Utility_Get_Sub_Softnumber());
 	pClient->UpgradeExecution.PackSliceIndex				= 0;
 	pClient->UpgradeExecution.PackSliceSize					= 0;
+	pClient->UpgradeExecution.PackLastSliceSize				= 0;
 	pClient->UpgradeExecution.PackSliceNum					= 0;
 	pClient->UpgradeExecution.PackCheckCode					= 0;
 	
@@ -90,10 +91,10 @@ PCP_ResultCodeTypeDef PCP_UpgradeDataNewVersionNotice_Callback(PCP_ClientsTypeDe
 {
 	PCP_ResultCodeTypeDef PCPResultCodeStatus = PCP_ExecuteSuccess;
 	
-	Radio_Trf_Debug_Printf_Level2("PlatSoftVer : %s", pClient->Parameter.PlatformSoftVersion);
-	Radio_Trf_Debug_Printf_Level2("PackSliceSize : %d", pClient->Parameter.UpgradePackSliceSize);
-	Radio_Trf_Debug_Printf_Level2("PackSliceNum : %d", pClient->Parameter.UpgradePackSliceNum);
-	Radio_Trf_Debug_Printf_Level2("PackCheckCode : %d", pClient->Parameter.UpgradePackCheckCode);
+	Radio_Trf_Debug_Printf_Level2("PlatSoftVer: %s", pClient->Parameter.PlatformSoftVersion);
+	Radio_Trf_Debug_Printf_Level2("PackSliceSize: %d", pClient->Parameter.UpgradePackSliceSize);
+	Radio_Trf_Debug_Printf_Level2("PackSliceNum: %d", pClient->Parameter.UpgradePackSliceNum);
+	Radio_Trf_Debug_Printf_Level2("PackCheckCode: %X", CalculateStringToHex(pClient->Parameter.UpgradePackCheckCode>>8, pClient->Parameter.UpgradePackCheckCode&0xFF));
 	
 	PCPResultCodeStatus = PCP_Upgrade_NewVersionNotice(pClient);
 	
@@ -113,7 +114,7 @@ PCP_ResultCodeTypeDef PCP_UpgradeDataDownload_Callback(PCP_ClientsTypeDef* pClie
 {
 	PCP_ResultCodeTypeDef PCPResultCodeStatus = PCP_ExecuteSuccess;
 	
-	Radio_Trf_Debug_Printf_Level2("Down%d.%d:OK", SliceIndex, UpgradeDataLength);
+	Radio_Trf_Debug_Printf_Level2("Down%d.%d: OK", SliceIndex, UpgradeDataLength);
 	
 	PCPResultCodeStatus = PCP_Upgrade_DataDownload(pClient, SliceIndex, UpgradeData, UpgradeDataLength);
 	
