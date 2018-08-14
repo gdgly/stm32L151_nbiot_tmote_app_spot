@@ -43,23 +43,35 @@
 #define	NBCOAP_QUOTA_TIME_5YEAR			1183
 #define	NBCOAP_COAP_QUOTA_TIME_TYPE		NBCOAP_QUOTA_TIME_3YEAR				//Coap一天使用配额时间
 
+#define	RADIO_CMD_ECHO_DISABLE			0
+#define	RADIO_CMD_ECHO_ENABLE			1
+#define	RADIO_CMD_ECHO_TYPE				RADIO_CMD_ECHO_DISABLE				//无线命令回显
+
+#define	DEVICE_BOOT_START_MAGINIT_DISABLE	0
+#define	DEVICE_BOOT_START_MAGINIT_ENABLE	1
+#define	DEVICE_BOOT_START_MAGINIT_TYPE	DEVICE_BOOT_START_MAGINIT_DISABLE		//上电初始化背景
+
 #define	RADAR_MODEL_V1					1
 #define	RADAR_MODEL_V2					2
 #define	RADAR_MODEL_TYPE				RADAR_MODEL_V2						//雷达类型
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					110								//从固件版本
+#define	SOFTWARESUB					112								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 
-#define	RADIO_PRINT_WORKINFO			1								//雷达输出Workinfo
-#define	RADIO_PRINT_NETINFO				1								//雷达输出NetInfo
-#define	RADIO_PRINT_DEVINFO				1								//雷达输出DeviceInfo
-#define	RADIO_PRINT_UPGRADEINFO			1								//雷达输出UpgradeInfo
+#define	RADIO_PRINT_WORKINFO			1								//无线输出Workinfo
+#define	RADIO_PRINT_NETINFO				1								//无线输出NetInfo
+#define	RADIO_PRINT_DEVINFO				1								//无线输出DeviceInfo
+#define	RADIO_PRINT_UPGRADEINFO			1								//无线输出UpgradeInfo
+
+#define	RF_DPRINT_LV_0					0								//调试信息不打印
+#define	RF_DPRINT_LV_1					1								//基本信息打印
+#define	RF_DPRINT_LV_2					2								//NB信息打印
+#define	RF_DPRINT_LV_3					3								//所有信息打印
+#define	RF_DPRINT_LV_TYPE				RF_DPRINT_LV_2						//无线调试信息输出等级
 
 #define	RADIO_SI4438													//无线开启
-#define	RF_DPRINT_LV					2								//无线调试信息输出等级
-
 #define	GD25Q_80CSIG													//SPIFLASH开启
 
 #define	IDLE_WORK						4								//休眠

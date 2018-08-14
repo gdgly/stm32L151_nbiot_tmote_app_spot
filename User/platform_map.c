@@ -91,7 +91,7 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_EEPROM_SetHeartinterval(TCFG_SystemData.Heartinterval);
 	
 	/* 无线调试输出等级 */
-	TCFG_SystemData.RFDprintLv = RF_DPRINT_LV;
+	TCFG_SystemData.RFDprintLv = RF_DPRINT_LV_TYPE;
 	TCFG_EEPROM_SetRFDprintLv(TCFG_SystemData.RFDprintLv);
 	
 	/* 地磁模式 */
@@ -190,6 +190,10 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_SystemData.UpgradeLimitSnr = 30;
 	TCFG_EEPROM_SetUpgradeLimitSnr(TCFG_SystemData.UpgradeLimitSnr);
 	
+	/* 蜂鸣器控制 */
+	TCFG_SystemData.BeepCtrlOff = 0;
+	TCFG_EEPROM_SetBeepOff(TCFG_SystemData.BeepCtrlOff);
+	
 	/* NB核心网地址 */
 	sscanf(COAPCDPADDR, "%d.%d.%d.%d", &serverip[3], &serverip[2], &serverip[1], &serverip[0]);
 	TCFG_SystemData.NBCoapCDPServer.ip.ip8[3] = serverip[3];
@@ -267,7 +271,7 @@ void TCFG_EEPROM_ReadConfigData(void)
 	/* 无线调试输出等级 */
 	TCFG_SystemData.RFDprintLv = TCFG_EEPROM_GetRFDprintLv();
 	if (TCFG_SystemData.RFDprintLv == 0) {
-		TCFG_SystemData.RFDprintLv = RF_DPRINT_LV;
+		TCFG_SystemData.RFDprintLv = RF_DPRINT_LV_TYPE;
 		TCFG_EEPROM_SetRFDprintLv(TCFG_SystemData.RFDprintLv);
 	}
 	
@@ -1782,6 +1786,28 @@ void TCFG_EEPROM_SetUpgradeLimitSnr(short val)
 short TCFG_EEPROM_GetUpgradeLimitSnr(void)
 {
 	return FLASH_EEPROM_ReadHalfWord(TCFG_UPDATA_LIMITSNR_OFFSET);
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetBeepOff(uint8_t val)
+ @Description			TCFG_EEPROM_SetBeepOff						: 保存BeepOff
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetBeepOff(uint8_t val)
+{
+	FLASH_EEPROM_WriteByte(TCFG_BEEP_OFF_OFFSET, val);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned char TCFG_EEPROM_GetBeepOff(void)
+ @Description			TCFG_EEPROM_GetBeepOff						: 读取BeepOff
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned char TCFG_EEPROM_GetBeepOff(void)
+{
+	return FLASH_EEPROM_ReadByte(TCFG_BEEP_OFF_OFFSET);
 }
 
 /**********************************************************************************************************

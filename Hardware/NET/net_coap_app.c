@@ -1846,6 +1846,18 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						TCFG_SystemData.MagCoefZ = magTempCoefZ;
 						TCFG_EEPROM_SetMagTempCoef(TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
 					}
+					/* BeepOff */
+					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "BeepOff") != NULL) {
+						u16 beepoff;
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(BeepOff):{(val):%hu,(Magic):%hu}}", &beepoff, &recvMagicNum);
+						if (recvMagicNum == TCLOD_MAGIC_NUM) {
+							TCFG_SystemData.BeepCtrlOff = beepoff;
+							TCFG_EEPROM_SetBeepOff(TCFG_SystemData.BeepCtrlOff);
+						}
+						else {
+							ret = NETIP_UNKNOWNERROR;
+						}
+					}
 					/* UpLimit */
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "UpLimit") != NULL) {
 						short limitRssi, limitSnr;

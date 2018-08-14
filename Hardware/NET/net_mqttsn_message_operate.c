@@ -193,7 +193,8 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Work(char* outBuffer)
 				"\"Earfcn\":%d,"
 				"\"Cellid\":%d,"
 				"\"Cmdcnt\":\"%d.%d\","
-				"\"Coef\":\"%d.%d.%d\""
+				"\"Coef\":\"%d.%d.%d\","
+				"\"Beepoff\":\"%d\""
 			"}"
 		"}",
 		
@@ -205,7 +206,8 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Work(char* outBuffer)
 		TCFG_Utility_Get_Nbiot_RadioEARFCN(), 
 		TCFG_Utility_Get_Nbiot_RadioCellID(),
 		TCFG_EEPROM_GetRFCmdCnt(), TCFG_EEPROM_GetNBCmdCnt(),
-		TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ
+		TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ,
+		TCFG_EEPROM_GetBeepOff()
 	);
 	
 	return strlen(outBuffer);

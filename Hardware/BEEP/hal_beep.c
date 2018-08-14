@@ -14,6 +14,8 @@
   */
 
 #include "hal_beep.h"
+#include "platform_config.h"
+#include "platform_map.h"
 #include "delay.h"
 
 /**********************************************************************************************************
@@ -77,11 +79,13 @@ void BEEP_CtrlRepeat_Extend(u16 nCount, u16 speak_nMs, u16 shut_nMs)
 {
 	u16 index = 0;
 	
-	for (index = 0; index < nCount; index++) {
-		BEEP(ON);
-		Delay_MS(speak_nMs);
-		BEEP(OFF);
-		Delay_MS(shut_nMs);
+	if (TCFG_EEPROM_GetBeepOff() != 2) {
+		for (index = 0; index < nCount; index++) {
+			BEEP(ON);
+			Delay_MS(speak_nMs);
+			BEEP(OFF);
+			Delay_MS(shut_nMs);
+		}
 	}
 }
 

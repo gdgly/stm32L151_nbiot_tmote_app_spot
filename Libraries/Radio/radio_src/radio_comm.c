@@ -104,7 +104,7 @@ void Radio_Comm_ClearCTS(void)
 **********************************************************************************************************/
 void Radio_Comm_SendCmd(unsigned char byteCount, unsigned char* pData)
 {
-	char count = 10;
+	char count = 6;
 	
 	while (!ctsWentHigh) {
 		Radio_Comm_PollCTS();

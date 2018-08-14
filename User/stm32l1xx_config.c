@@ -19,6 +19,7 @@
 #include "hal_rtc.h"
 #include "hal_iic.h"
 #include "hal_qmc5883l.h"
+#include "hal_spiflash.h"
 #include "radio_hal_rf.h"
 #include "radio_rf_app.h"
 #include "radio_hal.h"
@@ -214,6 +215,46 @@ static void VbatPower_Init(void)
 }
 
 /**********************************************************************************************************
+ @Function			static void RadioSpiNSS_Init(void)
+ @Description			RadioSpiNSS 初始化
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+static void RadioSpiNSS_Init(void)
+{
+	GPIO_InitTypeDef GPIO_Initure;
+	
+	SPIx_NSS_GPIO_CLK_ENABLE();
+	
+	GPIO_Initure.Pin		= SPIx_NSS_PIN;
+	GPIO_Initure.Mode		= GPIO_MODE_OUTPUT_PP;
+	GPIO_Initure.Speed		= GPIO_SPEED_HIGH;
+	HAL_GPIO_Init(SPIx_NSS_GPIO_PORT, &GPIO_Initure);
+	
+	Radio_Hal_AssertNsel();
+}
+
+/**********************************************************************************************************
+ @Function			static void GD25QSpiNSS_Init(void)
+ @Description			GD25QSpiNSS 初始化
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+static void GD25QSpiNSS_Init(void)
+{
+	GPIO_InitTypeDef GPIO_Initure;
+	
+	GD25Q_FLASH_SPIx_NSS_GPIO_CLK_ENABLE();
+	
+	GPIO_Initure.Pin		= GD25Q_FLASH_SPIx_NSS_PIN;
+	GPIO_Initure.Mode		= GPIO_MODE_OUTPUT_PP;
+	GPIO_Initure.Speed		= GPIO_SPEED_HIGH;
+	HAL_GPIO_Init(GD25Q_FLASH_SPIx_NSS_GPIO_PORT, &GPIO_Initure);
+	
+	GD25Q_FLASH_SPIx_NSS_DISABLE();
+}
+
+/**********************************************************************************************************
  @Function			void ModulePowerReset_Init(void)
  @Description			模块复位电源控制
  @Input				void
@@ -302,6 +343,8 @@ void ModulePowerReset_Init(void)
 **********************************************************************************************************/
 void PowerCtrlIO_Init(void)
 {
+	GD25QSpiNSS_Init();																//GD25QSPINSS未选
+	RadioSpiNSS_Init();																//无线SPINSS未选
 	ModelPower_Init();																//模块电源初始化
 	RadarPower_Init();																//雷达电源初始化
 	NBIOTPower_Init();																//NBIOT电源初始化

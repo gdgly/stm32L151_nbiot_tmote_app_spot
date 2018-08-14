@@ -241,7 +241,9 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				else {
 					TCFG_EEPROM_SetSavedSensitivity(TCFG_SystemData.Sensitivity);
 				}
+				#if RADIO_CMD_ECHO_TYPE
 				Radio_Trf_Printf("Inspect Spot Sensitivity : %hu", TCFG_EEPROM_GetSavedSensitivity());
+				#endif
 			}
 			/* 工作模式配置指令 */
 			else if (pPayload->head.type == TRF_MSG_WORKMODE) {
@@ -253,7 +255,9 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				else {
 					TCFG_EEPROM_SetWorkMode(TCFG_SystemData.WorkMode);
 				}
+				#if RADIO_CMD_ECHO_TYPE
 				Radio_Trf_Printf("Work Mode : %hu", TCFG_EEPROM_GetWorkMode());
+				#endif
 			}
 			/* 无线心跳间隔时间配置指令 */
 			else if (pPayload->head.type == TRF_MSG_RFHEART_INTERVAL) {
@@ -265,13 +269,17 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				else {
 					TCFG_EEPROM_SetHeartinterval(TCFG_SystemData.Heartinterval);
 				}
+				#if RADIO_CMD_ECHO_TYPE
 				Radio_Trf_Printf("RF Heartinter val : %hu", TCFG_EEPROM_GetHeartinterval());
+				#endif
 			}
 			/* 初始化传感器指令 */
 			else if (pPayload->head.type == TRF_MSG_INITBACKGROUND) {
 				Radar_InitBackground(TO_SAVE_RADAR_BACKGROUND);
 				QMC5883L_InitBackgroud();
+				#if RADIO_CMD_ECHO_TYPE
 				Radio_Trf_Printf("Init Sensor Background");
+				#endif
 			}
 			/* 其他下行指令 */
 			else if (pPayload->head.type == TRF_MSG_GENERAL_CMD) {
@@ -279,14 +287,18 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				/* Reboot */
 				if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "reboot")) {
 					BEEP_CtrlRepeat_Extend(2, 500, 250);
-					Radio_Trf_Printf("Reboot Success");
+				#if RADIO_CMD_ECHO_TYPE
+					Radio_Trf_Printf("Reboot : OK");
+				#endif
 					Stm32_System_Software_Reboot();
 				}
 				/* NewSn */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "newsn")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "newsn:%08x", &uval32);
 					TCFG_EEPROM_Set_MAC_SN(uval32);
+				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("New SN : %08x", TCFG_EEPROM_Get_MAC_SN());
+				#endif
 				}
 				/* CDPIP */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "ip")) {
@@ -297,16 +309,20 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					TCFG_SystemData.NBCoapCDPServer.port = TCFG_EEPROM_GetServerPort();
 					NETCoapNeedSendCode.DynamicInfo = 1;
 					NET_NBIOT_Initialization();
+				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("CDP IP %d.%d.%d.%d:%d", 
 					TCFG_SystemData.NBCoapCDPServer.ip.ip8[3], TCFG_SystemData.NBCoapCDPServer.ip.ip8[2], 
 					TCFG_SystemData.NBCoapCDPServer.ip.ip8[1], TCFG_SystemData.NBCoapCDPServer.ip.ip8[0], 
 					TCFG_SystemData.NBCoapCDPServer.port);
+				#endif
 				}
 				/* Active */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "active")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "active:%hu", &uval16);
 					TCFG_EEPROM_SetActiveDevice(uval16);
+				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("Active : %hu", TCFG_EEPROM_GetActiveDevice());
+				#endif
 					if (uval16) {
 						DeviceActivedMode = true;
 						BEEP_CtrlRepeat_Extend(5,30,70);
@@ -321,21 +337,27 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "radardbg:%hu", &uval16);
 					TCFG_EEPROM_SetRadarDbgMode(uval16);
 					TCFG_SystemData.RadarDbgMode = TCFG_EEPROM_GetRadarDbgMode();
+				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("RadarDbg : %hu", TCFG_SystemData.RadarDbgMode);
+				#endif
 				}
 				/* Magmod */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "magmod")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "magmod:%hu", &uval16);
 					TCFG_EEPROM_SetMagMode(uval16);
-					Radio_Trf_Printf("MagMod : %hu", TCFG_EEPROM_GetMagMode());
 					talgo_set_magmod(uval16);
+				#if RADIO_CMD_ECHO_TYPE
+					Radio_Trf_Printf("MagMod : %hu", TCFG_EEPROM_GetMagMode());
+				#endif
 				}
 				/* NbHeart */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "nbheart")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "nbheart:%hu", &uval16);
 					TCFG_EEPROM_SetNbiotHeart(uval16);
 					TCFG_SystemData.NBIotHeart = TCFG_EEPROM_GetNbiotHeart();
+				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("NbHeart : %hu", TCFG_SystemData.NBIotHeart);
+				#endif
 				}
 				/* DisRange */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "disrange")) {
@@ -343,33 +365,44 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					tradar_set_distance_range(uval16 + 4);
 					TCFG_EEPROM_SetRadarRange(uval16);
 					TCFG_SystemData.RadarRange = TCFG_EEPROM_GetRadarRange();
+				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("RadarRange : %hu", TCFG_SystemData.RadarRange);
+				#endif
 				}
 				/* MagInit */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "maginit")) {
 					QMC5883L_InitBackgroud();
 					BEEP_CtrlRepeat_Extend(5,30,70);
+				#if RADIO_CMD_ECHO_TYPE
+					Radio_Trf_Printf("MagInit : OK");
+				#endif
 				}
 				/* CarInDelay */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "indelay")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "indelay:%hu", &uval16);
 					TCFG_EEPROM_SetCarInDelay(uval16);
 					TCFG_SystemData.CarInDelay = TCFG_EEPROM_GetCarInDelay();
+				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("CarInDelay : %hu", TCFG_SystemData.CarInDelay);
+				#endif
 				}
 				/* RFDprintLv */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "rfdplv")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "rfdplv:%hu", &uval16);
 					TCFG_EEPROM_SetRFDprintLv(uval16);
 					TCFG_SystemData.RFDprintLv = TCFG_EEPROM_GetRFDprintLv();
+				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("RFDprintLv : %hu", TCFG_SystemData.RFDprintLv);
+				#endif
 				}
 				/* RATime */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "ratime")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "ratime:%hu", &uval16);
 					TCFG_EEPROM_SetCoapRATimeHour(uval16);
 					TCFG_SystemData.CoapRATimeHour = TCFG_EEPROM_GetCoapRATimeHour();
+				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("RATime : %hu", TCFG_SystemData.CoapRATimeHour);
+				#endif
 				}
 				/* QuotaTime */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "quotatime")) {
@@ -379,6 +412,9 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 						TCFG_SystemData.CoapQuotaTime = NBCOAP_COAP_QUOTA_TIME_TYPE;
 						TCFG_EEPROM_SetCoapQuotaTime(TCFG_SystemData.CoapQuotaTime);
 					}
+				#if RADIO_CMD_ECHO_TYPE
+					Radio_Trf_Printf("quotatime:%hu", TCFG_EEPROM_GetCoapQuotaTime());
+				#endif
 				}
 				/* MagTempCoef */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "coef")) {
@@ -387,6 +423,9 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					TCFG_SystemData.MagCoefY = magTempCoefY;
 					TCFG_SystemData.MagCoefZ = magTempCoefZ;
 					TCFG_EEPROM_SetMagTempCoef(TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
+				#if RADIO_CMD_ECHO_TYPE
+					Radio_Trf_Printf("coef:%hd,%hd,%hd", TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
+				#endif
 				}
 				/* SetQmcCoef */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "SetQmcCoef")) {
@@ -395,6 +434,18 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					TCFG_SystemData.MagCoefY = magTempCoefY;
 					TCFG_SystemData.MagCoefZ = magTempCoefZ;
 					TCFG_EEPROM_SetMagTempCoef(TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
+				#if RADIO_CMD_ECHO_TYPE
+					Radio_Trf_Printf("coef:%hd,%hd,%hd", TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
+				#endif
+				}
+				/* BeepOff */
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "beepoff")) {
+					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "beepoff:%hu", &uval16);
+					TCFG_SystemData.BeepCtrlOff = uval16;
+					TCFG_EEPROM_SetBeepOff(TCFG_SystemData.BeepCtrlOff);
+				#if RADIO_CMD_ECHO_TYPE
+					Radio_Trf_Printf("beepoff:%hu", TCFG_EEPROM_GetBeepOff());
+				#endif
 				}
 				/* UpLimit */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "uplimit")) {
@@ -403,7 +454,9 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					TCFG_SystemData.UpgradeLimitSnr = limitSnr;
 					TCFG_EEPROM_SetUpgradeLimitRssi(TCFG_SystemData.UpgradeLimitRssi);
 					TCFG_EEPROM_SetUpgradeLimitSnr(TCFG_SystemData.UpgradeLimitSnr);
+				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("uplimit:%hd,%hd", TCFG_EEPROM_GetUpgradeLimitRssi(), TCFG_EEPROM_GetUpgradeLimitSnr());
+				#endif
 				}
 				/* WorkInfo */
 				#if RADIO_PRINT_WORKINFO
@@ -556,24 +609,18 @@ void Radio_Trf_App_Task(void)
 	/* 到达心跳时间 */
 	if ((hearttime_pre + TCFG_SystemData.Heartinterval) < Stm32_GetSecondTick()) {
 		hearttime_pre = Stm32_GetSecondTick();
-		Radio_Rf_Interface_Init();
-		Radio_Rf_Interrupt_Init();
 		/* 发送心跳包 */
-		Radio_Trf_Xmit_Heartbeat();
+		Radio_Trf_Do_Heartbeat();
 	}
 	else if (cmdtime_pre + 180 > Stm32_GetSecondTick()) {
 		hearttime_pre = Stm32_GetSecondTick();
-		Radio_Rf_Interface_Init();
-		Radio_Rf_Interrupt_Init();
 		/* 发送心跳包 */
-		Radio_Trf_Xmit_Heartbeat();
+		Radio_Trf_Do_Heartbeat();
 	}
 	else if ((gateway_nearby > 0) && (hearttime_pre+5 < Stm32_GetSecondTick())) {
 		hearttime_pre = Stm32_GetSecondTick();
-		Radio_Rf_Interface_Init();
-		Radio_Rf_Interrupt_Init();
 		/* 发送心跳包 */
-		Radio_Trf_Xmit_Heartbeat();
+		Radio_Trf_Do_Heartbeat();
 	}
 	
 	/* 接收无线下行数据 */

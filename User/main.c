@@ -75,7 +75,9 @@ int main(void)
 #endif
 #endif
 	
+#if DEVICE_BOOT_START_MAGINIT_TYPE
 	SoftResetFlag = RCC_ResetFlag_GetStatus();												//获取复位标志位
+#endif
 	
 	IWDG_Init(IWDG_PRESCALER_256, 0x0FFF);													//看门狗初始化,溢出时间28s
 	RTC_Init();																		//RTC初始化
@@ -116,10 +118,12 @@ int main(void)
 	
 	Inspect_Spot_Init();																//车位检测算法初始化
 	
+#if DEVICE_BOOT_START_MAGINIT_TYPE
 	if (SoftResetFlag == RCC_RESET_FLAG_PORRST) {
 		Radar_InitBackground(TO_SAVE_RADAR_BACKGROUND);										//雷达背景初始化
 		QMC5883L_InitBackgroud();														//地磁背景初始化
 	}
+#endif
 	
 	NET_NBIOT_Initialization();															//NBIOT初始化
 	
@@ -218,7 +222,8 @@ void MainMajorCycle(void)
 **********************************************************************************************************/
 void MainRollingEnteredUpWork(void)
 {
-	Radio_Trf_Debug_Printf_Level1("Entered Up Work");
+	MODELPOWER(ON);
+	Radio_Trf_Printf("Entered Up Work");
 	BEEP_CtrlRepeat_Extend(3, 30, 70);
 	NETCoapNeedSendCode.WorkInfoWait = 3;
 	NETMqttSNNeedSendCode.InfoWorkWait = 3;
@@ -232,7 +237,6 @@ void MainRollingEnteredUpWork(void)
 **********************************************************************************************************/
 void MainRollingEnteringUpWork(void)
 {
-	Radio_Trf_Debug_Printf_Level1("Entering Up Work");
 	BEEP_CtrlRepeat_Extend(1, 500, 0);
 }
 
@@ -276,6 +280,7 @@ void MainRollingUpwardsActived(void)
 **********************************************************************************************************/
 void MainRollingUpwardsSleep(void)
 {
+	MODELPOWER(ON);
 	/* NBIOT Power OFF */
 	if (NBIOTPOWER_IO_READ()) {
 		NET_NBIOT_Initialization();
@@ -345,11 +350,11 @@ void MainRollingEnteredDownSleepKeepActived(void)
 **********************************************************************************************************/
 void MainRollingEnteringDownSleep(void)
 {
+	MODELPOWER(OFF);
 	/* NBIOT Power OFF */
 	if (NBIOTPOWER_IO_READ()) {
 		NET_NBIOT_Initialization();
 		NBIOTPOWER(OFF);
-		MODELPOWER(OFF);
 	}
 }
 
@@ -361,11 +366,11 @@ void MainRollingEnteringDownSleep(void)
 **********************************************************************************************************/
 void MainRollingDownSleep(void)
 {
+	MODELPOWER(OFF);
 	/* NBIOT Power OFF */
 	if (NBIOTPOWER_IO_READ()) {
 		NET_NBIOT_Initialization();
 		NBIOTPOWER(OFF);
-		MODELPOWER(OFF);
 	}
 }
 

@@ -67,7 +67,7 @@ u8 ProductTest_Read(void)
 	
 	ret = PRODUCTTEST_READ();
 	
-	GPIO_Initure.Pull = GPIO_PULLDOWN;										//下拉
+	GPIO_Initure.Pull = GPIO_NOPULL;
 	HAL_GPIO_Init(PRODUCTTEST_GPIOx, &GPIO_Initure);							//初始化GPIO
 	
 	return ret;

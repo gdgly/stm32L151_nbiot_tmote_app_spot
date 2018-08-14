@@ -50,7 +50,8 @@ int NET_COAP_Message_Operate_Creat_Json_Work_Info(char* outBuffer)
 				"\"Nbworkmode\":%d,"
 				"\"Nbruntime\":\"%d.%d\","
 				"\"NbruntimeDay\":\"%d.%d\","
-				"\"Coef\":\"%d.%d.%d\""
+				"\"Coef\":\"%d.%d.%d\","
+				"\"Beepoff\":\"%d\""
 			"}"
 		"}",
 		
@@ -65,7 +66,8 @@ int NET_COAP_Message_Operate_Creat_Json_Work_Info(char* outBuffer)
 		TCFG_Utility_Get_Nbiot_WorkMode(),
 		TCFG_Utility_GetCoapConnectTime(), TCFG_Utility_GetCoapIdleTime(),
 		TCFG_Utility_GetCoapConnectDayTime(), TCFG_Utility_GetCoapIdleDayTime(),
-		TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ
+		TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ,
+		TCFG_EEPROM_GetBeepOff()
 	);
 	
 	return strlen(outBuffer);

@@ -137,12 +137,8 @@
 #define TCFG_MAG_COEF_Z_LENGTH			1												//Temperature Compensation Z
 #define TCFG_MAG_BACK_TEMP_OFFSET			TCFG_MAG_COEF_Z_OFFSET + TCFG_MAG_COEF_Z_LENGTH			//0x080804E0
 #define TCFG_MAG_BACK_TEMP_LENGTH			2												//Temperature Compensation BACK
-#define TCFG_COAP_CON_DAY_OFFSET			TCFG_MAG_BACK_TEMP_OFFSET + TCFG_MAG_BACK_TEMP_LENGTH		//0x080804E2
-#define TCFG_COAP_CON_DAY_LENGTH			2												//CoapConDayTime		Coap一天连接时间
-#define TCFG_COAP_IDLE_DAY_OFFSET			TCFG_COAP_CON_DAY_OFFSET + TCFG_COAP_CON_DAY_LENGTH		//0x080804E4
-#define TCFG_COAP_IDLE_DAY_LENGTH			2												//CoapIdleDayTime		Coap一天休眠时间
-#define TCFG_COAP_QUOTA_TIME_OFFSET		TCFG_COAP_IDLE_DAY_OFFSET + TCFG_COAP_IDLE_DAY_LENGTH		//0x080804E6
-#define TCFG_COAP_QUOTA_TIME_LENGTH		2												//CoapQuotaTime		Coap一天使用配额时间
+#define TCFG_BEEP_OFF_OFFSET				TCFG_MAG_BACK_TEMP_OFFSET + TCFG_MAG_BACK_TEMP_LENGTH		//0x080804E2
+#define TCFG_BEEP_OFF_LENGTH				1												//Beep Ctrl OFF		蜂鸣器关闭
 
 /************************************** The environment parameters are used both by extend ***************************************/
 #define EEPROM_CONFIG_PAGE2_ADDRESS		0x08080E00										//配置页2起始地址 EEPROM_BASE_ADD + 0x0E00(3.5K)
@@ -167,6 +163,13 @@
 #define TCFG_UPDATA_LIMITRSSI_LENGTH		2												//UpdataLimitRssi		升级限制Rssi值
 #define TCFG_UPDATA_LIMITSNR_OFFSET		TCFG_UPDATA_LIMITRSSI_OFFSET + TCFG_UPDATA_LIMITRSSI_LENGTH	//0x08080E14
 #define TCFG_UPDATA_LIMITSNR_LENGTH		2												//UpdataLimitSnr		升级限制Snr值
+
+#define TCFG_COAP_CON_DAY_OFFSET			TCFG_UPDATA_LIMITSNR_OFFSET + TCFG_UPDATA_LIMITSNR_LENGTH	//0x08080E16
+#define TCFG_COAP_CON_DAY_LENGTH			2												//CoapConDayTime		Coap一天连接时间
+#define TCFG_COAP_IDLE_DAY_OFFSET			TCFG_COAP_CON_DAY_OFFSET + TCFG_COAP_CON_DAY_LENGTH		//0x08080E18
+#define TCFG_COAP_IDLE_DAY_LENGTH			2												//CoapIdleDayTime		Coap一天休眠时间
+#define TCFG_COAP_QUOTA_TIME_OFFSET		TCFG_COAP_IDLE_DAY_OFFSET + TCFG_COAP_IDLE_DAY_LENGTH		//0x08080E1A
+#define TCFG_COAP_QUOTA_TIME_LENGTH		2												//CoapQuotaTime		Coap一天使用配额时间
 /************************************************************** End **************************************************************/
 
 enum TCFG_SENSITIVITY																	//传感器灵敏度
@@ -224,6 +227,7 @@ typedef struct
 	unsigned short						CoapQuotaTime;										//Coap使用配额时间(一天)
 	short							UpgradeLimitRssi;									//信号值限制下限
 	short							UpgradeLimitSnr;									//信号质量限制下限
+	unsigned char						BeepCtrlOff;										//蜂鸣器控制
 	unsigned char						NBCoapCDPServerIP[16];								//NB核心网IP地址
 	unsigned char						NBCoapCDPServerPort[6];								//NB核心网IP端口
 	NBIOT_ServerAddr					NBCoapCDPServer;									//NB核心网地址
@@ -388,6 +392,9 @@ short		TCFG_EEPROM_GetUpgradeLimitRssi(void);											//读取UpgradeLimitRssi
 
 void			TCFG_EEPROM_SetUpgradeLimitSnr(short val);										//保存UpgradeLimitSnr
 short		TCFG_EEPROM_GetUpgradeLimitSnr(void);											//读取UpgradeLimitSnr
+
+void			TCFG_EEPROM_SetBeepOff(uint8_t val);											//保存BeepOff
+unsigned char	TCFG_EEPROM_GetBeepOff(void);													//读取BeepOff
 
 void			TCFG_Utility_Add_Device_BootCount(void);										//Device重启次数累加
 unsigned short TCFG_Utility_Get_Device_BootCount(void);										//Device重启次数获取

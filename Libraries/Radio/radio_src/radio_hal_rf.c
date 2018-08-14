@@ -104,6 +104,7 @@ void Radio_Rf_Interface_Init(void)
 	
 	GPIO_Initure.Pin					= RF_SDN_PIN;
 	GPIO_Initure.Mode					= GPIO_MODE_OUTPUT_PP;
+	GPIO_Initure.Pull					= 0x0400|GPIO_NOPULL;
 	GPIO_Initure.Speed					= GPIO_SPEED_HIGH;
 	HAL_GPIO_Init(RF_SDN_GPIO_PORT, &GPIO_Initure);
 	

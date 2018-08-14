@@ -1722,6 +1722,18 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					TCFG_SystemData.MagCoefZ = magTempCoefZ;
 					TCFG_EEPROM_SetMagTempCoef(TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
 				}
+				/* BeepOff */
+				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "BeepOff") != NULL) {
+					u16 beepoff;
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(BeepOff):{(val):%hu,(Magic):%hu}}", &beepoff, &recvMagicNum);
+					if (recvMagicNum == TCLOD_MAGIC_NUM) {
+						TCFG_SystemData.BeepCtrlOff = beepoff;
+						TCFG_EEPROM_SetBeepOff(TCFG_SystemData.BeepCtrlOff);
+					}
+					else {
+						ret = NETIP_UNKNOWNERROR;
+					}
+				}
 				/* ...... */
 			}
 			else if (messageHandler->message->payload[recvBufOffset + TCLOD_MSGID_OFFSET] == TCLOD_CONFIG_GET) {
