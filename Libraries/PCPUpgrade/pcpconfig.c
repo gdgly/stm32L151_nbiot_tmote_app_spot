@@ -91,10 +91,12 @@ PCP_ResultCodeTypeDef PCP_UpgradeDataNewVersionNotice_Callback(PCP_ClientsTypeDe
 {
 	PCP_ResultCodeTypeDef PCPResultCodeStatus = PCP_ExecuteSuccess;
 	
+#ifdef PCP_DEBUG_LOG_RF_PRINT
 	Radio_Trf_Debug_Printf_Level2("PlatSoftVer: %s", pClient->Parameter.PlatformSoftVersion);
 	Radio_Trf_Debug_Printf_Level2("PackSliceSize: %d", pClient->Parameter.UpgradePackSliceSize);
 	Radio_Trf_Debug_Printf_Level2("PackSliceNum: %d", pClient->Parameter.UpgradePackSliceNum);
 	Radio_Trf_Debug_Printf_Level2("PackCheckCode: %X", CalculateStringToHex(pClient->Parameter.UpgradePackCheckCode>>8, pClient->Parameter.UpgradePackCheckCode&0xFF));
+#endif
 	
 	PCPResultCodeStatus = PCP_Upgrade_NewVersionNotice(pClient);
 	
@@ -114,7 +116,9 @@ PCP_ResultCodeTypeDef PCP_UpgradeDataDownload_Callback(PCP_ClientsTypeDef* pClie
 {
 	PCP_ResultCodeTypeDef PCPResultCodeStatus = PCP_ExecuteSuccess;
 	
+#ifdef PCP_DEBUG_LOG_RF_PRINT
 	Radio_Trf_Debug_Printf_Level2("Down%d.%d: OK", SliceIndex, UpgradeDataLength);
+#endif
 	
 	PCPResultCodeStatus = PCP_Upgrade_DataDownload(pClient, SliceIndex, UpgradeData, UpgradeDataLength);
 	
@@ -131,7 +135,9 @@ PCP_ResultCodeTypeDef PCP_UpgradeDataAssemble_Callback(PCP_ClientsTypeDef* pClie
 {
 	PCP_ResultCodeTypeDef PCPResultCodeStatus = PCP_ExecuteSuccess;
 	
+#ifdef PCP_DEBUG_LOG_RF_PRINT
 	Radio_Trf_Debug_Printf_Level2("Download Over!!");
+#endif
 	
 	PCPResultCodeStatus = PCP_Upgrade_DataAssemble(pClient);
 	
@@ -148,7 +154,9 @@ PCP_ResultCodeTypeDef PCP_UpgradeDataReportUpgrades_Callback(PCP_ClientsTypeDef*
 {
 	PCP_ResultCodeTypeDef PCPResultCodeStatus = PCP_ExecuteSuccess;
 	
+#ifdef PCP_DEBUG_LOG_RF_PRINT
 	Radio_Trf_Debug_Printf_Level2("Upgrade Over!!");
+#endif
 	
 	PCPResultCodeStatus = PCP_Upgrade_AfterUpdata(pClient);
 	
