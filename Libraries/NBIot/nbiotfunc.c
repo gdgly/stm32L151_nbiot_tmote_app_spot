@@ -267,7 +267,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadModuleVersion(NBIOT_ClientsTypeDef*
 	pClient->ATCmdStack->ATNack = "ERROR";
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
 		memset((void *)pClient->Parameter.modelversion, 0x0, sizeof(pClient->Parameter.modelversion));
-		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\nSECURITY,%*11s%s\r\n", pClient->Parameter.modelversion) <= 0) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^SECURITY]%*[^,],%*11s%[^\r]", pClient->Parameter.modelversion) <= 0) {
 			NBStatus = NBIOT_ERROR;
 		}
 	}
@@ -298,7 +298,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadIMEI(NBIOT_ClientsTypeDef* pClient)
 	pClient->ATCmdStack->ATNack = "ERROR";
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
 		memset((void *)pClient->Parameter.imei, 0x0, sizeof(pClient->Parameter.imei));
-		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+]+CGSN:%[^\r]", pClient->Parameter.imei) <= 0) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+CGSN]%*[^:]:%[^\r]", pClient->Parameter.imei) <= 0) {
 			NBStatus = NBIOT_ERROR;
 		}
 	}
@@ -329,7 +329,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadIMEISV(NBIOT_ClientsTypeDef* pClien
 	pClient->ATCmdStack->ATNack = "ERROR";
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
 		memset((void *)pClient->Parameter.imeisv, 0x0, sizeof(pClient->Parameter.imeisv));
-		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+]+CGSN:%[^\r]", pClient->Parameter.imeisv) <= 0) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+CGSN]%*[^:]:%[^\r]", pClient->Parameter.imeisv) <= 0) {
 			NBStatus = NBIOT_ERROR;
 		}
 	}
@@ -574,18 +574,8 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCGPADDR(NBIOT_ClientsTypeDef* pClie
 	pClient->ATCmdStack->ATack = "OK";
 	pClient->ATCmdStack->ATNack = "ERROR";
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
-		if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+CGPADDR:0,")) {
-			memset((void *)pClient->Parameter.cgpaddr, 0x0, sizeof(pClient->Parameter.cgpaddr));
-			if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+]+CGPADDR:0,%[^\r]", pClient->Parameter.cgpaddr) <= 0) {
-				NBStatus = NBIOT_ERROR;
-			}
-			else {
-				NBStatus = NBIOT_OK;
-			}
-		}
-		else {
-			NBStatus = NBIOT_ERROR;
-		}
+		memset((void *)pClient->Parameter.cgpaddr, 0x0, sizeof(pClient->Parameter.cgpaddr));
+		sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+CGPADDR]%*[^,],%[^\r]", pClient->Parameter.cgpaddr);
 	}
 #if NBIOT_PRINT_ERROR_CODE_TYPE
 	else {
@@ -613,18 +603,8 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCGDCONT(NBIOT_ClientsTypeDef* pClie
 	pClient->ATCmdStack->ATack = "OK";
 	pClient->ATCmdStack->ATNack = "ERROR";
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
-		if (strstr((const char*)pClient->ATCmdStack->ATRecvbuf, "+CGDCONT:0,\"IP\",\"")) {
-			memset((void *)pClient->Parameter.cgdcont, 0x0, sizeof(pClient->Parameter.cgdcont));
-			if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\n+CGDCONT:0,\"IP\",\"%[^\"]", pClient->Parameter.cgdcont) <= 0) {
-				NBStatus = NBIOT_ERROR;
-			}
-			else {
-				NBStatus = NBIOT_OK;
-			}
-		}
-		else {
-			NBStatus = NBIOT_ERROR;
-		}
+		memset((void *)pClient->Parameter.cgdcont, 0x0, sizeof(pClient->Parameter.cgdcont));
+		sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+CGDCONT]%*[^,],%*[^,],%[^,]", pClient->Parameter.cgdcont);
 	}
 #if NBIOT_PRINT_ERROR_CODE_TYPE
 	else {

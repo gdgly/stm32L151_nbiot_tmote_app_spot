@@ -68,6 +68,22 @@ void BEEP_CtrlRepeat(u16 nCount, u16 nMs)
 }
 
 /**********************************************************************************************************
+ @Function			void BEEP_PassiveCtrl(u16 speak_nMs)
+ @Description			蜂鸣器无源响
+ @Input				speak_nMs	: BEEP时间MS
+ @Return				void
+**********************************************************************************************************/
+void BEEP_PassiveCtrl(u16 speak_nMs)
+{
+	for (u16 nCount = 0; nCount < speak_nMs; nCount++) {
+		BEEP(ON);
+		Delay_US(280);
+		BEEP(OFF);
+		Delay_US(220);
+	}
+}
+
+/**********************************************************************************************************
  @Function			void BEEP_CtrlRepeat_Extend(u16 nCount, u16 speak_nMs, u16 shut_nMs)
  @Description			蜂鸣器控制重复响
  @Input				nCount	: 次数
@@ -81,8 +97,12 @@ void BEEP_CtrlRepeat_Extend(u16 nCount, u16 speak_nMs, u16 shut_nMs)
 	
 	if (TCFG_EEPROM_GetBeepOff() != 2) {
 		for (index = 0; index < nCount; index++) {
+			#if BEEP_MODEL_TYPE
+			BEEP_PassiveCtrl(speak_nMs);
+			#else
 			BEEP(ON);
 			Delay_MS(speak_nMs);
+			#endif
 			BEEP(OFF);
 			Delay_MS(shut_nMs);
 		}

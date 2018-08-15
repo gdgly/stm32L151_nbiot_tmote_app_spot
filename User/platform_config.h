@@ -55,8 +55,12 @@
 #define	RADAR_MODEL_V2					2
 #define	RADAR_MODEL_TYPE				RADAR_MODEL_V2						//雷达类型
 
+#define	BEEP_ACTIVE					0
+#define	BEEP_PASSIVE					1
+#define	BEEP_MODEL_TYPE				BEEP_ACTIVE						//蜂鸣器类型
+
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					112								//从固件版本
+#define	SOFTWARESUB					113								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 
@@ -119,10 +123,10 @@ extern MQTTSN_ClientsTypeDef				MqttSNClientHandler;				//MqttSN Clinet Handler
 extern DNS_SocketNetTypeDef				DNSSocketNetHandler;				//DNS Net Handler
 extern DNS_ClientsTypeDef				DNSClientHandler;					//DNS Clinet Handler
 
-
-
-
-
+void RadioPrintWorkinfo(void);											//Radio Print WorkInfo
+void RadioPrintNetinfo(void);												//Radio Print NetInfo
+void RadioPrintDeviceinfo(void);											//Radio Print DeviceInfo
+void RadioPrintUpgradeinfo(void);											//Radio Print UpgradeInfo
 
 
 

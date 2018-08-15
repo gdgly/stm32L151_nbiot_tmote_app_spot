@@ -11,6 +11,7 @@
 #define BEEP(a)						BEEP_Ctrl(a);
 
 void BEEP_Ctrl(u8 beepEnable);											//蜂鸣器控制
+void BEEP_PassiveCtrl(u16 speak_nMs);										//蜂鸣器无源响
 void BEEP_CtrlRepeat(u16 nCount, u16 nMs);									//蜂鸣器控制重复响
 void BEEP_CtrlRepeat_Extend(u16 nCount, u16 speak_nMs, u16 shut_nMs);				//蜂鸣器控制重复响
 
