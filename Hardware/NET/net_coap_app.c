@@ -1171,8 +1171,11 @@ void NET_COAP_NBIOT_Event_ParameterCheckOut(NBIOT_ClientsTypeDef* pClient)
 void NET_COAP_NBIOT_Event_SendData(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	int SendSentNum = 0;
 	unsigned int uICoapIdleTime = 0;
+	
+#if NBCOAP_SENDDATA_NQMGSCHECK_TYPE
+	int SendSentNum = 0;
+#endif
 	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -1211,6 +1214,7 @@ void NET_COAP_NBIOT_Event_SendData(NBIOT_ClientsTypeDef* pClient)
 			return;
 		}
 		
+#if NBCOAP_SENDDATA_NQMGSCHECK_TYPE
 		if (((NBStatus = NBIOT_Neul_NBxx_QuerySendMessageCOAPPayload(pClient)) == NBIOT_OK) && 
 		    ((NBStatus = NBIOT_Neul_NBxx_QueryReadMessageCOAPPayload(pClient)) == NBIOT_OK)) {
 			/* Dictate execute is Success */
@@ -1230,6 +1234,7 @@ void NET_COAP_NBIOT_Event_SendData(NBIOT_ClientsTypeDef* pClient)
 		}
 		
 		SendSentNum = pClient->Parameter.coapSendMessage.sent;
+#endif
 		
 		/* 发送负载数据 */
 		if ((NBStatus = NBIOT_Neul_NBxx_SendCOAPPayload(pClient)) == NBIOT_OK) {
@@ -1249,6 +1254,7 @@ void NET_COAP_NBIOT_Event_SendData(NBIOT_ClientsTypeDef* pClient)
 			return;
 		}
 		
+#if NBCOAP_SENDDATA_NQMGSCHECK_TYPE
 		if (NBIOT_Neul_NBxx_QuerySendMessageCOAPPayload(pClient) == NBIOT_OK) {
 			/* Dictate execute is Success */
 			pClient->DictateRunCtl.dictateEvent = SEND_DATA;
@@ -1273,6 +1279,10 @@ void NET_COAP_NBIOT_Event_SendData(NBIOT_ClientsTypeDef* pClient)
 			/* Send Data Success */
 			COAP_NBIOT_DictateEvent_SuccessExecute(pClient, RECV_DATA, SEND_DATA);
 		}
+#else
+		/* Send Data Success */
+		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, RECV_DATA, SEND_DATA);
+#endif
 	}
 	/* No packets need to be sent */
 	else {
@@ -1397,11 +1407,14 @@ void NET_COAP_NBIOT_Event_RecvData(NBIOT_ClientsTypeDef* pClient)
 void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	int SendSentNum = 0;
 	char* RANormal	= "0x0100";
 	char* RAIdle	= "0x0101";
 	char* RAState	= RAIdle;
 	unsigned int uICoapIdleTime = 0;
+	
+#if NBCOAP_SENDDATA_NQMGSCHECK_TYPE
+	int SendSentNum = 0;
+#endif
 	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -1440,6 +1453,7 @@ void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
 			return;
 		}
 		
+#if NBCOAP_SENDDATA_NQMGSCHECK_TYPE
 		if (((NBStatus = NBIOT_Neul_NBxx_QuerySendMessageCOAPPayload(pClient)) == NBIOT_OK) && 
 		    ((NBStatus = NBIOT_Neul_NBxx_QueryReadMessageCOAPPayload(pClient)) == NBIOT_OK)) {
 			/* Dictate execute is Success */
@@ -1459,6 +1473,7 @@ void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
 		}
 		
 		SendSentNum = pClient->Parameter.coapSendMessage.sent;
+#endif
 		
 #if NBCOAP_RASENDMODE_TYPE == NBCOAP_RASENDMODE_NORMAL
 		RAState = RANormal;
@@ -1490,6 +1505,7 @@ void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
 			return;
 		}
 		
+#if NBCOAP_SENDDATA_NQMGSCHECK_TYPE
 		if (NBIOT_Neul_NBxx_QuerySendMessageCOAPPayload(pClient) == NBIOT_OK) {
 			/* Dictate execute is Success */
 			pClient->DictateRunCtl.dictateEvent = SEND_DATA_RA_NORMAL;
@@ -1514,6 +1530,10 @@ void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
 			/* Send Data Success */
 			COAP_NBIOT_DictateEvent_SuccessExecute(pClient, RECV_DATA_RA_NORMAL, SEND_DATA_RA_NORMAL);
 		}
+#else
+		/* Send Data Success */
+		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, RECV_DATA_RA_NORMAL, SEND_DATA_RA_NORMAL);
+#endif
 	}
 	/* No packets need to be sent */
 	else {
