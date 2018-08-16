@@ -281,14 +281,16 @@ typedef enum
 	FULL_FUNCTIONALITY					= 0x0C,											//完整功能
 	CDP_SERVER_CHECK					= 0x0D,											//CDP服务器查询
 	CDP_SERVER_CONFIG					= 0x0E,											//CDP服务器配置
-	SEND_DATA							= 0x0F,											//发送数据
-	RECV_DATA							= 0x10,											//接收数据
-	SEND_DATA_RA_NORMAL					= 0x11,											//发送数据RA_NORMAL
-	RECV_DATA_RA_NORMAL					= 0x12,											//接收数据RA_NORMAL
-	EXECUT_DOWNLINK_DATA				= 0x13,											//执行下行数据
-	MQTTSN_PROCESS_STACK				= 0x14,											//MQTTSN执行栈
-	DNS_PROCESS_STACK					= 0x15,											//DNS执行栈
-	LISTEN_RUN_CTL						= 0x16											//监听运行控制器
+	NBAND_MODE_CHECK					= 0x0F,											//NBAND模式查询
+	NBAND_MODE_CONFIG					= 0x10,											//NBAND模式配置
+	SEND_DATA							= 0x11,											//发送数据
+	RECV_DATA							= 0x12,											//接收数据
+	SEND_DATA_RA_NORMAL					= 0x13,											//发送数据RA_NORMAL
+	RECV_DATA_RA_NORMAL					= 0x14,											//接收数据RA_NORMAL
+	EXECUT_DOWNLINK_DATA				= 0x15,											//执行下行数据
+	MQTTSN_PROCESS_STACK				= 0x16,											//MQTTSN执行栈
+	DNS_PROCESS_STACK					= 0x17,											//DNS执行栈
+	LISTEN_RUN_CTL						= 0x18											//监听运行控制器
 }NBIOT_DictateEventTypeDef;
 
 /* NBIOT Listen Event */
@@ -491,6 +493,8 @@ struct NBIOT_ClientsTypeDef
 		unsigned char					dictateMinimumFunctionalityFailureCnt;
 		unsigned char					dictateCDPServerCheckFailureCnt;
 		unsigned char					dictateCDPServerConfigFailureCnt;
+		unsigned char					dictateNbandModeCheckFailureCnt;
+		unsigned char					dictateNbandModeConfigFailureCnt;
 		unsigned char					dictateSendDataFailureCnt;
 		unsigned char					dictateRecvDataFailureCnt;
 		unsigned char					dictateSendDataRANormalFailureCnt;

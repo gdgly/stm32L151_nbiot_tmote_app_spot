@@ -63,6 +63,8 @@ void NBIOT_Client_Init(NBIOT_ClientsTypeDef* pClient, NBIOT_ATCmdTypeDef* ATCmdS
 	pClient->DictateRunCtl.dictateMinimumFunctionalityFailureCnt	= 0;
 	pClient->DictateRunCtl.dictateCDPServerCheckFailureCnt			= 0;
 	pClient->DictateRunCtl.dictateCDPServerConfigFailureCnt		= 0;
+	pClient->DictateRunCtl.dictateNbandModeCheckFailureCnt			= 0;
+	pClient->DictateRunCtl.dictateNbandModeConfigFailureCnt		= 0;
 	pClient->DictateRunCtl.dictateSendDataFailureCnt				= 0;
 	pClient->DictateRunCtl.dictateRecvDataFailureCnt				= 0;
 	pClient->DictateRunCtl.dictateSendDataRANormalFailureCnt		= 0;

@@ -60,7 +60,7 @@
 #define	BEEP_MODEL_TYPE				BEEP_ACTIVE						//蜂鸣器类型
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					113								//从固件版本
+#define	SOFTWARESUB					114								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 

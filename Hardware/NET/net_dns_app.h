@@ -29,7 +29,10 @@ void NET_DNS_NBIOT_Event_HardwareReboot(DNS_ClientsTypeDef* pClient);				//硬�
 void NET_DNS_NBIOT_Event_ModuleCheck(DNS_ClientsTypeDef* pClient);				//模块检测
 void NET_DNS_NBIOT_Event_ParameterConfig(DNS_ClientsTypeDef* pClient);			//参数配置
 void NET_DNS_NBIOT_Event_SimICCIDCheck(DNS_ClientsTypeDef* pClient);				//Sim卡检测
-void NET_DNS_NBIOT_Event_MiscEquipConfig(DNS_ClientsTypeDef* pClient);			//其他配置
+void NET_DNS_NBIOT_Event_FullFunctionality(DNS_ClientsTypeDef* pClient);			//完整功能
+void NET_DNS_NBIOT_Event_MinimumFunctionality(DNS_ClientsTypeDef* pClient);		//最小功能
+void NET_DNS_NBIOT_Event_NbandModeCheck(DNS_ClientsTypeDef* pClient);				//NBAND模式查询
+void NET_DNS_NBIOT_Event_NbandModeConfig(DNS_ClientsTypeDef* pClient);			//NBAND模式配置
 void NET_DNS_NBIOT_Event_AttachCheck(DNS_ClientsTypeDef* pClient);				//注网检查
 void NET_DNS_NBIOT_Event_AttachExecute(DNS_ClientsTypeDef* pClient);				//注网进行
 void NET_DNS_NBIOT_Event_AttachInquire(DNS_ClientsTypeDef* pClient);				//注网查询

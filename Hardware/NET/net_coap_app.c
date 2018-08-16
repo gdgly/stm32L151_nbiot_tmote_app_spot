@@ -93,6 +93,14 @@ void NET_COAP_APP_PollExecution(NBIOT_ClientsTypeDef* pClient)
 		NET_COAP_NBIOT_Event_CDPServerConfig(pClient);
 		break;
 	
+	case NBAND_MODE_CHECK:
+		NET_COAP_NBIOT_Event_NbandModeCheck(pClient);
+		break;
+	
+	case NBAND_MODE_CONFIG:
+		NET_COAP_NBIOT_Event_NbandModeConfig(pClient);
+		break;
+	
 	case SEND_DATA:
 		NET_COAP_NBIOT_Event_SendData(pClient);
 		break;
@@ -192,6 +200,14 @@ static unsigned char* COAP_NBIOT_GetDictateFailureCnt(NBIOT_ClientsTypeDef* pCli
 	
 	case CDP_SERVER_CONFIG:
 		dictateFailureCnt = &pClient->DictateRunCtl.dictateCDPServerConfigFailureCnt;
+		break;
+	
+	case NBAND_MODE_CHECK:
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateNbandModeCheckFailureCnt;
+		break;
+	
+	case NBAND_MODE_CONFIG:
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateNbandModeConfigFailureCnt;
 		break;
 	
 	case MISC_EQUIP_CONFIG:
@@ -773,7 +789,7 @@ void NET_COAP_NBIOT_Event_CDPServerCheck(NBIOT_ClientsTypeDef* pClient)
 	}
 	else {
 		/* CDP Server Needn't be Config */
-		pClient->DictateRunCtl.dictateEvent = MISC_EQUIP_CONFIG;
+		pClient->DictateRunCtl.dictateEvent = NBAND_MODE_CHECK;
 	}
 }
 
@@ -791,7 +807,7 @@ void NET_COAP_NBIOT_Event_CDPServerConfig(NBIOT_ClientsTypeDef* pClient)
 	
 	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadCDPServer(pClient)) == NBIOT_OK) {
 		/* Dictate execute is Success */
-		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, CDP_SERVER_CONFIG);
+		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CONFIG, CDP_SERVER_CONFIG);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("Coap CDP Read %s:%d Ok", pClient->Parameter.cdpserver.CDPServerHost, pClient->Parameter.cdpserver.CDPServerPort);
@@ -810,7 +826,7 @@ void NET_COAP_NBIOT_Event_CDPServerConfig(NBIOT_ClientsTypeDef* pClient)
 		/* CDP Server Mast be Config */
 		if ((NBStatus = NBIOT_Neul_NBxx_SetCDPServer(pClient, TCFG_EEPROM_Get_ServerIP_String(), TCFG_EEPROM_GetServerPort())) == NBIOT_OK) {
 			/* Dictate execute is Success */
-			COAP_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, CDP_SERVER_CONFIG);
+			COAP_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CONFIG, CDP_SERVER_CONFIG);
 			
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("Coap CDP Set %s:%d Ok", TCFG_EEPROM_Get_ServerIP_String(), TCFG_EEPROM_GetServerPort());
@@ -828,6 +844,100 @@ void NET_COAP_NBIOT_Event_CDPServerConfig(NBIOT_ClientsTypeDef* pClient)
 	}
 	else {
 		/* CDP Server Needn't be Config */
+		pClient->DictateRunCtl.dictateEvent = NBAND_MODE_CONFIG;
+	}
+}
+
+/**********************************************************************************************************
+ @Function			void NET_COAP_NBIOT_Event_NbandModeCheck(NBIOT_ClientsTypeDef* pClient)
+ @Description			NET_COAP_NBIOT_Event_NbandModeCheck	: NBAND模式查询
+ @Input				pClient							: NBIOT客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_COAP_NBIOT_Event_NbandModeCheck(NBIOT_ClientsTypeDef* pClient)
+{
+	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	
+	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
+	
+	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadSupportedBands(pClient)) == NBIOT_OK) {
+		/* Dictate execute is Success */
+		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, NBAND_MODE_CHECK);
+		
+#ifdef COAP_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("Coap BAND Read %d Ok", pClient->Parameter.band);
+#endif
+	}
+	else {
+		/* Dictate execute is Fail */
+		COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, NBAND_MODE_CHECK);
+		
+#ifdef COAP_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("Coap BAND Read Fail ECde %d", NBStatus);
+#endif
+	}
+	
+	if (pClient->Parameter.band != COAP_NBIOT_BAND) {
+		/* BAND Mode Mast be Config */
+		pClient->DictateRunCtl.dictateEvent = MINIMUM_FUNCTIONALITY;
+	}
+	else {
+		/* BAND Mode Needn't be Config */
+		pClient->DictateRunCtl.dictateEvent = MISC_EQUIP_CONFIG;
+	}
+}
+
+/**********************************************************************************************************
+ @Function			void NET_COAP_NBIOT_Event_NbandModeConfig(NBIOT_ClientsTypeDef* pClient)
+ @Description			NET_COAP_NBIOT_Event_NbandModeConfig	: NBAND模式配置
+ @Input				pClient							: NBIOT客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_COAP_NBIOT_Event_NbandModeConfig(NBIOT_ClientsTypeDef* pClient)
+{
+	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	
+	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
+	
+	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadSupportedBands(pClient)) == NBIOT_OK) {
+		/* Dictate execute is Success */
+		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, NBAND_MODE_CONFIG);
+		
+#ifdef COAP_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("Coap BAND Read %d Ok", pClient->Parameter.band);
+#endif
+	}
+	else {
+		/* Dictate execute is Fail */
+		COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, NBAND_MODE_CONFIG);
+		
+#ifdef COAP_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("Coap BAND Read Fail ECde %d", NBStatus);
+#endif
+	}
+	
+	if (pClient->Parameter.band != COAP_NBIOT_BAND) {
+		/* BAND Mode Mast be Config */
+		if ((NBStatus = NBIOT_Neul_NBxx_SetSupportedBands(pClient, COAP_NBIOT_BAND)) == NBIOT_OK) {
+			/* Dictate execute is Success */
+			COAP_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, NBAND_MODE_CONFIG);
+			
+#ifdef COAP_DEBUG_LOG_RF_PRINT
+			Radio_Trf_Debug_Printf_Level2("Coap BAND Set %d Ok", COAP_NBIOT_BAND);
+#endif
+		}
+		else {
+			/* Dictate execute is Fail */
+			COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, NBAND_MODE_CONFIG);
+			
+#ifdef COAP_DEBUG_LOG_RF_PRINT
+			Radio_Trf_Debug_Printf_Level2("Coap BAND Set %d Fail ECde %d", COAP_NBIOT_BAND, NBStatus);
+#endif
+			return;
+		}
+	}
+	else {
+		/* BAND Mode Needn't be Config */
 		pClient->DictateRunCtl.dictateEvent = FULL_FUNCTIONALITY;
 	}
 }
@@ -844,8 +954,7 @@ void NET_COAP_NBIOT_Event_MiscEquipConfig(NBIOT_ClientsTypeDef* pClient)
 	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
-	if (((NBStatus = NBIOT_Neul_NBxx_CheckReadSupportedBands(pClient)) == NBIOT_OK) &&
-	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadNewMessageIndications(pClient)) == NBIOT_OK) &&
+	if (((NBStatus = NBIOT_Neul_NBxx_CheckReadNewMessageIndications(pClient)) == NBIOT_OK) &&
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadSentMessageIndications(pClient)) == NBIOT_OK)) {
 		/* Dictate execute is Success */
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, ATTACH_CHECK, MISC_EQUIP_CONFIG);
@@ -862,26 +971,6 @@ void NET_COAP_NBIOT_Event_MiscEquipConfig(NBIOT_ClientsTypeDef* pClient)
 		Radio_Trf_Debug_Printf_Level2("Coap MiscEquip Read Fail ECde %d", NBStatus);
 #endif
 		return;
-	}
-	
-	if (pClient->Parameter.band != COAP_NBIOT_BAND) {
-		if ((NBStatus = NBIOT_Neul_NBxx_SetSupportedBands(pClient, COAP_NBIOT_BAND)) == NBIOT_OK) {
-			/* Dictate execute is Success */
-			COAP_NBIOT_DictateEvent_SuccessExecute(pClient, ATTACH_CHECK, MISC_EQUIP_CONFIG);
-			
-#ifdef COAP_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("Coap Band Set %d Ok", COAP_NBIOT_BAND);
-#endif
-		}
-		else {
-			/* Dictate execute is Fail */
-			COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, MISC_EQUIP_CONFIG);
-			
-#ifdef COAP_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("Coap Band Set %d Fail ECde %d", COAP_NBIOT_BAND, NBStatus);
-#endif
-			return;
-		}
 	}
 	
 	if (pClient->Parameter.nnmistate != CloseFunc) {

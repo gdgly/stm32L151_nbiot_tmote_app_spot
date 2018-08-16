@@ -53,7 +53,7 @@ void NET_DNS_APP_PollExecution(DNS_ClientsTypeDef* pClient)
 		break;
 	
 	case MISC_EQUIP_CONFIG:
-		NET_DNS_NBIOT_Event_MiscEquipConfig(pClient);
+		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
 		break;
 	
 	case ATTACH_CHECK:
@@ -73,11 +73,11 @@ void NET_DNS_APP_PollExecution(DNS_ClientsTypeDef* pClient)
 		break;
 	
 	case MINIMUM_FUNCTIONALITY:
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+		NET_DNS_NBIOT_Event_MinimumFunctionality(pClient);
 		break;
 	
 	case FULL_FUNCTIONALITY:
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+		NET_DNS_NBIOT_Event_FullFunctionality(pClient);
 		break;
 	
 	case CDP_SERVER_CHECK:
@@ -86,6 +86,14 @@ void NET_DNS_APP_PollExecution(DNS_ClientsTypeDef* pClient)
 	
 	case CDP_SERVER_CONFIG:
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+		break;
+	
+	case NBAND_MODE_CHECK:
+		NET_DNS_NBIOT_Event_NbandModeCheck(pClient);
+		break;
+	
+	case NBAND_MODE_CONFIG:
+		NET_DNS_NBIOT_Event_NbandModeConfig(pClient);
 		break;
 	
 	case SEND_DATA:
@@ -222,10 +230,6 @@ static unsigned char* DNS_NBIOT_GetDictateFailureCnt(DNS_ClientsTypeDef* pClient
 		dictateFailureCnt = &pClient->SocketStack->NBIotStack->DictateRunCtl.dictateSimICCIDCheckFailureCnt;
 		break;
 	
-	case MISC_EQUIP_CONFIG:
-		dictateFailureCnt = &pClient->SocketStack->NBIotStack->DictateRunCtl.dictateMiscEquipConfigFailureCnt;
-		break;
-	
 	case ATTACH_CHECK:
 		dictateFailureCnt = &pClient->SocketStack->NBIotStack->DictateRunCtl.dictateAttachCheckFailureCnt;
 		break;
@@ -240,6 +244,22 @@ static unsigned char* DNS_NBIOT_GetDictateFailureCnt(DNS_ClientsTypeDef* pClient
 	
 	case PARAMETER_CHECKOUT:
 		dictateFailureCnt = &pClient->SocketStack->NBIotStack->DictateRunCtl.dictatePatameterCheckOutFailureCnt;
+		break;
+	
+	case MINIMUM_FUNCTIONALITY:
+		dictateFailureCnt = &pClient->SocketStack->NBIotStack->DictateRunCtl.dictateMinimumFunctionalityFailureCnt;
+		break;
+	
+	case FULL_FUNCTIONALITY:
+		dictateFailureCnt = &pClient->SocketStack->NBIotStack->DictateRunCtl.dictateFullFunctionalityFailureCnt;
+		break;
+	
+	case NBAND_MODE_CHECK:
+		dictateFailureCnt = &pClient->SocketStack->NBIotStack->DictateRunCtl.dictateNbandModeCheckFailureCnt;
+		break;
+	
+	case NBAND_MODE_CONFIG:
+		dictateFailureCnt = &pClient->SocketStack->NBIotStack->DictateRunCtl.dictateNbandModeConfigFailureCnt;
 		break;
 	
 	default :
@@ -590,7 +610,7 @@ void NET_DNS_NBIOT_Event_SimICCIDCheck(DNS_ClientsTypeDef* pClient)
 	
 	if (NBIOT_Neul_NBxx_CheckReadICCID(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
 		/* Dictate execute is Success */
-		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, MISC_EQUIP_CONFIG, ICCID_CHECK);
+		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, ICCID_CHECK);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("NB ICCID Check Ok");
@@ -607,51 +627,190 @@ void NET_DNS_NBIOT_Event_SimICCIDCheck(DNS_ClientsTypeDef* pClient)
 }
 
 /**********************************************************************************************************
- @Function			void NET_DNS_NBIOT_Event_MiscEquipConfig(DNS_ClientsTypeDef* pClient)
- @Description			NET_DNS_NBIOT_Event_MiscEquipConfig	: 其他配置
- @Input				pClient							: DNS客户端实例
+ @Function			void NET_DNS_NBIOT_Event_FullFunctionality(DNS_ClientsTypeDef* pClient)
+ @Description			NET_DNS_NBIOT_Event_FullFunctionality		: 完整功能
+ @Input				pClient								: DNS客户端实例
  @Return				void
 **********************************************************************************************************/
-void NET_DNS_NBIOT_Event_MiscEquipConfig(DNS_ClientsTypeDef* pClient)
+void NET_DNS_NBIOT_Event_FullFunctionality(DNS_ClientsTypeDef* pClient)
+{
+	DNS_NBIOT_DictateEvent_SetTime(pClient, 30);
+	
+	if (NBIOT_Neul_NBxx_CheckReadMinOrFullFunc(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
+		/* Dictate execute is Success */
+		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, FULL_FUNCTIONALITY);
+		
+#ifdef DNS_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("NB FullFunc Check Ok");
+#endif
+	}
+	else {
+		/* Dictate execute is Fail */
+		DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, FULL_FUNCTIONALITY);
+		
+#ifdef DNS_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("NB FullFunc Check Fail");
+#endif
+		return;
+	}
+	
+	if (pClient->SocketStack->NBIotStack->Parameter.functionality != FullFunc) {
+		if (NBIOT_Neul_NBxx_SetMinOrFullFunc(pClient->SocketStack->NBIotStack, FullFunc) == NBIOT_OK) {
+			/* Dictate execute is Success */
+			DNS_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, FULL_FUNCTIONALITY);
+			
+#ifdef DNS_DEBUG_LOG_RF_PRINT
+			Radio_Trf_Debug_Printf_Level2("NB FullFunc Set Ok");
+#endif
+		}
+		else {
+			/* Dictate execute is Fail */
+			DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, FULL_FUNCTIONALITY);
+			
+#ifdef DNS_DEBUG_LOG_RF_PRINT
+			Radio_Trf_Debug_Printf_Level2("NB FullFunc Set Fail");
+#endif
+			return;
+		}
+	}
+}
+
+/**********************************************************************************************************
+ @Function			void NET_DNS_NBIOT_Event_MinimumFunctionality(DNS_ClientsTypeDef* pClient)
+ @Description			NET_DNS_NBIOT_Event_MinimumFunctionality	: 最小功能
+ @Input				pClient								: DNS客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_DNS_NBIOT_Event_MinimumFunctionality(DNS_ClientsTypeDef* pClient)
+{
+	DNS_NBIOT_DictateEvent_SetTime(pClient, 30);
+	
+	if (NBIOT_Neul_NBxx_CheckReadMinOrFullFunc(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
+		/* Dictate execute is Success */
+		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CONFIG, MINIMUM_FUNCTIONALITY);
+		
+#ifdef DNS_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("NB MinFunc Check Ok");
+#endif
+	}
+	else {
+		/* Dictate execute is Fail */
+		DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, MINIMUM_FUNCTIONALITY);
+		
+#ifdef DNS_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("NB MinFunc Check Fail");
+#endif
+		return;
+	}
+	
+	if (pClient->SocketStack->NBIotStack->Parameter.functionality != MinFunc) {
+		if (NBIOT_Neul_NBxx_SetMinOrFullFunc(pClient->SocketStack->NBIotStack, MinFunc) == NBIOT_OK) {
+			/* Dictate execute is Success */
+			DNS_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CONFIG, MINIMUM_FUNCTIONALITY);
+			
+#ifdef DNS_DEBUG_LOG_RF_PRINT
+			Radio_Trf_Debug_Printf_Level2("NB MinFunc Set Ok");
+#endif
+		}
+		else {
+			/* Dictate execute is Fail */
+			DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, MINIMUM_FUNCTIONALITY);
+			
+#ifdef DNS_DEBUG_LOG_RF_PRINT
+			Radio_Trf_Debug_Printf_Level2("NB MinFunc Set Fail");
+#endif
+			return;
+		}
+	}
+}
+
+/**********************************************************************************************************
+ @Function			void NET_DNS_NBIOT_Event_NbandModeCheck(DNS_ClientsTypeDef* pClient)
+ @Description			NET_DNS_NBIOT_Event_NbandModeCheck			: NBAND模式查询
+ @Input				pClient								: DNS客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_DNS_NBIOT_Event_NbandModeCheck(DNS_ClientsTypeDef* pClient)
 {
 	DNS_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if (NBIOT_Neul_NBxx_CheckReadSupportedBands(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
 		/* Dictate execute is Success */
-		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, ATTACH_CHECK, MISC_EQUIP_CONFIG);
+		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, NBAND_MODE_CHECK);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("NB MiscEquip Read Ok");
+		Radio_Trf_Debug_Printf_Level2("NB BAND Read %d Ok", pClient->SocketStack->NBIotStack->Parameter.band);
 #endif
 	}
 	else {
 		/* Dictate execute is Fail */
-		DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, MISC_EQUIP_CONFIG);
+		DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, NBAND_MODE_CHECK);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("NB MiscEquip Read Fail");
+		Radio_Trf_Debug_Printf_Level2("NB BAND Read Fail");
 #endif
-		return;
 	}
 	
-	if (pClient->SocketStack->NBIotStack->Parameter.band != DNS_NBIOT_BAND) {
-		if (NBIOT_Neul_NBxx_SetSupportedBands(pClient->SocketStack->NBIotStack, DNS_NBIOT_BAND) == NBIOT_OK) {
+	if (pClient->SocketStack->NBIotStack->Parameter.band != MQTTSN_NBIOT_BAND) {
+		/* BAND Mode Mast be Config */
+		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MINIMUM_FUNCTIONALITY;
+	}
+	else {
+		/* BAND Mode Needn't be Config */
+		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ATTACH_CHECK;
+	}
+}
+
+/**********************************************************************************************************
+ @Function			void NET_DNS_NBIOT_Event_NbandModeConfig(DNS_ClientsTypeDef* pClient)
+ @Description			NET_DNS_NBIOT_Event_NbandModeConfig		: NBAND模式配置
+ @Input				pClient								: DNS客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_DNS_NBIOT_Event_NbandModeConfig(DNS_ClientsTypeDef* pClient)
+{
+	DNS_NBIOT_DictateEvent_SetTime(pClient, 30);
+	
+	if (NBIOT_Neul_NBxx_CheckReadSupportedBands(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
+		/* Dictate execute is Success */
+		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, NBAND_MODE_CONFIG);
+		
+#ifdef DNS_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("NB BAND Read %d Ok", pClient->SocketStack->NBIotStack->Parameter.band);
+#endif
+	}
+	else {
+		/* Dictate execute is Fail */
+		DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, NBAND_MODE_CONFIG);
+		
+#ifdef DNS_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("NB BAND Read Fail");
+#endif
+	}
+	
+	if (pClient->SocketStack->NBIotStack->Parameter.band != MQTTSN_NBIOT_BAND) {
+		/* BAND Mode Mast be Config */
+		if (NBIOT_Neul_NBxx_SetSupportedBands(pClient->SocketStack->NBIotStack, MQTTSN_NBIOT_BAND) == NBIOT_OK) {
 			/* Dictate execute is Success */
-			DNS_NBIOT_DictateEvent_SuccessExecute(pClient, ATTACH_CHECK, MISC_EQUIP_CONFIG);
+			DNS_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, NBAND_MODE_CONFIG);
 			
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("NB Band Set %d Ok", DNS_NBIOT_BAND);
+			Radio_Trf_Debug_Printf_Level2("NB BAND Set %d Ok", MQTTSN_NBIOT_BAND);
 #endif
 		}
 		else {
 			/* Dictate execute is Fail */
-			DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, MISC_EQUIP_CONFIG);
+			DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, NBAND_MODE_CONFIG);
 			
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("NB Band Set %d Fail", DNS_NBIOT_BAND);
+			Radio_Trf_Debug_Printf_Level2("NB BAND Set %d Fail", MQTTSN_NBIOT_BAND);
 #endif
 			return;
 		}
+	}
+	else {
+		/* BAND Mode Needn't be Config */
+		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = FULL_FUNCTIONALITY;
 	}
 }
 
@@ -1068,7 +1227,7 @@ void NET_DNS_Event_OverDnsAnalysis(DNS_ClientsTypeDef* pClient)
 	MQTTSN_Transport_Init(&MqttSNSocketNetHandler, &NbiotClientHandler, MQTTSN_SERVER_LOCAL_PORT, (char*)DNS_GetHostIP(pClient, (unsigned char*)MQTTSN_SERVER_HOST_NAME), MQTTSN_SERVER_TELE_PORT);
 	
 	pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
-	pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MISC_EQUIP_CONFIG;
+	pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ATTACH_CHECK;
 	pClient->ProcessState = DNS_PROCESS_CREAT_UDP_SOCKET;
 }
 
