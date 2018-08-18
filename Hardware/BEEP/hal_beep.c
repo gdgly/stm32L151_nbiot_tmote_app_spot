@@ -77,9 +77,9 @@ void BEEP_PassiveCtrl(u16 speak_nMs)
 {
 	for (u16 nCount = 0; nCount < speak_nMs; nCount++) {
 		BEEP(ON);
-		Delay_US(280);
+		Delay_US(BEEP_ON_US);
 		BEEP(OFF);
-		Delay_US(220);
+		Delay_US(BEEP_OFF_US);
 	}
 }
 

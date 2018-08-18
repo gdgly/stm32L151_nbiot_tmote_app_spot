@@ -59,8 +59,12 @@ DNS_ClientsTypeDef			DNSClientHandler;								//DNS Clinet Handler
 **********************************************************************************************************/
 void RadioPrintWorkinfo(void)
 {
+#if NBCOAP_SENDCODE_WORK_INFO
 	NETCoapNeedSendCode.WorkInfo = 1;
+#endif
+#if NBMQTTSN_SENDCODE_WORK_INFO
 	NETMqttSNNeedSendCode.InfoWork = 1;
+#endif
 	
 	TCFG_EEPROM_GetMagTempCoef(&TCFG_SystemData.MagCoefX, &TCFG_SystemData.MagCoefY, &TCFG_SystemData.MagCoefZ);
 	
@@ -100,10 +104,18 @@ void RadioPrintWorkinfo(void)
 **********************************************************************************************************/
 void RadioPrintNetinfo(void)
 {
+#if NBCOAP_SENDCODE_BASIC_INFO
 	NETCoapNeedSendCode.BasicInfo = 1;
+#endif
+#if NBCOAP_SENDCODE_DYNAMIC_INFO
 	NETCoapNeedSendCode.DynamicInfo = 1;
+#endif
+#if NBMQTTSN_SENDCODE_BASIC_INFO
 	NETMqttSNNeedSendCode.InfoBasic = 1;
+#endif
+#if NBMQTTSN_SENDCODE_DYNAMIC_INFO
 	NETMqttSNNeedSendCode.InfoDynamic = 1;
+#endif
 	
 	Radio_Trf_Printf("NetInfo:");
 	

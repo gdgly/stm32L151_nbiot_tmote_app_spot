@@ -1777,7 +1777,9 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
 						TCFG_EEPROM_SetRadarDbgMode(radarDbgval);
 						TCFG_SystemData.RadarDbgMode = TCFG_EEPROM_GetRadarDbgMode();
+						#if NBMQTTSN_SENDCODE_DYNAMIC_INFO
 						NETMqttSNNeedSendCode.InfoDynamic = 1;
+						#endif
 					}
 					else {
 						ret = NETIP_UNKNOWNERROR;
@@ -1814,7 +1816,9 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 						"{(InitRadar):{(v23456):%u,(v7890a):%u,(vbcdef):%u,(vg):%u,(Magic):%hu}}", &i32, &j32, &k32, &m32, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
 						Radar_InitBG_Cmd(i32, j32, k32, m32);
+						#if NBMQTTSN_SENDCODE_RADAR_INFO
 						NETMqttSNNeedSendCode.InfoRadar = 1;
+						#endif
 					}
 					else {
 						ret = NETIP_UNKNOWNERROR;
@@ -1899,15 +1903,21 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 				BEEP_CtrlRepeat_Extend(2, 50, 50);
 				/* InfoWork */
 				if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "Workinfo") != NULL) {
+				#if NBMQTTSN_SENDCODE_WORK_INFO
 					NETMqttSNNeedSendCode.InfoWork = 1;
+				#endif
 				}
 				/* InfoBasic */
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "BasicInfo") != NULL) {
+				#if NBMQTTSN_SENDCODE_BASIC_INFO
 					NETMqttSNNeedSendCode.InfoBasic = 1;
+				#endif
 				}
 				/* InfoDynamic */
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "DynamicInfo") != NULL) {
+				#if NBMQTTSN_SENDCODE_DYNAMIC_INFO
 					NETMqttSNNeedSendCode.InfoDynamic = 1;
+				#endif
 				}
 				/* ...... */
 			}

@@ -47,6 +47,9 @@
 #define	NBCOAP_QUOTA_TIME_5YEAR			1183
 #define	NBCOAP_COAP_QUOTA_TIME_TYPE		NBCOAP_QUOTA_TIME_3YEAR				//Coap一天使用配额时间
 
+#define	NBCOAP_LISTEN_ENTER_IDLE_SEC		35								//Coap监听NB进入IDLE等待时间
+#define	NBCOAP_LISTEN_ENTER_PARAMETER_SEC	15								//Coap监听NB进入参数检查等待时间
+
 #define	RADIO_CMD_ECHO_DISABLE			0
 #define	RADIO_CMD_ECHO_ENABLE			1
 #define	RADIO_CMD_ECHO_TYPE				RADIO_CMD_ECHO_DISABLE				//无线命令回显
@@ -63,8 +66,11 @@
 #define	BEEP_PASSIVE					1
 #define	BEEP_MODEL_TYPE				BEEP_ACTIVE						//蜂鸣器类型
 
+#define	BEEP_ON_US					300								//无源蜂鸣器开时间
+#define	BEEP_OFF_US					200								//无源蜂鸣器关时间
+
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					114								//从固件版本
+#define	SOFTWARESUB					115								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 
@@ -72,6 +78,20 @@
 #define	RADIO_PRINT_NETINFO				1								//无线输出NetInfo
 #define	RADIO_PRINT_DEVINFO				1								//无线输出DeviceInfo
 #define	RADIO_PRINT_UPGRADEINFO			1								//无线输出UpgradeInfo
+
+#define	NBCOAP_SENDCODE_SHORT_STATUS		0								//NB上报信息使能CoapShortStatus
+#define	NBCOAP_SENDCODE_LONG_STATUS		1								//NB上报信息使能CoapLongStatus
+#define	NBCOAP_SENDCODE_WORK_INFO		1								//NB上报信息使能CoapWorkInfo
+#define	NBCOAP_SENDCODE_BASIC_INFO		1								//NB上报信息使能CoapBasicInfo
+#define	NBCOAP_SENDCODE_DYNAMIC_INFO		1								//NB上报信息使能CoapDynamicInfo
+#define	NBCOAP_SENDCODE_RADAR_INFO		0								//NB上报信息使能CoapRadarInfo
+
+#define	NBMQTTSN_SENDCODE_STATUS_BASIC	0								//NB上报信息使能MqttSNStatusBasic
+#define	NBMQTTSN_SENDCODE_STATUS_EXTEND	1								//NB上报信息使能MqttSNStatusExtend
+#define	NBMQTTSN_SENDCODE_WORK_INFO		1								//NB上报信息使能MqttSNWorkInfo
+#define	NBMQTTSN_SENDCODE_BASIC_INFO		1								//NB上报信息使能MqttSNBasicInfo
+#define	NBMQTTSN_SENDCODE_DYNAMIC_INFO	1								//NB上报信息使能MqttSNDynamicInfo
+#define	NBMQTTSN_SENDCODE_RADAR_INFO		0								//NB上报信息使能MqttSNRadarInfo
 
 #define	RF_DPRINT_LV_0					0								//调试信息不打印
 #define	RF_DPRINT_LV_1					1								//基本信息打印

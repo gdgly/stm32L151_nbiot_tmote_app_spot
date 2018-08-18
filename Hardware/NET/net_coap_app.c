@@ -1787,7 +1787,9 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 							TCFG_SystemData.NBCoapCDPServer.port = cdpport;
 							TCFG_EEPROM_SetServerIP(TCFG_SystemData.NBCoapCDPServer.ip.ip32);
 							TCFG_EEPROM_SetServerPort(TCFG_SystemData.NBCoapCDPServer.port);
+							#if NBCOAP_SENDCODE_DYNAMIC_INFO
 							NETCoapNeedSendCode.DynamicInfo = 1;
+							#endif
 							NET_Coap_Message_RecvDataOffSet();
 							NETCoapNeedSendCode.ResponseInfoErrcode = ret;
 							NETCoapNeedSendCode.ResponseInfo = 1;
@@ -1824,7 +1826,9 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						if (recvMagicNum == TCLOD_MAGIC_NUM) {
 							TCFG_EEPROM_SetRadarDbgMode(radarDbgval);
 							TCFG_SystemData.RadarDbgMode = TCFG_EEPROM_GetRadarDbgMode();
+							#if NBCOAP_SENDCODE_DYNAMIC_INFO
 							NETCoapNeedSendCode.DynamicInfo = 1;
+							#endif
 						}
 						else {
 							ret = NETIP_UNKNOWNERROR;
@@ -1861,7 +1865,9 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 							"{(InitRadar):{(v23456):%u,(v7890a):%u,(vbcdef):%u,(vg):%u,(Magic):%hu}}", &i32, &j32, &k32, &m32, &recvMagicNum);
 						if (recvMagicNum == TCLOD_MAGIC_NUM) {
 							Radar_InitBG_Cmd(i32, j32, k32, m32);
+							#if NBCOAP_SENDCODE_RADAR_INFO
 							NETCoapNeedSendCode.RadarInfo = 1;
+							#endif
 						}
 						else {
 							ret = NETIP_UNKNOWNERROR;
@@ -1988,15 +1994,21 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 					BEEP_CtrlRepeat_Extend(2, 50, 50);
 					/* Workinfo */
 					if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Workinfo") != NULL) {
+					#if NBCOAP_SENDCODE_WORK_INFO
 						NETCoapNeedSendCode.WorkInfo = 1;
+					#endif
 					}
 					/* BasicInfo */
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "BasicInfo") != NULL) {
+					#if NBCOAP_SENDCODE_BASIC_INFO
 						NETCoapNeedSendCode.BasicInfo = 1;
+					#endif
 					}
 					/* DynamicInfo */
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "DynamicInfo") != NULL) {
+					#if NBCOAP_SENDCODE_DYNAMIC_INFO
 						NETCoapNeedSendCode.DynamicInfo = 1;
+					#endif
 					}
 					/* ...... */
 				}
@@ -2135,7 +2147,9 @@ void NET_COAP_NBIOT_Listen_Event_EnterIdleMode(NBIOT_ClientsTypeDef* pClient)
 				pClient->ListenRunCtl.ListenEnterIdle.listenEnable = false;
 				pClient->ListenRunCtl.ListenEnterIdle.listenStatus = false;
 				pClient->ListenRunCtl.listenEvent = ENTER_IDLE_MODE;
+				#if NBCOAP_SENDCODE_WORK_INFO
 				NETCoapNeedSendCode.WorkInfo = 1;
+				#endif
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 				Radio_Trf_Debug_Printf_Level2("NB Not Enter IDLE Mode");
 #endif

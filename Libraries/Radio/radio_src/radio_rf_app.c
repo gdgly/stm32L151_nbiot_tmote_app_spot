@@ -307,7 +307,9 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					TCFG_EEPROM_SetServerPort(uval16);
 					TCFG_SystemData.NBCoapCDPServer.ip.ip32 = TCFG_EEPROM_GetServerIP();
 					TCFG_SystemData.NBCoapCDPServer.port = TCFG_EEPROM_GetServerPort();
+					#if NBCOAP_SENDCODE_DYNAMIC_INFO
 					NETCoapNeedSendCode.DynamicInfo = 1;
+					#endif
 					NET_NBIOT_Initialization();
 				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("CDP IP %d.%d.%d.%d:%d", 

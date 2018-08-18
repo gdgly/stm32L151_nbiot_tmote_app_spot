@@ -95,7 +95,9 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 	
 	/* 检查是否有数据需要发送 */
 	if (Inspect_Message_SpotStatusisEmpty() == false) {
+	#if NBCOAP_SENDCODE_LONG_STATUS
 		NETCoapNeedSendCode.LongStatus = 1;
+	#endif
 	}
 	
 	/* COAP SHORT STATUS DATA ENQUEUE */
@@ -283,7 +285,9 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 	
 	/* 检查是否有数据需要发送 */
 	if (Inspect_Message_SpotStatusisEmpty() == false) {
+	#if NBMQTTSN_SENDCODE_STATUS_EXTEND
 		NETMqttSNNeedSendCode.StatusExtend = 1;
+	#endif
 	}
 	
 	/* MQTTSN STATUS BASIC DATA ENQUEUE */

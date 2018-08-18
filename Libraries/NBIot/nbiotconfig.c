@@ -16,6 +16,8 @@
 #include "nbiotconfig.h"
 #include "nbiotfunc.h"
 #include "nbiottransport.h"
+#include "platform_config.h"
+#include "platform_map.h"
 #include "string.h"
 
 unsigned char NBIOT_SendBuf[NBIOT_BUFFER_SIZE];
@@ -75,14 +77,14 @@ void NBIOT_Client_Init(NBIOT_ClientsTypeDef* pClient, NBIOT_ATCmdTypeDef* ATCmdS
 	/* 事件运行监听器 */
 	pClient->ListenRunCtl.ListenEnterIdle.listenEnable				= false;
 	pClient->ListenRunCtl.ListenEnterIdle.listenStatus				= false;
-	pClient->ListenRunCtl.ListenEnterIdle.listenTimereachSec			= 75;
+	pClient->ListenRunCtl.ListenEnterIdle.listenTimereachSec			= NBCOAP_LISTEN_ENTER_IDLE_SEC;
 	pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventEnable			= false;
 	pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventTimeoutSec		= 0;
 	pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventFailureCnt		= 0;
 	
 	pClient->ListenRunCtl.ListenEnterParameter.listenEnable			= false;
 	pClient->ListenRunCtl.ListenEnterParameter.listenStatus			= false;
-	pClient->ListenRunCtl.ListenEnterParameter.listenTimereachSec		= 65;
+	pClient->ListenRunCtl.ListenEnterParameter.listenTimereachSec		= NBCOAP_LISTEN_ENTER_PARAMETER_SEC;
 	pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventEnable		= false;
 	pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventTimeoutSec	= 0;
 	pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt	= 0;

@@ -403,7 +403,9 @@ void MainHandleRoutine(void)
 				__NOP();
 			}
 			else if (NETCoapNeedSendCode.WorkInfoWait > 0) {
+			#if NBCOAP_SENDCODE_WORK_INFO
 				NETCoapNeedSendCode.WorkInfo = 1;
+			#endif
 			}
 			NETCoapNeedSendCode.WorkInfoWait--;
 		}
@@ -413,7 +415,9 @@ void MainHandleRoutine(void)
 				__NOP();
 			}
 			else if (NETMqttSNNeedSendCode.InfoWorkWait > 0) {
+			#if NBMQTTSN_SENDCODE_WORK_INFO
 				NETMqttSNNeedSendCode.InfoWork = 1;
+			#endif
 			}
 			NETMqttSNNeedSendCode.InfoWorkWait--;
 		}
@@ -434,9 +438,13 @@ void MainHandleRoutine(void)
 			if (radarCountPre != TCFG_GetRadarCount()) {
 				radarCountPre = TCFG_GetRadarCount();
 				if (TCFG_Utility_GetCoapConnectDayTime() <= (TCFG_EEPROM_GetCoapQuotaTime() / 2)) {
+				#if NBCOAP_SENDCODE_RADAR_INFO
 					NETCoapNeedSendCode.RadarInfo = 1;
+				#endif
 				}
-				NETMqttSNNeedSendCode.InfoRadar = 1;
+				#if NBMQTTSN_SENDCODE_RADAR_INFO
+					NETMqttSNNeedSendCode.InfoRadar = 1;
+				#endif
 			}
 		}
 	}
@@ -494,10 +502,24 @@ void MainHandleRoutine(void)
 	if ((Stm32_GetSecondTick() / (24*3600)) != SystemRunningTime.days) {
 		SystemRunningTime.days = Stm32_GetSecondTick() / (24*3600);
 		
+	#if NBCOAP_SENDCODE_WORK_INFO
 		NETCoapNeedSendCode.WorkInfo = 1;
+	#endif
+	#if NBCOAP_SENDCODE_BASIC_INFO
+		NETCoapNeedSendCode.BasicInfo = 1;
+	#endif
+	#if NBCOAP_SENDCODE_DYNAMIC_INFO
 		NETCoapNeedSendCode.DynamicInfo = 1;
+	#endif
+	#if NBMQTTSN_SENDCODE_WORK_INFO
 		NETMqttSNNeedSendCode.InfoWork = 1;
+	#endif
+	#if NBMQTTSN_SENDCODE_BASIC_INFO
+		NETMqttSNNeedSendCode.InfoBasic = 1;
+	#endif
+	#if NBMQTTSN_SENDCODE_DYNAMIC_INFO
 		NETMqttSNNeedSendCode.InfoDynamic = 1;
+	#endif
 		
 		TCFG_SystemData.CoapConnectTime = TCFG_Utility_GetCoapConnectTime();
 		TCFG_EEPROM_SetCoapConnectTime(TCFG_SystemData.CoapConnectTime);

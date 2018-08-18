@@ -215,9 +215,13 @@ void Inspect_Spot_ExistenceDetect(void)
 					if ((lasttime2send_radar_at_free + 3600) < Stm32_GetSecondTick()) {
 						lasttime2send_radar_at_free = Stm32_GetSecondTick();
 						if (TCFG_Utility_GetCoapConnectDayTime() <= (TCFG_EEPROM_GetCoapQuotaTime() / 2)) {
+						#if NBCOAP_SENDCODE_RADAR_INFO
 							NETCoapNeedSendCode.RadarInfo = 1;
+						#endif
 						}
-						NETMqttSNNeedSendCode.InfoRadar = 1;
+						#if NBMQTTSN_SENDCODE_RADAR_INFO
+							NETMqttSNNeedSendCode.InfoRadar = 1;
+						#endif
 					}
 					prepare2send_radar = 60;
 				}
@@ -241,9 +245,13 @@ void Inspect_Spot_ExistenceDetect(void)
 		if ((prepare2send_radar == 0) && (SpotStatusDataBackUp.spot_status == 0)) {
 			lasttime2send_radar_at_free = Stm32_GetSecondTick();
 			if (TCFG_Utility_GetCoapConnectDayTime() <= (TCFG_EEPROM_GetCoapQuotaTime() / 2)) {
+			#if NBCOAP_SENDCODE_RADAR_INFO
 				NETCoapNeedSendCode.RadarInfo = 1;
+			#endif
 			}
-			NETMqttSNNeedSendCode.InfoRadar = 1;
+			#if NBMQTTSN_SENDCODE_RADAR_INFO
+				NETMqttSNNeedSendCode.InfoRadar = 1;
+			#endif
 		}
 	}
 }
