@@ -170,8 +170,18 @@ typedef enum
 	CID_is_active						= 515,
 	Incorrect_State_for_Command			= 516,
 	Cid_is_invalid						= 517,
+	CID_is_not_active					= 518,
 	Deactive_last_active_cid				= 520,
-	Cid_is_not_defined					= 521
+	Cid_is_not_defined					= 521,
+	Uart_parity_error					= 522,
+	Uart_frame_error					= 523,
+	Mt_not_power_on					= 524,
+	sent_data_sequence_repeat_error		= 525,
+	at_command_abort_error				= 526,
+	command_interrupted					= 527,
+	Configuration_conflicts				= 528,
+	FOTA_is_updating					= 529,
+	Not_the_at_allocated_socket			= 530
 }NBIOT_StatusTypeDef;
 
 /* NBIOT BAND */
