@@ -557,7 +557,7 @@ void Radio_Trf_App_Task(void)
 		/* 发送心跳包 */
 		Radio_Trf_Do_Heartbeat();
 	}
-	else if ((gateway_nearby > 0) && (hearttime_pre+5 < Stm32_GetSecondTick())) {
+	else if ((gateway_nearby > 0) && (hearttime_pre + RADIO_GATWAY_NEARBY_HEART_SEC < Stm32_GetSecondTick())) {
 		hearttime_pre = Stm32_GetSecondTick();
 		/* 发送心跳包 */
 		Radio_Trf_Do_Heartbeat();
@@ -710,7 +710,7 @@ void Radio_Trf_Xmit_Heartbeat(void)
 	
 	Radio_Trf_Cfg_Buildframe((uint8_t *)pHeartBeat, TMOTE_PLAIN_PUB, Radio_Trf_Xmit_Get_Pktnum(), TCFG_EEPROM_Get_MAC_SN(), TRF_SendBuf, sizeof(trf_heartbeat_s));
 	Radio_Rf_Send(TRF_SendBuf, TRF_SendBuf[0]);
-	Delay_MS(6);
+	Delay_MS(7);
 }
 
 /**********************************************************************************************************

@@ -49,7 +49,7 @@ NBIOT_StatusTypeDef NBIOT_Transport_SendATCmd(NBIOT_ATCmdTypeDef* ATCmd)
 	
 	if ((ATCmd->ATack && ATCmd->CmdWaitTime.xTicksToWait) || (ATCmd->ATNack && ATCmd->CmdWaitTime.xTicksToWait)) {	//需要等待应答
 		
-		Stm32_Calculagraph_CountdownMS(&Serial_timer_Ms, 100);
+		Stm32_Calculagraph_CountdownMS(&Serial_timer_Ms, NBIOT_SERIAL_TIMEOUT_MSEC);
 		ATCmd->SerialWaitTime = Serial_timer_Ms;
 		
 		while (Stm32_Calculagraph_IsExpiredMS(&ATCmd->SerialWaitTime) != true) {								//等待倒计时
@@ -59,7 +59,7 @@ NBIOT_StatusTypeDef NBIOT_Transport_SendATCmd(NBIOT_ATCmdTypeDef* ATCmd)
 				USART1_RX_STA &= 0x2000;																//缓存状态清0可继续接收
 			}
 			else if (USART1_RX_STA & 0x2000) {															//正在接收中
-				Stm32_Calculagraph_CountdownMS(&Serial_timer_Ms, 100);
+				Stm32_Calculagraph_CountdownMS(&Serial_timer_Ms, NBIOT_SERIAL_TIMEOUT_MSEC);
 				ATCmd->SerialWaitTime = Serial_timer_Ms;
 			}
 			if (Stm32_Calculagraph_IsExpiredMS(&ATCmd->CmdWaitTime) == true) {								//超过命令执行时间

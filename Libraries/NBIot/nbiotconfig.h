@@ -9,8 +9,9 @@
 #define NBIOT_RESET_RCC_GPIO_CLK_ENABLE()	__HAL_RCC_GPIOB_CLK_ENABLE()
 #define NBIOT_RESET_RCC_GPIO_CLK_DISABLE()	__HAL_RCC_GPIOB_CLK_DISABLE()
 
-#define NBIOT_COMMAND_TIMEOUT_MSEC			8000
-#define NBIOT_COMMAND_FAILURE_CNT			3
+#define NBIOT_SERIAL_TIMEOUT_MSEC			100												//串口连续接收数据包超时时间MS
+#define NBIOT_COMMAND_TIMEOUT_MSEC			8000												//指令发送等待响应包超时时间MS
+#define NBIOT_COMMAND_FAILURE_CNT			3												//指令执行错误尝试次数
 
 /* NBIOT 协议栈开辟缓存大小 */
 #define NBIOT_BUFFER_SIZE				512
@@ -456,6 +457,7 @@ struct NBIOT_ATCmdTypeDef
 	short							ATRecvlen;
 	char*							ATack;
 	char*							ATNack;
+	char*							ATNeedack;
 	Stm32_CalculagraphTypeDef			CmdWaitTime;
 	Stm32_CalculagraphTypeDef			SerialWaitTime;
 	NBIOT_StatusTypeDef					(*Write)(NBIOT_ATCmdTypeDef*);

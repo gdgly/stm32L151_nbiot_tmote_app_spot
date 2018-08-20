@@ -70,7 +70,7 @@
 #define	BEEP_OFF_US					200								//无源蜂鸣器关时间
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					115								//从固件版本
+#define	SOFTWARESUB					116								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 
@@ -107,6 +107,8 @@
 
 #define	DEBUG_WORK					1								//调试工作模式
 #define	NORMAL_WORK					0								//正常工作模式
+
+#define	RADIO_GATWAY_NEARBY_HEART_SEC		5								//无线接收网关数据心跳包间隔时间
 
 #define	TIME_TO_MODULE_INIT				3600*24*3							//间隔时间初始化模块
 
