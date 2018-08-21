@@ -457,7 +457,6 @@ struct NBIOT_ATCmdTypeDef
 	short							ATRecvlen;
 	char*							ATack;
 	char*							ATNack;
-	char*							ATNeedack;
 	Stm32_CalculagraphTypeDef			CmdWaitTime;
 	Stm32_CalculagraphTypeDef			SerialWaitTime;
 	NBIOT_StatusTypeDef					(*Write)(NBIOT_ATCmdTypeDef*);
