@@ -23,6 +23,8 @@
 #include "si446x_cmd.h"
 #include "si446x_defs.h"
 #include "platform_config.h"
+#include "platform_map.h"
+#include "hal_iwdg.h"
 #include "delay.h"
 #include "string.h"
 
@@ -206,7 +208,11 @@ char Radio_Rf_Init(void)
 	
 	/* step 1: reset chip */
 	for (i = 0; i < 3; i++) {
+		
+		IWDG_Feed();
+		
 		Radio_PowerUp();
+		
 		/* step 2: set up the rf chip */
 		si446x_part_info();
 		
