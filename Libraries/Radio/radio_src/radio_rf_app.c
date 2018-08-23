@@ -327,11 +327,11 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				#endif
 					if (uval16) {
 						DeviceActivedMode = true;
-						BEEP_CtrlRepeat_Extend(5,30,70);
+						BEEP_CtrlRepeat_Extend(5, 30, 70);
 					}
 					else {
 						DeviceActivedMode = false;
-						BEEP_CtrlRepeat_Extend(1,500,0);
+						BEEP_CtrlRepeat_Extend(1, 500, 0);
 					}
 				}
 				/* RadarDbg */
@@ -374,7 +374,7 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				/* MagInit */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "maginit")) {
 					QMC5883L_InitBackgroud();
-					BEEP_CtrlRepeat_Extend(5,30,70);
+					BEEP_CtrlRepeat_Extend(5, 30, 70);
 				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("MagInit : OK");
 				#endif
@@ -415,7 +415,7 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 						TCFG_EEPROM_SetCoapQuotaTime(TCFG_SystemData.CoapQuotaTime);
 					}
 				#if RADIO_CMD_ECHO_TYPE
-					Radio_Trf_Printf("quotatime:%hu", TCFG_EEPROM_GetCoapQuotaTime());
+					Radio_Trf_Printf("QuotaTime:%hu", TCFG_EEPROM_GetCoapQuotaTime());
 				#endif
 				}
 				/* MagTempCoef */
@@ -426,7 +426,7 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					TCFG_SystemData.MagCoefZ = magTempCoefZ;
 					TCFG_EEPROM_SetMagTempCoef(TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
 				#if RADIO_CMD_ECHO_TYPE
-					Radio_Trf_Printf("coef:%hd,%hd,%hd", TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
+					Radio_Trf_Printf("Coef:%hd,%hd,%hd", TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
 				#endif
 				}
 				/* SetQmcCoef */
@@ -437,7 +437,7 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					TCFG_SystemData.MagCoefZ = magTempCoefZ;
 					TCFG_EEPROM_SetMagTempCoef(TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
 				#if RADIO_CMD_ECHO_TYPE
-					Radio_Trf_Printf("coef:%hd,%hd,%hd", TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
+					Radio_Trf_Printf("Coef:%hd,%hd,%hd", TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
 				#endif
 				}
 				/* BeepOff */
@@ -446,7 +446,7 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					TCFG_SystemData.BeepCtrlOff = uval16;
 					TCFG_EEPROM_SetBeepOff(TCFG_SystemData.BeepCtrlOff);
 				#if RADIO_CMD_ECHO_TYPE
-					Radio_Trf_Printf("beepoff:%hu", TCFG_EEPROM_GetBeepOff());
+					Radio_Trf_Printf("Beepoff:%hu", TCFG_EEPROM_GetBeepOff());
 				#endif
 				}
 				/* UpLimit */
@@ -457,7 +457,15 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					TCFG_EEPROM_SetUpgradeLimitRssi(TCFG_SystemData.UpgradeLimitRssi);
 					TCFG_EEPROM_SetUpgradeLimitSnr(TCFG_SystemData.UpgradeLimitSnr);
 				#if RADIO_CMD_ECHO_TYPE
-					Radio_Trf_Printf("uplimit:%hd,%hd", TCFG_EEPROM_GetUpgradeLimitRssi(), TCFG_EEPROM_GetUpgradeLimitSnr());
+					Radio_Trf_Printf("Uplimit:%hd,%hd", TCFG_EEPROM_GetUpgradeLimitRssi(), TCFG_EEPROM_GetUpgradeLimitSnr());
+				#endif
+				}
+				/* Restore */
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "restore")) {
+					TCFG_EEPROM_WriteConfigData();
+					BEEP_CtrlRepeat_Extend(5, 30, 70);
+				#if RADIO_CMD_ECHO_TYPE
+					Radio_Trf_Printf("Restore Config Data");
 				#endif
 				}
 				/* WorkInfo */
