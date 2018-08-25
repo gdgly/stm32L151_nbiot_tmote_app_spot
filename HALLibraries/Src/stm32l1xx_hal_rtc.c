@@ -141,6 +141,13 @@
 
 #ifdef HAL_RTC_MODULE_ENABLED
 
+/* Private variables ---------------------------------------------------------*/
+/* Private function prototypes -----------------------------------------------*/
+/** @defgroup RTC_Private_Functions RTC Private Functions
+  * @{
+  */
+static uint8_t RTC_WeekDayNum(uint32_t nYear, uint8_t nMonth, uint8_t nDay);
+
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
@@ -475,6 +482,8 @@ HAL_StatusTypeDef HAL_RTC_SetDate(RTC_HandleTypeDef *hrtc, RTC_DateTypeDef *sDat
  __HAL_LOCK(hrtc);
   
   hrtc->State = HAL_RTC_STATE_BUSY; 
+  
+  sDate->WeekDay = RTC_WeekDayNum(sDate->Year, sDate->Month, sDate->Date);
   
   if((Format == RTC_FORMAT_BIN) && ((sDate->Month & 0x10) == 0x10))
   {
@@ -903,6 +912,40 @@ uint8_t RTC_Bcd2ToByte(uint8_t Value)
   return (tmp + (Value & (uint8_t)0x0F));
 }
 
+/**
+  * @brief  Determines the week number, the day number and the week day number.
+  * @param  nYear   year to check
+  * @param  nMonth  Month to check
+  * @param  nDay    Day to check
+  * @note   Day is calculated with hypothesis that year > 2000
+  * @retval Value which can take one of the following parameters:
+  *         @arg RTC_WEEKDAY_MONDAY
+  *         @arg RTC_WEEKDAY_TUESDAY
+  *         @arg RTC_WEEKDAY_WEDNESDAY
+  *         @arg RTC_WEEKDAY_THURSDAY
+  *         @arg RTC_WEEKDAY_FRIDAY
+  *         @arg RTC_WEEKDAY_SATURDAY
+  *         @arg RTC_WEEKDAY_SUNDAY
+  */
+static uint8_t RTC_WeekDayNum(uint32_t nYear, uint8_t nMonth, uint8_t nDay)
+{
+  uint32_t year = 0U, weekday = 0U;
+
+  year = 2000U + nYear;
+  
+  if(nMonth < 3U)
+  {
+    /*D = { [(23 x month)/9] + day + 4 + year + [(year-1)/4] - [(year-1)/100] + [(year-1)/400] } mod 7*/
+    weekday = (((23U * nMonth)/9U) + nDay + 4U + year + ((year-1U)/4U) - ((year-1U)/100U) + ((year-1U)/400U)) % 7U;
+  }
+  else
+  {
+    /*D = { [(23 x month)/9] + day + 4 + year + [year/4] - [year/100] + [year/400] - 2 } mod 7*/
+    weekday = (((23U * nMonth)/9U) + nDay + 4U + year + (year/4U) - (year/100U) + (year/400U) - 2U ) % 7U; 
+  }
+
+  return (uint8_t)weekday;
+}
 
 /**
   * @}

@@ -86,18 +86,11 @@ HAL_StatusTypeDef RTC_Set_Time(u8 hour, u8 min, u8 sec)
 **********************************************************************************************************/
 HAL_StatusTypeDef RTC_Set_Date(u8 year, u8 month, u8 date)
 {
-	u8 week;
 	RTC_DateTypeDef RTC_DateStructure;
 	
 	RTC_DateStructure.Date = date;
 	RTC_DateStructure.Month = month;
 	RTC_DateStructure.Year = year;
-	if (month == 1 || month == 2) {
-		month += 12;
-		year--;
-	}
-	week = (date+2*month+3*(month+1)/5+year+year/4-year/100+year/400+1)%7;
-	RTC_DateStructure.WeekDay = (week == 0) ? 7 : week;
 	
 	return HAL_RTC_SetDate(&RTC_Handler, &RTC_DateStructure, RTC_FORMAT_BIN);
 }

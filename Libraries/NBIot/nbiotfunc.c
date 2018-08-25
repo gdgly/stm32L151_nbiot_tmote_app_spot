@@ -1557,10 +1557,31 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCONDataStatus(NBIOT_ClientsTypeDef*
 	
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
-	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+MLWULDATASTATUS?\r", strlen("AT+MLWULDATASTATUS?\r"), "OK", "ERROR");
+#ifndef NBIOT_MODEL_TYPE
+	#error No Define NBIOT MODEL!
+#else
+	#if (NBIOT_MODEL_TYPE == NBIOT_MODEL_LIERDA)
+		NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+MLWULDATASTATUS?\r", strlen("AT+MLWULDATASTATUS?\r"), "OK", "ERROR");
+	#elif (NBIOT_MODEL_TYPE == NBIOT_MODEL_QUECTEL)
+		NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+QLWULDATASTATUS?\r", strlen("AT+QLWULDATASTATUS?\r"), "OK", "ERROR");
+	#else
+		#error NBIOT MODEL Define Error
+	#endif
+#endif
 	
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
+		
+#ifndef NBIOT_MODEL_TYPE
+	#error No Define NBIOT MODEL!
+#else
+	#if (NBIOT_MODEL_TYPE == NBIOT_MODEL_LIERDA)
 		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+MLWULDATASTATUS]%*[^:]:%d", &dataStatusval) <= 0) {
+	#elif (NBIOT_MODEL_TYPE == NBIOT_MODEL_QUECTEL)
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+QLWULDATASTATUS]%*[^:]:%d", &dataStatusval) <= 0) {
+	#else
+		#error NBIOT MODEL Define Error
+	#endif
+#endif
 			NBStatus = NBIOT_ERROR;
 		}
 		else {
@@ -1612,7 +1633,19 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCOAPPayloadFlag(NBIOT_ClientsTypeDef* pC
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
-	sprintf((char *)pClient->DataProcessStack, "AT+MLWULDATAEX=%d,", pClient->Sendlen);
+	
+#ifndef NBIOT_MODEL_TYPE
+	#error No Define NBIOT MODEL!
+#else
+	#if (NBIOT_MODEL_TYPE == NBIOT_MODEL_LIERDA)
+		sprintf((char *)pClient->DataProcessStack, "AT+MLWULDATAEX=%d,", pClient->Sendlen);
+	#elif (NBIOT_MODEL_TYPE == NBIOT_MODEL_QUECTEL)
+		sprintf((char *)pClient->DataProcessStack, "AT+QLWULDATAEX=%d,", pClient->Sendlen);
+	#else
+		#error NBIOT MODEL Define Error
+	#endif
+#endif
+	
 	length = strlen((const char*)pClient->DataProcessStack);
 	for (int i = 0; i < pClient->Sendlen; i++) {
 		sprintf((char *)(pClient->DataProcessStack + length + i * 2), "%02X", pClient->Sendbuf[i]);

@@ -58,6 +58,10 @@
 #define	DEVICE_BOOT_START_MAGINIT_ENABLE	1
 #define	DEVICE_BOOT_START_MAGINIT_TYPE	DEVICE_BOOT_START_MAGINIT_DISABLE		//上电初始化背景
 
+#define	NBIOT_MODEL_LIERDA				0
+#define	NBIOT_MODEL_QUECTEL				1
+#define	NBIOT_MODEL_TYPE				NBIOT_MODEL_LIERDA					//NB模组厂家
+
 #define	RADAR_MODEL_V1					1
 #define	RADAR_MODEL_V2					2
 #define	RADAR_MODEL_TYPE				RADAR_MODEL_V2						//雷达类型
@@ -70,7 +74,7 @@
 #define	BEEP_OFF_US					200								//无源蜂鸣器关时间
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					116								//从固件版本
+#define	SOFTWARESUB					117								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 

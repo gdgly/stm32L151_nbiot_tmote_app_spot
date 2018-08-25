@@ -311,6 +311,62 @@ static void COAP_NBIOT_DictateEvent_SuccessExecute(NBIOT_ClientsTypeDef* pClient
 }
 
 /**********************************************************************************************************
+ @Function			static void COAP_NBIOT_GetConnectTime(NBIOT_ClientsTypeDef* pClient, bool startIdleTime)
+ @Description			COAP_NBIOT_GetConnectTime			: 获取NBConnect状态时间(内部使用)
+ @Input				pClient							: NBIOT客户端实例
+					startIdleTime						: 是否开启Idle状态计时器
+ @Return				void
+**********************************************************************************************************/
+static void COAP_NBIOT_GetConnectTime(NBIOT_ClientsTypeDef* pClient, bool startIdleTime)
+{
+	unsigned int uICoapConnectTime = 0;
+	
+	/* Get ConnectTime */
+	uICoapConnectTime = Stm32_EventRunningTime_EndMS(&pClient->ConnectTimeMS) / 1000;
+	/* End ConnectTime */
+	TCFG_SystemData.CoapConnectTime = pClient->CoapConnectTimeSec + uICoapConnectTime;
+	pClient->CoapConnectTimeSec = TCFG_SystemData.CoapConnectTime;
+	/* End ConnectDayTime */
+	TCFG_SystemData.CoapConnectDayTime = pClient->CoapConnectDayTimeSec + uICoapConnectTime;
+	pClient->CoapConnectDayTimeSec = TCFG_SystemData.CoapConnectDayTime;
+	/* Start or End IdleTime */
+	if (startIdleTime != false) {
+		Stm32_EventRunningTime_StartMS(&pClient->IdleTimeMS);
+	}
+	else {
+		Stm32_EventRunningTime_EndMS(&pClient->IdleTimeMS);
+	}
+}
+
+/**********************************************************************************************************
+ @Function			static void COAP_NBIOT_GetIdleTime(NBIOT_ClientsTypeDef* pClient, bool startConnectTime)
+ @Description			COAP_NBIOT_GetIdleTime				: 获取NBIdle状态时间(内部使用)
+ @Input				pClient							: NBIOT客户端实例
+					startIdleTime						: 是否开启Connect状态计时器
+ @Return				void
+**********************************************************************************************************/
+static void COAP_NBIOT_GetIdleTime(NBIOT_ClientsTypeDef* pClient, bool startConnectTime)
+{
+	unsigned int uICoapIdleTime = 0;
+	
+	/* Get IdleTime */
+	uICoapIdleTime = Stm32_EventRunningTime_EndMS(&pClient->IdleTimeMS) / 1000;
+	/* End IdleTime */
+	TCFG_SystemData.CoapIdleTime = pClient->CoapIdleTimeSec + uICoapIdleTime;
+	pClient->CoapIdleTimeSec = TCFG_SystemData.CoapIdleTime;
+	/* End IdleDayTime */
+	TCFG_SystemData.CoapIdleDayTime = pClient->CoapIdleDayTimeSec + uICoapIdleTime;
+	pClient->CoapIdleDayTimeSec = TCFG_SystemData.CoapIdleDayTime;
+	/* Start or End ConnectTime */
+	if (startConnectTime != false) {
+		Stm32_EventRunningTime_StartMS(&pClient->ConnectTimeMS);
+	}
+	else {
+		Stm32_EventRunningTime_EndMS(&pClient->ConnectTimeMS);
+	}
+}
+
+/**********************************************************************************************************
  @Function			void NET_COAP_NBIOT_Event_StopMode(NBIOT_ClientsTypeDef* pClient)
  @Description			NET_COAP_NBIOT_Event_StopMode			: 停止模式
  @Input				pClient							: NBIOT客户端实例
@@ -321,8 +377,6 @@ void NET_COAP_NBIOT_Event_StopMode(NBIOT_ClientsTypeDef* pClient)
 {
 	Stm32_CalculagraphTypeDef dictateRunTime;
 	static unsigned char CoapSendMessageIndex;
-	unsigned int uICoapConnectTime = 0;
-	unsigned int uICoapIdleTime = 0;
 	
 	/* It is the first time to execute */
 	if (pClient->DictateRunCtl.dictateEnable != true) {
@@ -334,19 +388,10 @@ void NET_COAP_NBIOT_Event_StopMode(NBIOT_ClientsTypeDef* pClient)
 		NBIOT_Neul_NBxx_HardwarePoweroff(pClient);
 		/* Send Message Index */
 		CoapSendMessageIndex = NET_Coap_Message_SendDataRear();
+		
 		/* Get ConnectTime & IdleTime */
-		uICoapConnectTime = Stm32_EventRunningTime_EndMS(&pClient->ConnectTimeMS) / 1000;
-		uICoapIdleTime = Stm32_EventRunningTime_EndMS(&pClient->IdleTimeMS) / 1000;
-		/* Into ConnectTime & IdleTime */
-		TCFG_SystemData.CoapConnectTime = pClient->CoapConnectTimeSec + uICoapConnectTime;
-		pClient->CoapConnectTimeSec = TCFG_SystemData.CoapConnectTime;
-		TCFG_SystemData.CoapIdleTime = pClient->CoapIdleTimeSec + uICoapIdleTime;
-		pClient->CoapIdleTimeSec = TCFG_SystemData.CoapIdleTime;
-		/* Into ConnectDayTime & IdleDayTime */
-		TCFG_SystemData.CoapConnectDayTime = pClient->CoapConnectDayTimeSec + uICoapConnectTime;
-		pClient->CoapConnectDayTimeSec = TCFG_SystemData.CoapConnectDayTime;
-		TCFG_SystemData.CoapIdleDayTime = pClient->CoapIdleDayTimeSec + uICoapIdleTime;
-		pClient->CoapIdleDayTimeSec = TCFG_SystemData.CoapIdleDayTime;
+		COAP_NBIOT_GetConnectTime(pClient, false);
+		COAP_NBIOT_GetIdleTime(pClient, false);
 	}
 	
 	if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
@@ -375,8 +420,6 @@ void NET_COAP_NBIOT_Event_StopMode(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_HardwareReboot(NBIOT_ClientsTypeDef* pClient)
 {
-	unsigned int uICoapIdleTime = 0;
-	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if (NBIOT_Neul_NBxx_HardwareReboot(pClient, 8000) == NBIOT_OK) {
@@ -386,17 +429,9 @@ void NET_COAP_NBIOT_Event_HardwareReboot(NBIOT_ClientsTypeDef* pClient)
 #else
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, MODULE_CHECK, HARDWARE_REBOOT);
 #endif
-		
 		/* Get IdleTime */
-		uICoapIdleTime = Stm32_EventRunningTime_EndMS(&pClient->IdleTimeMS) / 1000;
-		/* End IdleTime */
-		TCFG_SystemData.CoapIdleTime = pClient->CoapIdleTimeSec + uICoapIdleTime;
-		pClient->CoapIdleTimeSec = TCFG_SystemData.CoapIdleTime;
-		/* End IdleDayTime */
-		TCFG_SystemData.CoapIdleDayTime = pClient->CoapIdleDayTimeSec + uICoapIdleTime;
-		pClient->CoapIdleDayTimeSec = TCFG_SystemData.CoapIdleDayTime;
-		/* Start ConnectTime */
-		Stm32_EventRunningTime_StartMS(&pClient->ConnectTimeMS);
+		COAP_NBIOT_GetIdleTime(pClient, true);
+		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("NB HDRBT Ok, Baud:%d", NBIOTBaudRate.Baud);
 #endif
@@ -1115,7 +1150,11 @@ void NET_COAP_NBIOT_Event_AttachInquire(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, ATTACH_INQUIRE);
 	}
 	else {
+		/* 注网成功 */
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, PARAMETER_CHECKOUT, ATTACH_INQUIRE);
+		
+		/* Get ConnectTime */
+		COAP_NBIOT_GetConnectTime(pClient, true);
 	}
 }
 
@@ -1171,7 +1210,6 @@ void NET_COAP_NBIOT_Event_ParameterCheckOut(NBIOT_ClientsTypeDef* pClient)
 void NET_COAP_NBIOT_Event_SendData(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	unsigned int uICoapIdleTime = 0;
 	
 #if NBCOAP_SENDDATA_NQMGSCHECK_TYPE
 	int SendSentNum = 0;
@@ -1182,15 +1220,8 @@ void NET_COAP_NBIOT_Event_SendData(NBIOT_ClientsTypeDef* pClient)
 	/* Data packets need to be sent*/
 	if (NET_Coap_Message_SendDataDequeue(pClient->Sendbuf, (unsigned short *)&pClient->Sendlen) == true) {
 		/* Get IdleTime */
-		uICoapIdleTime = Stm32_EventRunningTime_EndMS(&pClient->IdleTimeMS) / 1000;
-		/* End IdleTime */
-		TCFG_SystemData.CoapIdleTime = pClient->CoapIdleTimeSec + uICoapIdleTime;
-		pClient->CoapIdleTimeSec = TCFG_SystemData.CoapIdleTime;
-		/* End IdleDayTime */
-		TCFG_SystemData.CoapIdleDayTime = pClient->CoapIdleDayTimeSec + uICoapIdleTime;
-		pClient->CoapIdleDayTimeSec = TCFG_SystemData.CoapIdleDayTime;
-		/* Start ConnectTime */
-		Stm32_EventRunningTime_StartMS(&pClient->ConnectTimeMS);
+		COAP_NBIOT_GetIdleTime(pClient, true);
+		
 		/* Connect Check */
 		if ((NBStatus = NBIOT_Neul_NBxx_CheckReadAttachOrDetach(pClient)) == NBIOT_OK) {
 			/* Dictate execute is Success */
@@ -1300,7 +1331,6 @@ void NET_COAP_NBIOT_Event_RecvData(NBIOT_ClientsTypeDef* pClient)
 {
 	u8 COAPFeedBackData[] = {0xAA, 0xBB};									//COAP反馈包数据
 	bool COAPFeedBackFlag = false;										//COAP反馈包接收标志位
-	unsigned int uICoapConnectTime = 0;
 	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 60);
 	
@@ -1353,16 +1383,10 @@ void NET_COAP_NBIOT_Event_RecvData(NBIOT_ClientsTypeDef* pClient)
 				
 				NET_COAP_NBIOT_Listen_Enable_EnterIdleMode(pClient);
 				NET_COAP_NBIOT_Listen_Enable_EnterParameter(pClient);
+				
 				/* Get ConnectTime */
-				uICoapConnectTime = Stm32_EventRunningTime_EndMS(&pClient->ConnectTimeMS) / 1000;
-				/* End ConnectTime */
-				TCFG_SystemData.CoapConnectTime = pClient->CoapConnectTimeSec + uICoapConnectTime;
-				pClient->CoapConnectTimeSec = TCFG_SystemData.CoapConnectTime;
-				/* End ConnectDayTime */
-				TCFG_SystemData.CoapConnectDayTime = pClient->CoapConnectDayTimeSec + uICoapConnectTime;
-				pClient->CoapConnectDayTimeSec = TCFG_SystemData.CoapConnectDayTime;
-				/* Start IdleTime */
-				Stm32_EventRunningTime_StartMS(&pClient->IdleTimeMS);
+				COAP_NBIOT_GetConnectTime(pClient, true);
+				
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 				Radio_Trf_Debug_Printf_Level2("Coap Recv Feedback Ok");
 #endif
@@ -1410,7 +1434,6 @@ void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
 	char* RANormal	= "0x0100";
 	char* RAIdle	= "0x0101";
 	char* RAState	= RAIdle;
-	unsigned int uICoapIdleTime = 0;
 	
 #if NBCOAP_SENDDATA_NQMGSCHECK_TYPE
 	int SendSentNum = 0;
@@ -1421,15 +1444,8 @@ void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
 	/* Data packets need to be sent*/
 	if (NET_Coap_Message_SendDataDequeue(pClient->Sendbuf, (unsigned short *)&pClient->Sendlen) == true) {
 		/* Get IdleTime */
-		uICoapIdleTime = Stm32_EventRunningTime_EndMS(&pClient->IdleTimeMS) / 1000;
-		/* End IdleTime */
-		TCFG_SystemData.CoapIdleTime = pClient->CoapIdleTimeSec + uICoapIdleTime;
-		pClient->CoapIdleTimeSec = TCFG_SystemData.CoapIdleTime;
-		/* End IdleDayTime */
-		TCFG_SystemData.CoapIdleDayTime = pClient->CoapIdleDayTimeSec + uICoapIdleTime;
-		pClient->CoapIdleDayTimeSec = TCFG_SystemData.CoapIdleDayTime;
-		/* Start ConnectTime */
-		Stm32_EventRunningTime_StartMS(&pClient->ConnectTimeMS);
+		COAP_NBIOT_GetIdleTime(pClient, true);
+		
 		/* Connect Check */
 		if ((NBStatus = NBIOT_Neul_NBxx_CheckReadAttachOrDetach(pClient)) == NBIOT_OK) {
 			/* Dictate execute is Success */
@@ -1549,8 +1565,6 @@ void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_RecvDataRANormal(NBIOT_ClientsTypeDef* pClient)
 {
-	unsigned int uICoapConnectTime = 0;
-	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 60);
 	
 	if (NBIOT_Neul_NBxx_CheckReadCONDataStatus(pClient) == NBIOT_OK) {
@@ -1616,16 +1630,10 @@ void NET_COAP_NBIOT_Event_RecvDataRANormal(NBIOT_ClientsTypeDef* pClient)
 		
 		NET_COAP_NBIOT_Listen_Enable_EnterIdleMode(pClient);
 		NET_COAP_NBIOT_Listen_Enable_EnterParameter(pClient);
+		
 		/* Get ConnectTime */
-		uICoapConnectTime = Stm32_EventRunningTime_EndMS(&pClient->ConnectTimeMS) / 1000;
-		/* End ConnectTime */
-		TCFG_SystemData.CoapConnectTime = pClient->CoapConnectTimeSec + uICoapConnectTime;
-		pClient->CoapConnectTimeSec = TCFG_SystemData.CoapConnectTime;
-		/* End ConnectDayTime */
-		TCFG_SystemData.CoapConnectDayTime = pClient->CoapConnectDayTimeSec + uICoapConnectTime;
-		pClient->CoapConnectDayTimeSec = TCFG_SystemData.CoapConnectDayTime;
-		/* Start IdleTime */
-		Stm32_EventRunningTime_StartMS(&pClient->IdleTimeMS);
+		COAP_NBIOT_GetConnectTime(pClient, true);
+		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("Coap Send Ok");
 #endif
