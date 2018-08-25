@@ -505,17 +505,11 @@ void MainHandleRoutine(void)
 	#if NBCOAP_SENDCODE_WORK_INFO
 		NETCoapNeedSendCode.WorkInfo = 1;
 	#endif
-	#if NBCOAP_SENDCODE_BASIC_INFO
-		NETCoapNeedSendCode.BasicInfo = 1;
-	#endif
 	#if NBCOAP_SENDCODE_DYNAMIC_INFO
 		NETCoapNeedSendCode.DynamicInfo = 1;
 	#endif
 	#if NBMQTTSN_SENDCODE_WORK_INFO
 		NETMqttSNNeedSendCode.InfoWork = 1;
-	#endif
-	#if NBMQTTSN_SENDCODE_BASIC_INFO
-		NETMqttSNNeedSendCode.InfoBasic = 1;
 	#endif
 	#if NBMQTTSN_SENDCODE_DYNAMIC_INFO
 		NETMqttSNNeedSendCode.InfoDynamic = 1;
