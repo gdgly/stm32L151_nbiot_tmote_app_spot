@@ -935,6 +935,8 @@ void NET_DNS_NBIOT_Event_ParameterCheckOut(DNS_ClientsTypeDef* pClient)
 		/* Dictate execute is Success */
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, DNS_PROCESS_STACK, PARAMETER_CHECKOUT);
 		
+		pClient->SocketStack->NBIotStack->Registered = true;
+		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("NB Parameter Check Ok");
 #endif

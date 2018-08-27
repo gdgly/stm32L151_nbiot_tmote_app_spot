@@ -1182,6 +1182,8 @@ void NET_COAP_NBIOT_Event_ParameterCheckOut(NBIOT_ClientsTypeDef* pClient)
 		/* Dictate execute is Success */
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, NBCOAP_SENDMODE_TYPE, PARAMETER_CHECKOUT);
 		
+		pClient->Registered = true;
+		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("Coap Parameter Check Ok");
 #endif

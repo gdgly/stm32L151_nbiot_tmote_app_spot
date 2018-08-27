@@ -176,6 +176,9 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 	}
 	/* COAP WORK INFO DATA ENQUEUE */
 	else if (NETCoapNeedSendCode.WorkInfo) {
+		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
+			return;
+		}
 		memset((void*)&CoapInfoStructure.InfoData, 0, sizeof(CoapInfoStructure.InfoData));
 		CoapInfoStructure.HeadPacket.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
 		CoapInfoStructure.HeadPacket.DataLen				= 0x00;
@@ -197,6 +200,9 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 	}
 	/* COAP BASIC INFO DATA ENQUEUE */
 	else if (NETCoapNeedSendCode.BasicInfo) {
+		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
+			return;
+		}
 		memset((void*)&CoapInfoStructure.InfoData, 0, sizeof(CoapInfoStructure.InfoData));
 		CoapInfoStructure.HeadPacket.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
 		CoapInfoStructure.HeadPacket.DataLen				= 0x00;
@@ -218,6 +224,9 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 	}
 	/* COAP DYNAMIC INFO DATA ENQUEUE */
 	else if (NETCoapNeedSendCode.DynamicInfo) {
+		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
+			return;
+		}
 		memset((void*)&CoapInfoStructure.InfoData, 0, sizeof(CoapInfoStructure.InfoData));
 		CoapInfoStructure.HeadPacket.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
 		CoapInfoStructure.HeadPacket.DataLen				= 0x00;
@@ -338,6 +347,9 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 	}
 	/* MQTTSN INFO WORK DATA ENQUEUE */
 	else if (NETMqttSNNeedSendCode.InfoWork) {
+		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
+			return;
+		}
 		MqttSNInfoWorkStructure.DeviceSN					= TCFG_EEPROM_Get_MAC_SN();
 		NET_MqttSN_Message_InfoWorkEnqueue(MqttSNInfoWorkStructure);
 		NETMqttSNNeedSendCode.InfoWork = 0;
@@ -345,6 +357,9 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 	}
 	/* MQTTSN INFO BASIC DATA ENQUEUE */
 	else if (NETMqttSNNeedSendCode.InfoBasic) {
+		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
+			return;
+		}
 		MqttSNInfoBasicStructure.DeviceSN					= TCFG_EEPROM_Get_MAC_SN();
 		NET_MqttSN_Message_InfoBasicEnqueue(MqttSNInfoBasicStructure);
 		NETMqttSNNeedSendCode.InfoBasic = 0;
@@ -352,6 +367,9 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 	}
 	/* MQTTSN INFO DYNAMIC DATA ENQUEUE */
 	else if (NETMqttSNNeedSendCode.InfoDynamic) {
+		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
+			return;
+		}
 		MqttSNInfoDynamicStructure.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
 		NET_MqttSN_Message_InfoDynamicEnqueue(MqttSNInfoDynamicStructure);
 		NETMqttSNNeedSendCode.InfoDynamic = 0;
