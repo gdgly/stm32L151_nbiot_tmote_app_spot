@@ -18,6 +18,7 @@
 #include "hal_eeprom.h"
 #include "hal_vbat.h"
 #include "hal_temperature.h"
+#include "hal_spiflash.h"
 #include "radio_hal_rf.h"
 #include "radio_rf_app.h"
 #include "inspectmessageoperate.h"
@@ -2675,17 +2676,37 @@ char* TCFG_Utility_Get_Hardwear_Version_String(void)
 	
 #if RADAR_MODEL_TYPE == RADAR_MODEL_V1
 	if (Radio_Rf_get_Status() == TRF_OK) {
-		sprintf((char*)TCFG_SystemData.HardVersion, "L151-nb-rf");
+		if (GD25Q_SPIFLASH_Get_Status() == GD25Q80CSIG_OK) {
+			sprintf((char*)TCFG_SystemData.HardVersion, "L151-nb-rf-gd25");
+		}
+		else {
+			sprintf((char*)TCFG_SystemData.HardVersion, "L151-nb-rf");
+		}
 	}
 	else {
-		sprintf((char*)TCFG_SystemData.HardVersion, "L151-nb");
+		if (GD25Q_SPIFLASH_Get_Status() == GD25Q80CSIG_OK) {
+			sprintf((char*)TCFG_SystemData.HardVersion, "L151-nb-gd25");
+		}
+		else {
+			sprintf((char*)TCFG_SystemData.HardVersion, "L151-nb");
+		}
 	}
 #elif RADAR_MODEL_TYPE == RADAR_MODEL_V2
 	if (Radio_Rf_get_Status() == TRF_OK) {
-		sprintf((char*)TCFG_SystemData.HardVersion, "L151-nb-rf-rv2");
+		if (GD25Q_SPIFLASH_Get_Status() == GD25Q80CSIG_OK) {
+			sprintf((char*)TCFG_SystemData.HardVersion, "L151-nb-rf-gd25-rv2");
+		}
+		else {
+			sprintf((char*)TCFG_SystemData.HardVersion, "L151-nb-rf-rv2");
+		}
 	}
 	else {
-		sprintf((char*)TCFG_SystemData.HardVersion, "L151-nb-rv2");
+		if (GD25Q_SPIFLASH_Get_Status() == GD25Q80CSIG_OK) {
+			sprintf((char*)TCFG_SystemData.HardVersion, "L151-nb-gd25-rv2");
+		}
+		else {
+			sprintf((char*)TCFG_SystemData.HardVersion, "L151-nb-rv2");
+		}
 	}
 #else
 	#error RADAR_MODEL_TYPE Define Error
