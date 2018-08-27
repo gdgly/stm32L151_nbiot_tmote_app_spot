@@ -751,7 +751,7 @@ void NET_DNS_NBIOT_Event_NbandModeCheck(DNS_ClientsTypeDef* pClient)
 #endif
 	}
 	
-	if (pClient->SocketStack->NBIotStack->Parameter.band != MQTTSN_NBIOT_BAND) {
+	if (pClient->SocketStack->NBIotStack->Parameter.band != DNS_NBIOT_BAND_TYPE) {
 		/* BAND Mode Mast be Config */
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MINIMUM_FUNCTIONALITY;
 	}
@@ -788,14 +788,14 @@ void NET_DNS_NBIOT_Event_NbandModeConfig(DNS_ClientsTypeDef* pClient)
 #endif
 	}
 	
-	if (pClient->SocketStack->NBIotStack->Parameter.band != MQTTSN_NBIOT_BAND) {
+	if (pClient->SocketStack->NBIotStack->Parameter.band != DNS_NBIOT_BAND_TYPE) {
 		/* BAND Mode Mast be Config */
-		if (NBIOT_Neul_NBxx_SetSupportedBands(pClient->SocketStack->NBIotStack, MQTTSN_NBIOT_BAND) == NBIOT_OK) {
+		if (NBIOT_Neul_NBxx_SetSupportedBands(pClient->SocketStack->NBIotStack, DNS_NBIOT_BAND_TYPE) == NBIOT_OK) {
 			/* Dictate execute is Success */
 			DNS_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, NBAND_MODE_CONFIG);
 			
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("NB BAND Set %d Ok", MQTTSN_NBIOT_BAND);
+			Radio_Trf_Debug_Printf_Level2("NB BAND Set %d Ok", DNS_NBIOT_BAND_TYPE);
 #endif
 		}
 		else {
@@ -803,7 +803,7 @@ void NET_DNS_NBIOT_Event_NbandModeConfig(DNS_ClientsTypeDef* pClient)
 			DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, NBAND_MODE_CONFIG);
 			
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("NB BAND Set %d Fail", MQTTSN_NBIOT_BAND);
+			Radio_Trf_Debug_Printf_Level2("NB BAND Set %d Fail", DNS_NBIOT_BAND_TYPE);
 #endif
 			return;
 		}

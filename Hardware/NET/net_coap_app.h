@@ -16,10 +16,13 @@
 #define COAPCDPADDR						COAPCDPADDR_CHINA_TELECOM_FORMAL
 #define COAPCDPPORT						5683
 
-#define COAP_NBIOT_BAND_CHINA_TELECOM		ChinaTelecom
-#define COAP_NBIOT_BAND_CHINA_MOBILE		ChinaMobile
-#define COAP_NBIOT_BAND_CHINA_UNICOM		ChinaUnicom
-#define COAP_NBIOT_BAND					COAP_NBIOT_BAND_CHINA_TELECOM
+#define COAP_NBIOT_BAND1					NBand_2100MHz
+#define COAP_NBIOT_BAND3					NBand_1800MHz
+#define COAP_NBIOT_BAND5					NBand_850MHz
+#define COAP_NBIOT_BAND8					NBand_900MHz
+#define COAP_NBIOT_BAND20				NBand_800MHz
+#define COAP_NBIOT_BAND28				NBand_700MHz
+#define COAP_NBIOT_BAND_TYPE				COAP_NBIOT_BAND5
 
 void NET_COAP_APP_PollExecution(NBIOT_ClientsTypeDef* pClient);					//COAP逻辑处理
 void NET_COAP_NBIOT_Event_StopMode(NBIOT_ClientsTypeDef* pClient);				//停止模式

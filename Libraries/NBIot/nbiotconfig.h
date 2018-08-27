@@ -188,9 +188,12 @@ typedef enum
 /* NBIOT BAND */
 typedef enum
 {
-	ChinaTelecom						= 5,
-	ChinaMobile						= 8,
-	ChinaUnicom						= 20
+	NBand_2100MHz						= 1,
+	NBand_1800MHz						= 3,
+	NBand_850MHz						= 5,
+	NBand_900MHz						= 8,
+	NBand_800MHz						= 20,
+	NBand_700MHz						= 28
 }NBIOT_BandTypeDef;
 
 /* NBIOT Detach or Attach Netstate */

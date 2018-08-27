@@ -1147,7 +1147,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSupportedBands(NBIOT_ClientsTypeDef
 			NBStatus = NBIOT_ERROR;
 		}
 		else {
-			if ((bands == ChinaTelecom) || (bands == ChinaMobile) || (bands == ChinaUnicom)) {
+			if ((bands == NBand_2100MHz) || (bands == NBand_1800MHz) || (bands == NBand_850MHz) || (bands == NBand_900MHz) || (bands == NBand_800MHz) || (bands == NBand_700MHz)) {
 				pClient->Parameter.band = (NBIOT_BandTypeDef)bands;
 			}
 			else {
