@@ -91,11 +91,10 @@ int NET_COAP_Message_Operate_Creat_Json_Basic_Info(char* outBuffer)
 				"\"Vender\":\"%s\","
 				"\"Hard\":\"%s\","
 				"\"Soft\":\"%d:%d.%d\","
-#if 0
-				"\"Build\":\"%s\","
-#endif
 				"\"Sim\":\"%s\","
 				"\"Imei\":\"%s\","
+				"\"Nbvender\":\"%s\","
+				"\"Nbmode\":\"%s\","
 				"\"Boot\":\"%d.%d\","
 				"\"Ver\":\"%s\","
 				"\"Rmold\":\"%d\""
@@ -107,11 +106,10 @@ int NET_COAP_Message_Operate_Creat_Json_Basic_Info(char* outBuffer)
 		TCFG_EEPROM_Get_Vender_String(),
 		TCFG_Utility_Get_Hardwear_Version_String(),
 		TCFG_EEPROM_GetBootVersion(), TCFG_Utility_Get_Major_Softnumber(), TCFG_Utility_Get_Sub_Softnumber(),
-#if 0
-		TCFG_Utility_Get_Build_Time_String(),
-#endif
 		TCFG_Utility_Get_Nbiot_Iccid_String(),
 		TCFG_Utility_Get_Nbiot_Imei_String(),
+		TCFG_Utility_Get_Nbiot_Manufacturer(),
+		TCFG_Utility_Get_Nbiot_Manufacturermode(),
 		TCFG_Utility_Get_SoftResetFlag(), TCFG_Utility_Get_Device_BootCount(),
 		TCFG_Utility_Get_Nbiot_ModelVersion(),
 		Radar_GetModel()

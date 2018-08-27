@@ -444,6 +444,8 @@ unsigned int	TCFG_Utility_GetCoapIdleTime(void);											//读取Nbiot CoapIdl
 unsigned short	TCFG_Utility_GetCoapConnectDayTime(void);										//读取Nbiot CoapConnectDayTime值
 unsigned short	TCFG_Utility_GetCoapIdleDayTime(void);											//读取Nbiot CoapIdleDayTime值
 
+char*		TCFG_Utility_Get_Nbiot_Manufacturer(void);										//读取Nbiot Manufacturer值
+char*		TCFG_Utility_Get_Nbiot_Manufacturermode(void);									//读取Nbiot Manufacturermode值
 char*		TCFG_Utility_Get_Nbiot_ModelVersion(void);										//读取Nbiot ModelVersion值
 unsigned int	TCFG_Utility_Get_Nbiot_SentCount(void);											//读取Nbiot SentCount值
 unsigned int	TCFG_Utility_Get_Nbiot_RecvCount(void);											//读取Nbiot RecvCount值

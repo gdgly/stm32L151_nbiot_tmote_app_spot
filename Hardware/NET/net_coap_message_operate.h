@@ -72,10 +72,10 @@ typedef __packed struct
 {
 	COAP_PacketHeadTypeDef HeadPacket;
 	COAP_PacketMsgTypeDef MsgPacket;
-	u8	InfoData[240];
-}COAP_PacketInfoTypeDef;													//Info包254Byte
+	u8	InfoData[300];
+}COAP_PacketInfoTypeDef;													//Info包314Byte
 
-#define COAP_SEND_BUFFER_SIZE				256
+#define COAP_SEND_BUFFER_SIZE				320
 #define COAP_RECV_BUFFER_SIZE				512
 #define COAP_SEND_PARK_NUM				10
 #define COAP_RECV_PARK_NUM				3

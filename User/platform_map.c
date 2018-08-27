@@ -2394,6 +2394,36 @@ unsigned short TCFG_Utility_GetCoapIdleDayTime(void)
 }
 
 /**********************************************************************************************************
+ @Function			char* TCFG_Utility_Get_Nbiot_Manufacturer(void)
+ @Description			TCFG_Utility_Get_Nbiot_Manufacturer			: 读取Nbiot Manufacturer值
+ @Input				void
+ @Return				Nbiot_Manufacturer
+**********************************************************************************************************/
+char* TCFG_Utility_Get_Nbiot_Manufacturer(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return NbiotClientHandler.Parameter.manufacturer;
+#elif NETPROTOCAL == NETMQTTSN
+	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.manufacturer;
+#endif
+}
+
+/**********************************************************************************************************
+ @Function			char* TCFG_Utility_Get_Nbiot_Manufacturermode(void)
+ @Description			TCFG_Utility_Get_Nbiot_Manufacturermode			: 读取Nbiot Manufacturermode值
+ @Input				void
+ @Return				Nbiot_Manufacturermode
+**********************************************************************************************************/
+char* TCFG_Utility_Get_Nbiot_Manufacturermode(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return NbiotClientHandler.Parameter.manufacturermode;
+#elif NETPROTOCAL == NETMQTTSN
+	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.manufacturermode;
+#endif
+}
+
+/**********************************************************************************************************
  @Function			char* TCFG_Utility_Get_Nbiot_ModelVersion(void)
  @Description			TCFG_Utility_Get_Nbiot_ModelVersion			: 读取Nbiot ModelVersion值
  @Input				void
