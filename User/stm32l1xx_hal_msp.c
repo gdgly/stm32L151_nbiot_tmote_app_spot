@@ -23,6 +23,8 @@
 #include "radar_dac.h"
 #include "radio_hal_rf.h"
 #include "hal_spiflash.h"
+#include "platform_config.h"
+#include "platform_map.h"
 
 /**********************************************************************************************************
  @Function			void HAL_MspInit(void)
@@ -319,6 +321,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 {
 	GPIO_InitTypeDef GPIO_Initure;
 	
+#if USART1_TYPE
 	if (huart->Instance == USART1)
 	{
 		__HAL_RCC_GPIOA_CLK_ENABLE();										//使能GPIOA时钟
@@ -334,7 +337,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 		HAL_NVIC_SetPriority(USART1_IRQn, 0, 0);							//抢占优先级0, 子优先级0
 		HAL_NVIC_EnableIRQ(USART1_IRQn);									//使能USART1中断通道
 	}
+#endif
 	
+#if USART2_TYPE
 	if (huart->Instance == USART2)
 	{
 		__HAL_RCC_GPIOA_CLK_ENABLE();										//使能GPIOA时钟
@@ -350,6 +355,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 		HAL_NVIC_SetPriority(USART2_IRQn, 0, 1);							//抢占优先级0, 子优先级1
 		HAL_NVIC_EnableIRQ(USART2_IRQn);									//使能USART2中断通道
 	}
+#endif
 }
 
 /**********************************************************************************************************

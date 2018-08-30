@@ -19,8 +19,9 @@
 #define	SYSTEMCLOCKHSI					32000000
 #define	SYSTEMCLOCK					SYSTEMCLOCKMSI						//系统时钟
 
-#define	NETCOAP						0
-#define	NETMQTTSN						1
+#define	NETCOAP						0								//COAP
+#define	NETMQTTSN						1								//MQTTSN
+#define	NETONENET						2								//ONENET
 #define	NETPROTOCAL					NETCOAP							//网络模式
 
 #define	NBIOT_PRINT_ERRORCODE_DISABLE		0
@@ -74,7 +75,7 @@
 #define	BEEP_OFF_US					200								//无源蜂鸣器关时间
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					118								//从固件版本
+#define	SOFTWARESUB					119								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 
@@ -105,6 +106,14 @@
 
 #define	RADIO_SI4438													//无线开启
 #define	GD25Q_80CSIG													//SPIFLASH开启
+
+#define	USART1_DISABLE					0
+#define	USART1_ENABLE					1
+#define	USART1_TYPE					USART1_ENABLE						//串口1状态
+
+#define	USART2_DISABLE					0
+#define	USART2_ENABLE					1
+#define	USART2_TYPE					USART2_DISABLE						//串口2状态
 
 #define	IDLE_WORK						4								//休眠
 #define	NOTACTIVE_WORK					3								//不工作

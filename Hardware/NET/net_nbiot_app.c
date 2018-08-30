@@ -45,10 +45,17 @@ void NET_NBIOT_Initialization(void)
 	/* NBIOT客户端初始化 */
 	NBIOT_Client_Init(&NbiotClientHandler, &NbiotATCmdHandler, &NetNbiotClientHandler);
 	
+#ifndef NETPROTOCAL
+	#error No Define NETPROTOCAL!
+#else
+#if (NETPROTOCAL == NETCOAP)
+	
 	/* PCP数据传输接口初始化 */
 	PCP_Transport_Init(&PCPCoAPNetHandler, &NbiotClientHandler);
 	/* PCP客户端初始化 */
 	PCP_Client_Init(&PCPClientHandler, &PCPCoAPNetHandler, &NetNbiotClientHandler);
+	
+#elif (NETPROTOCAL == NETMQTTSN)
 	
 	/* DNS数据传输接口初始化 */
 	DNS_Transport_Init(&DNSSocketNetHandler, &NbiotClientHandler, DNS_SERVER_LOCAL_PORT, DNS_SERVER_HOST_IP, DNS_SERVER_TELE_PORT);
@@ -59,6 +66,11 @@ void NET_NBIOT_Initialization(void)
 	MQTTSN_Transport_Init(&MqttSNSocketNetHandler, &NbiotClientHandler, MQTTSN_SERVER_LOCAL_PORT, MQTTSN_SERVER_HOST_IP, MQTTSN_SERVER_TELE_PORT);
 	/* MQTTSN客户端初始化 */
 	MQTTSN_Client_Init(&MqttSNClientHandler, &MqttSNSocketNetHandler, &NetNbiotClientHandler);
+	
+#else
+	#error NETPROTOCAL Define Error
+#endif
+#endif
 }
 
 /**********************************************************************************************************

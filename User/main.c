@@ -75,9 +75,7 @@ int main(void)
 #endif
 #endif
 	
-#if DEVICE_BOOT_START_MAGINIT_TYPE
 	SoftResetFlag = RCC_ResetFlag_GetStatus();												//获取复位标志位
-#endif
 	
 	IWDG_Init(IWDG_PRESCALER_256, 0x0FFF);													//看门狗初始化,溢出时间28s
 	RTC_Init();																		//RTC初始化
@@ -99,8 +97,12 @@ int main(void)
 	ModulePowerReset_Init();																//模块电源复位
 	PowerCtrlIO_Init();																	//电源控制IO初始化
 	
+#if USART1_TYPE
 	Uart1_Init(9700);																	//串口1初始化
+#endif
+#if USART2_TYPE
 	Uart2_Init(9600);																	//串口2初始化
+#endif
 	
 #ifdef GD25Q_80CSIG
 	GD25Q_SPIFLASH_Init();																//SPI FLASH初始化

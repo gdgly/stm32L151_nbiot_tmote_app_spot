@@ -22,6 +22,8 @@
 #include "radar_timer.h"
 #include "radio_hal_rf.h"
 #include "nbiotconfig.h"
+#include "platform_config.h"
+#include "platform_map.h"
 
 /**********************************************************************************************************
  @Function			void TIM2_IRQHandler(void)
@@ -59,6 +61,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 **********************************************************************************************************/
 void USART1_IRQHandler(void)
 {
+#if USART1_TYPE
 //	u32 timeout = 0;
 	
 	HAL_UART_IRQHandler(&UART1_Handler);									//调用HAL库中断处理公用函数
@@ -87,6 +90,7 @@ void USART1_IRQHandler(void)
 	else {
 		UART1_Handler.State = HAL_UART_STATE_BUSY_RX;
 	}
+#endif
 }
 
 /**********************************************************************************************************
@@ -97,6 +101,7 @@ void USART1_IRQHandler(void)
 **********************************************************************************************************/
 void USART2_IRQHandler(void)
 {
+#if USART2_TYPE
 //	u32 timeout = 0;
 	
 	HAL_UART_IRQHandler(&UART2_Handler);									//调用HAL库中断处理公用函数
@@ -125,6 +130,7 @@ void USART2_IRQHandler(void)
 	else {
 		UART2_Handler.State = HAL_UART_STATE_BUSY_RX;
 	}
+#endif
 }
 
 /**********************************************************************************************************
@@ -136,6 +142,7 @@ void USART2_IRQHandler(void)
 **********************************************************************************************************/
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
+#if USART1_TYPE
 	if (huart->Instance == USART1)										//如果是串口1
 	{
 		USART1_RX_STA |= 0x2000;											//接收中
@@ -198,7 +205,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			}
 		}
 	}
+#endif
 	
+#if USART2_TYPE
 	if (huart->Instance == USART2)										//如果是串口2
 	{
 		USART2_RX_STA |= 0x2000;											//接收中
@@ -233,6 +242,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			}
 		}
 	}
+#endif
 }
 
 
