@@ -46,10 +46,12 @@ NBIOT_ATCmdTypeDef			NbiotATCmdHandler;								//NBIOT AT Cmd Handler
 NBIOT_ClientsTypeDef		NbiotClientHandler;								//Coap Clinet Handler
 PCP_CoAPNetTransportTypeDef	PCPCoAPNetHandler;								//PCP Net Handler
 PCP_ClientsTypeDef			PCPClientHandler;								//PCP Clinet Handler
-MQTTSN_SocketNetTypeDef		MqttSNSocketNetHandler;							//MqttSN Net Handler
-MQTTSN_ClientsTypeDef		MqttSNClientHandler;							//MqttSN Clinet Handler
 DNS_SocketNetTypeDef		DNSSocketNetHandler;							//DNS Net Handler
 DNS_ClientsTypeDef			DNSClientHandler;								//DNS Clinet Handler
+MQTTSN_SocketNetTypeDef		MqttSNSocketNetHandler;							//MqttSN Net Handler
+MQTTSN_ClientsTypeDef		MqttSNClientHandler;							//MqttSN Clinet Handler
+ONENET_LWM2MTransportTypeDef	OneNETLWM2MNetHandler;							//ONENET Net Handler
+ONENET_ClientsTypeDef		OneNETClientHandler;							//ONENET Clinet Handler
 
 /**********************************************************************************************************
  @Function			void RadioPrintWorkinfo(void)

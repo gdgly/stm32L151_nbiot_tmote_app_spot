@@ -4,8 +4,9 @@
 #include "sys.h"
 #include "net_coap_app.h"
 #include "net_pcp_app.h"
-#include "net_mqttsn_app.h"
 #include "net_dns_app.h"
+#include "net_mqttsn_app.h"
+#include "net_onenet_app.h"
 
 //#define	MVB_SUBSN						0x81011000						//设备号
 //#define	MVB_BRAND						"mvb"							//厂牌
@@ -157,15 +158,19 @@ extern NBIOT_ATCmdTypeDef				NbiotATCmdHandler;					//NBIOT AT Cmd Handler
 extern NBIOT_ClientsTypeDef				NbiotClientHandler;					//Coap Clinet Handler
 extern PCP_CoAPNetTransportTypeDef			PCPCoAPNetHandler;					//PCP Net Handler
 extern PCP_ClientsTypeDef				PCPClientHandler;					//PCP Clinet Handler
-extern MQTTSN_SocketNetTypeDef			MqttSNSocketNetHandler;				//MqttSN Net Handler
-extern MQTTSN_ClientsTypeDef				MqttSNClientHandler;				//MqttSN Clinet Handler
 extern DNS_SocketNetTypeDef				DNSSocketNetHandler;				//DNS Net Handler
 extern DNS_ClientsTypeDef				DNSClientHandler;					//DNS Clinet Handler
+extern MQTTSN_SocketNetTypeDef			MqttSNSocketNetHandler;				//MqttSN Net Handler
+extern MQTTSN_ClientsTypeDef				MqttSNClientHandler;				//MqttSN Clinet Handler
+extern ONENET_LWM2MTransportTypeDef		OneNETLWM2MNetHandler;				//ONENET Net Handler
+extern ONENET_ClientsTypeDef				OneNETClientHandler;				//ONENET Clinet Handler
 
 void RadioPrintWorkinfo(void);											//Radio Print WorkInfo
 void RadioPrintNetinfo(void);												//Radio Print NetInfo
 void RadioPrintDeviceinfo(void);											//Radio Print DeviceInfo
 void RadioPrintUpgradeinfo(void);											//Radio Print UpgradeInfo
+
+
 
 
 
