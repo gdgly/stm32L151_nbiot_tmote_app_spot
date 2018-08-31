@@ -11,7 +11,7 @@
 #include "net_onenet_message_operate.h"
 #include "platform_map.h"
 
-
+#define ONENET_DEBUG_LOG_RF_PRINT											//定义开启RF输出DEBUG信息
 
 
 
