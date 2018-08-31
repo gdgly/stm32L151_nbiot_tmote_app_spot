@@ -145,11 +145,19 @@ void TCFG_EEPROM_WriteConfigData(void)
 	
 	/* NBIot MqttSN 接收数据次数 */
 	TCFG_SystemData.MqttSNRecvCount = 0;
-	TCFG_EEPROM_SetCoapRecvCnt(TCFG_SystemData.MqttSNRecvCount);
+	TCFG_EEPROM_SetMqttSNRecvCnt(TCFG_SystemData.MqttSNRecvCount);
 	
 	/* NBIot MqttSN 发送数据次数 */
 	TCFG_SystemData.MqttSNSentCount = 0;
 	TCFG_EEPROM_SetMqttSNSentCnt(TCFG_SystemData.MqttSNSentCount);
+	
+	/* NBIot OneNET 接收数据次数 */
+	TCFG_SystemData.OneNETRecvCount = 0;
+	TCFG_EEPROM_SetOneNETRecvCnt(TCFG_SystemData.OneNETRecvCount);
+	
+	/* NBIot OneNET 发送数据次数 */
+	TCFG_SystemData.OneNETSentCount = 0;
+	TCFG_EEPROM_SetOneNETSentCnt(TCFG_SystemData.OneNETSentCount);
 	
 	/* RF命令接收条数 */
 	TCFG_SystemData.RFCommandCount = 0;
@@ -323,6 +331,12 @@ void TCFG_EEPROM_ReadConfigData(void)
 	
 	/* NBIot MqttSN 发送数据次数 */
 	TCFG_SystemData.MqttSNSentCount = TCFG_EEPROM_GetMqttSNSentCnt();
+	
+	/* NBIot OneNET 接收数据次数 */
+	TCFG_SystemData.OneNETRecvCount = TCFG_EEPROM_GetOneNETRecvCnt();
+	
+	/* NBIot OneNET 发送数据次数 */
+	TCFG_SystemData.OneNETSentCount = TCFG_EEPROM_GetOneNETSentCnt();
 	
 	/* Coap间隔时间发送普通数据包用于接收下行数据 */
 	TCFG_SystemData.CoapRATimeHour = TCFG_EEPROM_GetCoapRATimeHour();
@@ -1180,6 +1194,50 @@ unsigned int TCFG_EEPROM_GetMqttSNRecvCnt(void)
 }
 
 /**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetOneNETSentCnt(unsigned int val)
+ @Description			TCFG_EEPROM_SetOneNETSentCnt					: 保存OneNETSentCnt
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetOneNETSentCnt(unsigned int val)
+{
+	FLASH_EEPROM_WriteWord(TCFG_ONENET_SENTCNT_OFFSET, val);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned int TCFG_EEPROM_GetOneNETSentCnt(void)
+ @Description			TCFG_EEPROM_GetOneNETSentCnt					: 读取OneNETSentCnt
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned int TCFG_EEPROM_GetOneNETSentCnt(void)
+{
+	return FLASH_EEPROM_ReadWord(TCFG_ONENET_SENTCNT_OFFSET);
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetOneNETRecvCnt(unsigned int val)
+ @Description			TCFG_EEPROM_SetOneNETRecvCnt					: 保存OneNETRecvCnt
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetOneNETRecvCnt(unsigned int val)
+{
+	FLASH_EEPROM_WriteWord(TCFG_ONENET_RECVCNT_OFFSET, val);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned int TCFG_EEPROM_GetOneNETRecvCnt(void)
+ @Description			TCFG_EEPROM_GetOneNETRecvCnt					: 读取OneNETRecvCnt
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned int TCFG_EEPROM_GetOneNETRecvCnt(void)
+{
+	return FLASH_EEPROM_ReadWord(TCFG_ONENET_RECVCNT_OFFSET);
+}
+
+/**********************************************************************************************************
  @Function			void TCFG_EEPROM_SetDevBootCnt(unsigned short val)
  @Description			TCFG_EEPROM_SetDevBootCnt					: 保存DevBootCnt
  @Input				val
@@ -1960,6 +2018,56 @@ unsigned int TCFG_Utility_Get_MqttSN_RecvCount(void)
 }
 
 /**********************************************************************************************************
+ @Function			void TCFG_Utility_Add_OneNET_SentCount(void)
+ @Description			TCFG_Utility_Add_OneNET_SentCount				: NBIot OneNET发送次数累加
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+void TCFG_Utility_Add_OneNET_SentCount(void)
+{
+	TCFG_SystemData.OneNETSentCount++;
+	if (TCFG_SystemData.OneNETSentCount > (10 + TCFG_EEPROM_GetOneNETSentCnt())) {
+		TCFG_EEPROM_SetOneNETSentCnt(TCFG_SystemData.OneNETSentCount);
+	}
+}
+
+/**********************************************************************************************************
+ @Function			unsigned int TCFG_Utility_Get_OneNET_SentCount(void)
+ @Description			TCFG_Utility_Get_OneNET_SentCount				: NBIot OneNET发送次数获取
+ @Input				void
+ @Return				OneNET_SentCount
+**********************************************************************************************************/
+unsigned int TCFG_Utility_Get_OneNET_SentCount(void)
+{
+	return TCFG_SystemData.OneNETSentCount;
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_Utility_Add_OneNET_RecvCount(void)
+ @Description			TCFG_Utility_Add_OneNET_RecvCount				: NBIot OneNET接收次数累加
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+void TCFG_Utility_Add_OneNET_RecvCount(void)
+{
+	TCFG_SystemData.OneNETRecvCount++;
+	if (TCFG_SystemData.OneNETRecvCount > (10 + TCFG_EEPROM_GetOneNETRecvCnt())) {
+		TCFG_EEPROM_SetOneNETRecvCnt(TCFG_SystemData.OneNETRecvCount);
+	}
+}
+
+/**********************************************************************************************************
+ @Function			unsigned int TCFG_Utility_Get_OneNET_RecvCount(void)
+ @Description			TCFG_Utility_Get_OneNET_RecvCount				: NBIot OneNET接收次数获取
+ @Input				void
+ @Return				OneNET_RecvCount
+**********************************************************************************************************/
+unsigned int TCFG_Utility_Get_OneNET_RecvCount(void)
+{
+	return TCFG_SystemData.OneNETRecvCount;
+}
+
+/**********************************************************************************************************
  @Function			char* TCFG_Utility_Get_Nbiot_Iccid_String(void)
  @Description			TCFG_Utility_Get_Nbiot_Iccid_String			: 读取Nbiot Iccid字符串
  @Input				void
@@ -1971,6 +2079,8 @@ char* TCFG_Utility_Get_Nbiot_Iccid_String(void)
 	return (char*)NbiotClientHandler.Parameter.iccid;
 #elif NETPROTOCAL == NETMQTTSN
 	return (char*)MqttSNClientHandler.SocketStack->NBIotStack->Parameter.iccid;
+#elif NETPROTOCAL == NETONENET
+	return (char*)OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.iccid;
 #endif
 }
 
@@ -1986,6 +2096,8 @@ char* TCFG_Utility_Get_Nbiot_Imei_String(void)
 	return (char*)NbiotClientHandler.Parameter.imei;
 #elif NETPROTOCAL == NETMQTTSN
 	return (char*)MqttSNClientHandler.SocketStack->NBIotStack->Parameter.imei;
+#elif NETPROTOCAL == NETONENET
+	return (char*)OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.imei;
 #endif
 }
 
@@ -2001,6 +2113,8 @@ int TCFG_Utility_Get_Nbiot_Rssi_IntVal(void)
 	return NbiotClientHandler.Parameter.rssi;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.rssi;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.rssi;
 #endif
 }
 
@@ -2016,6 +2130,8 @@ unsigned char TCFG_Utility_Get_Nbiot_Rssi_UnCharVal(void)
 	return NbiotClientHandler.Parameter.rssi;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.rssi;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.rssi;
 #endif
 }
 
@@ -2031,6 +2147,8 @@ unsigned char TCFG_Utility_Get_Nbiot_WorkMode(void)
 	return NbiotClientHandler.Parameter.connectedstate;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.connectedstate;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.connectedstate;
 #endif
 }
 
@@ -2046,6 +2164,8 @@ unsigned char TCFG_Utility_Get_Nbiot_Registered(void)
 	return NbiotClientHandler.Registered;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Registered;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Registered;
 #endif
 }
 
@@ -2061,6 +2181,8 @@ int TCFG_Utility_Get_Nbiot_RadioSignalpower(void)
 	return NbiotClientHandler.Parameter.statisticsRADIO.Signalpower;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.Signalpower;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.Signalpower;
 #endif
 }
 
@@ -2076,6 +2198,8 @@ int TCFG_Utility_Get_Nbiot_RadioTotalpower(void)
 	return NbiotClientHandler.Parameter.statisticsRADIO.Totalpower;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.Totalpower;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.Totalpower;
 #endif
 }
 
@@ -2091,6 +2215,8 @@ int TCFG_Utility_Get_Nbiot_RadioTXpower(void)
 	return NbiotClientHandler.Parameter.statisticsRADIO.TXpower;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.TXpower;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.TXpower;
 #endif
 }
 
@@ -2106,6 +2232,8 @@ unsigned int TCFG_Utility_Get_Nbiot_RadioTXtime(void)
 	return NbiotClientHandler.Parameter.statisticsRADIO.TXtime;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.TXtime;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.TXtime;
 #endif
 }
 
@@ -2121,6 +2249,8 @@ unsigned int TCFG_Utility_Get_Nbiot_RadioRXtime(void)
 	return NbiotClientHandler.Parameter.statisticsRADIO.RXtime;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.RXtime;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.RXtime;
 #endif
 }
 
@@ -2136,6 +2266,8 @@ unsigned int TCFG_Utility_Get_Nbiot_RadioCellID(void)
 	return NbiotClientHandler.Parameter.statisticsRADIO.CellID;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.CellID;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.CellID;
 #endif
 }
 
@@ -2151,6 +2283,8 @@ int TCFG_Utility_Get_Nbiot_RadioECL(void)
 	return NbiotClientHandler.Parameter.statisticsRADIO.ECL;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.ECL;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.ECL;
 #endif
 }
 
@@ -2166,6 +2300,8 @@ int TCFG_Utility_Get_Nbiot_RadioSNR(void)
 	return NbiotClientHandler.Parameter.statisticsRADIO.SNR;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR;
 #endif
 }
 
@@ -2181,6 +2317,8 @@ int TCFG_Utility_Get_Nbiot_RadioEARFCN(void)
 	return NbiotClientHandler.Parameter.statisticsRADIO.EARFCN;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.EARFCN;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.EARFCN;
 #endif
 }
 
@@ -2196,6 +2334,8 @@ int TCFG_Utility_Get_Nbiot_RadioPCI(void)
 	return NbiotClientHandler.Parameter.statisticsRADIO.PCI;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.PCI;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.PCI;
 #endif
 }
 
@@ -2211,6 +2351,8 @@ int TCFG_Utility_Get_Nbiot_RadioRSRQ(void)
 	return NbiotClientHandler.Parameter.statisticsRADIO.RSRQ;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.RSRQ;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.RSRQ;
 #endif
 }
 
@@ -2226,6 +2368,8 @@ int TCFG_Utility_Get_Nbiot_CellEarfcn(void)
 	return NbiotClientHandler.Parameter.statisticsCELL.earfcn;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsCELL.earfcn;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsCELL.earfcn;
 #endif
 }
 
@@ -2241,6 +2385,8 @@ int TCFG_Utility_Get_Nbiot_CellPhysicalCellID(void)
 	return NbiotClientHandler.Parameter.statisticsCELL.physicalcellID;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsCELL.physicalcellID;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsCELL.physicalcellID;
 #endif
 }
 
@@ -2256,6 +2402,8 @@ int TCFG_Utility_Get_Nbiot_CellPrimaryCell(void)
 	return NbiotClientHandler.Parameter.statisticsCELL.primarycell;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsCELL.primarycell;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsCELL.primarycell;
 #endif
 }
 
@@ -2271,6 +2419,8 @@ int TCFG_Utility_Get_Nbiot_CellRsrp(void)
 	return NbiotClientHandler.Parameter.statisticsCELL.rsrp;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsCELL.rsrp;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsCELL.rsrp;
 #endif
 }
 
@@ -2286,6 +2436,8 @@ int TCFG_Utility_Get_Nbiot_CellRsrq(void)
 	return NbiotClientHandler.Parameter.statisticsCELL.rsrq;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsCELL.rsrq;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsCELL.rsrq;
 #endif
 }
 
@@ -2301,6 +2453,8 @@ int TCFG_Utility_Get_Nbiot_CellCellrssi(void)
 	return NbiotClientHandler.Parameter.statisticsCELL.rssi;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsCELL.rssi;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsCELL.rssi;
 #endif
 }
 
@@ -2316,6 +2470,8 @@ int TCFG_Utility_Get_Nbiot_CellSnr(void)
 	return NbiotClientHandler.Parameter.statisticsCELL.snr;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsCELL.snr;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsCELL.snr;
 #endif
 }
 
@@ -2331,6 +2487,8 @@ unsigned int TCFG_Utility_Get_Nbiot_NetworkRegistStatusTac(void)
 	return NbiotClientHandler.Parameter.networkRegStatus.tac;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.networkRegStatus.tac;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.networkRegStatus.tac;
 #endif
 }
 
@@ -2346,6 +2504,8 @@ unsigned int TCFG_Utility_Get_Nbiot_NetworkRegistStatusCellID(void)
 	return NbiotClientHandler.Parameter.networkRegStatus.cellID;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.networkRegStatus.cellID;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.networkRegStatus.cellID;
 #endif
 }
 
@@ -2405,6 +2565,8 @@ char* TCFG_Utility_Get_Nbiot_Manufacturer(void)
 	return NbiotClientHandler.Parameter.manufacturer;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.manufacturer;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.manufacturer;
 #endif
 }
 
@@ -2420,6 +2582,8 @@ char* TCFG_Utility_Get_Nbiot_Manufacturermode(void)
 	return NbiotClientHandler.Parameter.manufacturermode;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.manufacturermode;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.manufacturermode;
 #endif
 }
 
@@ -2435,6 +2599,8 @@ char* TCFG_Utility_Get_Nbiot_ModelVersion(void)
 	return NbiotClientHandler.Parameter.modelversion;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.modelversion;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.modelversion;
 #endif
 }
 
@@ -2450,6 +2616,8 @@ unsigned int TCFG_Utility_Get_Nbiot_SentCount(void)
 	return TCFG_Utility_Get_Coap_SentCount();
 #elif NETPROTOCAL == NETMQTTSN
 	return TCFG_Utility_Get_MqttSN_SentCount();
+#elif NETPROTOCAL == NETONENET
+	return TCFG_Utility_Get_OneNET_SentCount();
 #endif
 }
 
@@ -2465,6 +2633,8 @@ unsigned int TCFG_Utility_Get_Nbiot_RecvCount(void)
 	return TCFG_Utility_Get_Coap_RecvCount();
 #elif NETPROTOCAL == NETMQTTSN
 	return TCFG_Utility_Get_MqttSN_RecvCount();
+#elif NETPROTOCAL == NETONENET
+	return TCFG_Utility_Get_OneNET_RecvCount();
 #endif
 }
 

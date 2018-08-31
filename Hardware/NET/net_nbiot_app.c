@@ -68,6 +68,13 @@ void NET_NBIOT_Initialization(void)
 	/* MQTTSN客户端初始化 */
 	MQTTSN_Client_Init(&MqttSNClientHandler, &MqttSNSocketNetHandler, &NetNbiotClientHandler);
 	
+#elif (NETPROTOCAL == NETONENET)
+	
+	/* ONENET数据传输接口初始化 */
+	ONENET_Transport_Init(&OneNETLWM2MNetHandler, &NbiotClientHandler);
+	/* ONENET客户端初始化 */
+	OneNET_Client_Init(&OneNETClientHandler, &OneNETLWM2MNetHandler, &NetNbiotClientHandler);
+	
 #else
 	#error NETPROTOCAL Define Error
 #endif
@@ -89,6 +96,10 @@ void NET_NBIOT_Client_Init(NET_NBIOT_ClientsTypeDef* pClient)
 #elif NETPROTOCAL == NETMQTTSN
 	
 	pClient->PollExecution								= NET_POLL_EXECUTION_DNS;
+	
+#elif NETPROTOCAL == NETONENET
+	
+	pClient->PollExecution								= NET_POLL_EXECUTION_ONENET;
 	
 #endif
 }
@@ -434,6 +445,10 @@ void NET_NBIOT_TaskProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 	case NET_POLL_EXECUTION_PCP:
 		NET_PCP_APP_PollExecution(&PCPClientHandler);
 		break;
+	
+	case NET_POLL_EXECUTION_ONENET:
+		pClient->PollExecution = NET_POLL_EXECUTION_COAP;
+		break;
 	}
 	
 #elif NETPROTOCAL == NETMQTTSN
@@ -454,6 +469,35 @@ void NET_NBIOT_TaskProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 	
 	case NET_POLL_EXECUTION_PCP:
 		pClient->PollExecution = NET_POLL_EXECUTION_DNS;
+		break;
+	
+	case NET_POLL_EXECUTION_ONENET:
+		pClient->PollExecution = NET_POLL_EXECUTION_DNS;
+		break;
+	}
+	
+#elif NETPROTOCAL == NETMQTTSN
+	
+	switch (pClient->PollExecution)
+	{
+	case NET_POLL_EXECUTION_COAP:
+		pClient->PollExecution = NET_POLL_EXECUTION_ONENET;
+		break;
+	
+	case NET_POLL_EXECUTION_DNS:
+		pClient->PollExecution = NET_POLL_EXECUTION_ONENET;
+		break;
+	
+	case NET_POLL_EXECUTION_MQTTSN:
+		pClient->PollExecution = NET_POLL_EXECUTION_ONENET;
+		break;
+	
+	case NET_POLL_EXECUTION_PCP:
+		pClient->PollExecution = NET_POLL_EXECUTION_ONENET;
+		break;
+	
+	case NET_POLL_EXECUTION_ONENET:
+		
 		break;
 	}
 	

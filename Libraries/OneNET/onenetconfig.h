@@ -124,7 +124,7 @@ struct ONENET_ClientsTypeDef
 
 
 
-
-
+/* Application Programming Interface */
+void OneNET_Client_Init(ONENET_ClientsTypeDef* pClient, ONENET_LWM2MTransportTypeDef* NetSock, NET_NBIOT_ClientsTypeDef* NetNbiotStack);	//ONENET客户端初始化
 
 #endif /* __ONENET_CONFIG_H */

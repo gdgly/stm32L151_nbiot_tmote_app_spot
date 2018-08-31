@@ -32,9 +32,19 @@
 
 
 
-
-
-
-
+/**********************************************************************************************************
+ @Function			ONENET_StatusTypeDef ONENET_Transport_Init(ONENET_LWM2MTransportTypeDef* NetLWM2M, NBIOT_ClientsTypeDef* NBIotStack)
+ @Description			ONENET_Transport_Init	: Initiative初始化ONENET数据传输接口
+ @Input				NetLWM2M				: LWM2M Struct*
+					NBIotStack			: NBIot协议栈
+ @Return				ONENET_StatusTypeDef	: ONENET处理状态
+**********************************************************************************************************/
+ONENET_StatusTypeDef ONENET_Transport_Init(ONENET_LWM2MTransportTypeDef* NetLWM2M, NBIOT_ClientsTypeDef* NBIotStack)
+{
+	ONENET_StatusTypeDef OneNETStatus = ONENET_OK;
+	
+	
+	return OneNETStatus;
+}
 
 /********************************************** END OF FLEE **********************************************/

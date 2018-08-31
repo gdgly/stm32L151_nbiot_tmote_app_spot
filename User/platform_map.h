@@ -170,6 +170,11 @@
 #define TCFG_COAP_IDLE_DAY_LENGTH			2												//CoapIdleDayTime		Coap一天休眠时间
 #define TCFG_COAP_QUOTA_TIME_OFFSET		TCFG_COAP_IDLE_DAY_OFFSET + TCFG_COAP_IDLE_DAY_LENGTH		//0x08080E1A
 #define TCFG_COAP_QUOTA_TIME_LENGTH		2												//CoapQuotaTime		Coap一天使用配额时间
+
+#define TCFG_ONENET_SENTCNT_OFFSET			TCFG_COAP_QUOTA_TIME_OFFSET + TCFG_COAP_QUOTA_TIME_LENGTH	//0x08080E1C
+#define TCFG_ONENET_SENTCNT_LENGTH			4												//OneNETSentCnt		ONENET发送包数
+#define TCFG_ONENET_RECVCNT_OFFSET			TCFG_ONENET_SENTCNT_OFFSET + TCFG_ONENET_SENTCNT_LENGTH	//0x08080E20
+#define TCFG_ONENET_RECVCNT_LENGTH			4												//OneNETRecvCnt		ONENET接收包数
 /************************************************************** End **************************************************************/
 
 enum TCFG_SENSITIVITY																	//传感器灵敏度
@@ -216,6 +221,8 @@ typedef struct
 	unsigned int						CoapRecvCount;										//Coap接收包数
 	unsigned int						MqttSNSentCount;									//MqttSN发送包数
 	unsigned int						MqttSNRecvCount;									//MqttSN接收包数
+	unsigned int						OneNETSentCount;									//OneNET发送包数
+	unsigned int						OneNETRecvCount;									//OneNET接收包数
 	unsigned char						RFCommandCount;									//RF命令接收条数
 	unsigned char						NBCommandCount;									//NB命令接收条数
 	unsigned short						DeviceBootCount;									//设备重启次数
@@ -324,6 +331,12 @@ unsigned int	TCFG_EEPROM_GetMqttSNSentCnt(void);											//读取MqttSNSentCnt
 void			TCFG_EEPROM_SetMqttSNRecvCnt(unsigned int val);									//保存MqttSNRecvCnt
 unsigned int	TCFG_EEPROM_GetMqttSNRecvCnt(void);											//读取MqttSNRecvCnt
 
+void			TCFG_EEPROM_SetOneNETSentCnt(unsigned int val);									//保存OneNETSentCnt
+unsigned int	TCFG_EEPROM_GetOneNETSentCnt(void);											//读取OneNETSentCnt
+
+void			TCFG_EEPROM_SetOneNETRecvCnt(unsigned int val);									//保存OneNETRecvCnt
+unsigned int	TCFG_EEPROM_GetOneNETRecvCnt(void);											//读取OneNETRecvCnt
+
 void			TCFG_EEPROM_SetDevBootCnt(unsigned short val);									//保存DevBootCnt
 unsigned short	TCFG_EEPROM_GetDevBootCnt(void);												//读取DevBootCnt
 
@@ -408,6 +421,10 @@ void			TCFG_Utility_Add_MqttSN_SentCount(void);										//NBIot MqttSN发送次
 unsigned int	TCFG_Utility_Get_MqttSN_SentCount(void);										//NBIot MqttSN发送次数获取
 void			TCFG_Utility_Add_MqttSN_RecvCount(void);										//NBIot MqttSN接收次数累加
 unsigned int	TCFG_Utility_Get_MqttSN_RecvCount(void);										//NBIot MqttSN接收次数获取
+void			TCFG_Utility_Add_OneNET_SentCount(void);										//NBIot OneNET发送次数累加
+unsigned int	TCFG_Utility_Get_OneNET_SentCount(void);										//NBIot OneNET发送次数获取
+void			TCFG_Utility_Add_OneNET_RecvCount(void);										//NBIot OneNET接收次数累加
+unsigned int	TCFG_Utility_Get_OneNET_RecvCount(void);										//NBIot OneNET接收次数获取
 
 char*		TCFG_Utility_Get_Nbiot_Iccid_String(void);										//读取Nbiot Iccid字符串
 char*		TCFG_Utility_Get_Nbiot_Imei_String(void);										//读取Nbiot Imei字符串
