@@ -560,15 +560,19 @@ void Radio_Trf_App_Task(void)
 		/* 发送心跳包 */
 		Radio_Trf_Do_Heartbeat();
 	}
-	else if (cmdtime_pre + 180 > Stm32_GetSecondTick()) {
+	/* 接收到下行指令持续180秒连续间隔3秒发送心跳包 */
+	else if ((cmdtime_pre + 180 > Stm32_GetSecondTick()) && ((hearttime_pre + RADIO_GATCMD_NEARBY_HEART_SEC) < Stm32_GetSecondTick())) {
 		hearttime_pre = Stm32_GetSecondTick();
 		/* 发送心跳包 */
 		Radio_Trf_Do_Heartbeat();
+		Radio_Trf_Printf_SensorBackground();
 	}
-	else if ((gateway_nearby > 0) && (hearttime_pre + RADIO_GATWAY_NEARBY_HEART_SEC < Stm32_GetSecondTick())) {
+	/* 接收到配置器Ping包连续间隔5秒发送心跳包 */
+	else if ((gateway_nearby > 0) && ((hearttime_pre + RADIO_GATWAY_NEARBY_HEART_SEC) < Stm32_GetSecondTick())) {
 		hearttime_pre = Stm32_GetSecondTick();
 		/* 发送心跳包 */
 		Radio_Trf_Do_Heartbeat();
+		Radio_Trf_Printf_SensorBackground();
 	}
 	
 	/* 接收无线下行数据 */
@@ -877,6 +881,21 @@ void Radio_Trf_Printf(const char *fmt, ...)
 	va_end (args);
 	Radio_Trf_Do_Rf_Pintf((char*)TRF_PrintfBuf);
 	Delay_US(300);
+#endif
+}
+
+/**********************************************************************************************************
+ @Function			void Radio_Trf_Printf_SensorBackground(void)
+ @Description			Radio_Trf_Printf_SensorBackground	: 打印传感器背景值
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+void Radio_Trf_Printf_SensorBackground(void)
+{
+#ifdef	RADIO_SI4438
+	Radio_Trf_Printf("bbbbbxyz=%d,%d,%d,%d,%d,%d,%d,%d,", \
+	radar_targetinfo.pMagBG[2], radar_targetinfo.pMagBG[3], radar_targetinfo.pMagBG[4], radar_targetinfo.pMagBG[5], radar_targetinfo.pMagBG[6], \
+	Qmc5883lData.X_Now, Qmc5883lData.Y_Now, Qmc5883lData.Z_Now);
 #endif
 }
 

@@ -179,4 +179,6 @@ void Radio_Trf_Debug_Printf_Level1(const char *fmt, ...);
 void Radio_Trf_Debug_Printf_Level0(const char *fmt, ...);
 void Radio_Trf_Printf(const char *fmt, ...);
 
+void Radio_Trf_Printf_SensorBackground(void);
+
 #endif

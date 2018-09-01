@@ -123,6 +123,7 @@
 #define	NORMAL_WORK					0								//正常工作模式
 
 #define	RADIO_GATWAY_NEARBY_HEART_SEC		5								//无线接收网关数据心跳包间隔时间
+#define	RADIO_GATCMD_NEARBY_HEART_SEC		3								//无线接收网关数据命令包间隔时间
 
 #define	TIME_TO_MODULE_INIT				3600*24*3							//间隔时间初始化模块
 
