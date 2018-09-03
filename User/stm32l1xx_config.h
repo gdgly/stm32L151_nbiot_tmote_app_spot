@@ -61,10 +61,10 @@ typedef enum
 	RCC_RESET_FLAG_NONE					= 0x00,							/*!< None Reset Flag				*/
 	RCC_RESET_FLAG_IWDGRST				= 0x01,							/*!< Independent Watchdog Reset Flag	*/
 	RCC_RESET_FLAG_SFTRST				= 0x02,							/*!< Software Reset Flag				*/
-	RCC_RESET_FLAG_PORRST				= 0x03,							/*!< POR/PDR Reset Flag				*/
-	RCC_RESET_FLAG_PINRST				= 0x04,							/*!< PIN Reset Flag					*/
-	RCC_RESET_FLAG_LPWRRST				= 0x05,							/*!< Low-Power Reset Flag			*/
-	RCC_RESET_FLAG_OBLRST				= 0x06,							/*!< Options Bytes Loading Reset Flag	*/
+	RCC_RESET_FLAG_PORRST				= 0x04,							/*!< POR/PDR Reset Flag				*/
+	RCC_RESET_FLAG_PINRST				= 0x08,							/*!< PIN Reset Flag					*/
+	RCC_RESET_FLAG_LPWRRST				= 0x03,							/*!< Low-Power Reset Flag			*/
+	RCC_RESET_FLAG_OBLRST				= 0x05,							/*!< Options Bytes Loading Reset Flag	*/
 	RCC_RESET_FLAG_WWDGRST				= 0x07							/*!< Window Watchdog Reset Flag		*/
 }RCC_RESET_FLAG_TypeDef;
 

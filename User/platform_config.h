@@ -76,7 +76,7 @@
 #define	BEEP_OFF_US					200								//无源蜂鸣器关时间
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					119								//从固件版本
+#define	SOFTWARESUB					120								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 
