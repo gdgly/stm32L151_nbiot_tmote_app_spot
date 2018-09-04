@@ -80,6 +80,16 @@ typedef enum
 	ONENET_Not_the_at_allocated_socket		= 530
 }ONENET_StatusTypeDef;
 
+/* ONENET Is ProcessState */
+typedef enum
+{
+	ONENET_PROCESSSTATE_INIT				= 0x00,
+	
+	
+}ONENET_ProcessStateTypeDef;
+
+
+
 
 
 
@@ -105,11 +115,22 @@ struct ONENET_ClientsTypeDef
 	unsigned short						Command_Timeout_Sec;
 	unsigned short						Command_Failure_Cnt;
 	
+	struct ONENETDictateRuningCtlTypeDef
+	{
+		bool							dictateEnable;
+		unsigned int					dictateTimeoutSec;
+		unsigned char					dictateInitFailureCnt;
+		
+		
+		Stm32_CalculagraphTypeDef		dictateRunTime;
+	}DictateRunCtl;
 	
 	
 	
 	
 	
+	
+	ONENET_ProcessStateTypeDef			ProcessState;
 	ONENET_LWM2MTransportTypeDef*			LWM2MStack;
 	NET_NBIOT_ClientsTypeDef*			NetNbiotStack;
 };

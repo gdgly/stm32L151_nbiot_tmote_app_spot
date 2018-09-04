@@ -20,7 +20,7 @@
 
 /**********************************************************************************************************
  @Function			void NET_DNS_APP_PollExecution(DNS_ClientsTypeDef* pClient)
- @Description			NET_DNS_APP_PollExecution			: DNS逻辑处理
+ @Description			DNS_APP_PollExecution				: DNS逻辑处理
  @Input				pClient							: DNS客户端实例
  @Return				void
 **********************************************************************************************************/
@@ -122,6 +122,10 @@ void NET_DNS_APP_PollExecution(DNS_ClientsTypeDef* pClient)
 	
 	case DNS_PROCESS_STACK:
 		NET_DNS_APP_ProcessExecution(pClient);
+		break;
+	
+	case ONENET_PROCESS_STACK:
+		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
 		break;
 	
 	case LISTEN_RUN_CTL:

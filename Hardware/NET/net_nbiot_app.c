@@ -521,7 +521,7 @@ void NET_NBIOT_TaskProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		break;
 	
 	case NET_POLL_EXECUTION_ONENET:
-		
+		NET_ONENET_APP_PollExecution(&OneNETClientHandler);
 		break;
 	}
 	

@@ -45,10 +45,16 @@ void OneNET_Client_Init(ONENET_ClientsTypeDef* pClient, ONENET_LWM2MTransportTyp
 	pClient->Command_Timeout_Sec							= ONENET_COMMAND_TIMEOUT_SEC;
 	pClient->Command_Failure_Cnt							= ONENET_COMMAND_FAILURE_CNT;
 	
+	pClient->DictateRunCtl.dictateEnable					= false;
+	pClient->DictateRunCtl.dictateTimeoutSec				= 0;
+	pClient->DictateRunCtl.dictateInitFailureCnt				= 0;
 	
 	
 	
 	
+	
+	
+	pClient->ProcessState								= ONENET_PROCESSSTATE_INIT;
 	pClient->LWM2MStack									= NetSock;
 	pClient->NetNbiotStack								= NetNbiotStack;
 }

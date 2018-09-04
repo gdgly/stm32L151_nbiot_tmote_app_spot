@@ -21,7 +21,7 @@
 
 /**********************************************************************************************************
  @Function			void NET_PCP_APP_PollExecution(PCP_ClientsTypeDef* pClient)
- @Description			NET_PCP_APP_PollExecution			: PCP逻辑处理
+ @Description			PCP_APP_PollExecution				: PCP逻辑处理
  @Input				pClient							: PCP客户端实例
  @Return				void
 **********************************************************************************************************/

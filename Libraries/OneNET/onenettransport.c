@@ -43,6 +43,10 @@ ONENET_StatusTypeDef ONENET_Transport_Init(ONENET_LWM2MTransportTypeDef* NetLWM2
 {
 	ONENET_StatusTypeDef OneNETStatus = ONENET_OK;
 	
+	NetLWM2M->NBIotStack = NBIotStack;
+	
+	
+	
 	
 	return OneNETStatus;
 }

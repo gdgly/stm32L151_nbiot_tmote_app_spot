@@ -304,7 +304,8 @@ typedef enum
 	EXECUT_DOWNLINK_DATA				= 0x15,											//执行下行数据
 	MQTTSN_PROCESS_STACK				= 0x16,											//MQTTSN执行栈
 	DNS_PROCESS_STACK					= 0x17,											//DNS执行栈
-	LISTEN_RUN_CTL						= 0x18											//监听运行控制器
+	ONENET_PROCESS_STACK				= 0x18,											//ONENET执行栈
+	LISTEN_RUN_CTL						= 0x19											//监听运行控制器
 }NBIOT_DictateEventTypeDef;
 
 /* NBIOT Listen Event */

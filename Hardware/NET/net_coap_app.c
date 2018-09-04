@@ -25,7 +25,7 @@
 
 /**********************************************************************************************************
  @Function			void NET_COAP_APP_PollExecution(NBIOT_ClientsTypeDef* pClient)
- @Description			NET_COAP_APP_PollExecution			: COAP逻辑处理
+ @Description			COAP_APP_PollExecution				: COAP逻辑处理
  @Input				pClient							: NBIOT客户端实例
  @Return				void
 **********************************************************************************************************/
@@ -126,6 +126,10 @@ void NET_COAP_APP_PollExecution(NBIOT_ClientsTypeDef* pClient)
 		break;
 	
 	case DNS_PROCESS_STACK:
+		pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+		break;
+	
+	case ONENET_PROCESS_STACK:
 		pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
 		break;
 	

@@ -2877,35 +2877,35 @@ char* TCFG_Utility_Get_Hardwear_Version_String(void)
 #if RADAR_MODEL_TYPE == RADAR_MODEL_V1
 	if (Radio_Rf_get_Status() == TRF_OK) {
 		if (GD25Q_SPIFLASH_Get_Status() == GD25Q80CSIG_OK) {
-			sprintf((char*)TCFG_SystemData.HardVersion, "L151-nb-rf-gd25");
+			sprintf((char*)TCFG_SystemData.HardVersion, "%s-NB-RF-GD25", CPUVERSION);
 		}
 		else {
-			sprintf((char*)TCFG_SystemData.HardVersion, "L151-nb-rf");
+			sprintf((char*)TCFG_SystemData.HardVersion, "%s-NB-RF", CPUVERSION);
 		}
 	}
 	else {
 		if (GD25Q_SPIFLASH_Get_Status() == GD25Q80CSIG_OK) {
-			sprintf((char*)TCFG_SystemData.HardVersion, "L151-nb-gd25");
+			sprintf((char*)TCFG_SystemData.HardVersion, "%s-NB-GD25", CPUVERSION);
 		}
 		else {
-			sprintf((char*)TCFG_SystemData.HardVersion, "L151-nb");
+			sprintf((char*)TCFG_SystemData.HardVersion, "%s-NB", CPUVERSION);
 		}
 	}
 #elif RADAR_MODEL_TYPE == RADAR_MODEL_V2
 	if (Radio_Rf_get_Status() == TRF_OK) {
 		if (GD25Q_SPIFLASH_Get_Status() == GD25Q80CSIG_OK) {
-			sprintf((char*)TCFG_SystemData.HardVersion, "L151-nb-rf-gd25-rv2");
+			sprintf((char*)TCFG_SystemData.HardVersion, "%s-NB-RF-GD25-RV2", CPUVERSION);
 		}
 		else {
-			sprintf((char*)TCFG_SystemData.HardVersion, "L151-nb-rf-rv2");
+			sprintf((char*)TCFG_SystemData.HardVersion, "%s-NB-RF-RV2", CPUVERSION);
 		}
 	}
 	else {
 		if (GD25Q_SPIFLASH_Get_Status() == GD25Q80CSIG_OK) {
-			sprintf((char*)TCFG_SystemData.HardVersion, "L151-nb-gd25-rv2");
+			sprintf((char*)TCFG_SystemData.HardVersion, "%s-NB-GD25-RV2", CPUVERSION);
 		}
 		else {
-			sprintf((char*)TCFG_SystemData.HardVersion, "L151-nb-rv2");
+			sprintf((char*)TCFG_SystemData.HardVersion, "%s-NB-RV2", CPUVERSION);
 		}
 	}
 #else
