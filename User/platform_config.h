@@ -35,6 +35,10 @@
 #define	LOWPOWERENABLE					1
 #define	LOWPOWERMODE					LOWPOWERENABLE						//低功耗模式
 
+#define	DEBUGLOWPOWERDISABLE			0
+#define	DEBUGLOWPOWERENABLE				1
+#define	DEBUGLOWPOWERMODE				DEBUGLOWPOWERDISABLE				//调试低功耗模式
+
 #define	NBCOAP_SENDMODE_NORMAL			SEND_DATA
 #define	NBCOAP_SENDMODE_RAIDLE			SEND_DATA_RA_NORMAL
 #define	NBCOAP_SENDMODE_TYPE			NBCOAP_SENDMODE_RAIDLE				//COAP发送模式
@@ -54,6 +58,9 @@
 #define	NBCOAP_LISTEN_ENTER_IDLE_SEC		35								//Coap监听NB进入IDLE等待时间
 #define	NBCOAP_LISTEN_ENTER_PARAMETER_SEC	15								//Coap监听NB进入参数检查等待时间
 
+#define	NBCOAP_PCP_UPGRADE_LIMIT_RSSI		10								//PCP升级限制信号值
+#define	NBCOAP_PCP_UPGRADE_LIMIT_SNR		5								//PCP升级限制信噪比
+
 #define	RADIO_CMD_ECHO_DISABLE			0
 #define	RADIO_CMD_ECHO_ENABLE			1
 #define	RADIO_CMD_ECHO_TYPE				RADIO_CMD_ECHO_DISABLE				//无线命令回显
@@ -72,13 +79,13 @@
 
 #define	BEEP_ACTIVE					0
 #define	BEEP_PASSIVE					1
-#define	BEEP_MODEL_TYPE				BEEP_ACTIVE						//蜂鸣器类型
+#define	BEEP_MODEL_TYPE				BEEP_PASSIVE						//蜂鸣器类型
 
-#define	BEEP_ON_US					300								//无源蜂鸣器开时间
-#define	BEEP_OFF_US					200								//无源蜂鸣器关时间
+#define	BEEP_ON_US					230								//无源蜂鸣器开时间
+#define	BEEP_OFF_US					230								//无源蜂鸣器关时间
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					120								//从固件版本
+#define	SOFTWARESUB					121								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 

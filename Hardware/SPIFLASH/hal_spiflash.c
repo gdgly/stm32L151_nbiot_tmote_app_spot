@@ -5,6 +5,7 @@
   * @version V1.0
   * @date    2018-07-24
   * @brief   SPI FLASH GD25Q80CSIG Device
+  *		   SPI FLASH GD25Q40BSIG Device
   *********************************************************************************************************
   * @attention
   *		   NSS  : PB12
@@ -31,6 +32,8 @@ GD25Q_StatusTypeDef GD25QStatus = GD25Q80CSIG_OK;
 **********************************************************************************************************/
 void GD25Q_SPIFLASH_Init(void)
 {
+	u32 ReadIdentificationID;
+	
 	GD25Q_SPIFLASH_Handler.Instance				= GD25Q_FLASH_SPIx;						//SPI1
 	GD25Q_SPIFLASH_Handler.Init.Mode				= SPI_MODE_MASTER;						//设置SPI工作模式为主模式
 	GD25Q_SPIFLASH_Handler.Init.Direction			= SPI_DIRECTION_2LINES;					//设置SPI数据模式为双线模式
@@ -62,7 +65,8 @@ void GD25Q_SPIFLASH_Init(void)
 	}
 	
 	GD25Q_SPIFLASH_WakeUp();
-	if (GD25Q_SPIFLASH_ReadIdentificationID() != GD25Q80CSIGIdentificationID) {
+	ReadIdentificationID = GD25Q_SPIFLASH_ReadIdentificationID();
+	if ((ReadIdentificationID != GD25Q80CSIGIdentificationID) && (ReadIdentificationID != GD25Q40BSIGIdentificationID)) {
 		GD25QStatus = GD25Q80CSIG_ERROR;
 	}
 }

@@ -192,11 +192,11 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_EEPROM_SetCoapQuotaTime(TCFG_SystemData.CoapQuotaTime);
 	
 	/* 升级信号值限制下限 */
-	TCFG_SystemData.UpgradeLimitRssi = 18;
+	TCFG_SystemData.UpgradeLimitRssi = NBCOAP_PCP_UPGRADE_LIMIT_RSSI;
 	TCFG_EEPROM_SetUpgradeLimitRssi(TCFG_SystemData.UpgradeLimitRssi);
 	
 	/* 升级信号质量限制下限 */
-	TCFG_SystemData.UpgradeLimitSnr = 30;
+	TCFG_SystemData.UpgradeLimitSnr = NBCOAP_PCP_UPGRADE_LIMIT_SNR;
 	TCFG_EEPROM_SetUpgradeLimitSnr(TCFG_SystemData.UpgradeLimitSnr);
 	
 	/* 蜂鸣器控制 */

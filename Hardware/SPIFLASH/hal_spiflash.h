@@ -7,6 +7,10 @@
 #define GD25Q80CSIGManufactureID					0xC813
 #define GD25Q80CSIGIdentificationID				0xC84014
 
+#define GD25Q40BSIGDeviceID						0x12
+#define GD25Q40BSIGManufactureID					0xC812
+#define GD25Q40BSIGIdentificationID				0xC84013
+
 #define GD25Q80_BASE_ADDR						0x000000U
 #define GD25Q80_CHIP_BYTE_SIZE					0x100000U													// 1 M
 #define GD25Q80_BLOCK_BYTE_SIZE					0x010000U													//64 K

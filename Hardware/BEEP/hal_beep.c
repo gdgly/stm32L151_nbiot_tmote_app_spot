@@ -69,16 +69,16 @@ void BEEP_CtrlRepeat(u16 nCount, u16 nMs)
 
 /**********************************************************************************************************
  @Function			void BEEP_PassiveCtrl(u16 speak_nMs)
- @Description			蜂鸣器无源响
+ @Description			蜂鸣器无源响(内部使用)
  @Input				speak_nMs	: BEEP时间MS
  @Return				void
 **********************************************************************************************************/
 void BEEP_PassiveCtrl(u16 speak_nMs)
 {
-	for (u16 nCount = 0; nCount < speak_nMs; nCount++) {
-		BEEP(ON);
+	for (u16 nCount = 0; nCount < speak_nMs * 2; nCount++) {
+		HAL_GPIO_WritePin(BEEP_GPIOx, BEEP_PIN, GPIO_PIN_SET);
 		Delay_US(BEEP_ON_US);
-		BEEP(OFF);
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_RESET);
 		Delay_US(BEEP_OFF_US);
 	}
 }
@@ -93,20 +93,35 @@ void BEEP_PassiveCtrl(u16 speak_nMs)
 **********************************************************************************************************/
 void BEEP_CtrlRepeat_Extend(u16 nCount, u16 speak_nMs, u16 shut_nMs)
 {
+	GPIO_InitTypeDef GPIO_Initure;
 	u16 index = 0;
+	
+	BEEP_RCC_GPIO_CLK_ENABLE();
+	
+	GPIO_Initure.Pin = BEEP_PIN;
+	GPIO_Initure.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_Initure.Pull = GPIO_NOPULL;
+	GPIO_Initure.Speed = GPIO_SPEED_HIGH;
+	HAL_GPIO_Init(BEEP_GPIOx, &GPIO_Initure);
 	
 	if (TCFG_EEPROM_GetBeepOff() != 2) {
 		for (index = 0; index < nCount; index++) {
-			#if BEEP_MODEL_TYPE
+		#if BEEP_MODEL_TYPE
 			BEEP_PassiveCtrl(speak_nMs);
-			#else
-			BEEP(ON);
-			Delay_MS(speak_nMs);
-			#endif
 			BEEP(OFF);
 			Delay_MS(shut_nMs);
+		#else
+			BEEP(ON);
+			Delay_MS(speak_nMs);
+			BEEP(OFF);
+			Delay_MS(shut_nMs);
+		#endif
 		}
 	}
+	
+	GPIO_Initure.Pin = BEEP_PIN;
+	GPIO_Initure.Speed = GPIO_SPEED_VERY_LOW;
+	HAL_GPIO_Init(BEEP_GPIOx, &GPIO_Initure);
 }
 
 /********************************************** END OF FLEE **********************************************/

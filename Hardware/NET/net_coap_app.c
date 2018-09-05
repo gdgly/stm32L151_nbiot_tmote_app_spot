@@ -505,7 +505,11 @@ void NET_COAP_NBIOT_Event_ModuleCheck(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, MODULE_CHECK);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
 		Radio_Trf_Debug_Printf_Level2("NB Module Check Fail ECde %d", NBStatus);
+	#else
+		Radio_Trf_Debug_Printf_Level2("NB Module Check Fail");
+	#endif
 #endif
 	}
 }
@@ -535,7 +539,11 @@ void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, PARAMETER_CONFIG);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
 		Radio_Trf_Debug_Printf_Level2("NB Parameter Config Read Fail ECde %d", NBStatus);
+	#else
+		Radio_Trf_Debug_Printf_Level2("NB Parameter Config Read Fail");
+	#endif
 #endif
 		return;
 	}
@@ -686,7 +694,11 @@ void NET_COAP_NBIOT_Event_SimICCIDCheck(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, ICCID_CHECK);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
 		Radio_Trf_Debug_Printf_Level2("NB ICCID Check Fail ECde %d", NBStatus);
+	#else
+		Radio_Trf_Debug_Printf_Level2("NB ICCID Check Fail");
+	#endif
 #endif
 	}
 }
@@ -716,7 +728,11 @@ void NET_COAP_NBIOT_Event_FullFunctionality(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, FULL_FUNCTIONALITY);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
 		Radio_Trf_Debug_Printf_Level2("Coap FullFunc Check Fail ECde %d", NBStatus);
+	#else
+		Radio_Trf_Debug_Printf_Level2("Coap FullFunc Check Fail");
+	#endif
 #endif
 		return;
 	}
@@ -735,7 +751,11 @@ void NET_COAP_NBIOT_Event_FullFunctionality(NBIOT_ClientsTypeDef* pClient)
 			COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, FULL_FUNCTIONALITY);
 			
 #ifdef COAP_DEBUG_LOG_RF_PRINT
+		#if NBIOT_PRINT_ERROR_CODE_TYPE
 			Radio_Trf_Debug_Printf_Level2("Coap FullFunc Set Fail ECde %d", NBStatus);
+		#else
+			Radio_Trf_Debug_Printf_Level2("Coap FullFunc Set Fail");
+		#endif
 #endif
 			return;
 		}
@@ -767,7 +787,11 @@ void NET_COAP_NBIOT_Event_MinimumFunctionality(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, MINIMUM_FUNCTIONALITY);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
 		Radio_Trf_Debug_Printf_Level2("Coap MinFunc Check Fail ECde %d", NBStatus);
+	#else
+		Radio_Trf_Debug_Printf_Level2("Coap MinFunc Check Fail");
+	#endif
 #endif
 		return;
 	}
@@ -786,7 +810,11 @@ void NET_COAP_NBIOT_Event_MinimumFunctionality(NBIOT_ClientsTypeDef* pClient)
 			COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, MINIMUM_FUNCTIONALITY);
 			
 #ifdef COAP_DEBUG_LOG_RF_PRINT
+		#if NBIOT_PRINT_ERROR_CODE_TYPE
 			Radio_Trf_Debug_Printf_Level2("Coap MinFunc Set Fail ECde %d", NBStatus);
+		#else
+			Radio_Trf_Debug_Printf_Level2("Coap MinFunc Set Fail");
+		#endif
 #endif
 			return;
 		}

@@ -61,6 +61,7 @@ void DeBugMain(void);
 int main(void)
 {
 	HAL_Init();																		//HAL库初始化
+	QmsWarmupPower(OFF);																//关闭QMC加热
 	
 #ifndef SYSTEMCLOCK
 	#error No Define SYSTEMCLOCK!
@@ -556,10 +557,16 @@ void DeBugMain(void)
 		
 		
 		
+#if DEBUGLOWPOWERMODE == DEBUGLOWPOWERENABLE
+		LowPowerBeforeSleepInit();
+		LowPowerEnterStop();
+		LowPowerAfterSleepInit();
+#elif DEBUGLOWPOWERMODE == DEBUGLOWPOWERDISABLE
 		/* 小无线处理 */
 		Radio_Trf_App_Task();
 		
 		Delay_MS(1000);
+#endif
 		
 		/* 喂狗 */
 		IWDG_Feed();
