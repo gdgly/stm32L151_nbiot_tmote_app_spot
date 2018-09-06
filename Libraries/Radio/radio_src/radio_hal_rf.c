@@ -203,6 +203,9 @@ char Radio_Rf_Init(void)
 {
 	unsigned char i = 0;
 	
+	Stm32_CalculagraphTypeDef RfTimeout;
+	Stm32_Calculagraph_CountdownMS(&RfTimeout, 10000);
+	
 	/* step 0 : */
 	Radio_Rf_Interface_Init();
 	
@@ -231,8 +234,11 @@ char Radio_Rf_Init(void)
 	}
 	
 	while (SI446X_SUCCESS != si446x_configuration_init(Radio_Configuration_Data_Array)) {
-		
 		Radio_PowerUp();
+		if (Stm32_Calculagraph_IsExpiredMS(&RfTimeout)) {
+			trf_status = TRF_ERROR;
+			return TRF_ERROR;
+		}
 	}
 	
 	/* step 3: Get the chip's Interrupt status/pending flags form the radio and clear flags if requested */
