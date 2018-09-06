@@ -18,6 +18,10 @@
 #define NBIOT_ATBUFFER_SIZE				1100
 #define NBIOT_DATASTACK_SIZE				1100
 
+/* NBIOT 厂商 */
+#define NBIOT_MANUFACTURER_LIERDA			"Lierda"
+#define NBIOT_MANUFACTURER_QUECTEL			"Quectel"
+
 /* NCONFIG配置参数 */
 #define AutoConnect						"AUTOCONNECT"										//自动注网模式
 #define CrScrambling					"CR_0354_0338_SCRAMBLING"							//扰码功能

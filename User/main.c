@@ -266,9 +266,11 @@ void MainRollingUpwardsActived(void)
 		else {
 			/* NBIOT Power OFF */
 			if (NBIOTPOWER_IO_READ()) {
+				NBIOT_Neul_NBxx_CheckReadIMEI(&NbiotClientHandler);
 				NET_NBIOT_Initialization();
 				NBIOTPOWER(OFF);
 			}
+			Radio_Trf_Printf("imei:%s", NbiotClientHandler.Parameter.imei);
 		}
 	}
 	

@@ -95,8 +95,6 @@ void NBIOT_Client_Init(NBIOT_ClientsTypeDef* pClient, NBIOT_ATCmdTypeDef* ATCmdS
 	pClient->ATCmdStack										= ATCmdStack;
 	pClient->NetNbiotStack									= NetNbiotStack;
 	
-	memset((void *)&pClient->Parameter, 0x0, sizeof(pClient->Parameter));
-	
 	Stm32_EventRunningTime_Init(&pClient->ConnectTimeMS);
 	Stm32_EventRunningTime_Init(&pClient->IdleTimeMS);
 }

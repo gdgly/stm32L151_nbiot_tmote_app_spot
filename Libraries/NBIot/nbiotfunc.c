@@ -1554,9 +1554,27 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCONDataStatus(NBIOT_ClientsTypeDef*
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	int dataStatusval = 0;
+#if (NBIOT_AUTO_MODEL_TYPE == NBIOT_AUTO_MODEL_ENABLE)
+	unsigned char* WulDataStatusCmdLierda = (unsigned char*)"AT+MLWULDATASTATUS?\r";
+	unsigned char* WulDataStatusCmdQuectel = (unsigned char*)"AT+QLWULDATASTATUS?\r";
+	unsigned char* WulDataStatusCmd = WulDataStatusCmdLierda;
+#endif
 	
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
+#if (NBIOT_AUTO_MODEL_TYPE == NBIOT_AUTO_MODEL_ENABLE)
+	if (strcmp(pClient->Parameter.manufacturer, NBIOT_MANUFACTURER_LIERDA) == 0) {
+		WulDataStatusCmd = WulDataStatusCmdLierda;
+	}
+	else if (strcmp(pClient->Parameter.manufacturer, NBIOT_MANUFACTURER_QUECTEL) == 0) {
+		WulDataStatusCmd = WulDataStatusCmdQuectel;
+	}
+	else {
+		WulDataStatusCmd = WulDataStatusCmdLierda;
+	}
+	
+	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, WulDataStatusCmd, strlen((const char*)WulDataStatusCmd), "OK", "ERROR");
+#elif (NBIOT_AUTO_MODEL_TYPE == NBIOT_AUTO_MODEL_DISABLE)
 #ifndef NBIOT_MODEL_TYPE
 	#error No Define NBIOT MODEL!
 #else
@@ -1568,9 +1586,14 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCONDataStatus(NBIOT_ClientsTypeDef*
 		#error NBIOT MODEL Define Error
 	#endif
 #endif
+#else
+	#error NBIOT AUTO MODEL Define Error
+#endif
 	
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
-		
+#if (NBIOT_AUTO_MODEL_TYPE == NBIOT_AUTO_MODEL_ENABLE)
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^WULDATASTATUS]%*[^:]:%d", &dataStatusval) <= 0) {
+#elif (NBIOT_AUTO_MODEL_TYPE == NBIOT_AUTO_MODEL_DISABLE)
 #ifndef NBIOT_MODEL_TYPE
 	#error No Define NBIOT MODEL!
 #else
@@ -1581,6 +1604,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCONDataStatus(NBIOT_ClientsTypeDef*
 	#else
 		#error NBIOT MODEL Define Error
 	#endif
+#endif
+#else
+	#error NBIOT AUTO MODEL Define Error
 #endif
 			NBStatus = NBIOT_ERROR;
 		}
@@ -1624,6 +1650,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCOAPPayloadFlag(NBIOT_ClientsTypeDef* pC
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	u16 length = 0;
+#if (NBIOT_AUTO_MODEL_TYPE == NBIOT_AUTO_MODEL_ENABLE)
+	unsigned char* WulDataExCmdLierda = (unsigned char*)"AT+MLWULDATAEX=%d,";
+	unsigned char* WulDataExCmdQuectel = (unsigned char*)"AT+QLWULDATAEX=%d,";
+	unsigned char* WulDataExCmd = WulDataExCmdLierda;
+#endif
 	
 	if ((pClient->Sendlen > pClient->Sendbuf_size) || (((2 * pClient->Sendlen) + 29) > pClient->DataProcessStack_size) || (((2 * pClient->Sendlen) + 29) > pClient->ATCmdStack->ATSendbuf_size)) {
 		NBStatus = NBIOT_ERROR;
@@ -1634,6 +1665,19 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCOAPPayloadFlag(NBIOT_ClientsTypeDef* pC
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	
+#if (NBIOT_AUTO_MODEL_TYPE == NBIOT_AUTO_MODEL_ENABLE)
+	if (strcmp(pClient->Parameter.manufacturer, NBIOT_MANUFACTURER_LIERDA) == 0) {
+		WulDataExCmd = WulDataExCmdLierda;
+	}
+	else if (strcmp(pClient->Parameter.manufacturer, NBIOT_MANUFACTURER_QUECTEL) == 0) {
+		WulDataExCmd = WulDataExCmdQuectel;
+	}
+	else {
+		WulDataExCmd = WulDataExCmdLierda;
+	}
+	
+	sprintf((char *)pClient->DataProcessStack, (const char*)WulDataExCmd, pClient->Sendlen);
+#elif (NBIOT_AUTO_MODEL_TYPE == NBIOT_AUTO_MODEL_DISABLE)
 #ifndef NBIOT_MODEL_TYPE
 	#error No Define NBIOT MODEL!
 #else
@@ -1644,6 +1688,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCOAPPayloadFlag(NBIOT_ClientsTypeDef* pC
 	#else
 		#error NBIOT MODEL Define Error
 	#endif
+#endif
+#else
+	#error NBIOT AUTO MODEL Define Error
 #endif
 	
 	length = strlen((const char*)pClient->DataProcessStack);

@@ -73,6 +73,10 @@
 #define	NBIOT_MODEL_QUECTEL				1
 #define	NBIOT_MODEL_TYPE				NBIOT_MODEL_LIERDA					//NB模组厂家
 
+#define	NBIOT_AUTO_MODEL_DISABLE			0
+#define	NBIOT_AUTO_MODEL_ENABLE			1
+#define	NBIOT_AUTO_MODEL_TYPE			NBIOT_AUTO_MODEL_ENABLE				//NB模组厂家自动选择
+
 #define	RADAR_MODEL_V1					1
 #define	RADAR_MODEL_V2					2
 #define	RADAR_MODEL_TYPE				RADAR_MODEL_V2						//雷达类型
@@ -85,7 +89,7 @@
 #define	BEEP_OFF_US					230								//无源蜂鸣器关时间
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					121								//从固件版本
+#define	SOFTWARESUB					122								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 
