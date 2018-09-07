@@ -119,11 +119,6 @@
       <TargetDriverDllRegistry>
         <SetRegEntry>
           <Number>0</Number>
-          <Key>DLGUARM</Key>
-          <Name></Name>
-        </SetRegEntry>
-        <SetRegEntry>
-          <Number>0</Number>
           <Key>ARMRTXEVENTFLAGS</Key>
           <Name>-L70 -Z18 -C0 -M0 -T1</Name>
         </SetRegEntry>
@@ -381,11 +376,6 @@
           <count>23</count>
           <WinNumber>2</WinNumber>
           <ItemText>\\stm32L151_nbiot_tmote_app\../User/platform_config.c\PCPClientHandler,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>24</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>Si446xCmd</ItemText>
         </Ww>
       </WatchWindow2>
       <MemoryWindow1>

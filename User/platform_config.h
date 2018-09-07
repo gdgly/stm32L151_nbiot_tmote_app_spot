@@ -55,9 +55,6 @@
 #define	NBCOAP_QUOTA_TIME_5YEAR			1183
 #define	NBCOAP_COAP_QUOTA_TIME_TYPE		NBCOAP_QUOTA_TIME_3YEAR				//Coap一天使用配额时间
 
-#define	NBCOAP_LISTEN_ENTER_IDLE_SEC		35								//Coap监听NB进入IDLE等待时间
-#define	NBCOAP_LISTEN_ENTER_PARAMETER_SEC	15								//Coap监听NB进入参数检查等待时间
-
 #define	NBCOAP_PCP_UPGRADE_LIMIT_RSSI		10								//PCP升级限制信号值
 #define	NBCOAP_PCP_UPGRADE_LIMIT_SNR		5								//PCP升级限制信噪比
 
@@ -89,7 +86,7 @@
 #define	BEEP_OFF_US					230								//无源蜂鸣器关时间
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					122								//从固件版本
+#define	SOFTWARESUB					123								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 

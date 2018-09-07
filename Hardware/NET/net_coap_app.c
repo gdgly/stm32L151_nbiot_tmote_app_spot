@@ -1479,8 +1479,12 @@ void NET_COAP_NBIOT_Event_RecvData(NBIOT_ClientsTypeDef* pClient)
 				}
 				COAP_NBIOT_DictateEvent_SuccessExecute(pClient, SEND_DATA, RECV_DATA);
 				
+			#if NBCOAP_LISTEN_IDLE_TYPE == NBCOAP_LISTEN_IDLE_ENABLE
 				NET_COAP_NBIOT_Listen_Enable_EnterIdleMode(pClient);
+			#endif
+			#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
 				NET_COAP_NBIOT_Listen_Enable_EnterParameter(pClient);
+			#endif
 				
 				/* Get ConnectTime */
 				COAP_NBIOT_GetConnectTime(pClient, true);
@@ -1738,8 +1742,12 @@ void NET_COAP_NBIOT_Event_RecvDataRANormal(NBIOT_ClientsTypeDef* pClient)
 		NET_Coap_Message_SendDataOffSet();
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, SEND_DATA_RA_NORMAL, RECV_DATA_RA_NORMAL);
 		
+	#if NBCOAP_LISTEN_IDLE_TYPE == NBCOAP_LISTEN_IDLE_ENABLE
 		NET_COAP_NBIOT_Listen_Enable_EnterIdleMode(pClient);
+	#endif
+	#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
 		NET_COAP_NBIOT_Listen_Enable_EnterParameter(pClient);
+	#endif
 		
 		/* Get ConnectTime */
 		COAP_NBIOT_GetConnectTime(pClient, true);
@@ -2176,15 +2184,20 @@ void NET_COAP_Listen_PollExecution(NBIOT_ClientsTypeDef* pClient)
 	switch (pClient->ListenRunCtl.listenEvent)
 	{
 	case ENTER_IDLE_MODE:
+#if NBCOAP_LISTEN_IDLE_TYPE == NBCOAP_LISTEN_IDLE_ENABLE
 		NET_COAP_NBIOT_Listen_Event_EnterIdleMode(pClient);
+#endif
 		break;
 	
 	case ENTER_PARAMETER_CHECKOUT:
+#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
 		NET_COAP_NBIOT_Listen_Event_EnterParameter(pClient);
+#endif
 		break;
 	}
 }
 
+#if NBCOAP_LISTEN_IDLE_TYPE == NBCOAP_LISTEN_IDLE_ENABLE
 /**********************************************************************************************************
  @Function			void NET_COAP_NBIOT_Listen_Enable_EnterIdleMode(NBIOT_ClientsTypeDef* pClient)
  @Description			NET_COAP_NBIOT_Listen_Enable_EnterIdleMode	: 使能(进入IDLE模式)监听
@@ -2279,7 +2292,9 @@ void NET_COAP_NBIOT_Listen_Event_EnterIdleMode(NBIOT_ClientsTypeDef* pClient)
 	pClient->DictateRunCtl.dictateEvent = LISTEN_RUN_CTL;
 	pClient->ListenRunCtl.listenEvent = ENTER_PARAMETER_CHECKOUT;
 }
+#endif
 
+#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
 /**********************************************************************************************************
  @Function			void NET_COAP_NBIOT_Listen_Enable_EnterParameter(NBIOT_ClientsTypeDef* pClient)
  @Description			NET_COAP_NBIOT_Listen_Enable_EnterParameter	: 使能(进入NBIOT运行信息)监听
@@ -2363,8 +2378,9 @@ void NET_COAP_NBIOT_Listen_Event_EnterParameter(NBIOT_ClientsTypeDef* pClient)
 	
 	pClient->DictateRunCtl.dictateEnable = false;
 	pClient->DictateRunCtl.dictateEvent = NBCOAP_SENDMODE_TYPE;
-	pClient->ListenRunCtl.listenEvent = ENTER_IDLE_MODE;
+	pClient->ListenRunCtl.listenEvent = NBCOAP_LISTEN_DEFAULT_BOOTMODE;
 	pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
 }
+#endif
 
 /********************************************** END OF FLEE **********************************************/

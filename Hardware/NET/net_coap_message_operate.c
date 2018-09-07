@@ -47,7 +47,9 @@ int NET_COAP_Message_Operate_Creat_Json_Work_Info(char* outBuffer)
 				"\"Earfcn\":%d,"
 				"\"Cellid\":%d,"
 				"\"Cmdcnt\":\"%d.%d\","
+#if NBCOAP_LISTEN_IDLE_TYPE == NBCOAP_LISTEN_IDLE_ENABLE
 				"\"Nbworkmode\":%d,"
+#endif
 				"\"Nbruntime\":\"%d.%d\","
 				"\"NbruntimeDay\":\"%d.%d\","
 				"\"Coef\":\"%d.%d.%d\","
@@ -63,7 +65,9 @@ int NET_COAP_Message_Operate_Creat_Json_Work_Info(char* outBuffer)
 		TCFG_Utility_Get_Nbiot_RadioEARFCN(),
 		TCFG_Utility_Get_Nbiot_RadioCellID(),
 		TCFG_EEPROM_GetRFCmdCnt(), TCFG_EEPROM_GetNBCmdCnt(),
+#if NBCOAP_LISTEN_IDLE_TYPE == NBCOAP_LISTEN_IDLE_ENABLE
 		TCFG_Utility_Get_Nbiot_WorkMode(),
+#endif
 		TCFG_Utility_GetCoapConnectTime(), TCFG_Utility_GetCoapIdleTime(),
 		TCFG_Utility_GetCoapConnectDayTime(), TCFG_Utility_GetCoapIdleDayTime(),
 		TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ,

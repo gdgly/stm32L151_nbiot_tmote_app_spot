@@ -75,21 +75,23 @@ void NBIOT_Client_Init(NBIOT_ClientsTypeDef* pClient, NBIOT_ATCmdTypeDef* ATCmdS
 	pClient->DictateRunCtl.dictateEvent						= HARDWARE_REBOOT;
 	
 	/* 事件运行监听器 */
+#if NBCOAP_LISTEN_IDLE_TYPE == NBCOAP_LISTEN_IDLE_ENABLE
 	pClient->ListenRunCtl.ListenEnterIdle.listenEnable				= false;
 	pClient->ListenRunCtl.ListenEnterIdle.listenStatus				= false;
 	pClient->ListenRunCtl.ListenEnterIdle.listenTimereachSec			= NBCOAP_LISTEN_ENTER_IDLE_SEC;
 	pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventEnable			= false;
 	pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventTimeoutSec		= 0;
 	pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventFailureCnt		= 0;
-	
+#endif
+#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
 	pClient->ListenRunCtl.ListenEnterParameter.listenEnable			= false;
 	pClient->ListenRunCtl.ListenEnterParameter.listenStatus			= false;
 	pClient->ListenRunCtl.ListenEnterParameter.listenTimereachSec		= NBCOAP_LISTEN_ENTER_PARAMETER_SEC;
 	pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventEnable		= false;
 	pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventTimeoutSec	= 0;
 	pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt	= 0;
-	
-	pClient->ListenRunCtl.listenEvent								= ENTER_IDLE_MODE;
+#endif
+	pClient->ListenRunCtl.listenEvent								= NBCOAP_LISTEN_DEFAULT_BOOTMODE;
 	
 	pClient->Registered										= false;
 	pClient->ATCmdStack										= ATCmdStack;

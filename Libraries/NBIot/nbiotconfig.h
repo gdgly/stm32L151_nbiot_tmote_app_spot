@@ -37,6 +37,22 @@
 #define CellReselectionVal				NConfigTrue										//True
 #define EnableBipVal					NConfigFalse										//False
 
+/* NBIOT 事件监听器配置 */
+#define NBCOAP_LISTEN_MODE_ENTER_IDLE		ENTER_IDLE_MODE
+#define NBCOAP_LISTEN_MODE_ENTER_PARAMETER	ENTER_PARAMETER_CHECKOUT
+#define NBCOAP_LISTEN_DEFAULT_BOOTMODE		NBCOAP_LISTEN_MODE_ENTER_PARAMETER						//Coap监听NB默认起始模式
+
+#define NBCOAP_LISTEN_ENTER_IDLE_SEC		35												//Coap监听NB进入IDLE等待时间
+#define NBCOAP_LISTEN_ENTER_PARAMETER_SEC	15												//Coap监听NB进入参数检查等待时间
+
+#define NBCOAP_LISTEN_IDLE_DISABLE			0
+#define NBCOAP_LISTEN_IDLE_ENABLE			1
+#define NBCOAP_LISTEN_IDLE_TYPE			NBCOAP_LISTEN_IDLE_DISABLE							//Coap监听NB进入休眠模式
+
+#define NBCOAP_LISTEN_PARAMETER_DISABLE		0
+#define NBCOAP_LISTEN_PARAMETER_ENABLE		1
+#define NBCOAP_LISTEN_PARAMETER_TYPE		NBCOAP_LISTEN_PARAMETER_ENABLE						//Coap监听NB进入参数检查模式
+
 /* NBIOT 串口波特率计算中间值 */
 #define BAUDRATE_CAL_MIDDLE_NUM			16
 
@@ -526,6 +542,7 @@ struct NBIOT_ClientsTypeDef
 	/* 事件运行监听器 */
 	struct NBIOTListenRuningCtlTypeDef
 	{
+#if NBCOAP_LISTEN_IDLE_TYPE == NBCOAP_LISTEN_IDLE_ENABLE
 		struct ListenEnterIdleTypeDef
 		{
 			bool						listenEnable;
@@ -541,7 +558,8 @@ struct NBIOT_ClientsTypeDef
 				Stm32_CalculagraphTypeDef	eventRunTime;
 			}EventCtl;
 		}ListenEnterIdle;
-		
+#endif
+#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
 		struct ListenEnterParameterTypeDef
 		{
 			bool						listenEnable;
@@ -557,6 +575,7 @@ struct NBIOT_ClientsTypeDef
 				Stm32_CalculagraphTypeDef	eventRunTime;
 			}EventCtl;
 		}ListenEnterParameter;
+#endif
 		
 		NBIOT_ListenEventTypeDef			listenEvent;
 	}ListenRunCtl;
