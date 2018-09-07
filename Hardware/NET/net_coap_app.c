@@ -1321,7 +1321,11 @@ void NET_COAP_NBIOT_Event_SendData(NBIOT_ClientsTypeDef* pClient)
 			COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, SEND_DATA);
 			
 #ifdef COAP_DEBUG_LOG_RF_PRINT
+		#if NBIOT_PRINT_ERROR_CODE_TYPE
 			Radio_Trf_Debug_Printf_Level2("Coap CGATT %d Fail ECde %d", pClient->Parameter.netstate, NBStatus);
+		#else
+			Radio_Trf_Debug_Printf_Level2("Coap CGATT %d Fail", pClient->Parameter.netstate);
+		#endif
 #endif
 			return;
 		}
@@ -1345,7 +1349,11 @@ void NET_COAP_NBIOT_Event_SendData(NBIOT_ClientsTypeDef* pClient)
 			COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, SEND_DATA);
 			
 #ifdef COAP_DEBUG_LOG_RF_PRINT
+		#if NBIOT_PRINT_ERROR_CODE_TYPE
 			Radio_Trf_Debug_Printf_Level2("Coap NQMGS NQMGR Fail ECde %d", NBStatus);
+		#else
+			Radio_Trf_Debug_Printf_Level2("Coap NQMGS NQMGR Fail");
+		#endif
 #endif
 			return;
 		}
@@ -1366,7 +1374,11 @@ void NET_COAP_NBIOT_Event_SendData(NBIOT_ClientsTypeDef* pClient)
 			COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, SEND_DATA);
 			
 #ifdef COAP_DEBUG_LOG_RF_PRINT
+		#if NBIOT_PRINT_ERROR_CODE_TYPE
 			Radio_Trf_Debug_Printf_Level2("Coap Send Payload Fail ECde %d", NBStatus);
+		#else
+			Radio_Trf_Debug_Printf_Level2("Coap Send Payload Fail");
+		#endif
 #endif
 			return;
 		}
@@ -1545,7 +1557,11 @@ void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
 			COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, SEND_DATA_RA_NORMAL);
 			
 #ifdef COAP_DEBUG_LOG_RF_PRINT
+		#if NBIOT_PRINT_ERROR_CODE_TYPE
 			Radio_Trf_Debug_Printf_Level2("Coap CGATT %d Fail ECde %d", pClient->Parameter.netstate, NBStatus);
+		#else
+			Radio_Trf_Debug_Printf_Level2("Coap CGATT %d Fail", pClient->Parameter.netstate);
+		#endif
 #endif
 			return;
 		}
@@ -1569,7 +1585,11 @@ void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
 			COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, SEND_DATA_RA_NORMAL);
 			
 #ifdef COAP_DEBUG_LOG_RF_PRINT
+		#if NBIOT_PRINT_ERROR_CODE_TYPE
 			Radio_Trf_Debug_Printf_Level2("Coap NQMGS NQMGR Fail ECde %d", NBStatus);
+		#else
+			Radio_Trf_Debug_Printf_Level2("Coap NQMGS NQMGR Fail");
+		#endif
 #endif
 			return;
 		}
@@ -1602,7 +1622,11 @@ void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
 			COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, SEND_DATA_RA_NORMAL);
 			
 #ifdef COAP_DEBUG_LOG_RF_PRINT
+		#if NBIOT_PRINT_ERROR_CODE_TYPE
 			Radio_Trf_Debug_Printf_Level2("Coap Send Payload Fail ECde %d", NBStatus);
+		#else
+			Radio_Trf_Debug_Printf_Level2("Coap Send Payload Fail");
+		#endif
 #endif
 			return;
 		}
