@@ -1240,8 +1240,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>$TC_ROOT$\..\..\Movebroad\stm32L151_nbiot\workspace\stm32L151_nbiot_tmote_app_spot\Libraries\Xtea\tmesh_xtea.lib</PathWithFileName>
-      <FilenameWithoutPath>..\..\Movebroad\stm32L151_nbiot\workspace\stm32L151_nbiot_tmote_app_spot\Libraries\Xtea\tmesh_xtea.lib</FilenameWithoutPath>
+      <PathWithFileName>..\Libraries\Xtea\tmesh_xtea.lib</PathWithFileName>
+      <FilenameWithoutPath>tmesh_xtea.lib</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1252,8 +1252,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>$TC_ROOT$\..\..\Movebroad\stm32L151_nbiot\workspace\stm32L151_nbiot_tmote_app_spot\Libraries\Inspect\thingalgorithm_lib.lib</PathWithFileName>
-      <FilenameWithoutPath>..\..\Movebroad\stm32L151_nbiot\workspace\stm32L151_nbiot_tmote_app_spot\Libraries\Inspect\thingalgorithm_lib.lib</FilenameWithoutPath>
+      <PathWithFileName>..\Libraries\Inspect\thingalgorithm_lib.lib</PathWithFileName>
+      <FilenameWithoutPath>thingalgorithm_lib.lib</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1264,8 +1264,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>$TC_ROOT$\..\..\Movebroad\stm32L151_nbiot\workspace\stm32L151_nbiot_tmote_app_spot\Libraries\Radar\tmesh_radar_algorithm.lib</PathWithFileName>
-      <FilenameWithoutPath>..\..\Movebroad\stm32L151_nbiot\workspace\stm32L151_nbiot_tmote_app_spot\Libraries\Radar\tmesh_radar_algorithm.lib</FilenameWithoutPath>
+      <PathWithFileName>..\Libraries\Radar\tmesh_radar_algorithm.lib</PathWithFileName>
+      <FilenameWithoutPath>tmesh_radar_algorithm.lib</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

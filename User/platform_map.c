@@ -1448,6 +1448,8 @@ unsigned int TCFG_EEPROM_Get_MAC_SN(void)
 	sn |= (subsn & 0x0000FF00) << 1*8;
 	sn |= (subsn & 0x000000FF) << 3*8;
 	
+	sn = (sn == 0) ? 1 : sn;
+	
 	return sn;
 }
 
@@ -1467,6 +1469,8 @@ char* TCFG_EEPROM_Get_MAC_SN_String(void)
 	sn |= (subsn & 0x00FF0000) >> 1*8;
 	sn |= (subsn & 0x0000FF00) << 1*8;
 	sn |= (subsn & 0x000000FF) << 3*8;
+	
+	sn = (sn == 0) ? 1 : sn;
 	
 	memset((void *)TCFG_SystemData.SubMacSN, 0x0, sizeof(TCFG_SystemData.SubMacSN));
 	sprintf((char*)TCFG_SystemData.SubMacSN, "%08x", sn);

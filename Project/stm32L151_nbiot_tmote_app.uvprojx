@@ -717,19 +717,19 @@
           <GroupName>Libraries</GroupName>
           <Files>
             <File>
-              <FileName>..\..\Movebroad\stm32L151_nbiot\workspace\stm32L151_nbiot_tmote_app_spot\Libraries\Xtea\tmesh_xtea.lib</FileName>
+              <FileName>tmesh_xtea.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>$TC_ROOT$\..\..\Movebroad\stm32L151_nbiot\workspace\stm32L151_nbiot_tmote_app_spot\Libraries\Xtea\tmesh_xtea.lib</FilePath>
+              <FilePath>..\Libraries\Xtea\tmesh_xtea.lib</FilePath>
             </File>
             <File>
-              <FileName>..\..\Movebroad\stm32L151_nbiot\workspace\stm32L151_nbiot_tmote_app_spot\Libraries\Inspect\thingalgorithm_lib.lib</FileName>
+              <FileName>thingalgorithm_lib.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>$TC_ROOT$\..\..\Movebroad\stm32L151_nbiot\workspace\stm32L151_nbiot_tmote_app_spot\Libraries\Inspect\thingalgorithm_lib.lib</FilePath>
+              <FilePath>..\Libraries\Inspect\thingalgorithm_lib.lib</FilePath>
             </File>
             <File>
-              <FileName>..\..\Movebroad\stm32L151_nbiot\workspace\stm32L151_nbiot_tmote_app_spot\Libraries\Radar\tmesh_radar_algorithm.lib</FileName>
+              <FileName>tmesh_radar_algorithm.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>$TC_ROOT$\..\..\Movebroad\stm32L151_nbiot\workspace\stm32L151_nbiot_tmote_app_spot\Libraries\Radar\tmesh_radar_algorithm.lib</FilePath>
+              <FilePath>..\Libraries\Radar\tmesh_radar_algorithm.lib</FilePath>
             </File>
           </Files>
         </Group>

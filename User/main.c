@@ -167,7 +167,6 @@ int main(void)
 		if ((BootUp == true) && (Stm32_GetSecondTick() > 90)) {
 			TCFG_EEPROM_SetBootCount(0);
 			if (TCFG_EEPROM_GetBootCount() == 0) {
-				PCP_Upgrade_BackupCurrentAPP(&PCPClientHandler);
 				BootUp = false;
 			}
 		}

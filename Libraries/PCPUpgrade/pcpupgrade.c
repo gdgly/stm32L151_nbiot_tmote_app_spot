@@ -182,6 +182,9 @@ PCP_ResultCodeTypeDef PCP_Upgrade_NewVersionNotice(PCP_ClientsTypeDef* pClient)
 		goto exit;
 	}
 	
+	/* 升级前备份当前APP */
+	PCP_Upgrade_BackupCurrentAPP(pClient);
+	
 	Radio_Rf_Interrupt_Deinit();
 	GD25Q_SPIFLASH_WakeUp();
 	GD25Q_SPIFLASH_Init();
