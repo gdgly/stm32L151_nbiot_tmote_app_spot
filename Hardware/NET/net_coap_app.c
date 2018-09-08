@@ -486,7 +486,7 @@ void NET_COAP_NBIOT_Event_ReportError(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_ModuleCheck(NBIOT_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -522,7 +522,7 @@ void NET_COAP_NBIOT_Event_ModuleCheck(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -677,7 +677,7 @@ void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_SimICCIDCheck(NBIOT_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -711,7 +711,7 @@ void NET_COAP_NBIOT_Event_SimICCIDCheck(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_FullFunctionality(NBIOT_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -770,7 +770,7 @@ void NET_COAP_NBIOT_Event_FullFunctionality(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_MinimumFunctionality(NBIOT_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -829,7 +829,7 @@ void NET_COAP_NBIOT_Event_MinimumFunctionality(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_CDPServerCheck(NBIOT_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -872,7 +872,7 @@ void NET_COAP_NBIOT_Event_CDPServerCheck(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_CDPServerConfig(NBIOT_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -935,7 +935,7 @@ void NET_COAP_NBIOT_Event_CDPServerConfig(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_NbandModeCheck(NBIOT_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -1041,7 +1041,7 @@ void NET_COAP_NBIOT_Event_NbandModeConfig(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_MiscEquipConfig(NBIOT_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -1125,7 +1125,7 @@ void NET_COAP_NBIOT_Event_MiscEquipConfig(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_AttachCheck(NBIOT_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -1167,7 +1167,7 @@ void NET_COAP_NBIOT_Event_AttachCheck(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_AttachExecute(NBIOT_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -1201,7 +1201,7 @@ void NET_COAP_NBIOT_Event_AttachExecute(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_AttachInquire(NBIOT_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 60);
 	
@@ -1246,7 +1246,7 @@ void NET_COAP_NBIOT_Event_AttachInquire(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_ParameterCheckOut(NBIOT_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -1295,7 +1295,7 @@ void NET_COAP_NBIOT_Event_ParameterCheckOut(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_SendData(NBIOT_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 #if NBCOAP_SENDDATA_NQMGSCHECK_TYPE
 	int SendSentNum = 0;
@@ -1532,7 +1532,7 @@ void NET_COAP_NBIOT_Event_RecvData(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	char* RANormal	= "0x0100";
 	char* RAIdle	= "0x0101";
 	char* RAState	= RAIdle;
