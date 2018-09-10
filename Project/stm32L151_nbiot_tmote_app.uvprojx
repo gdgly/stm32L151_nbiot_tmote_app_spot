@@ -1212,9 +1212,9 @@
           <GroupName>Readme</GroupName>
           <Files>
             <File>
-              <FileName>Readme.txt</FileName>
+              <FileName>README.md</FileName>
               <FileType>5</FileType>
-              <FilePath>..\Doc\Readme.txt</FilePath>
+              <FilePath>..\README.md</FilePath>
             </File>
           </Files>
         </Group>

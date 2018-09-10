@@ -1,6 +1,10 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang
 
+* 2018-09-10 :
+	* 修改原根据NB注网成功则上位机联网reg，为当数据发送成功联网reg。
+* 2018-09-09 :
+	* 去掉翻转控制ModulePower开断。
 * 2018-09-07 :
 	* 20V123 :
 	* 去掉监听NB是否进入Idle模式，选着由宏配置是否开启该功能。

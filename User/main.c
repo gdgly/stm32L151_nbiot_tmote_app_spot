@@ -225,7 +225,6 @@ void MainMajorCycle(void)
 **********************************************************************************************************/
 void MainRollingEnteredUpWork(void)
 {
-	MODELPOWER(ON);
 	Radio_Trf_Printf("Entered Up Work");
 	BEEP_CtrlRepeat_Extend(3, 30, 70);
 	NETCoapNeedSendCode.WorkInfoWait = 3;
@@ -240,6 +239,7 @@ void MainRollingEnteredUpWork(void)
 **********************************************************************************************************/
 void MainRollingEnteringUpWork(void)
 {
+	Radio_Trf_Printf("Entering Up Work");
 	BEEP_CtrlRepeat_Extend(1, 500, 0);
 }
 
@@ -285,7 +285,6 @@ void MainRollingUpwardsActived(void)
 **********************************************************************************************************/
 void MainRollingUpwardsSleep(void)
 {
-	MODELPOWER(ON);
 	/* NBIOT Power OFF */
 	if (NBIOTPOWER_IO_READ()) {
 		NET_NBIOT_Initialization();
@@ -355,7 +354,6 @@ void MainRollingEnteredDownSleepKeepActived(void)
 **********************************************************************************************************/
 void MainRollingEnteringDownSleep(void)
 {
-	MODELPOWER(OFF);
 	/* NBIOT Power OFF */
 	if (NBIOTPOWER_IO_READ()) {
 		NET_NBIOT_Initialization();
@@ -371,7 +369,6 @@ void MainRollingEnteringDownSleep(void)
 **********************************************************************************************************/
 void MainRollingDownSleep(void)
 {
-	MODELPOWER(OFF);
 	/* NBIOT Power OFF */
 	if (NBIOTPOWER_IO_READ()) {
 		NET_NBIOT_Initialization();

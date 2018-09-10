@@ -437,7 +437,7 @@ void NET_ONENET_NBIOT_Event_ReportError(ONENET_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_ONENET_NBIOT_Event_ModuleCheck(ONENET_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 	ONENET_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -456,7 +456,11 @@ void NET_ONENET_NBIOT_Event_ModuleCheck(ONENET_ClientsTypeDef* pClient)
 		ONENET_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, MODULE_CHECK);
 		
 #ifdef ONENET_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
 		Radio_Trf_Debug_Printf_Level2("NB Module Check Fail ECde %d", NBStatus);
+	#else
+		Radio_Trf_Debug_Printf_Level2("NB Module Check Fail");
+	#endif
 #endif
 	}
 }
@@ -469,7 +473,7 @@ void NET_ONENET_NBIOT_Event_ModuleCheck(ONENET_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_ONENET_NBIOT_Event_ParameterConfig(ONENET_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 	ONENET_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -486,7 +490,11 @@ void NET_ONENET_NBIOT_Event_ParameterConfig(ONENET_ClientsTypeDef* pClient)
 		ONENET_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, PARAMETER_CONFIG);
 		
 #ifdef ONENET_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
 		Radio_Trf_Debug_Printf_Level2("NB Parameter Config Read Fail ECde %d", NBStatus);
+	#else
+		Radio_Trf_Debug_Printf_Level2("NB Parameter Config Read Fail");
+	#endif
 #endif
 		return;
 	}
@@ -620,7 +628,7 @@ void NET_ONENET_NBIOT_Event_ParameterConfig(ONENET_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_ONENET_NBIOT_Event_SimICCIDCheck(ONENET_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 	ONENET_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -637,7 +645,11 @@ void NET_ONENET_NBIOT_Event_SimICCIDCheck(ONENET_ClientsTypeDef* pClient)
 		ONENET_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, ICCID_CHECK);
 		
 #ifdef ONENET_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
 		Radio_Trf_Debug_Printf_Level2("NB ICCID Check Fail ECde %d", NBStatus);
+	#else
+		Radio_Trf_Debug_Printf_Level2("NB ICCID Check Fail");
+	#endif
 #endif
 	}
 }
@@ -650,7 +662,7 @@ void NET_ONENET_NBIOT_Event_SimICCIDCheck(ONENET_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_ONENET_NBIOT_Event_FullFunctionality(ONENET_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 	ONENET_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -667,7 +679,11 @@ void NET_ONENET_NBIOT_Event_FullFunctionality(ONENET_ClientsTypeDef* pClient)
 		ONENET_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, FULL_FUNCTIONALITY);
 		
 #ifdef ONENET_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
 		Radio_Trf_Debug_Printf_Level2("NB FullFunc Check Fail ECde %d", NBStatus);
+	#else
+		Radio_Trf_Debug_Printf_Level2("NB FullFunc Check Fail");
+	#endif
 #endif
 		return;
 	}
@@ -686,7 +702,11 @@ void NET_ONENET_NBIOT_Event_FullFunctionality(ONENET_ClientsTypeDef* pClient)
 			ONENET_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, FULL_FUNCTIONALITY);
 			
 #ifdef ONENET_DEBUG_LOG_RF_PRINT
+		#if NBIOT_PRINT_ERROR_CODE_TYPE
 			Radio_Trf_Debug_Printf_Level2("NB FullFunc Set Fail ECde %d", NBStatus);
+		#else
+			Radio_Trf_Debug_Printf_Level2("NB FullFunc Set Fail");
+		#endif
 #endif
 			return;
 		}
@@ -701,7 +721,7 @@ void NET_ONENET_NBIOT_Event_FullFunctionality(ONENET_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_ONENET_NBIOT_Event_MinimumFunctionality(ONENET_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 	ONENET_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -718,7 +738,11 @@ void NET_ONENET_NBIOT_Event_MinimumFunctionality(ONENET_ClientsTypeDef* pClient)
 		ONENET_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, MINIMUM_FUNCTIONALITY);
 		
 #ifdef ONENET_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
 		Radio_Trf_Debug_Printf_Level2("NB MinFunc Check Fail ECde %d", NBStatus);
+	#else
+		Radio_Trf_Debug_Printf_Level2("NB MinFunc Check Fail");
+	#endif
 #endif
 		return;
 	}
@@ -737,7 +761,11 @@ void NET_ONENET_NBIOT_Event_MinimumFunctionality(ONENET_ClientsTypeDef* pClient)
 			ONENET_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, MINIMUM_FUNCTIONALITY);
 			
 #ifdef ONENET_DEBUG_LOG_RF_PRINT
+		#if NBIOT_PRINT_ERROR_CODE_TYPE
 			Radio_Trf_Debug_Printf_Level2("NB MinFunc Set Fail ECde %d", NBStatus);
+		#else
+			Radio_Trf_Debug_Printf_Level2("NB MinFunc Set Fail");
+		#endif
 #endif
 			return;
 		}
@@ -752,7 +780,7 @@ void NET_ONENET_NBIOT_Event_MinimumFunctionality(ONENET_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_ONENET_NBIOT_Event_NbandModeCheck(ONENET_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 	ONENET_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -769,7 +797,11 @@ void NET_ONENET_NBIOT_Event_NbandModeCheck(ONENET_ClientsTypeDef* pClient)
 		ONENET_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, NBAND_MODE_CHECK);
 		
 #ifdef ONENET_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
 		Radio_Trf_Debug_Printf_Level2("NB BAND Read Fail ECde %d", NBStatus);
+	#else
+		Radio_Trf_Debug_Printf_Level2("NB BAND Read Fail");
+	#endif
 #endif
 	}
 	
@@ -791,7 +823,7 @@ void NET_ONENET_NBIOT_Event_NbandModeCheck(ONENET_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_ONENET_NBIOT_Event_NbandModeConfig(ONENET_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 	ONENET_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -808,7 +840,11 @@ void NET_ONENET_NBIOT_Event_NbandModeConfig(ONENET_ClientsTypeDef* pClient)
 		ONENET_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, NBAND_MODE_CONFIG);
 		
 #ifdef ONENET_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
 		Radio_Trf_Debug_Printf_Level2("NB BAND Read Fail ECde %d", NBStatus);
+	#else
+		Radio_Trf_Debug_Printf_Level2("NB BAND Read Fail");
+	#endif
 #endif
 	}
 	
@@ -827,7 +863,11 @@ void NET_ONENET_NBIOT_Event_NbandModeConfig(ONENET_ClientsTypeDef* pClient)
 			ONENET_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, NBAND_MODE_CONFIG);
 			
 #ifdef ONENET_DEBUG_LOG_RF_PRINT
+		#if NBIOT_PRINT_ERROR_CODE_TYPE
 			Radio_Trf_Debug_Printf_Level2("NB BAND Set %d Fail ECde %d", ONENET_NBIOT_BAND_TYPE, NBStatus);
+		#else
+			Radio_Trf_Debug_Printf_Level2("NB BAND Set %d Fail", ONENET_NBIOT_BAND_TYPE, NBStatus);
+		#endif
 #endif
 			return;
 		}
@@ -846,7 +886,7 @@ void NET_ONENET_NBIOT_Event_NbandModeConfig(ONENET_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_ONENET_NBIOT_Event_AttachCheck(ONENET_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 	ONENET_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -863,7 +903,11 @@ void NET_ONENET_NBIOT_Event_AttachCheck(ONENET_ClientsTypeDef* pClient)
 		ONENET_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, ATTACH_CHECK);
 		
 #ifdef ONENET_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
 		Radio_Trf_Debug_Printf_Level2("NB CGATT %d Fail ECde %d", pClient->LWM2MStack->NBIotStack->Parameter.netstate, NBStatus);
+	#else
+		Radio_Trf_Debug_Printf_Level2("NB CGATT %d Fail", pClient->LWM2MStack->NBIotStack->Parameter.netstate);
+	#endif
 #endif
 		return;
 	}
@@ -884,7 +928,7 @@ void NET_ONENET_NBIOT_Event_AttachCheck(ONENET_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_ONENET_NBIOT_Event_AttachExecute(ONENET_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 	ONENET_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -901,7 +945,11 @@ void NET_ONENET_NBIOT_Event_AttachExecute(ONENET_ClientsTypeDef* pClient)
 		ONENET_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, ATTACH_EXECUTE);
 		
 #ifdef ONENET_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
 		Radio_Trf_Debug_Printf_Level2("NB Set CGATT %d Fail ECde %d", Attach, NBStatus);
+	#else
+		Radio_Trf_Debug_Printf_Level2("NB Set CGATT %d Fail", Attach);
+	#endif
 #endif
 	}
 }
@@ -914,7 +962,7 @@ void NET_ONENET_NBIOT_Event_AttachExecute(ONENET_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_ONENET_NBIOT_Event_AttachInquire(ONENET_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 	ONENET_NBIOT_DictateEvent_SetTime(pClient, 60);
 	
@@ -930,7 +978,11 @@ void NET_ONENET_NBIOT_Event_AttachInquire(ONENET_ClientsTypeDef* pClient)
 		ONENET_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, ATTACH_INQUIRE);
 		
 #ifdef ONENET_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
 		Radio_Trf_Debug_Printf_Level2("NB CGATT %d Fail ECde %d", pClient->LWM2MStack->NBIotStack->Parameter.netstate, NBStatus);
+	#else
+		Radio_Trf_Debug_Printf_Level2("NB CGATT %d Fail", pClient->LWM2MStack->NBIotStack->Parameter.netstate);
+	#endif
 #endif
 		return;
 	}
@@ -951,7 +1003,7 @@ void NET_ONENET_NBIOT_Event_AttachInquire(ONENET_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_ONENET_NBIOT_Event_ParameterCheckOut(ONENET_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 	ONENET_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -978,7 +1030,11 @@ void NET_ONENET_NBIOT_Event_ParameterCheckOut(ONENET_ClientsTypeDef* pClient)
 		ONENET_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, PARAMETER_CHECKOUT);
 		
 #ifdef ONENET_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
 		Radio_Trf_Debug_Printf_Level2("NB Parameter Check Fail ECde %d", NBStatus);
+	#else
+		Radio_Trf_Debug_Printf_Level2("NB Parameter Check Fail");
+	#endif
 #endif
 		return;
 	}

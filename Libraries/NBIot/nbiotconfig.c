@@ -94,6 +94,7 @@ void NBIOT_Client_Init(NBIOT_ClientsTypeDef* pClient, NBIOT_ATCmdTypeDef* ATCmdS
 	pClient->ListenRunCtl.listenEvent								= NBCOAP_LISTEN_DEFAULT_BOOTMODE;
 	
 	pClient->Registered										= false;
+	pClient->NetStateIdentification							= false;
 	pClient->ATCmdStack										= ATCmdStack;
 	pClient->NetNbiotStack									= NetNbiotStack;
 	

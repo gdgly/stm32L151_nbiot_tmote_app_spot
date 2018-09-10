@@ -1171,7 +1171,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
 			pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
 			pClient->MessageSendCtl.messageStatusBasic = false;
-			pClient->SocketStack->NBIotStack->Registered = true;
+			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_StatusBasicOffSet();
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send StatusBasic Ok");
@@ -1214,7 +1214,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
 			pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
 			pClient->MessageSendCtl.messageStatusExtend = false;
-			pClient->SocketStack->NBIotStack->Registered = true;
+			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_StatusExtendOffSet();
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send StatusExtend Ok");
@@ -1257,7 +1257,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
 			pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
 			pClient->MessageSendCtl.messageInfoWork = false;
-			pClient->SocketStack->NBIotStack->Registered = true;
+			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoWorkOffSet();
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoWork Ok");
@@ -1300,7 +1300,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
 			pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
 			pClient->MessageSendCtl.messageInfoBasic = false;
-			pClient->SocketStack->NBIotStack->Registered = true;
+			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoBasicOffSet();
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoBasic Ok");
@@ -1343,7 +1343,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
 			pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
 			pClient->MessageSendCtl.messageInfoDynamic = false;
-			pClient->SocketStack->NBIotStack->Registered = true;
+			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoDynamicOffSet();
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoDynamic Ok");
@@ -1386,7 +1386,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
 			pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
 			pClient->MessageSendCtl.messageInfoRadar = false;
-			pClient->SocketStack->NBIotStack->Registered = true;
+			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoRadarOffSet();
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoRadar Ok");
@@ -1429,7 +1429,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
 			pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
 			pClient->MessageSendCtl.messageInfoResponse = false;
-			pClient->SocketStack->NBIotStack->Registered = true;
+			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoResponseOffSet();
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoResponse Ok");

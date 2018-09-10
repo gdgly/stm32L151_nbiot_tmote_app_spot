@@ -581,6 +581,7 @@ struct NBIOT_ClientsTypeDef
 	}ListenRunCtl;
 	
 	bool								Registered;
+	bool								NetStateIdentification;
 	NBIOT_ParameterTypeDef				Parameter;
 	NBIOT_ATCmdTypeDef*					ATCmdStack;
 	NET_NBIOT_ClientsTypeDef*			NetNbiotStack;

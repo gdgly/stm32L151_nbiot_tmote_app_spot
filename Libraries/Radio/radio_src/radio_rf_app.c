@@ -718,7 +718,7 @@ void Radio_Trf_Xmit_Heartbeat(void)
 	/* 0=free, 1=occupy */
 	pHeartBeat->status			= talgo_get_spotstatus();
 	/* 0=sending,1=sent */
-	pHeartBeat->nbstate			= TCFG_Utility_Get_Nbiot_Registered();
+	pHeartBeat->nbstate			= TCFG_Utility_Get_Nbiot_NetStateIdentification();
 	
 	Radio_Trf_Cfg_Buildframe((uint8_t *)pHeartBeat, TMOTE_PLAIN_PUB, Radio_Trf_Xmit_Get_Pktnum(), TCFG_EEPROM_Get_MAC_SN(), TRF_SendBuf, sizeof(trf_heartbeat_s));
 	Radio_Rf_Send(TRF_SendBuf, TRF_SendBuf[0]);

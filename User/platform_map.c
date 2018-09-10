@@ -2174,6 +2174,23 @@ unsigned char TCFG_Utility_Get_Nbiot_Registered(void)
 }
 
 /**********************************************************************************************************
+ @Function			unsigned char TCFG_Utility_Get_Nbiot_NetStateIdentification(void)
+ @Description			TCFG_Utility_Get_Nbiot_NetStateIdentification		: 读取Nbiot NetStateIdentification值
+ @Input				void
+ @Return				Nbiot_NetStateIdentification
+**********************************************************************************************************/
+unsigned char TCFG_Utility_Get_Nbiot_NetStateIdentification(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return NbiotClientHandler.NetStateIdentification;
+#elif NETPROTOCAL == NETMQTTSN
+	return MqttSNClientHandler.SocketStack->NBIotStack->NetStateIdentification;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->NetStateIdentification;
+#endif
+}
+
+/**********************************************************************************************************
  @Function			int TCFG_Utility_Get_Nbiot_RadioSignalpower(void)
  @Description			TCFG_Utility_Get_Nbiot_RadioSignalpower			: 读取Nbiot RadioSignalpower值
  @Input				void

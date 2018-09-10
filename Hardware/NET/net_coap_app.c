@@ -978,7 +978,7 @@ void NET_COAP_NBIOT_Event_NbandModeCheck(NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_COAP_NBIOT_Event_NbandModeConfig(NBIOT_ClientsTypeDef* pClient)
 {
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
@@ -1472,7 +1472,7 @@ void NET_COAP_NBIOT_Event_RecvData(NBIOT_ClientsTypeDef* pClient)
 			
 			if (memcmp((const char*)pClient->Recvbuf, COAPFeedBackData, sizeof(COAPFeedBackData)) == 0) {
 				/* Is Feedback */
-				pClient->Registered = true;
+				pClient->NetStateIdentification = true;
 				if (COAPFeedBackFlag == false) {
 					COAPFeedBackFlag = true;
 					NET_Coap_Message_SendDataOffSet();
@@ -1738,7 +1738,7 @@ void NET_COAP_NBIOT_Event_RecvDataRANormal(NBIOT_ClientsTypeDef* pClient)
 			}
 		}
 		
-		pClient->Registered = true;
+		pClient->NetStateIdentification = true;
 		NET_Coap_Message_SendDataOffSet();
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, SEND_DATA_RA_NORMAL, RECV_DATA_RA_NORMAL);
 		
