@@ -21,7 +21,7 @@
 #define ONENET_NBIOT_BAND8				NBand_900MHz
 #define ONENET_NBIOT_BAND20				NBand_800MHz
 #define ONENET_NBIOT_BAND28				NBand_700MHz
-#define ONENET_NBIOT_BAND_TYPE			ONENET_NBIOT_BAND5
+#define ONENET_NBIOT_BAND_TYPE			ONENET_NBIOT_BAND8
 
 
 
@@ -45,7 +45,7 @@ void NET_ONENET_NBIOT_Event_AttachInquire(ONENET_ClientsTypeDef* pClient);			//�
 void NET_ONENET_NBIOT_Event_ParameterCheckOut(ONENET_ClientsTypeDef* pClient);		//参数检出
 
 void NET_ONENET_APP_ProcessExecution(ONENET_ClientsTypeDef* pClient);				//OneNET协议逻辑处理
-
+void NET_ONENET_Event_Init(ONENET_ClientsTypeDef* pClient);						//INIT
 
 
 

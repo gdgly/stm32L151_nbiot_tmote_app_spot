@@ -156,7 +156,7 @@ void NET_MQTTSN_APP_ProcessExecution(MQTTSN_ClientsTypeDef* pClient)
 	case MQTTSN_SUBSTATE_INIT:
 		NET_MQTTSN_Event_Init(pClient);
 		break;
-		
+	
 	case MQTTSN_SUBSTATE_DISCONNECT:
 		NET_MQTTSN_Event_Disconnect(pClient);
 		break;

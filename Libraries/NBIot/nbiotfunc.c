@@ -187,7 +187,6 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_ClearStoredEarfcn(NBIOT_ClientsTypeDef* pCli
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+NCSEARFCN\r", strlen("AT+NCSEARFCN\r"), "OK", "ERROR");
 	
 #if NBIOT_PRINT_ERROR_CODE_TYPE
-	NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack);
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_ERROR) {
 		NBStatus = NBIOT_Neul_NBxx_DictateEvent_GetError(pClient);
 	}
@@ -1239,7 +1238,6 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetCDPServer(NBIOT_ClientsTypeDef* pClient, 
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, pClient->DataProcessStack, strlen((char *)pClient->DataProcessStack), "OK", "ERROR");
 	
-	NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack);
 #if NBIOT_PRINT_ERROR_CODE_TYPE
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_ERROR) {
 		NBStatus = NBIOT_Neul_NBxx_DictateEvent_GetError(pClient);

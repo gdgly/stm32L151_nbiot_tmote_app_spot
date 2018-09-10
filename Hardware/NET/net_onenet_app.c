@@ -115,7 +115,7 @@ void NET_ONENET_APP_PollExecution(ONENET_ClientsTypeDef* pClient)
 		break;
 	
 	case EXECUT_DOWNLINK_DATA:
-		
+		pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
 		break;
 	
 	case MQTTSN_PROCESS_STACK:
@@ -131,7 +131,7 @@ void NET_ONENET_APP_PollExecution(ONENET_ClientsTypeDef* pClient)
 		break;
 	
 	case LISTEN_RUN_CTL:
-		
+		pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
 		break;
 	
 	default :
@@ -151,7 +151,7 @@ void NET_ONENET_APP_ProcessExecution(ONENET_ClientsTypeDef* pClient)
 	switch (pClient->ProcessState)
 	{
 	case ONENET_PROCESSSTATE_INIT:
-		
+		NET_ONENET_Event_Init(pClient);
 		break;
 	
 	
@@ -161,7 +161,7 @@ void NET_ONENET_APP_ProcessExecution(ONENET_ClientsTypeDef* pClient)
 	
 	
 	
-		
+	
 	}
 }
 
@@ -1044,7 +1044,22 @@ void NET_ONENET_NBIOT_Event_ParameterCheckOut(ONENET_ClientsTypeDef* pClient)
 	RTC_Set_Time(pClient->LWM2MStack->NBIotStack->Parameter.dataTime.hour, pClient->LWM2MStack->NBIotStack->Parameter.dataTime.min,   pClient->LWM2MStack->NBIotStack->Parameter.dataTime.sec);
 }
 
-
+/**********************************************************************************************************
+ @Function			void NET_ONENET_Event_Init(ONENET_ClientsTypeDef* pClient)
+ @Description			NET_ONENET_Event_Init				: INIT
+ @Input				pClient							: OneNET客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_ONENET_Event_Init(ONENET_ClientsTypeDef* pClient)
+{
+#ifdef DegOneNET
+	ONENET_StatusTypeDef retError;
+	
+	retError = NBIOT_OneNET_Related_AccessConfig_LwM2MServer(pClient, 1, (sc8*)"183.230.40.39", 5683);
+	
+	retError = retError;
+#endif
+}
 
 
 

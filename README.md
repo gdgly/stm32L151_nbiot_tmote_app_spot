@@ -3,6 +3,7 @@ movebroad Knagkang
 
 * 2018-09-10 :
 	* 修改原根据NB注网成功则上位机联网reg，为当数据发送成功联网reg。
+	* 去掉nbiotfunc.c中设置CDP服务器函数中多写的一条指令NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack);。
 * 2018-09-09 :
 	* 去掉翻转控制ModulePower开断。
 * 2018-09-07 :
