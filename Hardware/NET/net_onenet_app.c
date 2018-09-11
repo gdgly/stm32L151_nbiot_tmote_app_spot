@@ -1054,9 +1054,11 @@ void NET_ONENET_Event_Init(ONENET_ClientsTypeDef* pClient)
 {
 #ifdef DegOneNET
 	ONENET_StatusTypeDef retError;
+	s32 refer;
 	
-	retError = NBIOT_OneNET_Related_AccessConfig_LwM2MServer(pClient, 1, (sc8*)"183.230.40.39", 5683);
+	retError = NBIOT_OneNET_Related_Create_SuiteInstance(pClient, &refer);
 	
+	refer = refer;
 	retError = retError;
 #endif
 }

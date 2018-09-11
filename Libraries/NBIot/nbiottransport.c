@@ -19,6 +19,22 @@
 unsigned char NBIOT_ATSendBuf[NBIOT_ATBUFFER_SIZE];
 unsigned char NBIOT_ATRecvBuf[NBIOT_ATBUFFER_SIZE];
 
+static void NBIOT_ClearStringHead(unsigned char* buf, unsigned short* len)
+{
+	unsigned int indexlen = 0;
+	
+	for (indexlen = 0; indexlen < *len; indexlen++) {
+		if (buf[indexlen] != '\0') break;
+	}
+	
+	if (indexlen > 0) {
+		for (int indexcp = 0; indexcp < (*len - indexlen); indexcp++) {
+			buf[indexcp] = buf[indexcp + indexlen];
+		}
+		*len -= indexlen;
+	}
+}
+
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Transport_SendATCmd(NBIOT_ATCmdTypeDef* ATCmd)
  @Description			NBIOT_Transport_SendATCmd 				: 发送AT指令等待应答
@@ -71,6 +87,7 @@ NBIOT_StatusTypeDef NBIOT_Transport_SendATCmd(NBIOT_ATCmdTypeDef* ATCmd)
 			if (USART1_RX_CACHE_STA != 0) {															//接收到期待的应答结果
 				
 				USART1_RX_CACHE_BUF[USART1_RX_CACHE_STA] = 0;											//添加结束符
+				NBIOT_ClearStringHead(USART1_RX_CACHE_BUF, &USART1_RX_CACHE_STA);							//去除前导'\0'
 				
 				if (ATCmd->ATack && (strstr((const char*)USART1_RX_CACHE_BUF, (const char*)ATCmd->ATack) != NULL)) {			//Found! OK
 					if (ATCmd->ATRecvbuf) {															//获取应答数据

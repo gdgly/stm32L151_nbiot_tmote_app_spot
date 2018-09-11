@@ -1,6 +1,10 @@
 # stm32L151_nbiot_tmote_app_spot
-movebroad Knagkang
+movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2018-09-11 :
+	* 20V124 :
+	* 版本号修改20V124。
+	* 对NB应答数据有可能出现前导'\0'的情况去除前导'\0'。
 * 2018-09-10 :
 	* 修改原根据NB注网成功则上位机联网reg，为当数据发送成功联网reg。
 	* 去掉nbiotfunc.c中设置CDP服务器函数中多写的一条指令NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack);。
