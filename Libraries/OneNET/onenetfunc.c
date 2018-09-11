@@ -192,16 +192,127 @@ ONENET_StatusTypeDef NBIOT_OneNET_Related_Create_SuiteInstance(ONENET_ClientsTyp
 	return ONStatus;
 }
 
+/**********************************************************************************************************
+ @Function			ONENET_StatusTypeDef NBIOT_OneNET_Related_Delete_SuiteInstance(ONENET_ClientsTypeDef* pClient, s32 refer)
+ @Description			NBIOT_OneNET_Related_Delete_SuiteInstance		: 删除通信套件实例
+ @Input				pClient									: ONENET客户端实例
+					refer									: Instance ID of OneNET communication suite
+ @Return				ONENET_StatusTypeDef						: ONENET处理状态
+**********************************************************************************************************/
+ONENET_StatusTypeDef NBIOT_OneNET_Related_Delete_SuiteInstance(ONENET_ClientsTypeDef* pClient, s32 refer)
+{
+	ONENET_StatusTypeDef ONStatus = ONENET_OK;
+	
+	NBIOT_OneNET_Related_DictateEvent_SetTime(pClient, pClient->LWM2MStack->NBIotStack->Command_Timeout_Msec);
+	
+	memset((void *)pClient->LWM2MStack->NBIotStack->DataProcessStack, 0x0, pClient->LWM2MStack->NBIotStack->DataProcessStack_size);
+	sprintf((char *)pClient->LWM2MStack->NBIotStack->DataProcessStack, "AT+MIPLDELETE=%d\r", refer);
+	
+	NBIOT_OneNET_Related_ATCmd_SetCmdStack(pClient, pClient->LWM2MStack->NBIotStack->DataProcessStack, strlen((char *)pClient->LWM2MStack->NBIotStack->DataProcessStack), "OK", "ERROR");
+	
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	if ((ONStatus = (ONENET_StatusTypeDef)pClient->LWM2MStack->NBIotStack->ATCmdStack->Write(pClient->LWM2MStack->NBIotStack->ATCmdStack)) == ONENET_ERROR) {
+		ONStatus = NBIOT_OneNET_Related_DictateEvent_GetError(pClient);
+	}
+#else
+	ONStatus = (ONENET_StatusTypeDef)pClient->LWM2MStack->NBIotStack->ATCmdStack->Write(pClient->LWM2MStack->NBIotStack->ATCmdStack);
+#endif
+	
+	return ONStatus;
+}
 
+/**********************************************************************************************************
+ @Function			ONENET_StatusTypeDef NBIOT_OneNET_Related_CheckRead_SuiteVersion(ONENET_ClientsTypeDef* pClient)
+ @Description			NBIOT_OneNET_Related_CheckRead_SuiteVersion		: 检出通信套件版本
+ @Input				pClient									: ONENET客户端实例
+ @Return				ONENET_StatusTypeDef						: ONENET处理状态
+**********************************************************************************************************/
+ONENET_StatusTypeDef NBIOT_OneNET_Related_CheckRead_SuiteVersion(ONENET_ClientsTypeDef* pClient)
+{
+	ONENET_StatusTypeDef ONStatus = ONENET_OK;
+	
+	NBIOT_OneNET_Related_DictateEvent_SetTime(pClient, pClient->LWM2MStack->NBIotStack->Command_Timeout_Msec);
+	
+	NBIOT_OneNET_Related_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+MIPLVER?\r", strlen("AT+MIPLVER?\r"), "OK", "ERROR");
+	
+	if ((ONStatus = (ONENET_StatusTypeDef)pClient->LWM2MStack->NBIotStack->ATCmdStack->Write(pClient->LWM2MStack->NBIotStack->ATCmdStack)) == ONENET_OK) {
+		memset((void *)pClient->Parameter.suiteVersion, 0x0, sizeof(pClient->Parameter.suiteVersion));
+		if (sscanf((const char*)pClient->LWM2MStack->NBIotStack->ATCmdStack->ATRecvbuf, "%*[^+MIPLVER]%*[^:]:%[^\r]", pClient->Parameter.suiteVersion) <= 0) {
+			ONStatus = ONENET_ERROR;
+		}
+	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		ONStatus = NBIOT_OneNET_Related_DictateEvent_GetError(pClient);
+	}
+#endif
+	
+	return ONStatus;
+}
 
+/**********************************************************************************************************
+ @Function			ONENET_StatusTypeDef NBIOT_OneNET_Related_Add_LwM2MObject(ONENET_ClientsTypeDef* pClient, ...)
+ @Description			NBIOT_OneNET_Related_Add_LwM2MObject			: 创建LwM2M对象
+ @Input				pClient									: ONENET客户端实例
+					refer									: Instance ID of OneNET communication suite
+					objId									: Object identifier
+					insCount									: Instance count
+					insBitmap									: Instance bitmap
+					attrCount									: Attribute count
+					actCount									: Action count
+ @Return				ONENET_StatusTypeDef						: ONENET处理状态
+**********************************************************************************************************/
+ONENET_StatusTypeDef NBIOT_OneNET_Related_Add_LwM2MObject(ONENET_ClientsTypeDef* pClient, s32 refer, u32 objId, u16 insCount, sc8* insBitmap, u16 attrCount, u16 actCount)
+{
+	ONENET_StatusTypeDef ONStatus = ONENET_OK;
+	
+	NBIOT_OneNET_Related_DictateEvent_SetTime(pClient, pClient->LWM2MStack->NBIotStack->Command_Timeout_Msec);
+	
+	memset((void *)pClient->LWM2MStack->NBIotStack->DataProcessStack, 0x0, pClient->LWM2MStack->NBIotStack->DataProcessStack_size);
+	sprintf((char *)pClient->LWM2MStack->NBIotStack->DataProcessStack, "AT+MIPLADDOBJ=%d,%d,%d,\"%s\",%d,%d\r", refer, objId, insCount, insBitmap, attrCount, actCount);
+	
+	NBIOT_OneNET_Related_ATCmd_SetCmdStack(pClient, pClient->LWM2MStack->NBIotStack->DataProcessStack, strlen((char *)pClient->LWM2MStack->NBIotStack->DataProcessStack), "OK", "ERROR");
+	
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	if ((ONStatus = (ONENET_StatusTypeDef)pClient->LWM2MStack->NBIotStack->ATCmdStack->Write(pClient->LWM2MStack->NBIotStack->ATCmdStack)) == ONENET_ERROR) {
+		ONStatus = NBIOT_OneNET_Related_DictateEvent_GetError(pClient);
+	}
+#else
+	ONStatus = (ONENET_StatusTypeDef)pClient->LWM2MStack->NBIotStack->ATCmdStack->Write(pClient->LWM2MStack->NBIotStack->ATCmdStack);
+#endif
+	
+	return ONStatus;
+}
 
-
-
-
-
-
-
-
+/**********************************************************************************************************
+ @Function			ONENET_StatusTypeDef NBIOT_OneNET_Related_Del_LwM2MObject(ONENET_ClientsTypeDef* pClient, s32 refer, u32 objId)
+ @Description			NBIOT_OneNET_Related_Del_LwM2MObject			: 删除LwM2M对象
+ @Input				pClient									: ONENET客户端实例
+					refer									: Instance ID of OneNET communication suite
+					objId									: Object identifier
+ @Return				ONENET_StatusTypeDef						: ONENET处理状态
+**********************************************************************************************************/
+ONENET_StatusTypeDef NBIOT_OneNET_Related_Del_LwM2MObject(ONENET_ClientsTypeDef* pClient, s32 refer, u32 objId)
+{
+	ONENET_StatusTypeDef ONStatus = ONENET_OK;
+	
+	NBIOT_OneNET_Related_DictateEvent_SetTime(pClient, pClient->LWM2MStack->NBIotStack->Command_Timeout_Msec);
+	
+	memset((void *)pClient->LWM2MStack->NBIotStack->DataProcessStack, 0x0, pClient->LWM2MStack->NBIotStack->DataProcessStack_size);
+	sprintf((char *)pClient->LWM2MStack->NBIotStack->DataProcessStack, "AT+MIPLDELOBJ=%d,%d\r", refer, objId);
+	
+	NBIOT_OneNET_Related_ATCmd_SetCmdStack(pClient, pClient->LWM2MStack->NBIotStack->DataProcessStack, strlen((char *)pClient->LWM2MStack->NBIotStack->DataProcessStack), "OK", "ERROR");
+	
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	if ((ONStatus = (ONENET_StatusTypeDef)pClient->LWM2MStack->NBIotStack->ATCmdStack->Write(pClient->LWM2MStack->NBIotStack->ATCmdStack)) == ONENET_ERROR) {
+		ONStatus = NBIOT_OneNET_Related_DictateEvent_GetError(pClient);
+	}
+#else
+	ONStatus = (ONENET_StatusTypeDef)pClient->LWM2MStack->NBIotStack->ATCmdStack->Write(pClient->LWM2MStack->NBIotStack->ATCmdStack);
+#endif
+	
+	return ONStatus;
+}
 
 
 

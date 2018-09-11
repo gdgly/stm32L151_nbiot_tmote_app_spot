@@ -13,6 +13,7 @@
 #define ONENET_DATASTACK_SIZE				512
 
 
+typedef struct ONENET_ParameterTypeDef		ONENET_ParameterTypeDef;
 typedef struct ONENET_LWM2MTransportTypeDef	ONENET_LWM2MTransportTypeDef;
 typedef struct ONENET_ClientsTypeDef		ONENET_ClientsTypeDef;
 
@@ -86,9 +87,18 @@ typedef enum
 	ONENET_PROCESSSTATE_INIT				= 0x00,
 	
 	
+	
+	
 }ONENET_ProcessStateTypeDef;
 
-
+/* ONENET Parameter */
+struct ONENET_ParameterTypeDef
+{
+	char								suiteVersion[20];									//通信套件版本
+	
+	
+	
+};
 
 
 
@@ -97,6 +107,8 @@ typedef enum
 struct ONENET_LWM2MTransportTypeDef
 {
 	NBIOT_ClientsTypeDef*				NBIotStack;
+	
+	
 	ONENET_StatusTypeDef				(*Write)(ONENET_LWM2MTransportTypeDef*, const char*, u16);
 	ONENET_StatusTypeDef				(*Read)(ONENET_LWM2MTransportTypeDef*, char*, u16*);
 };
@@ -129,7 +141,7 @@ struct ONENET_ClientsTypeDef
 	
 	
 	
-	
+	ONENET_ParameterTypeDef				Parameter;
 	ONENET_ProcessStateTypeDef			ProcessState;
 	ONENET_LWM2MTransportTypeDef*			LWM2MStack;
 	NET_NBIOT_ClientsTypeDef*			NetNbiotStack;
