@@ -1056,8 +1056,14 @@ void NET_ONENET_Event_Init(ONENET_ClientsTypeDef* pClient)
 	ONENET_StatusTypeDef retError;
 	s32 refer;
 	
+	retError = NBIOT_OneNET_Related_AccessConfig_AckTimeout(pClient, 20);
+	
 	retError = NBIOT_OneNET_Related_Create_SuiteInstance(pClient, &refer);
 	retError = NBIOT_OneNET_Related_Add_LwM2MObject(pClient, refer, 6203, 2, (sc8*)"11", 1, 0);
+	
+	retError = NBIOT_OneNET_Related_Send_RegisterRequest(pClient, refer, 3600, 60);
+	retError = NBIOT_OneNET_Related_Send_DeregisterRequest(pClient, refer);
+	
 	retError = NBIOT_OneNET_Related_Del_LwM2MObject(pClient, refer, 6203);
 	retError = NBIOT_OneNET_Related_Delete_SuiteInstance(pClient, refer);
 	
