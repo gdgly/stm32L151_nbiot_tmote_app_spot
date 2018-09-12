@@ -234,6 +234,7 @@ typedef struct
 	unsigned short						CoapQuotaTime;										//Coap使用配额时间(一天)
 	short							UpgradeLimitRssi;									//信号值限制下限
 	short							UpgradeLimitSnr;									//信号质量限制下限
+	unsigned short						NBIdleLifetime;									//NBIot休眠模式保活时间(10S)
 	unsigned char						BeepCtrlOff;										//蜂鸣器控制
 	unsigned char						NBCoapCDPServerIP[16];								//NB核心网IP地址
 	unsigned char						NBCoapCDPServerPort[6];								//NB核心网IP端口
@@ -425,6 +426,10 @@ void			TCFG_Utility_Add_OneNET_SentCount(void);										//NBIot OneNET发送次
 unsigned int	TCFG_Utility_Get_OneNET_SentCount(void);										//NBIot OneNET发送次数获取
 void			TCFG_Utility_Add_OneNET_RecvCount(void);										//NBIot OneNET接收次数累加
 unsigned int	TCFG_Utility_Get_OneNET_RecvCount(void);										//NBIot OneNET接收次数获取
+
+void			TCFG_Utility_Set_Nbiot_IdleLifetime(unsigned short val);							//NBIot 休眠模式保活时间设置
+unsigned short	TCFG_Utility_Get_Nbiot_IdleLifetime(void);										//NBIot 休眠模式保活时间获取
+void			TCFG_Utility_Sub_Nbiot_IdleLifetime(void);										//NBIot 休眠模式保活时间递减
 
 char*		TCFG_Utility_Get_Nbiot_Iccid_String(void);										//读取Nbiot Iccid字符串
 char*		TCFG_Utility_Get_Nbiot_Imei_String(void);										//读取Nbiot Imei字符串

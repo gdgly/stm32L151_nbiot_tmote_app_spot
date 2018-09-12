@@ -285,10 +285,19 @@ void MainRollingUpwardsActived(void)
 **********************************************************************************************************/
 void MainRollingUpwardsSleep(void)
 {
-	/* NBIOT Power OFF */
-	if (NBIOTPOWER_IO_READ()) {
-		NET_NBIOT_Initialization();
-		NBIOTPOWER(OFF);
+	/* 日常处理 */
+	MainHandleRoutine();
+	
+	if (TCFG_Utility_Get_Nbiot_IdleLifetime() > 0) {
+		/* NBIOT APP Task */
+		NET_NBIOT_App_Task();
+	}
+	else {
+		/* NBIOT Power OFF */
+		if (NBIOTPOWER_IO_READ()) {
+			NET_NBIOT_Initialization();
+			NBIOTPOWER(OFF);
+		}
 	}
 	
 	/* 小无线处理 */
@@ -388,7 +397,6 @@ void MainHandleRoutine(void)
 {
 	static uint32_t radarCountPre = 0;
 	uint8_t val8;
-	short val16;
 	
 	/* Every Second Running */
 	if (Stm32_GetSecondTick() != SystemRunningTime.seconds) {
@@ -423,13 +431,14 @@ void MainHandleRoutine(void)
 			}
 			NETMqttSNNeedSendCode.InfoWorkWait--;
 		}
+		
+		TCFG_Utility_Sub_Nbiot_IdleLifetime();
 	}
 	/* Every Minutes Running */
 	if ((Stm32_GetSecondTick() / 60) != SystemRunningTime.minutes) {
 		SystemRunningTime.minutes = Stm32_GetSecondTick() / 60;
 		
-		val16 = QMC5883L_Temperature_Read();
-		Radio_Trf_Debug_Printf_Level3(" qmc_temp=%hd,x=%dy=%dz=%d ", val16, Qmc5883lData.X_Now, Qmc5883lData.Y_Now, Qmc5883lData.Z_Now);
+		
 	}
 	/* Every FifteenMinutes Running */
 	if ((Stm32_GetSecondTick() / 900) != SystemRunningTime.fifteenMinutes) {
@@ -528,6 +537,9 @@ void MainHandleRoutine(void)
 		
 		TCFG_SystemData.CoapIdleDayTime = TCFG_Utility_GetCoapIdleDayTime();
 		TCFG_EEPROM_SetCoapIdleDayTime(TCFG_SystemData.CoapIdleDayTime);
+		
+		NBIOT_COAP_RA_NORMAL_SET_STATE(&NbiotClientHandler, true);
+		TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_MAX_LIFETIME);
 	}
 }
 

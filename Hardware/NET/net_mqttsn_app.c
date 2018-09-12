@@ -1137,6 +1137,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 	
 	/* Whether the query has data needs to be sent */
 	/* OBJECT_TYPE_TMOTES_STATUS_BASIC_PUT */
+#if NBMQTTSN_SENDCODE_STATUS_BASIC
 	if (NET_MqttSN_Message_StatusBasicisEmpty() != true) {
 		pClient->MessageSendCtl.messageStatusBasic = true;
 	}
@@ -1173,13 +1174,17 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageStatusBasic = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_StatusBasicOffSet();
+			/* NB 继续活跃注入时间 */
+			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send StatusBasic Ok");
 #endif
 		}
 	}
+#endif
 	
 	/* OBJECT_TYPE_TMOTES_STATUS_EXTEND_PUT */
+#if NBMQTTSN_SENDCODE_STATUS_EXTEND
 	if (NET_MqttSN_Message_StatusExtendisEmpty() != true) {
 		pClient->MessageSendCtl.messageStatusExtend = true;
 	}
@@ -1216,13 +1221,17 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageStatusExtend = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_StatusExtendOffSet();
+			/* NB 继续活跃注入时间 */
+			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send StatusExtend Ok");
 #endif
 		}
 	}
+#endif
 	
 	/* OBJECT_TYPE_TMOTES_INFO_WORK_PUT */
+#if NBMQTTSN_SENDCODE_WORK_INFO
 	if (NET_MqttSN_Message_InfoWorkisEmpty() != true) {
 		pClient->MessageSendCtl.messageInfoWork = true;
 	}
@@ -1259,13 +1268,17 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageInfoWork = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoWorkOffSet();
+			/* NB 继续活跃注入时间 */
+			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoWork Ok");
 #endif
 		}
 	}
+#endif
 	
 	/* OBJECT_TYPE_TMOTES_INFO_BASIC_PUT */
+#if NBMQTTSN_SENDCODE_BASIC_INFO
 	if (NET_MqttSN_Message_InfoBasicisEmpty() != true) {
 		pClient->MessageSendCtl.messageInfoBasic = true;
 	}
@@ -1302,13 +1315,17 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageInfoBasic = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoBasicOffSet();
+			/* NB 继续活跃注入时间 */
+			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoBasic Ok");
 #endif
 		}
 	}
+#endif
 	
 	/* OBJECT_TYPE_TMOTES_INFO_DYNAMIC_PUT */
+#if NBMQTTSN_SENDCODE_DYNAMIC_INFO
 	if (NET_MqttSN_Message_InfoDynamicisEmpty() != true) {
 		pClient->MessageSendCtl.messageInfoDynamic = true;
 	}
@@ -1345,13 +1362,17 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageInfoDynamic = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoDynamicOffSet();
+			/* NB 继续活跃注入时间 */
+			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoDynamic Ok");
 #endif
 		}
 	}
+#endif
 	
 	/* OBJECT_TYPE_TMOTES_INFO_RADAR_PUT */
+#if NBMQTTSN_SENDCODE_RADAR_INFO
 	if (NET_MqttSN_Message_InfoRadarisEmpty() != true) {
 		pClient->MessageSendCtl.messageInfoRadar = true;
 	}
@@ -1388,11 +1409,14 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageInfoRadar = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoRadarOffSet();
+			/* NB 继续活跃注入时间 */
+			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoRadar Ok");
 #endif
 		}
 	}
+#endif
 	
 	/* OBJECT_TYPE_TMOTES_INFO_RESPONSE_PUT */
 	if (NET_MqttSN_Message_InfoResponseisEmpty() != true) {
@@ -1431,6 +1455,8 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageInfoResponse = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoResponseOffSet();
+			/* NB 继续活跃注入时间 */
+			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoResponse Ok");
 #endif

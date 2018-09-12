@@ -48,7 +48,7 @@ enum Sendtype
 
 SPI_HandleTypeDef SPI_Handler;											//SPI句柄
 
-unsigned char RF_CHANNEL1 = 36;
+unsigned char RF_CHANNEL1 = RADIO_RF_CHANNEL1;
 
 const U8 Radio_Configuration_Data_Array[] = RADIO_CONFIGURATION_DATA_ARRAY;
 uint8_t g_Pakcet_len;

@@ -55,8 +55,15 @@
 #define	NBCOAP_QUOTA_TIME_5YEAR			1183
 #define	NBCOAP_COAP_QUOTA_TIME_TYPE		NBCOAP_QUOTA_TIME_3YEAR				//Coap一天使用配额时间
 
+#define	NBCOAP_RATIME_NORMAL_2HOUR		2
+#define	NBCOAP_RATIME_NORMAL_4HOUR		4
+#define	NBCOAP_RATIME_NORMAL_TYPE		NBCOAP_RATIME_NORMAL_2HOUR			//Coap间隔时间发送普通数据包
+
 #define	NBCOAP_PCP_UPGRADE_LIMIT_RSSI		10								//PCP升级限制信号值
 #define	NBCOAP_PCP_UPGRADE_LIMIT_SNR		5								//PCP升级限制信噪比
+
+#define	NBIOT_CONTINUE_LIFETIME			2								//NBIOT休眠正反继续活跃20秒
+#define	NBIOT_MAX_LIFETIME				12								//NBIOT休眠正反最大活跃120秒
 
 #define	RADIO_CMD_ECHO_DISABLE			0
 #define	RADIO_CMD_ECHO_ENABLE			1
@@ -117,6 +124,8 @@
 
 #define	RADIO_SI4438													//无线开启
 #define	GD25Q_80CSIG													//SPIFLASH开启
+
+#define	RADIO_RF_CHANNEL1				36								//无线默认通道
 
 #define	USART1_DISABLE					0
 #define	USART1_ENABLE					1

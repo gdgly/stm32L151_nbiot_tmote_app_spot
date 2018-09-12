@@ -84,7 +84,7 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_EEPROM_SetWorkMode(TCFG_SystemData.WorkMode);
 	
 	/* 无线通道选择 */
-	TCFG_SystemData.RFChannel = 36;
+	TCFG_SystemData.RFChannel = RADIO_RF_CHANNEL1;
 	TCFG_EEPROM_SetRfChannel(TCFG_SystemData.RFChannel);
 	
 	/* 无线心跳间隔 */
@@ -168,7 +168,7 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_EEPROM_SetNBCmdCnt(TCFG_SystemData.NBCommandCount);
 	
 	/* Coap间隔时间发送普通数据包用于接收下行数据 */
-	TCFG_SystemData.CoapRATimeHour = 2;
+	TCFG_SystemData.CoapRATimeHour = NBCOAP_RATIME_NORMAL_TYPE;
 	TCFG_EEPROM_SetCoapRATimeHour(TCFG_SystemData.CoapRATimeHour);
 	
 	/* Coap保持连接时间 */
@@ -2069,6 +2069,41 @@ void TCFG_Utility_Add_OneNET_RecvCount(void)
 unsigned int TCFG_Utility_Get_OneNET_RecvCount(void)
 {
 	return TCFG_SystemData.OneNETRecvCount;
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_Utility_Set_Nbiot_IdleLifetime(unsigned short val)
+ @Description			TCFG_Utility_Set_Nbiot_IdleLifetime			: NBIot 休眠模式保活时间设置
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void TCFG_Utility_Set_Nbiot_IdleLifetime(unsigned short val)
+{
+	TCFG_SystemData.NBIdleLifetime = (val > 30) ? 30 : val;
+}
+
+/**********************************************************************************************************
+ @Function			unsigned short TCFG_Utility_Get_Nbiot_IdleLifetime(void)
+ @Description			TCFG_Utility_Get_Nbiot_IdleLifetime			: NBIot 休眠模式保活时间获取
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned short TCFG_Utility_Get_Nbiot_IdleLifetime(void)
+{
+	return TCFG_SystemData.NBIdleLifetime;
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_Utility_Sub_Nbiot_IdleLifetime(void)
+ @Description			TCFG_Utility_Sub_Nbiot_IdleLifetime			: NBIot 休眠模式保活时间递减
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+void TCFG_Utility_Sub_Nbiot_IdleLifetime(void)
+{
+	if (TCFG_SystemData.NBIdleLifetime > 0) {
+		TCFG_SystemData.NBIdleLifetime--;
+	}
 }
 
 /**********************************************************************************************************

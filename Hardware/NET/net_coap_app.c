@@ -1486,6 +1486,9 @@ void NET_COAP_NBIOT_Event_RecvData(NBIOT_ClientsTypeDef* pClient)
 				NET_COAP_NBIOT_Listen_Enable_EnterParameter(pClient);
 			#endif
 				
+				/* NB 继续活跃注入时间 */
+				TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
+				
 				/* Get ConnectTime */
 				COAP_NBIOT_GetConnectTime(pClient, true);
 				
@@ -1748,6 +1751,9 @@ void NET_COAP_NBIOT_Event_RecvDataRANormal(NBIOT_ClientsTypeDef* pClient)
 	#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
 		NET_COAP_NBIOT_Listen_Enable_EnterParameter(pClient);
 	#endif
+		
+		/* NB 继续活跃注入时间 */
+		TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
 		
 		/* Get ConnectTime */
 		COAP_NBIOT_GetConnectTime(pClient, true);

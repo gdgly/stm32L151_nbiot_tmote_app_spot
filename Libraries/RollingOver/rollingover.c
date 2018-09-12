@@ -187,7 +187,7 @@ void RollingOverMercuryClose(void)
 			//Radio_Trf_Printf("Sleep Begin TBI:%d, SYS:%d, EEPROM:%d", TimeBeforeIdle, Stm32_GetSecondTick(), TCFG_EEPROM_GetActiveDevice());
 #endif
 		}
-		/* 15Sec 内处理 */
+		/* 45Sec 内处理 */
 		else if ((TimeBeforeIdle + ROLLINGOVER_WAIT_SLEEP_TIME) > Stm32_GetSecondTick()) {
 			MainRollingEnteredDownSleepKeepActived();										//将进入倒放休眠状态前保持工作
 #ifdef ROLLINGOVER_LOG_RF_PRINT
