@@ -37,7 +37,7 @@ void NET_DNS_APP_PollExecution(DNS_ClientsTypeDef* pClient)
 		break;
 	
 	case REPORT_ERROE:
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+		NET_DNS_NBIOT_Event_ReportError(pClient);
 		break;
 	
 	case MODULE_CHECK:
@@ -222,6 +222,10 @@ static unsigned char* DNS_NBIOT_GetDictateFailureCnt(DNS_ClientsTypeDef* pClient
 		dictateFailureCnt = &pClient->SocketStack->NBIotStack->DictateRunCtl.dictateRebootFailureCnt;
 		break;
 	
+	case REPORT_ERROE:
+		dictateFailureCnt = &pClient->SocketStack->NBIotStack->DictateRunCtl.dictateReportErrorFailureCnt;
+		break;
+	
 	case MODULE_CHECK:
 		dictateFailureCnt = &pClient->SocketStack->NBIotStack->DictateRunCtl.dictateModuleCheckFailureCnt;
 		break;
@@ -340,6 +344,7 @@ static void DNS_NBIOT_DictateEvent_SuccessExecute(DNS_ClientsTypeDef* pClient, N
 void NET_DNS_NBIOT_Event_StopMode(DNS_ClientsTypeDef* pClient)
 {
 	Stm32_CalculagraphTypeDef dictateRunTime;
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
 	static unsigned char DNSMqttSNStatusBasicIndex;
 	static unsigned char DNSMqttSNStatusExtendIndex;
 	static unsigned char DNSMqttSNInfoWorkIndex;
@@ -347,6 +352,10 @@ void NET_DNS_NBIOT_Event_StopMode(DNS_ClientsTypeDef* pClient)
 	static unsigned char DNSMqttSNInfoDynamicIndex;
 	static unsigned char DNSMqttSNInfoRadarIndex;
 	static unsigned char DNSMqttSNInfoResponseIndex;
+#endif
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
+	static unsigned char DNSByteStreamIndex;
+#endif
 	
 	/* It is the first time to execute */
 	if (pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable != true) {
@@ -357,6 +366,7 @@ void NET_DNS_NBIOT_Event_StopMode(DNS_ClientsTypeDef* pClient)
 		/* NBIOT Module Poweroff */
 		NBIOT_Neul_NBxx_HardwarePoweroff(pClient->SocketStack->NBIotStack);
 		/* Init Message Index */
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
 		DNSMqttSNStatusBasicIndex = NET_MqttSN_Message_StatusBasicRear();
 		DNSMqttSNStatusExtendIndex = NET_MqttSN_Message_StatusExtendRear();
 		DNSMqttSNInfoWorkIndex = NET_MqttSN_Message_InfoWorkRear();
@@ -364,6 +374,10 @@ void NET_DNS_NBIOT_Event_StopMode(DNS_ClientsTypeDef* pClient)
 		DNSMqttSNInfoDynamicIndex = NET_MqttSN_Message_InfoDynamicRear();
 		DNSMqttSNInfoRadarIndex = NET_MqttSN_Message_InfoRadarRear();
 		DNSMqttSNInfoResponseIndex = NET_MqttSN_Message_InfoResponseRear();
+#endif
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
+		DNSByteStreamIndex = NET_MqttSN_Message_SendDataRear();
+#endif
 	}
 	
 	if (Stm32_Calculagraph_IsExpiredSec(&pClient->SocketStack->NBIotStack->DictateRunCtl.dictateRunTime) == true) {
@@ -375,6 +389,7 @@ void NET_DNS_NBIOT_Event_StopMode(DNS_ClientsTypeDef* pClient)
 	}
 	else {
 		/* Dictate isn't TimeOut */
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
 		if ( (NET_MqttSN_Message_StatusBasicRear() != DNSMqttSNStatusBasicIndex) || 
 			(NET_MqttSN_Message_StatusExtendRear() != DNSMqttSNStatusExtendIndex) ||
 			(NET_MqttSN_Message_InfoWorkRear() != DNSMqttSNInfoWorkIndex) ||
@@ -382,6 +397,10 @@ void NET_DNS_NBIOT_Event_StopMode(DNS_ClientsTypeDef* pClient)
 			(NET_MqttSN_Message_InfoDynamicRear() != DNSMqttSNInfoDynamicIndex) ||
 			(NET_MqttSN_Message_InfoRadarRear() != DNSMqttSNInfoRadarIndex) ||
 			(NET_MqttSN_Message_InfoResponseRear() != DNSMqttSNInfoResponseIndex) ) {
+#endif
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
+		if ( NET_MqttSN_Message_SendDataRear() != DNSByteStreamIndex ) {
+#endif
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
 			pClient->ProcessState = DNS_PROCESS_CREAT_UDP_SOCKET;
@@ -407,7 +426,11 @@ void NET_DNS_NBIOT_Event_HardwareReboot(DNS_ClientsTypeDef* pClient)
 	
 	if (NBIOT_Neul_NBxx_HardwareReboot(pClient->SocketStack->NBIotStack, 8000) == NBIOT_OK) {
 		/* Dictate execute is Success */
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, REPORT_ERROE, HARDWARE_REBOOT);
+#else
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, MODULE_CHECK, HARDWARE_REBOOT);
+#endif
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("NB HDRBT Ok, Baud:%d", NBIOTBaudRate.Baud);
@@ -424,6 +447,34 @@ void NET_DNS_NBIOT_Event_HardwareReboot(DNS_ClientsTypeDef* pClient)
 }
 
 /**********************************************************************************************************
+ @Function			void NET_DNS_NBIOT_Event_ReportError(DNS_ClientsTypeDef* pClient)
+ @Description			NET_DNS_NBIOT_Event_ReportError		: 错误码输出
+ @Input				pClient							: DNS客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_DNS_NBIOT_Event_ReportError(DNS_ClientsTypeDef* pClient)
+{
+	DNS_NBIOT_DictateEvent_SetTime(pClient, 30);
+	
+	if ((NBIOT_Neul_NBxx_SetReportTerminationError(pClient->SocketStack->NBIotStack, CMEEnable) == NBIOT_OK)) {
+		/* Dictate execute is Success */
+		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, MODULE_CHECK, REPORT_ERROE);
+		
+#ifdef DNS_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("NB ReportErrorCode Set %d Ok", CMEEnable);
+#endif
+	}
+	else {
+		/* Dictate execute is Fail */
+		DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, REPORT_ERROE);
+		
+#ifdef DNS_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("NB ReportErrorCode Set %d Fail", CMEEnable);
+#endif
+	}
+}
+
+/**********************************************************************************************************
  @Function			void NET_DNS_NBIOT_Event_ModuleCheck(DNS_ClientsTypeDef* pClient)
  @Description			NET_DNS_NBIOT_Event_ModuleCheck		: 模块检测
  @Input				pClient							: DNS客户端实例
@@ -431,11 +482,13 @@ void NET_DNS_NBIOT_Event_HardwareReboot(DNS_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_DNS_NBIOT_Event_ModuleCheck(DNS_ClientsTypeDef* pClient)
 {
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
+	
 	DNS_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
-	if ((NBIOT_Neul_NBxx_CheckReadManufacturer(pClient->SocketStack->NBIotStack) == NBIOT_OK) && 
-	    (NBIOT_Neul_NBxx_CheckReadManufacturerModel(pClient->SocketStack->NBIotStack) == NBIOT_OK) && 
-	    (NBIOT_Neul_NBxx_CheckReadModuleVersion(pClient->SocketStack->NBIotStack) == NBIOT_OK)) {
+	if (((NBStatus = NBIOT_Neul_NBxx_CheckReadManufacturer(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
+	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadManufacturerModel(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
+	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadModuleVersion(pClient->SocketStack->NBIotStack)) == NBIOT_OK)) {
 		/* Dictate execute is Success */
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, PARAMETER_CONFIG, MODULE_CHECK);
 		
@@ -448,7 +501,11 @@ void NET_DNS_NBIOT_Event_ModuleCheck(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, MODULE_CHECK);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("NB Module Check Fail ECde %d", NBStatus);
+	#else
 		Radio_Trf_Debug_Printf_Level2("NB Module Check Fail");
+	#endif
 #endif
 	}
 }
@@ -461,9 +518,11 @@ void NET_DNS_NBIOT_Event_ModuleCheck(DNS_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_DNS_NBIOT_Event_ParameterConfig(DNS_ClientsTypeDef* pClient)
 {
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
+	
 	DNS_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
-	if (NBIOT_Neul_NBxx_CheckReadConfigUE(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
+	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadConfigUE(pClient->SocketStack->NBIotStack)) == NBIOT_OK) {
 		/* Dictate execute is Success */
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, ICCID_CHECK, PARAMETER_CONFIG);
 		
@@ -476,7 +535,11 @@ void NET_DNS_NBIOT_Event_ParameterConfig(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, PARAMETER_CONFIG);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("NB Parameter Config Read Fail ECde %d", NBStatus);
+	#else
 		Radio_Trf_Debug_Printf_Level2("NB Parameter Config Read Fail");
+	#endif
 #endif
 		return;
 	}
@@ -610,9 +673,11 @@ void NET_DNS_NBIOT_Event_ParameterConfig(DNS_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_DNS_NBIOT_Event_SimICCIDCheck(DNS_ClientsTypeDef* pClient)
 {
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
+	
 	DNS_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
-	if (NBIOT_Neul_NBxx_CheckReadICCID(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
+	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadICCID(pClient->SocketStack->NBIotStack)) == NBIOT_OK) {
 		/* Dictate execute is Success */
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, ICCID_CHECK);
 		
@@ -625,7 +690,11 @@ void NET_DNS_NBIOT_Event_SimICCIDCheck(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, ICCID_CHECK);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("NB ICCID Check Fail ECde %d", NBStatus);
+	#else
 		Radio_Trf_Debug_Printf_Level2("NB ICCID Check Fail");
+	#endif
 #endif
 	}
 }
@@ -638,9 +707,11 @@ void NET_DNS_NBIOT_Event_SimICCIDCheck(DNS_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_DNS_NBIOT_Event_FullFunctionality(DNS_ClientsTypeDef* pClient)
 {
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
+	
 	DNS_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
-	if (NBIOT_Neul_NBxx_CheckReadMinOrFullFunc(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
+	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadMinOrFullFunc(pClient->SocketStack->NBIotStack)) == NBIOT_OK) {
 		/* Dictate execute is Success */
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, FULL_FUNCTIONALITY);
 		
@@ -653,13 +724,17 @@ void NET_DNS_NBIOT_Event_FullFunctionality(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, FULL_FUNCTIONALITY);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
+		#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("NB FullFunc Check Fail ECde %d", NBStatus);
+	#else
 		Radio_Trf_Debug_Printf_Level2("NB FullFunc Check Fail");
+	#endif
 #endif
 		return;
 	}
 	
 	if (pClient->SocketStack->NBIotStack->Parameter.functionality != FullFunc) {
-		if (NBIOT_Neul_NBxx_SetMinOrFullFunc(pClient->SocketStack->NBIotStack, FullFunc) == NBIOT_OK) {
+		if ((NBStatus = NBIOT_Neul_NBxx_SetMinOrFullFunc(pClient->SocketStack->NBIotStack, FullFunc)) == NBIOT_OK) {
 			/* Dictate execute is Success */
 			DNS_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, FULL_FUNCTIONALITY);
 			
@@ -672,7 +747,11 @@ void NET_DNS_NBIOT_Event_FullFunctionality(DNS_ClientsTypeDef* pClient)
 			DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, FULL_FUNCTIONALITY);
 			
 #ifdef DNS_DEBUG_LOG_RF_PRINT
+		#if NBIOT_PRINT_ERROR_CODE_TYPE
+			Radio_Trf_Debug_Printf_Level2("NB FullFunc Set Fail ECde %d", NBStatus);
+		#else
 			Radio_Trf_Debug_Printf_Level2("NB FullFunc Set Fail");
+		#endif
 #endif
 			return;
 		}
@@ -687,9 +766,11 @@ void NET_DNS_NBIOT_Event_FullFunctionality(DNS_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_DNS_NBIOT_Event_MinimumFunctionality(DNS_ClientsTypeDef* pClient)
 {
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
+	
 	DNS_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
-	if (NBIOT_Neul_NBxx_CheckReadMinOrFullFunc(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
+	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadMinOrFullFunc(pClient->SocketStack->NBIotStack)) == NBIOT_OK) {
 		/* Dictate execute is Success */
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CONFIG, MINIMUM_FUNCTIONALITY);
 		
@@ -702,13 +783,17 @@ void NET_DNS_NBIOT_Event_MinimumFunctionality(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, MINIMUM_FUNCTIONALITY);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("NB MinFunc Check Fail ECde %d", NBStatus);
+	#else
 		Radio_Trf_Debug_Printf_Level2("NB MinFunc Check Fail");
+	#endif
 #endif
 		return;
 	}
 	
 	if (pClient->SocketStack->NBIotStack->Parameter.functionality != MinFunc) {
-		if (NBIOT_Neul_NBxx_SetMinOrFullFunc(pClient->SocketStack->NBIotStack, MinFunc) == NBIOT_OK) {
+		if ((NBStatus = NBIOT_Neul_NBxx_SetMinOrFullFunc(pClient->SocketStack->NBIotStack, MinFunc)) == NBIOT_OK) {
 			/* Dictate execute is Success */
 			DNS_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CONFIG, MINIMUM_FUNCTIONALITY);
 			
@@ -721,7 +806,11 @@ void NET_DNS_NBIOT_Event_MinimumFunctionality(DNS_ClientsTypeDef* pClient)
 			DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, MINIMUM_FUNCTIONALITY);
 			
 #ifdef DNS_DEBUG_LOG_RF_PRINT
+		#if NBIOT_PRINT_ERROR_CODE_TYPE
+			Radio_Trf_Debug_Printf_Level2("NB MinFunc Set Fail ECde %d", NBStatus);
+		#else
 			Radio_Trf_Debug_Printf_Level2("NB MinFunc Set Fail");
+		#endif
 #endif
 			return;
 		}
@@ -736,9 +825,11 @@ void NET_DNS_NBIOT_Event_MinimumFunctionality(DNS_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_DNS_NBIOT_Event_NbandModeCheck(DNS_ClientsTypeDef* pClient)
 {
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
+	
 	DNS_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
-	if (NBIOT_Neul_NBxx_CheckReadSupportedBands(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
+	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadSupportedBands(pClient->SocketStack->NBIotStack)) == NBIOT_OK) {
 		/* Dictate execute is Success */
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, NBAND_MODE_CHECK);
 		
@@ -751,7 +842,11 @@ void NET_DNS_NBIOT_Event_NbandModeCheck(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, NBAND_MODE_CHECK);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("NB BAND Read Fail ECde %d", NBStatus);
+	#else
 		Radio_Trf_Debug_Printf_Level2("NB BAND Read Fail");
+	#endif
 #endif
 	}
 	
@@ -773,9 +868,11 @@ void NET_DNS_NBIOT_Event_NbandModeCheck(DNS_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_DNS_NBIOT_Event_NbandModeConfig(DNS_ClientsTypeDef* pClient)
 {
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
+	
 	DNS_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
-	if (NBIOT_Neul_NBxx_CheckReadSupportedBands(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
+	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadSupportedBands(pClient->SocketStack->NBIotStack)) == NBIOT_OK) {
 		/* Dictate execute is Success */
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, NBAND_MODE_CONFIG);
 		
@@ -788,13 +885,17 @@ void NET_DNS_NBIOT_Event_NbandModeConfig(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, NBAND_MODE_CONFIG);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("NB BAND Read Fail ECde %d", NBStatus);
+	#else
 		Radio_Trf_Debug_Printf_Level2("NB BAND Read Fail");
+	#endif
 #endif
 	}
 	
 	if (pClient->SocketStack->NBIotStack->Parameter.band != DNS_NBIOT_BAND_TYPE) {
 		/* BAND Mode Mast be Config */
-		if (NBIOT_Neul_NBxx_SetSupportedBands(pClient->SocketStack->NBIotStack, DNS_NBIOT_BAND_TYPE) == NBIOT_OK) {
+		if ((NBStatus = NBIOT_Neul_NBxx_SetSupportedBands(pClient->SocketStack->NBIotStack, DNS_NBIOT_BAND_TYPE)) == NBIOT_OK) {
 			/* Dictate execute is Success */
 			DNS_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, NBAND_MODE_CONFIG);
 			
@@ -807,7 +908,11 @@ void NET_DNS_NBIOT_Event_NbandModeConfig(DNS_ClientsTypeDef* pClient)
 			DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, NBAND_MODE_CONFIG);
 			
 #ifdef DNS_DEBUG_LOG_RF_PRINT
+		#if NBIOT_PRINT_ERROR_CODE_TYPE
+			Radio_Trf_Debug_Printf_Level2("NB BAND Set %d Fail ECde %d", DNS_NBIOT_BAND_TYPE, NBStatus);
+		#else
 			Radio_Trf_Debug_Printf_Level2("NB BAND Set %d Fail", DNS_NBIOT_BAND_TYPE);
+		#endif
 #endif
 			return;
 		}
@@ -826,9 +931,11 @@ void NET_DNS_NBIOT_Event_NbandModeConfig(DNS_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_DNS_NBIOT_Event_AttachCheck(DNS_ClientsTypeDef* pClient)
 {
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
+	
 	DNS_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
-	if (NBIOT_Neul_NBxx_CheckReadAttachOrDetach(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
+	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadAttachOrDetach(pClient->SocketStack->NBIotStack)) == NBIOT_OK) {
 		/* Dictate execute is Success */
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, ATTACH_CHECK, ATTACH_CHECK);
 		
@@ -841,7 +948,11 @@ void NET_DNS_NBIOT_Event_AttachCheck(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, ATTACH_CHECK);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("NB CGATT %d Fail ECde %d", pClient->SocketStack->NBIotStack->Parameter.netstate, NBStatus);
+	#else
 		Radio_Trf_Debug_Printf_Level2("NB CGATT %d Fail", pClient->SocketStack->NBIotStack->Parameter.netstate);
+	#endif
 #endif
 		return;
 	}
@@ -862,9 +973,11 @@ void NET_DNS_NBIOT_Event_AttachCheck(DNS_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_DNS_NBIOT_Event_AttachExecute(DNS_ClientsTypeDef* pClient)
 {
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
+	
 	DNS_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
-	if (NBIOT_Neul_NBxx_SetAttachOrDetach(pClient->SocketStack->NBIotStack, Attach) == NBIOT_OK) {
+	if ((NBStatus = NBIOT_Neul_NBxx_SetAttachOrDetach(pClient->SocketStack->NBIotStack, Attach)) == NBIOT_OK) {
 		/* Dictate execute is Success */
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, ATTACH_INQUIRE, ATTACH_EXECUTE);
 		
@@ -877,7 +990,11 @@ void NET_DNS_NBIOT_Event_AttachExecute(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, ATTACH_EXECUTE);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("NB Set CGATT %d Fail ECde %d", Attach, NBStatus);
+	#else
 		Radio_Trf_Debug_Printf_Level2("NB Set CGATT %d Fail", Attach);
+	#endif
 #endif
 	}
 }
@@ -890,9 +1007,11 @@ void NET_DNS_NBIOT_Event_AttachExecute(DNS_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_DNS_NBIOT_Event_AttachInquire(DNS_ClientsTypeDef* pClient)
 {
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
+	
 	DNS_NBIOT_DictateEvent_SetTime(pClient, 60);
 	
-	if (NBIOT_Neul_NBxx_CheckReadAttachOrDetach(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
+	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadAttachOrDetach(pClient->SocketStack->NBIotStack)) == NBIOT_OK) {
 		/* Dictate execute is Success */
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ATTACH_INQUIRE;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
@@ -904,7 +1023,11 @@ void NET_DNS_NBIOT_Event_AttachInquire(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, ATTACH_INQUIRE);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("NB CGATT %d Fail ECde %d", pClient->SocketStack->NBIotStack->Parameter.netstate, NBStatus);
+	#else
 		Radio_Trf_Debug_Printf_Level2("NB CGATT %d Fail", pClient->SocketStack->NBIotStack->Parameter.netstate);
+	#endif
 #endif
 		return;
 	}
@@ -925,17 +1048,19 @@ void NET_DNS_NBIOT_Event_AttachInquire(DNS_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_DNS_NBIOT_Event_ParameterCheckOut(DNS_ClientsTypeDef* pClient)
 {
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
+	
 	DNS_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
-	if ((NBIOT_Neul_NBxx_CheckReadIMEI(pClient->SocketStack->NBIotStack) == NBIOT_OK) && 
-	    (NBIOT_Neul_NBxx_CheckReadIMEISV(pClient->SocketStack->NBIotStack) == NBIOT_OK) && 
-	    (NBIOT_Neul_NBxx_CheckReadIMSI(pClient->SocketStack->NBIotStack) == NBIOT_OK) && 
-	    (NBIOT_Neul_NBxx_CheckReadCGPADDR(pClient->SocketStack->NBIotStack) == NBIOT_OK) && 
-	    (NBIOT_Neul_NBxx_CheckReadCGDCONT(pClient->SocketStack->NBIotStack) == NBIOT_OK) && 
-	    (NBIOT_Neul_NBxx_CheckReadRSSI(pClient->SocketStack->NBIotStack) == NBIOT_OK) && 
-	    (NBIOT_Neul_NBxx_CheckReadStatisticsRADIO(pClient->SocketStack->NBIotStack) == NBIOT_OK) && 
-	    (NBIOT_Neul_NBxx_CheckReadStatisticsCELL(pClient->SocketStack->NBIotStack) == NBIOT_OK) && 
-	    (NBIOT_Neul_NBxx_CheckReadDateTime(pClient->SocketStack->NBIotStack) == NBIOT_OK)) {
+	if (((NBStatus = NBIOT_Neul_NBxx_CheckReadIMEI(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
+	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadIMEISV(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
+	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadIMSI(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
+	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadCGPADDR(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
+	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadCGDCONT(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
+	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadRSSI(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
+	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadStatisticsRADIO(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
+	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadStatisticsCELL(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
+	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadDateTime(pClient->SocketStack->NBIotStack)) == NBIOT_OK)) {
 		/* Dictate execute is Success */
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, DNS_PROCESS_STACK, PARAMETER_CHECKOUT);
 		
@@ -950,7 +1075,11 @@ void NET_DNS_NBIOT_Event_ParameterCheckOut(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, PARAMETER_CHECKOUT);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("NB Parameter Check Fail ECde %d", NBStatus);
+	#else
 		Radio_Trf_Debug_Printf_Level2("NB Parameter Check Fail");
+	#endif
 #endif
 		return;
 	}

@@ -320,17 +320,26 @@ ONENET_StatusTypeDef NBIOT_OneNET_Related_Del_LwM2MObject(ONENET_ClientsTypeDef*
  @Input				pClient									: ONENET客户端实例
 					refer									: Instance ID of OneNET communication suite
 					lifetime									: Device lifetime. Range: 16-268435454. Unit: second.
-					timeout									: Timeout of registration. Range: 30-65535. Unit: second.
+					[timeout]									: Timeout of registration. Range: 30-65535. Unit: second.
  @Return				ONENET_StatusTypeDef						: ONENET处理状态
 **********************************************************************************************************/
 ONENET_StatusTypeDef NBIOT_OneNET_Related_Send_RegisterRequest(ONENET_ClientsTypeDef* pClient, s32 refer, u32 lifetime, u32 timeout)
 {
 	ONENET_StatusTypeDef ONStatus = ONENET_OK;
+	u16 datalength = 0;
 	
 	NBIOT_OneNET_Related_DictateEvent_SetTime(pClient, pClient->LWM2MStack->NBIotStack->Command_Timeout_Msec);
 	
 	memset((void *)pClient->LWM2MStack->NBIotStack->DataProcessStack, 0x0, pClient->LWM2MStack->NBIotStack->DataProcessStack_size);
-	sprintf((char *)pClient->LWM2MStack->NBIotStack->DataProcessStack, "AT+MIPLOPEN=%d,%d,%d\r", refer, lifetime, timeout);
+	sprintf((char *)pClient->LWM2MStack->NBIotStack->DataProcessStack, "AT+MIPLOPEN=%d,%d", refer, lifetime);
+	
+	datalength = strlen((const char*)pClient->LWM2MStack->NBIotStack->DataProcessStack);
+	if (timeout != NULL) {
+		sprintf((char *)(pClient->LWM2MStack->NBIotStack->DataProcessStack + datalength), ",%d", timeout);
+		datalength = strlen((const char*)pClient->LWM2MStack->NBIotStack->DataProcessStack);
+	}
+	
+	sprintf((char *)(pClient->LWM2MStack->NBIotStack->DataProcessStack + datalength), "%c", '\r');
 	
 	NBIOT_OneNET_Related_ATCmd_SetCmdStack(pClient, pClient->LWM2MStack->NBIotStack->DataProcessStack, strlen((char *)pClient->LWM2MStack->NBIotStack->DataProcessStack), "OK", "ERROR");
 	
@@ -383,7 +392,7 @@ ONENET_StatusTypeDef NBIOT_OneNET_Related_Send_DeregisterRequest(ONENET_ClientsT
 					result									: The result of discover.
 					length									: The length of <valuestring>.
 					valuestring								: A string which includes the attributes of the object and should be marked with double quotation marks.
-					raiMode									: Specifies the flag of RAI (Release Assistant Indication) of message transmission.
+					[raiMode]									: Specifies the flag of RAI (Release Assistant Indication) of message transmission.
 													NULL		: A value of 0 can be provided but not necessary.
 													0x200	: Release Indicator: indicate release after the message.
 													0x400	: Release Indicator: indicate release after the message has been replied.
@@ -427,7 +436,7 @@ ONENET_StatusTypeDef NBIOT_OneNET_Related_Respond_DiscoverRequest(ONENET_Clients
 					refer									: Instance ID of OneNET communication suite
 					msgId									: The message identifier, which comes from the URC “+ MIPLOBSERVE:”.
 					result									: The result of discover.
-					raiMode									: Specifies the flag of RAI (Release Assistant Indication) of message transmission.
+					[raiMode]									: Specifies the flag of RAI (Release Assistant Indication) of message transmission.
 													NULL		: A value of 0 can be provided but not necessary.
 													0x200	: Release Indicator: indicate release after the message.
 													0x400	: Release Indicator: indicate release after the message has been replied.

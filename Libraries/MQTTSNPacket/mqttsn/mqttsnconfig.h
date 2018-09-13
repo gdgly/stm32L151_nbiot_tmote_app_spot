@@ -121,6 +121,7 @@ struct MQTTSN_ClientsTypeDef
 		bool							messageInfoDynamic;
 		bool							messageInfoRadar;
 		bool							messageInfoResponse;
+		bool							messageByteStream;
 	}MessageSendCtl;
 	
 	struct MessageHandlersTypeDef

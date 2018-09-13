@@ -411,7 +411,7 @@ void NET_ONENET_NBIOT_Event_ReportError(ONENET_ClientsTypeDef* pClient)
 {
 	ONENET_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
-	if ((NBIOT_Neul_NBxx_SetReportTerminationError(pClient->LWM2MStack->NBIotStack, CMEEnable) == NBIOT_OK)) {
+	if (NBIOT_Neul_NBxx_SetReportTerminationError(pClient->LWM2MStack->NBIotStack, CMEEnable) == NBIOT_OK) {
 		/* Dictate execute is Success */
 		ONENET_NBIOT_DictateEvent_SuccessExecute(pClient, MODULE_CHECK, REPORT_ERROE);
 		
@@ -866,7 +866,7 @@ void NET_ONENET_NBIOT_Event_NbandModeConfig(ONENET_ClientsTypeDef* pClient)
 		#if NBIOT_PRINT_ERROR_CODE_TYPE
 			Radio_Trf_Debug_Printf_Level2("NB BAND Set %d Fail ECde %d", ONENET_NBIOT_BAND_TYPE, NBStatus);
 		#else
-			Radio_Trf_Debug_Printf_Level2("NB BAND Set %d Fail", ONENET_NBIOT_BAND_TYPE, NBStatus);
+			Radio_Trf_Debug_Printf_Level2("NB BAND Set %d Fail", ONENET_NBIOT_BAND_TYPE);
 		#endif
 #endif
 			return;

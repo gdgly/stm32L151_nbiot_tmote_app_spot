@@ -460,7 +460,7 @@ void NET_COAP_NBIOT_Event_ReportError(NBIOT_ClientsTypeDef* pClient)
 {
 	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
-	if ((NBIOT_Neul_NBxx_SetReportTerminationError(pClient, CMEEnable) == NBIOT_OK)) {
+	if (NBIOT_Neul_NBxx_SetReportTerminationError(pClient, CMEEnable) == NBIOT_OK) {
 		/* Dictate execute is Success */
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, MODULE_CHECK, REPORT_ERROE);
 		
@@ -1021,7 +1021,7 @@ void NET_COAP_NBIOT_Event_NbandModeConfig(NBIOT_ClientsTypeDef* pClient)
 		#if NBIOT_PRINT_ERROR_CODE_TYPE
 			Radio_Trf_Debug_Printf_Level2("Coap BAND Set %d Fail ECde %d", COAP_NBIOT_BAND_TYPE, NBStatus);
 		#else
-			Radio_Trf_Debug_Printf_Level2("Coap BAND Set %d Fail", COAP_NBIOT_BAND_TYPE, NBStatus);
+			Radio_Trf_Debug_Printf_Level2("Coap BAND Set %d Fail", COAP_NBIOT_BAND_TYPE);
 		#endif
 #endif
 			return;

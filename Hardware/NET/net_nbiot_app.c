@@ -352,8 +352,12 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
 	#endif
 	}
+	
 #elif NETPROTOCAL == NETMQTTSN
 	
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
+	u32 len = 0;
+#endif
 	SpotStatusTypedef SpotStatusData;
 	
 	/* 检查是否有数据需要发送 */
@@ -362,6 +366,8 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NETMqttSNNeedSendCode.StatusExtend = 1;
 	#endif
 	}
+	
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
 	
 	/* MQTTSN STATUS BASIC DATA ENQUEUE */
 	if (NETMqttSNNeedSendCode.StatusBasic) {
@@ -466,6 +472,198 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NETMqttSNNeedSendCode.InfoResponse = 0;
 		TCFG_Utility_Add_MqttSN_SentCount();
 	}
+#endif
+
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
+	
+	/* MQTTSN SHORT STATUS DATA ENQUEUE */
+	if (NETMqttSNNeedSendCode.StatusBasic) {
+#if NBMQTTSN_SENDCODE_STATUS_BASIC
+		Inspect_Message_SpotStatusDequeue(&SpotStatusData);
+		MqttSNShortStructure.HeadPacket.DeviceSN			= TCFG_EEPROM_Get_MAC_SN();
+		MqttSNShortStructure.HeadPacket.DataLen				= 0x00;
+		MqttSNShortStructure.HeadPacket.ProtocolType			= 0x00;
+		MqttSNShortStructure.HeadPacket.Reserved1			= 0x00;
+		MqttSNShortStructure.HeadPacket.ProtocolVersion		= 0x00;
+		MqttSNShortStructure.HeadPacket.Reserved2			= 0x00;
+		MqttSNShortStructure.HeadPacket.PacketType			= 0x05;
+		MqttSNShortStructure.HeadPacket.PacketNumber			= 0x00;
+		MqttSNShortStructure.MsgPacket.DestSN				= 0x00;
+		MqttSNShortStructure.MsgPacket.Version				= 0x01;
+		MqttSNShortStructure.MsgPacket.Type				= MQTTSN_MSGTYPE_TYPE_SHORT_STATUS;
+		MqttSNShortStructure.DateTime						= SpotStatusData.unixTime;
+		MqttSNShortStructure.SpotStatus					= SpotStatusData.spot_status;
+		MqttSNShortStructure.SpotCount					= SpotStatusData.spot_count;
+		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNShortStructure, sizeof(MqttSNShortStructure));
+		NETMqttSNNeedSendCode.StatusBasic = 0;
+		Inspect_Message_SpotStatusOffSet();
+		TCFG_Utility_Add_MqttSN_SentCount();
+#endif
+	}
+	/* MQTTSN LONG STATUS DATA ENQUEUE */
+	else if (NETMqttSNNeedSendCode.StatusExtend) {
+#if NBMQTTSN_SENDCODE_STATUS_EXTEND
+		Inspect_Message_SpotStatusDequeue(&SpotStatusData);
+		MqttSNLongStructure.HeadPacket.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
+		MqttSNLongStructure.HeadPacket.DataLen				= 0x00;
+		MqttSNLongStructure.HeadPacket.ProtocolType			= 0x00;
+		MqttSNLongStructure.HeadPacket.Reserved1			= 0x00;
+		MqttSNLongStructure.HeadPacket.ProtocolVersion		= 0x00;
+		MqttSNLongStructure.HeadPacket.Reserved2			= 0x00;
+		MqttSNLongStructure.HeadPacket.PacketType			= 0x05;
+		MqttSNLongStructure.HeadPacket.PacketNumber			= 0x00;
+		MqttSNLongStructure.MsgPacket.DestSN				= 0x00;
+#if MQTTSN_STATUS_MSG_VERSION_TYPE == MQTTSN_STATUS_MSG_VERSION_V1
+		MqttSNLongStructure.MsgPacket.Version				= 0x01;
+#elif MQTTSN_STATUS_MSG_VERSION_TYPE == MQTTSN_STATUS_MSG_VERSION_V2
+		MqttSNLongStructure.MsgPacket.Version				= 0x02;
+#endif
+		MqttSNLongStructure.MsgPacket.Type					= MQTTSN_MSGTYPE_TYPE_LONG_STATUS;
+		MqttSNLongStructure.DateTime						= SpotStatusData.unixTime;
+		MqttSNLongStructure.SpotStatus					= SpotStatusData.spot_status;
+		MqttSNLongStructure.SpotCount						= SpotStatusData.spot_count;
+		MqttSNLongStructure.MagneticX						= SpotStatusData.qmc5883lData.X_Now;
+		MqttSNLongStructure.MagneticY						= SpotStatusData.qmc5883lData.Y_Now;
+		MqttSNLongStructure.MagneticZ						= SpotStatusData.qmc5883lData.Z_Now;
+		MqttSNLongStructure.MagneticDiff					= SpotStatusData.qmc5883lDiff.BackVal_Diff;
+		MqttSNLongStructure.RadarDistance					= SpotStatusData.radarData.DisVal;
+		MqttSNLongStructure.RadarStrength					= SpotStatusData.radarData.MagVal;
+		MqttSNLongStructure.RadarCoverCount				= SpotStatusData.radarData.Diff_v2;
+		MqttSNLongStructure.RadarDiff						= SpotStatusData.radarData.Diff;
+#if MQTTSN_STATUS_MSG_VERSION_TYPE == MQTTSN_STATUS_MSG_VERSION_V2
+		MqttSNLongStructure.NBRssi						= TCFG_Utility_Get_Nbiot_Rssi_IntVal();
+		MqttSNLongStructure.NBSnr						= TCFG_Utility_Get_Nbiot_RadioSNR() > 127 ? 127 : TCFG_Utility_Get_Nbiot_RadioSNR();
+		MqttSNLongStructure.MCUTemp						= TCFG_Utility_Get_Device_Temperature();
+		MqttSNLongStructure.QMCTemp						= Qmc5883lData.temp_now;
+		MqttSNLongStructure.MagneticBackX					= Qmc5883lData.X_Back;
+		MqttSNLongStructure.MagneticBackY					= Qmc5883lData.Y_Back;
+		MqttSNLongStructure.MagneticBackZ					= Qmc5883lData.Z_Back;
+		MqttSNLongStructure.Debugval						= SpotStatusData.radarData.timedomain_dif;
+		for (int i = 0; i < 16; i++) {
+			MqttSNLongStructure.Radarval[i] = radar_targetinfo.pMagNow[i+2]>255?255:radar_targetinfo.pMagNow[i+2];
+			MqttSNLongStructure.Radarback[i] = radar_targetinfo.pMagBG[i+2]>255?255:radar_targetinfo.pMagBG[i+2];
+		}
+#endif
+		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNLongStructure, sizeof(MqttSNLongStructure));
+		NETMqttSNNeedSendCode.StatusExtend = 0;
+		Inspect_Message_SpotStatusOffSet();
+		TCFG_Utility_Add_MqttSN_SentCount();
+#endif
+	}
+	/* MQTTSN INFO WORK DATA ENQUEUE */
+	else if (NETMqttSNNeedSendCode.InfoWork) {
+#if NBMQTTSN_SENDCODE_WORK_INFO
+		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
+			return;
+		}
+		memset((void*)&MqttSNInfoStructure.InfoData, 0, sizeof(MqttSNInfoStructure.InfoData));
+		MqttSNInfoStructure.HeadPacket.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
+		MqttSNInfoStructure.HeadPacket.DataLen				= 0x00;
+		MqttSNInfoStructure.HeadPacket.ProtocolType			= 0x00;
+		MqttSNInfoStructure.HeadPacket.Reserved1			= 0x00;
+		MqttSNInfoStructure.HeadPacket.ProtocolVersion		= 0x00;
+		MqttSNInfoStructure.HeadPacket.Reserved2			= 0x00;
+		MqttSNInfoStructure.HeadPacket.PacketType			= 0x05;
+		MqttSNInfoStructure.HeadPacket.PacketNumber			= 0x00;
+		MqttSNInfoStructure.MsgPacket.DestSN				= 0x00;
+		MqttSNInfoStructure.MsgPacket.Version				= 0x01;
+		MqttSNInfoStructure.MsgPacket.Type					= MQTTSN_MSGTYPE_TYPE_INFO;
+		len = NET_MQTTSN_Message_Operate_Creat_Json_Work_Info((char *)&MqttSNInfoStructure.InfoData);
+		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNInfoStructure, sizeof(MqttSNInfoStructure) - sizeof(MqttSNInfoStructure.InfoData) + len);
+		NETMqttSNNeedSendCode.InfoWork = 0;
+		TCFG_Utility_Add_MqttSN_SentCount();
+#endif
+	}
+	/* MQTTSN INFO BASIC DATA ENQUEUE */
+	else if (NETMqttSNNeedSendCode.InfoBasic) {
+#if NBMQTTSN_SENDCODE_BASIC_INFO
+		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
+			return;
+		}
+		memset((void*)&MqttSNInfoStructure.InfoData, 0, sizeof(MqttSNInfoStructure.InfoData));
+		MqttSNInfoStructure.HeadPacket.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
+		MqttSNInfoStructure.HeadPacket.DataLen				= 0x00;
+		MqttSNInfoStructure.HeadPacket.ProtocolType			= 0x00;
+		MqttSNInfoStructure.HeadPacket.Reserved1			= 0x00;
+		MqttSNInfoStructure.HeadPacket.ProtocolVersion		= 0x00;
+		MqttSNInfoStructure.HeadPacket.Reserved2			= 0x00;
+		MqttSNInfoStructure.HeadPacket.PacketType			= 0x05;
+		MqttSNInfoStructure.HeadPacket.PacketNumber			= 0x00;
+		MqttSNInfoStructure.MsgPacket.DestSN				= 0x00;
+		MqttSNInfoStructure.MsgPacket.Version				= 0x01;
+		MqttSNInfoStructure.MsgPacket.Type					= MQTTSN_MSGTYPE_TYPE_INFO;
+		len = NET_MQTTSN_Message_Operate_Creat_Json_Basic_Info((char *)&MqttSNInfoStructure.InfoData);
+		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNInfoStructure, sizeof(MqttSNInfoStructure) - sizeof(MqttSNInfoStructure.InfoData) + len);
+		NETMqttSNNeedSendCode.InfoBasic = 0;
+		TCFG_Utility_Add_MqttSN_SentCount();
+#endif
+	}
+	/* MQTTSN INFO DYNAMIC DATA ENQUEUE */
+	else if (NETMqttSNNeedSendCode.InfoDynamic) {
+#if NBMQTTSN_SENDCODE_DYNAMIC_INFO
+		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
+			return;
+		}
+		memset((void*)&MqttSNInfoStructure.InfoData, 0, sizeof(MqttSNInfoStructure.InfoData));
+		MqttSNInfoStructure.HeadPacket.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
+		MqttSNInfoStructure.HeadPacket.DataLen				= 0x00;
+		MqttSNInfoStructure.HeadPacket.ProtocolType			= 0x00;
+		MqttSNInfoStructure.HeadPacket.Reserved1			= 0x00;
+		MqttSNInfoStructure.HeadPacket.ProtocolVersion		= 0x00;
+		MqttSNInfoStructure.HeadPacket.Reserved2			= 0x00;
+		MqttSNInfoStructure.HeadPacket.PacketType			= 0x05;
+		MqttSNInfoStructure.HeadPacket.PacketNumber			= 0x00;
+		MqttSNInfoStructure.MsgPacket.DestSN				= 0x00;
+		MqttSNInfoStructure.MsgPacket.Version				= 0x01;
+		MqttSNInfoStructure.MsgPacket.Type					= MQTTSN_MSGTYPE_TYPE_INFO;
+		len = NET_MQTTSN_Message_Operate_Creat_Json_Dynamic_Info((char *)&MqttSNInfoStructure.InfoData);
+		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNInfoStructure, sizeof(MqttSNInfoStructure) - sizeof(MqttSNInfoStructure.InfoData) + len);
+		NETMqttSNNeedSendCode.InfoDynamic = 0;
+		TCFG_Utility_Add_MqttSN_SentCount();
+#endif
+	}
+	/* MQTTSN INFO RADAR DATA ENQUEUE */
+	else if (NETMqttSNNeedSendCode.InfoRadar) {
+#if NBMQTTSN_SENDCODE_RADAR_INFO
+		memset((void*)&MqttSNInfoStructure.InfoData, 0, sizeof(MqttSNInfoStructure.InfoData));
+		MqttSNInfoStructure.HeadPacket.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
+		MqttSNInfoStructure.HeadPacket.DataLen				= 0x00;
+		MqttSNInfoStructure.HeadPacket.ProtocolType			= 0x00;
+		MqttSNInfoStructure.HeadPacket.Reserved1			= 0x00;
+		MqttSNInfoStructure.HeadPacket.ProtocolVersion		= 0x00;
+		MqttSNInfoStructure.HeadPacket.Reserved2			= 0x00;
+		MqttSNInfoStructure.HeadPacket.PacketType			= 0x05;
+		MqttSNInfoStructure.HeadPacket.PacketNumber			= 0x00;
+		MqttSNInfoStructure.MsgPacket.DestSN				= 0x00;
+		MqttSNInfoStructure.MsgPacket.Version				= 0x01;
+		MqttSNInfoStructure.MsgPacket.Type					= MQTTSN_MSGTYPE_TYPE_INFO;
+		len = NET_MQTTSN_Message_Operate_Creat_Json_Radar_Info((char *)&MqttSNInfoStructure.InfoData);
+		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNInfoStructure, sizeof(MqttSNInfoStructure) - sizeof(MqttSNInfoStructure.InfoData) + len);
+		NETMqttSNNeedSendCode.InfoRadar = 0;
+		TCFG_Utility_Add_MqttSN_SentCount();
+#endif
+	}
+	/* MQTTSN INFO RESPONSE DATA ENQUEUE */
+	else if (NETMqttSNNeedSendCode.InfoResponse) {
+		memset((void*)&MqttSNInfoStructure.InfoData, 0, sizeof(MqttSNInfoStructure.InfoData));
+		MqttSNInfoStructure.HeadPacket.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
+		MqttSNInfoStructure.HeadPacket.DataLen				= 0x00;
+		MqttSNInfoStructure.HeadPacket.ProtocolType			= 0x00;
+		MqttSNInfoStructure.HeadPacket.Reserved1			= 0x00;
+		MqttSNInfoStructure.HeadPacket.ProtocolVersion		= 0x00;
+		MqttSNInfoStructure.HeadPacket.Reserved2			= 0x00;
+		MqttSNInfoStructure.HeadPacket.PacketType			= 0x05;
+		MqttSNInfoStructure.HeadPacket.PacketNumber			= 0x00;
+		MqttSNInfoStructure.MsgPacket.DestSN				= 0x00;
+		MqttSNInfoStructure.MsgPacket.Version				= 0x01;
+		MqttSNInfoStructure.MsgPacket.Type					= MQTTSN_MSGTYPE_TYPE_INFO;
+		len = NET_MQTTSN_Message_Operate_Creat_Json_Response_Info((char *)&MqttSNInfoStructure.InfoData, NETMqttSNNeedSendCode.InfoResponseErrcode);
+		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNInfoStructure, sizeof(MqttSNInfoStructure) - sizeof(MqttSNInfoStructure.InfoData) + len);
+		NETMqttSNNeedSendCode.InfoResponse = 0;
+		TCFG_Utility_Add_MqttSN_SentCount();
+	}
+	
+#endif
 #endif
 }
 

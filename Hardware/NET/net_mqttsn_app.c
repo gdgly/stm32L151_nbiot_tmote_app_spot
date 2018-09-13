@@ -42,7 +42,7 @@ void NET_MQTTSN_APP_PollExecution(MQTTSN_ClientsTypeDef* pClient)
 		break;
 	
 	case REPORT_ERROE:
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+		NET_MQTTSN_NBIOT_Event_ReportError(pClient);
 		break;
 	
 	case MODULE_CHECK:
@@ -231,6 +231,10 @@ static unsigned char* MQTTSN_NBIOT_GetDictateFailureCnt(MQTTSN_ClientsTypeDef* p
 		dictateFailureCnt = &pClient->SocketStack->NBIotStack->DictateRunCtl.dictateRebootFailureCnt;
 		break;
 	
+	case REPORT_ERROE:
+		dictateFailureCnt = &pClient->SocketStack->NBIotStack->DictateRunCtl.dictateReportErrorFailureCnt;
+		break;
+	
 	case MODULE_CHECK:
 		dictateFailureCnt = &pClient->SocketStack->NBIotStack->DictateRunCtl.dictateModuleCheckFailureCnt;
 		break;
@@ -349,6 +353,7 @@ static void MQTTSN_NBIOT_DictateEvent_SuccessExecute(MQTTSN_ClientsTypeDef* pCli
 void NET_MQTTSN_NBIOT_Event_StopMode(MQTTSN_ClientsTypeDef* pClient)
 {
 	Stm32_CalculagraphTypeDef dictateRunTime;
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
 	static unsigned char MqttSNStatusBasicIndex;
 	static unsigned char MqttSNStatusExtendIndex;
 	static unsigned char MqttSNInfoWorkIndex;
@@ -356,6 +361,10 @@ void NET_MQTTSN_NBIOT_Event_StopMode(MQTTSN_ClientsTypeDef* pClient)
 	static unsigned char MqttSNInfoDynamicIndex;
 	static unsigned char MqttSNInfoRadarIndex;
 	static unsigned char MqttSNInfoResponseIndex;
+#endif
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
+	static unsigned char MqttSNByteStreamIndex;
+#endif
 	
 	/* It is the first time to execute */
 	if (pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable != true) {
@@ -366,6 +375,7 @@ void NET_MQTTSN_NBIOT_Event_StopMode(MQTTSN_ClientsTypeDef* pClient)
 		/* NBIOT Module Poweroff */
 		NBIOT_Neul_NBxx_HardwarePoweroff(pClient->SocketStack->NBIotStack);
 		/* Init Message Index */
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
 		MqttSNStatusBasicIndex = NET_MqttSN_Message_StatusBasicRear();
 		MqttSNStatusExtendIndex = NET_MqttSN_Message_StatusExtendRear();
 		MqttSNInfoWorkIndex = NET_MqttSN_Message_InfoWorkRear();
@@ -373,6 +383,10 @@ void NET_MQTTSN_NBIOT_Event_StopMode(MQTTSN_ClientsTypeDef* pClient)
 		MqttSNInfoDynamicIndex = NET_MqttSN_Message_InfoDynamicRear();
 		MqttSNInfoRadarIndex = NET_MqttSN_Message_InfoRadarRear();
 		MqttSNInfoResponseIndex = NET_MqttSN_Message_InfoResponseRear();
+#endif
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
+		MqttSNByteStreamIndex = NET_MqttSN_Message_SendDataRear();
+#endif
 	}
 	
 	if (Stm32_Calculagraph_IsExpiredSec(&pClient->SocketStack->NBIotStack->DictateRunCtl.dictateRunTime) == true) {
@@ -384,6 +398,7 @@ void NET_MQTTSN_NBIOT_Event_StopMode(MQTTSN_ClientsTypeDef* pClient)
 	}
 	else {
 		/* Dictate isn't TimeOut */
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
 		if ( (NET_MqttSN_Message_StatusBasicRear() != MqttSNStatusBasicIndex) || 
 			(NET_MqttSN_Message_StatusExtendRear() != MqttSNStatusExtendIndex) ||
 			(NET_MqttSN_Message_InfoWorkRear() != MqttSNInfoWorkIndex) ||
@@ -391,6 +406,10 @@ void NET_MQTTSN_NBIOT_Event_StopMode(MQTTSN_ClientsTypeDef* pClient)
 			(NET_MqttSN_Message_InfoDynamicRear() != MqttSNInfoDynamicIndex) ||
 			(NET_MqttSN_Message_InfoRadarRear() != MqttSNInfoRadarIndex) ||
 			(NET_MqttSN_Message_InfoResponseRear() != MqttSNInfoResponseIndex) ) {
+#endif
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
+		if ( NET_MqttSN_Message_SendDataRear() != MqttSNByteStreamIndex ) {
+#endif
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
 			pClient->SubState = MQTTSN_SUBSTATE_INIT;
@@ -416,7 +435,11 @@ void NET_MQTTSN_NBIOT_Event_HardwareReboot(MQTTSN_ClientsTypeDef* pClient)
 	
 	if (NBIOT_Neul_NBxx_HardwareReboot(pClient->SocketStack->NBIotStack, 8000) == NBIOT_OK) {
 		/* Dictate execute is Success */
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, REPORT_ERROE, HARDWARE_REBOOT);
+#else
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, MODULE_CHECK, HARDWARE_REBOOT);
+#endif
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 		Radio_Trf_Debug_Printf_Level2("NB HDRBT Ok, Baud:%d", NBIOTBaudRate.Baud);
@@ -433,6 +456,34 @@ void NET_MQTTSN_NBIOT_Event_HardwareReboot(MQTTSN_ClientsTypeDef* pClient)
 }
 
 /**********************************************************************************************************
+ @Function			void NET_MQTTSN_NBIOT_Event_ReportError(MQTTSN_ClientsTypeDef* pClient)
+ @Description			NET_MQTTSN_NBIOT_Event_ReportError		: 错误码输出
+ @Input				pClient							: MqttSN客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_MQTTSN_NBIOT_Event_ReportError(MQTTSN_ClientsTypeDef* pClient)
+{
+	MQTTSN_NBIOT_DictateEvent_SetTime(pClient, 30);
+	
+	if ((NBIOT_Neul_NBxx_SetReportTerminationError(pClient->SocketStack->NBIotStack, CMEEnable) == NBIOT_OK)) {
+		/* Dictate execute is Success */
+		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, MODULE_CHECK, REPORT_ERROE);
+		
+#ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
+		Radio_Trf_Debug_Printf_Level2("NB ReportErrorCode Set %d Ok", CMEEnable);
+#endif
+	}
+	else {
+		/* Dictate execute is Fail */
+		MQTTSN_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, REPORT_ERROE);
+		
+#ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
+		Radio_Trf_Debug_Printf_Level2("NB ReportErrorCode Set %d Fail", CMEEnable);
+#endif
+	}
+}
+
+/**********************************************************************************************************
  @Function			void NET_MQTTSN_NBIOT_Event_ModuleCheck(MQTTSN_ClientsTypeDef* pClient)
  @Description			NET_MQTTSN_NBIOT_Event_ModuleCheck		: 模块检测
  @Input				pClient							: MqttSN客户端实例
@@ -440,11 +491,13 @@ void NET_MQTTSN_NBIOT_Event_HardwareReboot(MQTTSN_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_MQTTSN_NBIOT_Event_ModuleCheck(MQTTSN_ClientsTypeDef* pClient)
 {
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
+	
 	MQTTSN_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
-	if ((NBIOT_Neul_NBxx_CheckReadManufacturer(pClient->SocketStack->NBIotStack) == NBIOT_OK) && 
-	    (NBIOT_Neul_NBxx_CheckReadManufacturerModel(pClient->SocketStack->NBIotStack) == NBIOT_OK) && 
-	    (NBIOT_Neul_NBxx_CheckReadModuleVersion(pClient->SocketStack->NBIotStack) == NBIOT_OK)) {
+	if (((NBStatus = NBIOT_Neul_NBxx_CheckReadManufacturer(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
+	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadManufacturerModel(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
+	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadModuleVersion(pClient->SocketStack->NBIotStack)) == NBIOT_OK)) {
 		/* Dictate execute is Success */
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, PARAMETER_CONFIG, MODULE_CHECK);
 		
@@ -457,7 +510,11 @@ void NET_MQTTSN_NBIOT_Event_ModuleCheck(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, MODULE_CHECK);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("NB Module Check Fail ECde %d", NBStatus);
+	#else
 		Radio_Trf_Debug_Printf_Level2("NB Module Check Fail");
+	#endif
 #endif
 	}
 }
@@ -470,9 +527,11 @@ void NET_MQTTSN_NBIOT_Event_ModuleCheck(MQTTSN_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 {
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
+	
 	MQTTSN_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
-	if (NBIOT_Neul_NBxx_CheckReadConfigUE(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
+	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadConfigUE(pClient->SocketStack->NBIotStack)) == NBIOT_OK) {
 		/* Dictate execute is Success */
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, ICCID_CHECK, PARAMETER_CONFIG);
 		
@@ -485,7 +544,11 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, PARAMETER_CONFIG);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("NB Parameter Config Read Fail ECde %d", NBStatus);
+	#else
 		Radio_Trf_Debug_Printf_Level2("NB Parameter Config Read Fail");
+	#endif
 #endif
 		return;
 	}
@@ -619,9 +682,11 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_MQTTSN_NBIOT_Event_SimICCIDCheck(MQTTSN_ClientsTypeDef* pClient)
 {
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
+	
 	MQTTSN_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
-	if (NBIOT_Neul_NBxx_CheckReadICCID(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
+	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadICCID(pClient->SocketStack->NBIotStack)) == NBIOT_OK) {
 		/* Dictate execute is Success */
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, ICCID_CHECK);
 		
@@ -634,7 +699,11 @@ void NET_MQTTSN_NBIOT_Event_SimICCIDCheck(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, ICCID_CHECK);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("NB ICCID Check Fail ECde %d", NBStatus);
+	#else
 		Radio_Trf_Debug_Printf_Level2("NB ICCID Check Fail");
+	#endif
 #endif
 	}
 }
@@ -647,9 +716,11 @@ void NET_MQTTSN_NBIOT_Event_SimICCIDCheck(MQTTSN_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_MQTTSN_NBIOT_Event_FullFunctionality(MQTTSN_ClientsTypeDef* pClient)
 {
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
+	
 	MQTTSN_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
-	if (NBIOT_Neul_NBxx_CheckReadMinOrFullFunc(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
+	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadMinOrFullFunc(pClient->SocketStack->NBIotStack)) == NBIOT_OK) {
 		/* Dictate execute is Success */
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, FULL_FUNCTIONALITY);
 		
@@ -662,13 +733,17 @@ void NET_MQTTSN_NBIOT_Event_FullFunctionality(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, FULL_FUNCTIONALITY);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("NB FullFunc Check Fail ECde %d", NBStatus);
+	#else
 		Radio_Trf_Debug_Printf_Level2("NB FullFunc Check Fail");
+	#endif
 #endif
 		return;
 	}
 	
 	if (pClient->SocketStack->NBIotStack->Parameter.functionality != FullFunc) {
-		if (NBIOT_Neul_NBxx_SetMinOrFullFunc(pClient->SocketStack->NBIotStack, FullFunc) == NBIOT_OK) {
+		if ((NBStatus = NBIOT_Neul_NBxx_SetMinOrFullFunc(pClient->SocketStack->NBIotStack, FullFunc)) == NBIOT_OK) {
 			/* Dictate execute is Success */
 			MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, FULL_FUNCTIONALITY);
 			
@@ -681,7 +756,11 @@ void NET_MQTTSN_NBIOT_Event_FullFunctionality(MQTTSN_ClientsTypeDef* pClient)
 			MQTTSN_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, FULL_FUNCTIONALITY);
 			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
+		#if NBIOT_PRINT_ERROR_CODE_TYPE
+			Radio_Trf_Debug_Printf_Level2("NB FullFunc Set Fail ECde %d", NBStatus);
+		#else
 			Radio_Trf_Debug_Printf_Level2("NB FullFunc Set Fail");
+		#endif
 #endif
 			return;
 		}
@@ -696,9 +775,11 @@ void NET_MQTTSN_NBIOT_Event_FullFunctionality(MQTTSN_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_MQTTSN_NBIOT_Event_MinimumFunctionality(MQTTSN_ClientsTypeDef* pClient)
 {
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
+	
 	MQTTSN_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
-	if (NBIOT_Neul_NBxx_CheckReadMinOrFullFunc(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
+	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadMinOrFullFunc(pClient->SocketStack->NBIotStack)) == NBIOT_OK) {
 		/* Dictate execute is Success */
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CONFIG, MINIMUM_FUNCTIONALITY);
 		
@@ -711,13 +792,17 @@ void NET_MQTTSN_NBIOT_Event_MinimumFunctionality(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, MINIMUM_FUNCTIONALITY);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("NB MinFunc Check Fail ECde %d", NBStatus);
+	#else
 		Radio_Trf_Debug_Printf_Level2("NB MinFunc Check Fail");
+	#endif
 #endif
 		return;
 	}
 	
 	if (pClient->SocketStack->NBIotStack->Parameter.functionality != MinFunc) {
-		if (NBIOT_Neul_NBxx_SetMinOrFullFunc(pClient->SocketStack->NBIotStack, MinFunc) == NBIOT_OK) {
+		if ((NBStatus = NBIOT_Neul_NBxx_SetMinOrFullFunc(pClient->SocketStack->NBIotStack, MinFunc)) == NBIOT_OK) {
 			/* Dictate execute is Success */
 			MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CONFIG, MINIMUM_FUNCTIONALITY);
 			
@@ -730,7 +815,11 @@ void NET_MQTTSN_NBIOT_Event_MinimumFunctionality(MQTTSN_ClientsTypeDef* pClient)
 			MQTTSN_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, MINIMUM_FUNCTIONALITY);
 			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
+		#if NBIOT_PRINT_ERROR_CODE_TYPE
+			Radio_Trf_Debug_Printf_Level2("NB MinFunc Set Fail ECde %d", NBStatus);
+		#else
 			Radio_Trf_Debug_Printf_Level2("NB MinFunc Set Fail");
+		#endif
 #endif
 			return;
 		}
@@ -745,9 +834,11 @@ void NET_MQTTSN_NBIOT_Event_MinimumFunctionality(MQTTSN_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_MQTTSN_NBIOT_Event_NbandModeCheck(MQTTSN_ClientsTypeDef* pClient)
 {
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
+	
 	MQTTSN_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
-	if (NBIOT_Neul_NBxx_CheckReadSupportedBands(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
+	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadSupportedBands(pClient->SocketStack->NBIotStack)) == NBIOT_OK) {
 		/* Dictate execute is Success */
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, NBAND_MODE_CHECK);
 		
@@ -760,7 +851,11 @@ void NET_MQTTSN_NBIOT_Event_NbandModeCheck(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, NBAND_MODE_CHECK);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("NB BAND Read Fail ECde %d", NBStatus);
+	#else
 		Radio_Trf_Debug_Printf_Level2("NB BAND Read Fail");
+	#endif
 #endif
 	}
 	
@@ -782,9 +877,11 @@ void NET_MQTTSN_NBIOT_Event_NbandModeCheck(MQTTSN_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_MQTTSN_NBIOT_Event_NbandModeConfig(MQTTSN_ClientsTypeDef* pClient)
 {
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
+	
 	MQTTSN_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
-	if (NBIOT_Neul_NBxx_CheckReadSupportedBands(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
+	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadSupportedBands(pClient->SocketStack->NBIotStack)) == NBIOT_OK) {
 		/* Dictate execute is Success */
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, NBAND_MODE_CONFIG);
 		
@@ -797,13 +894,17 @@ void NET_MQTTSN_NBIOT_Event_NbandModeConfig(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, NBAND_MODE_CONFIG);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("NB BAND Read Fail ECde %d", NBStatus);
+	#else
 		Radio_Trf_Debug_Printf_Level2("NB BAND Read Fail");
+	#endif
 #endif
 	}
 	
 	if (pClient->SocketStack->NBIotStack->Parameter.band != MQTTSN_NBIOT_BAND_TYPE) {
 		/* BAND Mode Mast be Config */
-		if (NBIOT_Neul_NBxx_SetSupportedBands(pClient->SocketStack->NBIotStack, MQTTSN_NBIOT_BAND_TYPE) == NBIOT_OK) {
+		if ((NBStatus = NBIOT_Neul_NBxx_SetSupportedBands(pClient->SocketStack->NBIotStack, MQTTSN_NBIOT_BAND_TYPE)) == NBIOT_OK) {
 			/* Dictate execute is Success */
 			MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, NBAND_MODE_CONFIG);
 			
@@ -816,7 +917,11 @@ void NET_MQTTSN_NBIOT_Event_NbandModeConfig(MQTTSN_ClientsTypeDef* pClient)
 			MQTTSN_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, NBAND_MODE_CONFIG);
 			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
+		#if NBIOT_PRINT_ERROR_CODE_TYPE
+			Radio_Trf_Debug_Printf_Level2("NB BAND Set %d Fail ECde %d", MQTTSN_NBIOT_BAND_TYPE, NBStatus);
+		#else
 			Radio_Trf_Debug_Printf_Level2("NB BAND Set %d Fail", MQTTSN_NBIOT_BAND_TYPE);
+		#endif
 #endif
 			return;
 		}
@@ -835,9 +940,11 @@ void NET_MQTTSN_NBIOT_Event_NbandModeConfig(MQTTSN_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_MQTTSN_NBIOT_Event_AttachCheck(MQTTSN_ClientsTypeDef* pClient)
 {
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
+	
 	MQTTSN_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
-	if (NBIOT_Neul_NBxx_CheckReadAttachOrDetach(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
+	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadAttachOrDetach(pClient->SocketStack->NBIotStack)) == NBIOT_OK) {
 		/* Dictate execute is Success */
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, ATTACH_CHECK, ATTACH_CHECK);
 		
@@ -850,7 +957,11 @@ void NET_MQTTSN_NBIOT_Event_AttachCheck(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, ATTACH_CHECK);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("NB CGATT %d Fail ECde %d", pClient->SocketStack->NBIotStack->Parameter.netstate, NBStatus);
+	#else
 		Radio_Trf_Debug_Printf_Level2("NB CGATT %d Fail", pClient->SocketStack->NBIotStack->Parameter.netstate);
+	#endif
 #endif
 		return;
 	}
@@ -871,9 +982,11 @@ void NET_MQTTSN_NBIOT_Event_AttachCheck(MQTTSN_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_MQTTSN_NBIOT_Event_AttachExecute(MQTTSN_ClientsTypeDef* pClient)
 {
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
+	
 	MQTTSN_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
-	if (NBIOT_Neul_NBxx_SetAttachOrDetach(pClient->SocketStack->NBIotStack, Attach) == NBIOT_OK) {
+	if ((NBStatus = NBIOT_Neul_NBxx_SetAttachOrDetach(pClient->SocketStack->NBIotStack, Attach)) == NBIOT_OK) {
 		/* Dictate execute is Success */
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, ATTACH_INQUIRE, ATTACH_EXECUTE);
 		
@@ -886,7 +999,11 @@ void NET_MQTTSN_NBIOT_Event_AttachExecute(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, ATTACH_EXECUTE);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("NB Set CGATT %d Fail ECde %d", Attach, NBStatus);
+	#else
 		Radio_Trf_Debug_Printf_Level2("NB Set CGATT %d Fail", Attach);
+	#endif
 #endif
 	}
 }
@@ -899,9 +1016,11 @@ void NET_MQTTSN_NBIOT_Event_AttachExecute(MQTTSN_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_MQTTSN_NBIOT_Event_AttachInquire(MQTTSN_ClientsTypeDef* pClient)
 {
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
+	
 	MQTTSN_NBIOT_DictateEvent_SetTime(pClient, 60);
 	
-	if (NBIOT_Neul_NBxx_CheckReadAttachOrDetach(pClient->SocketStack->NBIotStack) == NBIOT_OK) {
+	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadAttachOrDetach(pClient->SocketStack->NBIotStack)) == NBIOT_OK) {
 		/* Dictate execute is Success */
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ATTACH_INQUIRE;
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
@@ -913,7 +1032,11 @@ void NET_MQTTSN_NBIOT_Event_AttachInquire(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, ATTACH_INQUIRE);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("NB CGATT %d Fail ECde %d", pClient->SocketStack->NBIotStack->Parameter.netstate, NBStatus);
+	#else
 		Radio_Trf_Debug_Printf_Level2("NB CGATT %d Fail", pClient->SocketStack->NBIotStack->Parameter.netstate);
+	#endif
 #endif
 		return;
 	}
@@ -934,17 +1057,19 @@ void NET_MQTTSN_NBIOT_Event_AttachInquire(MQTTSN_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_MQTTSN_NBIOT_Event_ParameterCheckOut(MQTTSN_ClientsTypeDef* pClient)
 {
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
+	
 	MQTTSN_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
-	if ((NBIOT_Neul_NBxx_CheckReadIMEI(pClient->SocketStack->NBIotStack) == NBIOT_OK) && 
-	    (NBIOT_Neul_NBxx_CheckReadIMEISV(pClient->SocketStack->NBIotStack) == NBIOT_OK) && 
-	    (NBIOT_Neul_NBxx_CheckReadIMSI(pClient->SocketStack->NBIotStack) == NBIOT_OK) && 
-	    (NBIOT_Neul_NBxx_CheckReadCGPADDR(pClient->SocketStack->NBIotStack) == NBIOT_OK) && 
-	    (NBIOT_Neul_NBxx_CheckReadCGDCONT(pClient->SocketStack->NBIotStack) == NBIOT_OK) && 
-	    (NBIOT_Neul_NBxx_CheckReadRSSI(pClient->SocketStack->NBIotStack) == NBIOT_OK) && 
-	    (NBIOT_Neul_NBxx_CheckReadStatisticsRADIO(pClient->SocketStack->NBIotStack) == NBIOT_OK) && 
-	    (NBIOT_Neul_NBxx_CheckReadStatisticsCELL(pClient->SocketStack->NBIotStack) == NBIOT_OK) && 
-	    (NBIOT_Neul_NBxx_CheckReadDateTime(pClient->SocketStack->NBIotStack) == NBIOT_OK)) {
+	if (((NBStatus = NBIOT_Neul_NBxx_CheckReadIMEI(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
+	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadIMEISV(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
+	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadIMSI(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
+	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadCGPADDR(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
+	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadCGDCONT(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
+	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadRSSI(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
+	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadStatisticsRADIO(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
+	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadStatisticsCELL(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
+	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadDateTime(pClient->SocketStack->NBIotStack)) == NBIOT_OK)) {
 		/* Dictate execute is Success */
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, PARAMETER_CHECKOUT);
 		
@@ -959,7 +1084,11 @@ void NET_MQTTSN_NBIOT_Event_ParameterCheckOut(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, PARAMETER_CHECKOUT);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("NB Parameter Check Fail ECde %d", NBStatus);
+	#else
 		Radio_Trf_Debug_Printf_Level2("NB Parameter Check Fail");
+	#endif
 #endif
 		return;
 	}
@@ -1136,6 +1265,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 	}
 	
 	/* Whether the query has data needs to be sent */
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
 	/* OBJECT_TYPE_TMOTES_STATUS_BASIC_PUT */
 #if NBMQTTSN_SENDCODE_STATUS_BASIC
 	if (NET_MqttSN_Message_StatusBasicisEmpty() != true) {
@@ -1462,6 +1592,50 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 #endif
 		}
 	}
+#endif
+	
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
+	/* OBJECT_TYPE_TMOTES_BYTE_STREAM_PUT */
+	if (NET_MqttSN_Message_SendDataisEmpty() != true) {
+		pClient->MessageSendCtl.messageByteStream = true;
+	}
+	if (pClient->MessageSendCtl.messageByteStream != false) {
+		if (NET_MQTTSN_SendPayloadPacket(pClient, OBJECT_TYPE_TMOTES_BYTE_STREAM_PUT) != MQTTSN_OK) {
+			/* Dictate execute is Fail */
+			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
+				/* Dictate TimeOut */
+				pClient->DictateRunCtl.dictateEnable = false;
+				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+				pClient->SubState = MQTTSN_SUBSTATE_INIT;
+				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_DNS;
+				pClient->DictateRunCtl.dictateActiveFailureCnt++;
+				if (pClient->DictateRunCtl.dictateActiveFailureCnt > 3) {
+					pClient->DictateRunCtl.dictateActiveFailureCnt = 0;
+					pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
+					pClient->SubState = MQTTSN_SUBSTATE_LOST;
+					pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
+				}
+			}
+			else {
+				/* Dictate isn't TimeOut */
+				pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
+			}
+		}
+		else {
+			/* Dictate execute is Success */
+			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
+			pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
+			pClient->MessageSendCtl.messageByteStream = false;
+			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
+			NET_MqttSN_Message_SendDataOffSet();
+			/* NB 继续活跃注入时间 */
+			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
+#ifdef MQTTSN_DEBUG_LOG_RF_PRINT
+			Radio_Trf_Debug_Printf_Level2("MqttSN Send Payload Ok");
+#endif
+		}
+	}
+#endif
 	
 	/* Keep active for Active seconds before to Sleep, so we can send messsage contiguously */
 	if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
@@ -1515,6 +1689,7 @@ void NET_MQTTSN_Event_Sleep(MQTTSN_ClientsTypeDef* pClient)
 	MQTTSN_DictateEvent_SetTime(pClient, 60);
 	
 	/* Whether the query has data needs to be sent */
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
 	if (NET_MqttSN_Message_StatusBasicisEmpty() != true) {
 		pClient->MessageSendCtl.messageStatusBasic = true;
 	}
@@ -1536,6 +1711,14 @@ void NET_MQTTSN_Event_Sleep(MQTTSN_ClientsTypeDef* pClient)
 	if (NET_MqttSN_Message_InfoResponseisEmpty() != true) {
 		pClient->MessageSendCtl.messageInfoResponse = true;
 	}
+#endif
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
+	if (NET_MqttSN_Message_SendDataisEmpty() != true) {
+		pClient->MessageSendCtl.messageByteStream = true;
+	}
+#endif
+	
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
 	if ( (pClient->MessageSendCtl.messageStatusBasic != false) || 
 		(pClient->MessageSendCtl.messageStatusExtend != false) ||
 		(pClient->MessageSendCtl.messageInfoWork != false) ||
@@ -1543,6 +1726,10 @@ void NET_MQTTSN_Event_Sleep(MQTTSN_ClientsTypeDef* pClient)
 		(pClient->MessageSendCtl.messageInfoDynamic != false) ||
 		(pClient->MessageSendCtl.messageInfoRadar != false) ||
 		(pClient->MessageSendCtl.messageInfoResponse != false) ) {
+#endif
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
+	if ( pClient->MessageSendCtl.messageByteStream != false ) {
+#endif
 		options.clientID.cstring = MQTTSN_CLIENT_ID;
 		options.duration = TNET_MQTTSN_ACTIVE_DURATION;
 		options.cleansession = false;
@@ -1979,7 +2166,13 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 MQTTSN_StatusTypeDef NET_MQTTSN_SendPayloadPacket(MQTTSN_ClientsTypeDef* pClient, NET_MQTTSN_ObjectPacketTypeDef ObjectPacket)
 {
 	MQTTSN_StatusTypeDef MQTTSNStatus = MQTTSN_OK;
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
 	NET_Message_TcldMsgTypeDef *pMsg = (NET_Message_TcldMsgTypeDef*)pClient->DataProcessStack;
+#endif
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
+	unsigned char* pMsg = pClient->DataProcessStack;
+	unsigned short pMsgLen = 0;
+#endif
 	MQTTSN_MessageTypeDef message;
 	MQTTSN_topicid topic;
 	
@@ -1996,6 +2189,8 @@ MQTTSN_StatusTypeDef NET_MQTTSN_SendPayloadPacket(MQTTSN_ClientsTypeDef* pClient
 	{
 		case OBJECT_TYPE_TMOTES_STATUS_BASIC_PUT:
 		{
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
+#if NBMQTTSN_SENDCODE_STATUS_BASIC
 			NET_MESSAGE_GET_MAGICNUM(pMsg->MsgHead.MagicNum);
 			pMsg->MsgHead.MsgType		=	MSG_JSON;
 			pMsg->MsgHead.Version		=	MESSAGE_VERSION;
@@ -2009,12 +2204,15 @@ MQTTSN_StatusTypeDef NET_MQTTSN_SendPayloadPacket(MQTTSN_ClientsTypeDef* pClient
 			if ((MQTTSNStatus = MQTTSN_Publish(pClient, topic, &message)) != MQTTSN_OK) {
 				//Todo
 			}
-			
+#endif
+#endif
 			break;
 		}
 		
 		case OBJECT_TYPE_TMOTES_STATUS_EXTEND_PUT:
 		{
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
+#if NBMQTTSN_SENDCODE_STATUS_EXTEND
 			NET_MESSAGE_GET_MAGICNUM(pMsg->MsgHead.MagicNum);
 			pMsg->MsgHead.MsgType		=	MSG_JSON;
 			pMsg->MsgHead.Version		=	MESSAGE_VERSION;
@@ -2028,12 +2226,15 @@ MQTTSN_StatusTypeDef NET_MQTTSN_SendPayloadPacket(MQTTSN_ClientsTypeDef* pClient
 			if ((MQTTSNStatus = MQTTSN_Publish(pClient, topic, &message)) != MQTTSN_OK) {
 				//Todo
 			}
-			
+#endif
+#endif
 			break;
 		}
 		
 		case OBJECT_TYPE_TMOTES_INFO_WORK_PUT:
 		{
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
+#if NBMQTTSN_SENDCODE_WORK_INFO
 			NET_MESSAGE_GET_MAGICNUM(pMsg->MsgHead.MagicNum);
 			pMsg->MsgHead.MsgType		=	MSG_JSON;
 			pMsg->MsgHead.Version		=	MESSAGE_VERSION;
@@ -2047,12 +2248,15 @@ MQTTSN_StatusTypeDef NET_MQTTSN_SendPayloadPacket(MQTTSN_ClientsTypeDef* pClient
 			if ((MQTTSNStatus = MQTTSN_Publish(pClient, topic, &message)) != MQTTSN_OK) {
 				//Todo
 			}
-			
+#endif
+#endif
 			break;
 		}
 		
 		case OBJECT_TYPE_TMOTES_INFO_BASIC_PUT:
 		{
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
+#if NBMQTTSN_SENDCODE_BASIC_INFO
 			NET_MESSAGE_GET_MAGICNUM(pMsg->MsgHead.MagicNum);
 			pMsg->MsgHead.MsgType		=	MSG_JSON;
 			pMsg->MsgHead.Version		=	MESSAGE_VERSION;
@@ -2066,12 +2270,15 @@ MQTTSN_StatusTypeDef NET_MQTTSN_SendPayloadPacket(MQTTSN_ClientsTypeDef* pClient
 			if ((MQTTSNStatus = MQTTSN_Publish(pClient, topic, &message)) != MQTTSN_OK) {
 				//Todo
 			}
-			
+#endif
+#endif
 			break;
 		}
 		
 		case OBJECT_TYPE_TMOTES_INFO_DYNAMIC_PUT:
 		{
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
+#if NBMQTTSN_SENDCODE_DYNAMIC_INFO
 			NET_MESSAGE_GET_MAGICNUM(pMsg->MsgHead.MagicNum);
 			pMsg->MsgHead.MsgType		=	MSG_JSON;
 			pMsg->MsgHead.Version		=	MESSAGE_VERSION;
@@ -2085,12 +2292,15 @@ MQTTSN_StatusTypeDef NET_MQTTSN_SendPayloadPacket(MQTTSN_ClientsTypeDef* pClient
 			if ((MQTTSNStatus = MQTTSN_Publish(pClient, topic, &message)) != MQTTSN_OK) {
 				//Todo
 			}
-			
+#endif
+#endif
 			break;
 		}
 		
 		case OBJECT_TYPE_TMOTES_INFO_RADAR_PUT:
 		{
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
+#if NBMQTTSN_SENDCODE_RADAR_INFO
 			NET_MESSAGE_GET_MAGICNUM(pMsg->MsgHead.MagicNum);
 			pMsg->MsgHead.MsgType		=	MSG_JSON;
 			pMsg->MsgHead.Version		=	MESSAGE_VERSION;
@@ -2104,12 +2314,14 @@ MQTTSN_StatusTypeDef NET_MQTTSN_SendPayloadPacket(MQTTSN_ClientsTypeDef* pClient
 			if ((MQTTSNStatus = MQTTSN_Publish(pClient, topic, &message)) != MQTTSN_OK) {
 				//Todo
 			}
-			
+#endif
+#endif
 			break;
 		}
 		
 		case OBJECT_TYPE_TMOTES_INFO_RESPONSE_PUT:
 		{
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
 			NET_MESSAGE_GET_MAGICNUM(pMsg->MsgHead.MagicNum);
 			pMsg->MsgHead.MsgType		=	MSG_JSON;
 			pMsg->MsgHead.Version		=	MESSAGE_VERSION;
@@ -2123,7 +2335,23 @@ MQTTSN_StatusTypeDef NET_MQTTSN_SendPayloadPacket(MQTTSN_ClientsTypeDef* pClient
 			if ((MQTTSNStatus = MQTTSN_Publish(pClient, topic, &message)) != MQTTSN_OK) {
 				//Todo
 			}
+#endif
+			break;
+		}
+		
+		case OBJECT_TYPE_TMOTES_BYTE_STREAM_PUT:
+		{
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
+			NET_MqttSN_Message_SendDataDequeue(pMsg, &pMsgLen);
 			
+			message.payloadlen			=	pMsgLen;
+			
+			topic.type = MQTTSN_TOPIC_TYPE_PREDEFINED;
+			topic.data.id = TOPICID_STANDARD;
+			if ((MQTTSNStatus = MQTTSN_Publish(pClient, topic, &message)) != MQTTSN_OK) {
+				//Todo
+			}
+#endif
 			break;
 		}
 	}

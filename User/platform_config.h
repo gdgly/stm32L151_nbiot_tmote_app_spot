@@ -93,7 +93,7 @@
 #define	BEEP_OFF_US					230								//无源蜂鸣器关时间
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					124								//从固件版本
+#define	SOFTWARESUB					125								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 
@@ -165,6 +165,7 @@ extern COAP_PacketShortTypeDef			CoapShortStructure;					//Coap Short Packet
 extern COAP_PacketLongTypeDef				CoapLongStructure;					//Coap Long Packet
 extern COAP_PacketInfoTypeDef				CoapInfoStructure;					//Coap Info Packet
 
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
 extern MQTTSN_StatusBasicTypeDef			MqttSNStatusBasicStructure;			//MqttSN Basic Status Packet
 extern MQTTSN_StatusExtendTypeDef			MqttSNStatusExtendStructure;			//MqttSN Extend Status Packet
 extern MQTTSN_InfoWorkTypeDef				MqttSNInfoWorkStructure;				//MqttSN Work Info Packet
@@ -172,6 +173,12 @@ extern MQTTSN_InfoBasicTypeDef			MqttSNInfoBasicStructure;			//MqttSN Basic Info
 extern MQTTSN_InfoDynamicTypeDef			MqttSNInfoDynamicStructure;			//MqttSN Dynamic Info Packet
 extern MQTTSN_InfoRadarTypeDef			MqttSNInfoRadarStructure;			//MqttSN Radar Info Packet
 extern MQTTSN_InfoResponseTypeDef			MqttSNInfoResponseStructure;			//MqttSN Response Info Packet
+#endif
+#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
+extern MQTTSN_PacketShortTypeDef			MqttSNShortStructure;				//MqttSN Short Packet
+extern MQTTSN_PacketLongTypeDef			MqttSNLongStructure;				//MqttSN Long Packet
+extern MQTTSN_PacketInfoTypeDef			MqttSNInfoStructure;				//MqttSN Info Packet
+#endif
 
 extern NET_NBIOT_ClientsTypeDef			NetNbiotClientHandler;				//NET NBIOT Clinet Handler
 extern NBIOT_ATCmdTypeDef				NbiotATCmdHandler;					//NBIOT AT Cmd Handler

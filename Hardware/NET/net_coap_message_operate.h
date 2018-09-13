@@ -86,7 +86,7 @@ typedef struct
 	unsigned char						Front;
 	unsigned char						Rear;
 	
-	struct SendParkTypeDef
+	struct CoapSendParkTypeDef
 	{
 		unsigned char					Buffer[COAP_SEND_BUFFER_SIZE];
 		unsigned short					Length;
@@ -99,7 +99,7 @@ typedef struct
 	unsigned char						Front;
 	unsigned char						Rear;
 	
-	struct RecvParkTypeDef
+	struct CoapRecvParkTypeDef
 	{
 		unsigned char					Buffer[COAP_RECV_BUFFER_SIZE];
 		unsigned short					Length;

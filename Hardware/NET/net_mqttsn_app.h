@@ -28,6 +28,8 @@
 #define TOPICID_MOTESTATUS				27921							//27921 -->mvb/51/1/status
 #define TOPICID_MOTEINFO					27922							//27922 -->mvb/51/1/info
 
+#define TOPICID_STANDARD					27931							//27931 -->mvb/51/1/standard
+
 #define TOPICID_PARKINGDEVICEMVB_A_STATUS	28921							//28921 -->ParkingDeviceMvb/A/status
 #define TOPICID_PARKINGDEVICEMVB_A_MOTEINFO	28922							//28921 -->ParkingDeviceMvb/A/moteinfo
 #define TOPICID_PARKINGDEVICEMVB_A_WORKINFO	28923							//28921 -->ParkingDeviceMvb/A/workinfo
@@ -49,7 +51,8 @@ typedef enum
 	OBJECT_TYPE_TMOTES_INFO_BASIC_PUT		= 0x03,							//BASIC		INFO
 	OBJECT_TYPE_TMOTES_INFO_DYNAMIC_PUT	= 0x04,							//DYNAMIC		INFO
 	OBJECT_TYPE_TMOTES_INFO_RADAR_PUT		= 0x05,							//RADAR		INFO
-	OBJECT_TYPE_TMOTES_INFO_RESPONSE_PUT	= 0x06							//RESPONSE	INFO
+	OBJECT_TYPE_TMOTES_INFO_RESPONSE_PUT	= 0x06,							//RESPONSE	INFO
+	OBJECT_TYPE_TMOTES_BYTE_STREAM_PUT		= 0x07							//BYTE		STREAM
 }NET_MQTTSN_ObjectPacketTypeDef;
 
 MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTTSN_MessageDataTypeDef* messageHandler);			//MQTTSN接收处理
@@ -58,6 +61,7 @@ MQTTSN_StatusTypeDef NET_MQTTSN_SendPayloadPacket(MQTTSN_ClientsTypeDef* pClient
 void NET_MQTTSN_APP_PollExecution(MQTTSN_ClientsTypeDef* pClient);				//MqttSN逻辑处理
 void NET_MQTTSN_NBIOT_Event_StopMode(MQTTSN_ClientsTypeDef* pClient);				//停止模式
 void NET_MQTTSN_NBIOT_Event_HardwareReboot(MQTTSN_ClientsTypeDef* pClient);		//硬件重启
+void NET_MQTTSN_NBIOT_Event_ReportError(MQTTSN_ClientsTypeDef* pClient);			//错误码输出
 void NET_MQTTSN_NBIOT_Event_ModuleCheck(MQTTSN_ClientsTypeDef* pClient);			//模块检测
 void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient);		//参数配置
 void NET_MQTTSN_NBIOT_Event_SimICCIDCheck(MQTTSN_ClientsTypeDef* pClient);			//Sim卡检测
