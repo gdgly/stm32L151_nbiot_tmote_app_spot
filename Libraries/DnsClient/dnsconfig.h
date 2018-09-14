@@ -13,13 +13,19 @@
 #define DNS_DATASTACK_SIZE				256
 #define DNS_HOSTNAME_SIZE				30
 #define DNS_HOSTIP_SIZE					17
+#define DNS_ANALYSIS_NUM					2
 
-#define DNS_ANALYSIS_DATA				2
+#define DNS_ANALYSIS_DISABLE				0
+#define DNS_ANALYSIS_ENABLE				1
+#define DNS_ANALYSIS_DATA				1
+
 #define DNS_ANALYSIS_HOSTNAME1			"mqtt.movebroad.cn"
 #define DNS_ANALYSIS_HOSTIP1				"47.98.140.145"
+#define DNS_ANALYSIS_TYPE1				DNS_ANALYSIS_ENABLE
 
 #define DNS_ANALYSIS_HOSTNAME2			"movebroad.cn"
 #define DNS_ANALYSIS_HOSTIP2				"106.14.142.169"
+#define DNS_ANALYSIS_TYPE2				DNS_ANALYSIS_DISABLE
 
 typedef struct DNS_SocketNetTypeDef		DNS_SocketNetTypeDef;
 typedef struct DNS_ClientsTypeDef			DNS_ClientsTypeDef;
@@ -132,7 +138,7 @@ struct DNS_ClientsTypeDef
 	int								LetterCounter;
 	
 	unsigned char						AnalysisTick;
-	DNS_AnalysisDataTypeDef				AnalysisData[DNS_ANALYSIS_DATA];
+	DNS_AnalysisDataTypeDef				AnalysisData[DNS_ANALYSIS_NUM];
 	
 	struct DNSDictateRuningCtlTypeDef
 	{

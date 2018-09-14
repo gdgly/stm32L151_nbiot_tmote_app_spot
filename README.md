@@ -1,6 +1,9 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2018-09-14 :
+	* MqttSN协议增加NB运行时间统计，兼容Coap方式。
+	* DNS解析可配置解析域名个数，可选MqttSN域名，去掉解析movebroad.cn，只解析mqtt.movebroad.cn。
 * 2018-09-13 :
 	* 20V125 :
 	* 版本号修改20V125。

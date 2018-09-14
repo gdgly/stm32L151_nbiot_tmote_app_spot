@@ -346,7 +346,7 @@ static void COAP_NBIOT_GetConnectTime(NBIOT_ClientsTypeDef* pClient, bool startI
  @Function			static void COAP_NBIOT_GetIdleTime(NBIOT_ClientsTypeDef* pClient, bool startConnectTime)
  @Description			COAP_NBIOT_GetIdleTime				: 获取NBIdle状态时间(内部使用)
  @Input				pClient							: NBIOT客户端实例
-					startIdleTime						: 是否开启Connect状态计时器
+					startConnectTime					: 是否开启Connect状态计时器
  @Return				void
 **********************************************************************************************************/
 static void COAP_NBIOT_GetIdleTime(NBIOT_ClientsTypeDef* pClient, bool startConnectTime)

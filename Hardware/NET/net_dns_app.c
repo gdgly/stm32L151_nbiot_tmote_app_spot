@@ -335,6 +335,62 @@ static void DNS_NBIOT_DictateEvent_SuccessExecute(DNS_ClientsTypeDef* pClient, N
 }
 
 /**********************************************************************************************************
+ @Function			static void DNS_NBIOT_GetConnectTime(DNS_ClientsTypeDef* pClient, bool startIdleTime)
+ @Description			DNS_NBIOT_GetConnectTime				: 获取NBConnect状态时间(内部使用)
+ @Input				pClient							: DNS客户端实例
+					startIdleTime						: 是否开启Idle状态计时器
+ @Return				void
+**********************************************************************************************************/
+static void DNS_NBIOT_GetConnectTime(DNS_ClientsTypeDef* pClient, bool startIdleTime)
+{
+	unsigned int uICoapConnectTime = 0;
+	
+	/* Get ConnectTime */
+	uICoapConnectTime = Stm32_EventRunningTime_EndMS(&pClient->SocketStack->NBIotStack->ConnectTimeMS) / 1000;
+	/* End ConnectTime */
+	TCFG_SystemData.CoapConnectTime = pClient->SocketStack->NBIotStack->CoapConnectTimeSec + uICoapConnectTime;
+	pClient->SocketStack->NBIotStack->CoapConnectTimeSec = TCFG_SystemData.CoapConnectTime;
+	/* End ConnectDayTime */
+	TCFG_SystemData.CoapConnectDayTime = pClient->SocketStack->NBIotStack->CoapConnectDayTimeSec + uICoapConnectTime;
+	pClient->SocketStack->NBIotStack->CoapConnectDayTimeSec = TCFG_SystemData.CoapConnectDayTime;
+	/* Start or End IdleTime */
+	if (startIdleTime != false) {
+		Stm32_EventRunningTime_StartMS(&pClient->SocketStack->NBIotStack->IdleTimeMS);
+	}
+	else {
+		Stm32_EventRunningTime_EndMS(&pClient->SocketStack->NBIotStack->IdleTimeMS);
+	}
+}
+
+/**********************************************************************************************************
+ @Function			static void DNS_NBIOT_GetIdleTime(DNS_ClientsTypeDef* pClient, bool startConnectTime)
+ @Description			DNS_NBIOT_GetIdleTime				: 获取NBIdle状态时间(内部使用)
+ @Input				pClient							: DNS客户端实例
+					startConnectTime					: 是否开启Connect状态计时器
+ @Return				void
+**********************************************************************************************************/
+static void DNS_NBIOT_GetIdleTime(DNS_ClientsTypeDef* pClient, bool startConnectTime)
+{
+	unsigned int uICoapIdleTime = 0;
+	
+	/* Get IdleTime */
+	uICoapIdleTime = Stm32_EventRunningTime_EndMS(&pClient->SocketStack->NBIotStack->IdleTimeMS) / 1000;
+	/* End IdleTime */
+	TCFG_SystemData.CoapIdleTime = pClient->SocketStack->NBIotStack->CoapIdleTimeSec + uICoapIdleTime;
+	pClient->SocketStack->NBIotStack->CoapIdleTimeSec = TCFG_SystemData.CoapIdleTime;
+	/* End IdleDayTime */
+	TCFG_SystemData.CoapIdleDayTime = pClient->SocketStack->NBIotStack->CoapIdleDayTimeSec + uICoapIdleTime;
+	pClient->SocketStack->NBIotStack->CoapIdleDayTimeSec = TCFG_SystemData.CoapIdleDayTime;
+	/* Start or End ConnectTime */
+	if (startConnectTime != false) {
+		Stm32_EventRunningTime_StartMS(&pClient->SocketStack->NBIotStack->ConnectTimeMS);
+	}
+	else {
+		Stm32_EventRunningTime_EndMS(&pClient->SocketStack->NBIotStack->ConnectTimeMS);
+	}
+}
+
+/**********************************************************************************************************
  @Function			void NET_DNS_NBIOT_Event_StopMode(DNS_ClientsTypeDef* pClient)
  @Description			NET_DNS_NBIOT_Event_StopMode			: 停止模式
  @Input				pClient							: DNS客户端实例
@@ -378,6 +434,9 @@ void NET_DNS_NBIOT_Event_StopMode(DNS_ClientsTypeDef* pClient)
 #if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
 		DNSByteStreamIndex = NET_MqttSN_Message_SendDataRear();
 #endif
+		/* Get ConnectTime & IdleTime */
+		DNS_NBIOT_GetConnectTime(pClient, false);
+		DNS_NBIOT_GetIdleTime(pClient, false);
 	}
 	
 	if (Stm32_Calculagraph_IsExpiredSec(&pClient->SocketStack->NBIotStack->DictateRunCtl.dictateRunTime) == true) {
@@ -431,6 +490,8 @@ void NET_DNS_NBIOT_Event_HardwareReboot(DNS_ClientsTypeDef* pClient)
 #else
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, MODULE_CHECK, HARDWARE_REBOOT);
 #endif
+		/* Get IdleTime */
+		DNS_NBIOT_GetIdleTime(pClient, true);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("NB HDRBT Ok, Baud:%d", NBIOTBaudRate.Baud);
@@ -1036,7 +1097,11 @@ void NET_DNS_NBIOT_Event_AttachInquire(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, ATTACH_INQUIRE);
 	}
 	else {
+		/* 注网成功 */
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, PARAMETER_CHECKOUT, ATTACH_INQUIRE);
+		
+		/* Get ConnectTime */
+		DNS_NBIOT_GetConnectTime(pClient, true);
 	}
 }
 
@@ -1106,6 +1171,10 @@ void NET_DNS_Event_CreatUDPSocket(DNS_ClientsTypeDef* pClient)
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = DNS_PROCESS_STACK;
 		pClient->ProcessState = DNS_PROCESS_SEND_DNS_STRUCT_DATA;
 		pClient->DictateRunCtl.dictateCreatUDPSocketFailureCnt = 0;
+		
+		/* Get IdleTime */
+		DNS_NBIOT_GetIdleTime(pClient, true);
+		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("DNS Creat UDP Ok");
 #endif
@@ -1327,6 +1396,10 @@ void NET_DNS_Event_CloseUDPSocket(DNS_ClientsTypeDef* pClient)
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = DNS_PROCESS_STACK;
 		pClient->ProcessState = DNS_PROCESS_OVER_DNS_ANALYSIS;
 		pClient->DictateRunCtl.dictateCloseUDPSocketFailureCnt = 0;
+		
+		/* Get ConnectTime */
+		DNS_NBIOT_GetConnectTime(pClient, true);
+		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("DNS Close UDP Ok");
 #endif

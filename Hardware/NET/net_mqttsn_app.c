@@ -344,6 +344,62 @@ static void MQTTSN_NBIOT_DictateEvent_SuccessExecute(MQTTSN_ClientsTypeDef* pCli
 }
 
 /**********************************************************************************************************
+ @Function			static void MQTTSN_NBIOT_GetConnectTime(MQTTSN_ClientsTypeDef* pClient, bool startIdleTime)
+ @Description			MQTTSN_NBIOT_GetConnectTime			: 获取NBConnect状态时间(内部使用)
+ @Input				pClient							: MqttSN客户端实例
+					startIdleTime						: 是否开启Idle状态计时器
+ @Return				void
+**********************************************************************************************************/
+static void MQTTSN_NBIOT_GetConnectTime(MQTTSN_ClientsTypeDef* pClient, bool startIdleTime)
+{
+	unsigned int uICoapConnectTime = 0;
+	
+	/* Get ConnectTime */
+	uICoapConnectTime = Stm32_EventRunningTime_EndMS(&pClient->SocketStack->NBIotStack->ConnectTimeMS) / 1000;
+	/* End ConnectTime */
+	TCFG_SystemData.CoapConnectTime = pClient->SocketStack->NBIotStack->CoapConnectTimeSec + uICoapConnectTime;
+	pClient->SocketStack->NBIotStack->CoapConnectTimeSec = TCFG_SystemData.CoapConnectTime;
+	/* End ConnectDayTime */
+	TCFG_SystemData.CoapConnectDayTime = pClient->SocketStack->NBIotStack->CoapConnectDayTimeSec + uICoapConnectTime;
+	pClient->SocketStack->NBIotStack->CoapConnectDayTimeSec = TCFG_SystemData.CoapConnectDayTime;
+	/* Start or End IdleTime */
+	if (startIdleTime != false) {
+		Stm32_EventRunningTime_StartMS(&pClient->SocketStack->NBIotStack->IdleTimeMS);
+	}
+	else {
+		Stm32_EventRunningTime_EndMS(&pClient->SocketStack->NBIotStack->IdleTimeMS);
+	}
+}
+
+/**********************************************************************************************************
+ @Function			static void MQTTSN_NBIOT_GetIdleTime(MQTTSN_ClientsTypeDef* pClient, bool startConnectTime)
+ @Description			MQTTSN_NBIOT_GetIdleTime				: 获取NBIdle状态时间(内部使用)
+ @Input				pClient							: MqttSN客户端实例
+					startConnectTime					: 是否开启Connect状态计时器
+ @Return				void
+**********************************************************************************************************/
+static void MQTTSN_NBIOT_GetIdleTime(MQTTSN_ClientsTypeDef* pClient, bool startConnectTime)
+{
+	unsigned int uICoapIdleTime = 0;
+	
+	/* Get IdleTime */
+	uICoapIdleTime = Stm32_EventRunningTime_EndMS(&pClient->SocketStack->NBIotStack->IdleTimeMS) / 1000;
+	/* End IdleTime */
+	TCFG_SystemData.CoapIdleTime = pClient->SocketStack->NBIotStack->CoapIdleTimeSec + uICoapIdleTime;
+	pClient->SocketStack->NBIotStack->CoapIdleTimeSec = TCFG_SystemData.CoapIdleTime;
+	/* End IdleDayTime */
+	TCFG_SystemData.CoapIdleDayTime = pClient->SocketStack->NBIotStack->CoapIdleDayTimeSec + uICoapIdleTime;
+	pClient->SocketStack->NBIotStack->CoapIdleDayTimeSec = TCFG_SystemData.CoapIdleDayTime;
+	/* Start or End ConnectTime */
+	if (startConnectTime != false) {
+		Stm32_EventRunningTime_StartMS(&pClient->SocketStack->NBIotStack->ConnectTimeMS);
+	}
+	else {
+		Stm32_EventRunningTime_EndMS(&pClient->SocketStack->NBIotStack->ConnectTimeMS);
+	}
+}
+
+/**********************************************************************************************************
  @Function			void NET_MQTTSN_NBIOT_Event_StopMode(MQTTSN_ClientsTypeDef* pClient)
  @Description			NET_MQTTSN_NBIOT_Event_StopMode		: 停止模式
  @Input				pClient							: MqttSN客户端实例
@@ -387,6 +443,9 @@ void NET_MQTTSN_NBIOT_Event_StopMode(MQTTSN_ClientsTypeDef* pClient)
 #if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
 		MqttSNByteStreamIndex = NET_MqttSN_Message_SendDataRear();
 #endif
+		/* Get ConnectTime & IdleTime */
+		MQTTSN_NBIOT_GetConnectTime(pClient, false);
+		MQTTSN_NBIOT_GetIdleTime(pClient, false);
 	}
 	
 	if (Stm32_Calculagraph_IsExpiredSec(&pClient->SocketStack->NBIotStack->DictateRunCtl.dictateRunTime) == true) {
@@ -440,6 +499,8 @@ void NET_MQTTSN_NBIOT_Event_HardwareReboot(MQTTSN_ClientsTypeDef* pClient)
 #else
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, MODULE_CHECK, HARDWARE_REBOOT);
 #endif
+		/* Get IdleTime */
+		MQTTSN_NBIOT_GetIdleTime(pClient, true);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 		Radio_Trf_Debug_Printf_Level2("NB HDRBT Ok, Baud:%d", NBIOTBaudRate.Baud);
@@ -1045,7 +1106,11 @@ void NET_MQTTSN_NBIOT_Event_AttachInquire(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, ATTACH_INQUIRE);
 	}
 	else {
+		/* 注网成功 */
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, PARAMETER_CHECKOUT, ATTACH_INQUIRE);
+		
+		/* Get ConnectTime */
+		MQTTSN_NBIOT_GetConnectTime(pClient, true);
 	}
 }
 
@@ -1270,6 +1335,8 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 #if NBMQTTSN_SENDCODE_STATUS_BASIC
 	if (NET_MqttSN_Message_StatusBasicisEmpty() != true) {
 		pClient->MessageSendCtl.messageStatusBasic = true;
+		/* Get IdleTime */
+		MQTTSN_NBIOT_GetIdleTime(pClient, true);
 	}
 	if (pClient->MessageSendCtl.messageStatusBasic != false) {
 		if (NET_MQTTSN_SendPayloadPacket(pClient, OBJECT_TYPE_TMOTES_STATUS_BASIC_PUT) != MQTTSN_OK) {
@@ -1306,6 +1373,8 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			NET_MqttSN_Message_StatusBasicOffSet();
 			/* NB 继续活跃注入时间 */
 			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
+			/* Get ConnectTime */
+			MQTTSN_NBIOT_GetConnectTime(pClient, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send StatusBasic Ok");
 #endif
@@ -1317,6 +1386,8 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 #if NBMQTTSN_SENDCODE_STATUS_EXTEND
 	if (NET_MqttSN_Message_StatusExtendisEmpty() != true) {
 		pClient->MessageSendCtl.messageStatusExtend = true;
+		/* Get IdleTime */
+		MQTTSN_NBIOT_GetIdleTime(pClient, true);
 	}
 	if (pClient->MessageSendCtl.messageStatusExtend != false) {
 		if (NET_MQTTSN_SendPayloadPacket(pClient, OBJECT_TYPE_TMOTES_STATUS_EXTEND_PUT) != MQTTSN_OK) {
@@ -1353,6 +1424,8 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			NET_MqttSN_Message_StatusExtendOffSet();
 			/* NB 继续活跃注入时间 */
 			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
+			/* Get ConnectTime */
+			MQTTSN_NBIOT_GetConnectTime(pClient, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send StatusExtend Ok");
 #endif
@@ -1364,6 +1437,8 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 #if NBMQTTSN_SENDCODE_WORK_INFO
 	if (NET_MqttSN_Message_InfoWorkisEmpty() != true) {
 		pClient->MessageSendCtl.messageInfoWork = true;
+		/* Get IdleTime */
+		MQTTSN_NBIOT_GetIdleTime(pClient, true);
 	}
 	if (pClient->MessageSendCtl.messageInfoWork != false) {
 		if (NET_MQTTSN_SendPayloadPacket(pClient, OBJECT_TYPE_TMOTES_INFO_WORK_PUT) != MQTTSN_OK) {
@@ -1400,6 +1475,8 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			NET_MqttSN_Message_InfoWorkOffSet();
 			/* NB 继续活跃注入时间 */
 			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
+			/* Get ConnectTime */
+			MQTTSN_NBIOT_GetConnectTime(pClient, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoWork Ok");
 #endif
@@ -1411,6 +1488,8 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 #if NBMQTTSN_SENDCODE_BASIC_INFO
 	if (NET_MqttSN_Message_InfoBasicisEmpty() != true) {
 		pClient->MessageSendCtl.messageInfoBasic = true;
+		/* Get IdleTime */
+		MQTTSN_NBIOT_GetIdleTime(pClient, true);
 	}
 	if (pClient->MessageSendCtl.messageInfoBasic != false) {
 		if (NET_MQTTSN_SendPayloadPacket(pClient, OBJECT_TYPE_TMOTES_INFO_BASIC_PUT) != MQTTSN_OK) {
@@ -1447,6 +1526,8 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			NET_MqttSN_Message_InfoBasicOffSet();
 			/* NB 继续活跃注入时间 */
 			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
+			/* Get ConnectTime */
+			MQTTSN_NBIOT_GetConnectTime(pClient, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoBasic Ok");
 #endif
@@ -1458,6 +1539,8 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 #if NBMQTTSN_SENDCODE_DYNAMIC_INFO
 	if (NET_MqttSN_Message_InfoDynamicisEmpty() != true) {
 		pClient->MessageSendCtl.messageInfoDynamic = true;
+		/* Get IdleTime */
+		MQTTSN_NBIOT_GetIdleTime(pClient, true);
 	}
 	if (pClient->MessageSendCtl.messageInfoDynamic != false) {
 		if (NET_MQTTSN_SendPayloadPacket(pClient, OBJECT_TYPE_TMOTES_INFO_DYNAMIC_PUT) != MQTTSN_OK) {
@@ -1494,6 +1577,8 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			NET_MqttSN_Message_InfoDynamicOffSet();
 			/* NB 继续活跃注入时间 */
 			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
+			/* Get ConnectTime */
+			MQTTSN_NBIOT_GetConnectTime(pClient, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoDynamic Ok");
 #endif
@@ -1505,6 +1590,8 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 #if NBMQTTSN_SENDCODE_RADAR_INFO
 	if (NET_MqttSN_Message_InfoRadarisEmpty() != true) {
 		pClient->MessageSendCtl.messageInfoRadar = true;
+		/* Get IdleTime */
+		MQTTSN_NBIOT_GetIdleTime(pClient, true);
 	}
 	if (pClient->MessageSendCtl.messageInfoRadar != false) {
 		if (NET_MQTTSN_SendPayloadPacket(pClient, OBJECT_TYPE_TMOTES_INFO_RADAR_PUT) != MQTTSN_OK) {
@@ -1541,6 +1628,8 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			NET_MqttSN_Message_InfoRadarOffSet();
 			/* NB 继续活跃注入时间 */
 			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
+			/* Get ConnectTime */
+			MQTTSN_NBIOT_GetConnectTime(pClient, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoRadar Ok");
 #endif
@@ -1551,6 +1640,8 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 	/* OBJECT_TYPE_TMOTES_INFO_RESPONSE_PUT */
 	if (NET_MqttSN_Message_InfoResponseisEmpty() != true) {
 		pClient->MessageSendCtl.messageInfoResponse = true;
+		/* Get IdleTime */
+		MQTTSN_NBIOT_GetIdleTime(pClient, true);
 	}
 	if (pClient->MessageSendCtl.messageInfoResponse != false) {
 		if (NET_MQTTSN_SendPayloadPacket(pClient, OBJECT_TYPE_TMOTES_INFO_RESPONSE_PUT) != MQTTSN_OK) {
@@ -1587,6 +1678,8 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			NET_MqttSN_Message_InfoResponseOffSet();
 			/* NB 继续活跃注入时间 */
 			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
+			/* Get ConnectTime */
+			MQTTSN_NBIOT_GetConnectTime(pClient, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoResponse Ok");
 #endif
@@ -1598,6 +1691,8 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 	/* OBJECT_TYPE_TMOTES_BYTE_STREAM_PUT */
 	if (NET_MqttSN_Message_SendDataisEmpty() != true) {
 		pClient->MessageSendCtl.messageByteStream = true;
+		/* Get IdleTime */
+		MQTTSN_NBIOT_GetIdleTime(pClient, true);
 	}
 	if (pClient->MessageSendCtl.messageByteStream != false) {
 		if (NET_MQTTSN_SendPayloadPacket(pClient, OBJECT_TYPE_TMOTES_BYTE_STREAM_PUT) != MQTTSN_OK) {
@@ -1630,6 +1725,8 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			NET_MqttSN_Message_SendDataOffSet();
 			/* NB 继续活跃注入时间 */
 			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
+			/* Get ConnectTime */
+			MQTTSN_NBIOT_GetConnectTime(pClient, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send Payload Ok");
 #endif
