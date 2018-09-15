@@ -381,6 +381,9 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NETMqttSNNeedSendCode.StatusBasic = 0;
 		Inspect_Message_SpotStatusOffSet();
 		TCFG_Utility_Add_MqttSN_SentCount();
+	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
+	#endif
 #endif
 	}
 	/* MQTTSN STATUS EXTEND DATA ENQUEUE */
@@ -417,6 +420,9 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NETMqttSNNeedSendCode.StatusExtend = 0;
 		Inspect_Message_SpotStatusOffSet();
 		TCFG_Utility_Add_MqttSN_SentCount();
+	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
+	#endif
 #endif
 	}
 	/* MQTTSN INFO WORK DATA ENQUEUE */
@@ -429,6 +435,9 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NET_MqttSN_Message_InfoWorkEnqueue(MqttSNInfoWorkStructure);
 		NETMqttSNNeedSendCode.InfoWork = 0;
 		TCFG_Utility_Add_MqttSN_SentCount();
+	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
+	#endif
 #endif
 	}
 	/* MQTTSN INFO BASIC DATA ENQUEUE */
@@ -441,6 +450,9 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NET_MqttSN_Message_InfoBasicEnqueue(MqttSNInfoBasicStructure);
 		NETMqttSNNeedSendCode.InfoBasic = 0;
 		TCFG_Utility_Add_MqttSN_SentCount();
+	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
+	#endif
 #endif
 	}
 	/* MQTTSN INFO DYNAMIC DATA ENQUEUE */
@@ -453,6 +465,9 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NET_MqttSN_Message_InfoDynamicEnqueue(MqttSNInfoDynamicStructure);
 		NETMqttSNNeedSendCode.InfoDynamic = 0;
 		TCFG_Utility_Add_MqttSN_SentCount();
+	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
+	#endif
 #endif
 	}
 	/* MQTTSN INFO RADAR DATA ENQUEUE */
@@ -462,6 +477,9 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NET_MqttSN_Message_InfoRadarEnqueue(MqttSNInfoRadarStructure);
 		NETMqttSNNeedSendCode.InfoRadar = 0;
 		TCFG_Utility_Add_MqttSN_SentCount();
+	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
+	#endif
 #endif
 	}
 	/* MQTTSN INFO RESPONSE DATA ENQUEUE */
@@ -471,6 +489,9 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NET_MqttSN_Message_InfoResponseEnqueue(MqttSNInfoResponseStructure);
 		NETMqttSNNeedSendCode.InfoResponse = 0;
 		TCFG_Utility_Add_MqttSN_SentCount();
+	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
+	#endif
 	}
 #endif
 
@@ -498,6 +519,9 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NETMqttSNNeedSendCode.StatusBasic = 0;
 		Inspect_Message_SpotStatusOffSet();
 		TCFG_Utility_Add_MqttSN_SentCount();
+	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
+	#endif
 #endif
 	}
 	/* MQTTSN LONG STATUS DATA ENQUEUE */
@@ -548,6 +572,9 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NETMqttSNNeedSendCode.StatusExtend = 0;
 		Inspect_Message_SpotStatusOffSet();
 		TCFG_Utility_Add_MqttSN_SentCount();
+	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
+	#endif
 #endif
 	}
 	/* MQTTSN INFO WORK DATA ENQUEUE */
@@ -572,6 +599,9 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNInfoStructure, sizeof(MqttSNInfoStructure) - sizeof(MqttSNInfoStructure.InfoData) + len);
 		NETMqttSNNeedSendCode.InfoWork = 0;
 		TCFG_Utility_Add_MqttSN_SentCount();
+	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
+	#endif
 #endif
 	}
 	/* MQTTSN INFO BASIC DATA ENQUEUE */
@@ -596,6 +626,9 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNInfoStructure, sizeof(MqttSNInfoStructure) - sizeof(MqttSNInfoStructure.InfoData) + len);
 		NETMqttSNNeedSendCode.InfoBasic = 0;
 		TCFG_Utility_Add_MqttSN_SentCount();
+	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
+	#endif
 #endif
 	}
 	/* MQTTSN INFO DYNAMIC DATA ENQUEUE */
@@ -620,6 +653,9 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNInfoStructure, sizeof(MqttSNInfoStructure) - sizeof(MqttSNInfoStructure.InfoData) + len);
 		NETMqttSNNeedSendCode.InfoDynamic = 0;
 		TCFG_Utility_Add_MqttSN_SentCount();
+	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
+	#endif
 #endif
 	}
 	/* MQTTSN INFO RADAR DATA ENQUEUE */
@@ -641,6 +677,9 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNInfoStructure, sizeof(MqttSNInfoStructure) - sizeof(MqttSNInfoStructure.InfoData) + len);
 		NETMqttSNNeedSendCode.InfoRadar = 0;
 		TCFG_Utility_Add_MqttSN_SentCount();
+	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
+	#endif
 #endif
 	}
 	/* MQTTSN INFO RESPONSE DATA ENQUEUE */
@@ -661,6 +700,9 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNInfoStructure, sizeof(MqttSNInfoStructure) - sizeof(MqttSNInfoStructure.InfoData) + len);
 		NETMqttSNNeedSendCode.InfoResponse = 0;
 		TCFG_Utility_Add_MqttSN_SentCount();
+	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
+	#endif
 	}
 	
 #endif

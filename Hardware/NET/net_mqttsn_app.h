@@ -37,10 +37,10 @@
 
 #define TOPICID_TESTING_MVBKK				29921							//29921 -->/testing/mvbkk/
 
-#define TNET_MQTTSN_ACTIVE_DURATION		100
-#define TNET_MQTTSN_SLEEP_DURATION			14400
-#define TNET_MQTTSN_PINGREG_DURATION		7200
-#define TNET_MQTTSN_LOST_DURATION			300
+#define TNET_MQTTSN_ACTIVE_DURATION		MQTTSN_EVENT_ACTIVE_DURATION
+#define TNET_MQTTSN_SLEEP_DURATION			MQTTSN_EVENT_SLEEP_DURATION
+#define TNET_MQTTSN_PINGREG_DURATION		MQTTSN_EVENT_PINGREG_DURATION
+#define TNET_MQTTSN_LOST_DURATION			MQTTSN_EVENT_LOST_DURATION
 
 /* MQTTSN ObjectPacket */
 typedef enum
@@ -81,5 +81,12 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient);					//ACTIVE
 void NET_MQTTSN_Event_Sleep(MQTTSN_ClientsTypeDef* pClient);					//SLEEP
 void NET_MQTTSN_Event_Aweak(MQTTSN_ClientsTypeDef* pClient);					//AWAKE
 void NET_MQTTSN_Event_Lost(MQTTSN_ClientsTypeDef* pClient);						//LOST
+
+void NET_MQTTSN_Listen_PollExecution(MQTTSN_ClientsTypeDef* pClient);				//MQTTSN监听器处理
+void NET_MQTTSN_NBIOT_Listen_Enable_EnterNone(MQTTSN_ClientsTypeDef* pClient);		//事件(进入None模式)监听
+#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+void NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter(MQTTSN_ClientsTypeDef* pClient);	//使能(进入NBIOT运行信息)监听
+void NET_MQTTSN_NBIOT_Listen_Event_EnterParameter(MQTTSN_ClientsTypeDef* pClient);	//事件(进入NBIOT运行信息)监听
+#endif
 
 #endif /* __NET_MQTTSN_APP_H */

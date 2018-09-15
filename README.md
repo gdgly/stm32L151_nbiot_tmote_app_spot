@@ -1,7 +1,12 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2018-09-15 :
+	* 优化监听器代码。
 * 2018-09-14 :
+	* 20V126 :
+	* 版本号修改20V126。
+	* 增加MqttSN监听处理，监听进入休眠时15秒后检出NB网络信息。
 	* MqttSN协议增加NB运行时间统计，兼容Coap方式。
 	* DNS解析可配置解析域名个数，可选MqttSN域名，去掉解析movebroad.cn，只解析mqtt.movebroad.cn。
 * 2018-09-13 :

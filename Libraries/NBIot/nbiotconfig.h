@@ -38,8 +38,9 @@
 #define EnableBipVal					NConfigFalse										//False
 
 /* NBIOT 事件监听器配置 */
-#define NBCOAP_LISTEN_MODE_ENTER_IDLE		ENTER_IDLE_MODE
-#define NBCOAP_LISTEN_MODE_ENTER_PARAMETER	ENTER_PARAMETER_CHECKOUT
+#define NBCOAP_LISTEN_MODE_ENTER_NONE		COAP_ENTER_NONE
+#define NBCOAP_LISTEN_MODE_ENTER_IDLE		COAP_ENTER_IDLE_MODE
+#define NBCOAP_LISTEN_MODE_ENTER_PARAMETER	COAP_ENTER_PARAMETER_CHECKOUT
 #define NBCOAP_LISTEN_DEFAULT_BOOTMODE		NBCOAP_LISTEN_MODE_ENTER_PARAMETER						//Coap监听NB默认起始模式
 
 #define NBCOAP_LISTEN_ENTER_IDLE_SEC		35												//Coap监听NB进入IDLE等待时间
@@ -331,8 +332,9 @@ typedef enum
 /* NBIOT Listen Event */
 typedef enum
 {
-	ENTER_IDLE_MODE					= 0x00,											//进入IDLE模式监听
-	ENTER_PARAMETER_CHECKOUT				= 0x01											//进入NBIOT运行信息监听
+	COAP_ENTER_NONE					= 0x00,											//无监听
+	COAP_ENTER_IDLE_MODE				= 0x01,											//进入IDLE模式监听
+	COAP_ENTER_PARAMETER_CHECKOUT			= 0x02											//进入NBIOT运行信息监听
 }NBIOT_ListenEventTypeDef;
 
 /* NBIOT CDP Server */
@@ -540,10 +542,10 @@ struct NBIOT_ClientsTypeDef
 	}DictateRunCtl;
 	
 	/* 事件运行监听器 */
-	struct NBIOTListenRuningCtlTypeDef
+	struct COAPListenRuningCtlTypeDef
 	{
 #if NBCOAP_LISTEN_IDLE_TYPE == NBCOAP_LISTEN_IDLE_ENABLE
-		struct ListenEnterIdleTypeDef
+		struct COAPListenEnterIdleTypeDef
 		{
 			bool						listenEnable;
 			bool						listenStatus;
@@ -560,7 +562,7 @@ struct NBIOT_ClientsTypeDef
 		}ListenEnterIdle;
 #endif
 #if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
-		struct ListenEnterParameterTypeDef
+		struct COAPListenEnterParameterTypeDef
 		{
 			bool						listenEnable;
 			bool						listenStatus;
@@ -576,7 +578,6 @@ struct NBIOT_ClientsTypeDef
 			}EventCtl;
 		}ListenEnterParameter;
 #endif
-		
 		NBIOT_ListenEventTypeDef			listenEvent;
 	}ListenRunCtl;
 	

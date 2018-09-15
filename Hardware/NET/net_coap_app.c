@@ -2189,18 +2189,36 @@ void NET_COAP_Listen_PollExecution(NBIOT_ClientsTypeDef* pClient)
 {
 	switch (pClient->ListenRunCtl.listenEvent)
 	{
-	case ENTER_IDLE_MODE:
+	case NBCOAP_LISTEN_MODE_ENTER_NONE:
+		NET_COAP_NBIOT_Listen_Event_EnterNone(pClient);
+		break;
+	
+	case NBCOAP_LISTEN_MODE_ENTER_IDLE:
 #if NBCOAP_LISTEN_IDLE_TYPE == NBCOAP_LISTEN_IDLE_ENABLE
 		NET_COAP_NBIOT_Listen_Event_EnterIdleMode(pClient);
 #endif
 		break;
 	
-	case ENTER_PARAMETER_CHECKOUT:
+	case NBCOAP_LISTEN_MODE_ENTER_PARAMETER:
 #if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
 		NET_COAP_NBIOT_Listen_Event_EnterParameter(pClient);
 #endif
 		break;
 	}
+}
+
+/**********************************************************************************************************
+ @Function			void NET_COAP_NBIOT_Listen_Event_EnterNone(NBIOT_ClientsTypeDef* pClient)
+ @Description			NET_COAP_NBIOT_Listen_Event_EnterNone		: 事件(进入None模式)监听
+ @Input				pClient								: NBIOT客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_COAP_NBIOT_Listen_Event_EnterNone(NBIOT_ClientsTypeDef* pClient)
+{
+	pClient->DictateRunCtl.dictateEnable = false;
+	pClient->DictateRunCtl.dictateEvent = NBCOAP_SENDMODE_TYPE;
+	pClient->ListenRunCtl.listenEvent = NBCOAP_LISTEN_DEFAULT_BOOTMODE;
+	pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
 }
 
 #if NBCOAP_LISTEN_IDLE_TYPE == NBCOAP_LISTEN_IDLE_ENABLE
@@ -2246,7 +2264,7 @@ void NET_COAP_NBIOT_Listen_Event_EnterIdleMode(NBIOT_ClientsTypeDef* pClient)
 			if (NBIOT_Neul_NBxx_CheckReadSignalConnectionStatus(pClient) == NBIOT_OK) {
 				/* Dictate execute is Success */
 				pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventEnable = false;
-				pClient->ListenRunCtl.listenEvent = ENTER_IDLE_MODE;
+				pClient->ListenRunCtl.listenEvent = NBCOAP_LISTEN_MODE_ENTER_IDLE;
 				pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventFailureCnt = 0;
 			}
 			else {
@@ -2254,7 +2272,7 @@ void NET_COAP_NBIOT_Listen_Event_EnterIdleMode(NBIOT_ClientsTypeDef* pClient)
 				if (Stm32_Calculagraph_IsExpiredSec(&pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventRunTime) == true) {
 					/* Dictate TimeOut */
 					pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventEnable = false;
-					pClient->ListenRunCtl.listenEvent = ENTER_IDLE_MODE;
+					pClient->ListenRunCtl.listenEvent = NBCOAP_LISTEN_MODE_ENTER_IDLE;
 					pClient->DictateRunCtl.dictateEnable = false;
 					pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
 					pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventFailureCnt++;
@@ -2265,7 +2283,7 @@ void NET_COAP_NBIOT_Listen_Event_EnterIdleMode(NBIOT_ClientsTypeDef* pClient)
 				}
 				else {
 					/* Dictate isn't TimeOut */
-					pClient->ListenRunCtl.listenEvent = ENTER_IDLE_MODE;
+					pClient->ListenRunCtl.listenEvent = NBCOAP_LISTEN_MODE_ENTER_IDLE;
 				}
 				return;
 			}
@@ -2274,7 +2292,7 @@ void NET_COAP_NBIOT_Listen_Event_EnterIdleMode(NBIOT_ClientsTypeDef* pClient)
 				/* Entered Idle Mode */
 				pClient->ListenRunCtl.ListenEnterIdle.listenEnable = false;
 				pClient->ListenRunCtl.ListenEnterIdle.listenStatus = false;
-				pClient->ListenRunCtl.listenEvent = ENTER_IDLE_MODE;
+				pClient->ListenRunCtl.listenEvent = NBCOAP_LISTEN_MODE_ENTER_IDLE;
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 				Radio_Trf_Debug_Printf_Level2("NB Enter IDLE Mode");
 #endif
@@ -2283,7 +2301,7 @@ void NET_COAP_NBIOT_Listen_Event_EnterIdleMode(NBIOT_ClientsTypeDef* pClient)
 				/* Not Entered Idle Mode */
 				pClient->ListenRunCtl.ListenEnterIdle.listenEnable = false;
 				pClient->ListenRunCtl.ListenEnterIdle.listenStatus = false;
-				pClient->ListenRunCtl.listenEvent = ENTER_IDLE_MODE;
+				pClient->ListenRunCtl.listenEvent = NBCOAP_LISTEN_MODE_ENTER_IDLE;
 				#if NBCOAP_SENDCODE_WORK_INFO
 				NETCoapNeedSendCode.WorkInfo = 1;
 				#endif
@@ -2296,7 +2314,7 @@ void NET_COAP_NBIOT_Listen_Event_EnterIdleMode(NBIOT_ClientsTypeDef* pClient)
 	
 	pClient->DictateRunCtl.dictateEnable = false;
 	pClient->DictateRunCtl.dictateEvent = LISTEN_RUN_CTL;
-	pClient->ListenRunCtl.listenEvent = ENTER_PARAMETER_CHECKOUT;
+	pClient->ListenRunCtl.listenEvent = NBCOAP_LISTEN_MODE_ENTER_PARAMETER;
 }
 #endif
 
@@ -2344,7 +2362,7 @@ void NET_COAP_NBIOT_Listen_Event_EnterParameter(NBIOT_ClientsTypeDef* pClient)
 			    (NBIOT_Neul_NBxx_CheckReadStatisticsRADIO(pClient) == NBIOT_OK)) {
 				/* Dictate execute is Success */
 				pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventEnable = false;
-				pClient->ListenRunCtl.listenEvent = ENTER_PARAMETER_CHECKOUT;
+				pClient->ListenRunCtl.listenEvent = NBCOAP_LISTEN_MODE_ENTER_PARAMETER;
 				pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt = 0;
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 				Radio_Trf_Debug_Printf_Level2("Coap Patameter Check Ok");
@@ -2357,7 +2375,7 @@ void NET_COAP_NBIOT_Listen_Event_EnterParameter(NBIOT_ClientsTypeDef* pClient)
 				if (Stm32_Calculagraph_IsExpiredSec(&pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventRunTime) == true) {
 					/* Dictate TimeOut */
 					pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventEnable = false;
-					pClient->ListenRunCtl.listenEvent = ENTER_PARAMETER_CHECKOUT;
+					pClient->ListenRunCtl.listenEvent = NBCOAP_LISTEN_MODE_ENTER_PARAMETER;
 					pClient->DictateRunCtl.dictateEnable = false;
 					pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
 					pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt++;
@@ -2368,7 +2386,7 @@ void NET_COAP_NBIOT_Listen_Event_EnterParameter(NBIOT_ClientsTypeDef* pClient)
 				}
 				else {
 					/* Dictate isn't TimeOut */
-					pClient->ListenRunCtl.listenEvent = ENTER_PARAMETER_CHECKOUT;
+					pClient->ListenRunCtl.listenEvent = NBCOAP_LISTEN_MODE_ENTER_PARAMETER;
 				}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 				Radio_Trf_Debug_Printf_Level2("Coap Patameter Check Fail");
@@ -2378,7 +2396,7 @@ void NET_COAP_NBIOT_Listen_Event_EnterParameter(NBIOT_ClientsTypeDef* pClient)
 			
 			pClient->ListenRunCtl.ListenEnterParameter.listenEnable = false;
 			pClient->ListenRunCtl.ListenEnterParameter.listenStatus = false;
-			pClient->ListenRunCtl.listenEvent = ENTER_PARAMETER_CHECKOUT;
+			pClient->ListenRunCtl.listenEvent = NBCOAP_LISTEN_MODE_ENTER_PARAMETER;
 		}
 	}
 	

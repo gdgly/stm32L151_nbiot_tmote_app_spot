@@ -134,7 +134,7 @@ void NET_MQTTSN_APP_PollExecution(MQTTSN_ClientsTypeDef* pClient)
 		break;
 	
 	case LISTEN_RUN_CTL:
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+		NET_MQTTSN_Listen_PollExecution(pClient);
 		break;
 	
 	default :
@@ -1371,6 +1371,9 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageStatusBasic = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_StatusBasicOffSet();
+		#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+			NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter(pClient);
+		#endif
 			/* NB 继续活跃注入时间 */
 			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
 			/* Get ConnectTime */
@@ -1422,6 +1425,9 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageStatusExtend = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_StatusExtendOffSet();
+		#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+			NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter(pClient);
+		#endif
 			/* NB 继续活跃注入时间 */
 			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
 			/* Get ConnectTime */
@@ -1473,6 +1479,9 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageInfoWork = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoWorkOffSet();
+		#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+			NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter(pClient);
+		#endif
 			/* NB 继续活跃注入时间 */
 			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
 			/* Get ConnectTime */
@@ -1524,6 +1533,9 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageInfoBasic = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoBasicOffSet();
+		#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+			NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter(pClient);
+		#endif
 			/* NB 继续活跃注入时间 */
 			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
 			/* Get ConnectTime */
@@ -1575,6 +1587,9 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageInfoDynamic = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoDynamicOffSet();
+		#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+			NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter(pClient);
+		#endif
 			/* NB 继续活跃注入时间 */
 			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
 			/* Get ConnectTime */
@@ -1626,6 +1641,9 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageInfoRadar = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoRadarOffSet();
+		#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+			NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter(pClient);
+		#endif
 			/* NB 继续活跃注入时间 */
 			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
 			/* Get ConnectTime */
@@ -1676,6 +1694,9 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageInfoResponse = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoResponseOffSet();
+		#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+			NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter(pClient);
+		#endif
 			/* NB 继续活跃注入时间 */
 			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
 			/* Get ConnectTime */
@@ -1723,6 +1744,9 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageByteStream = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_SendDataOffSet();
+		#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+			NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter(pClient);
+		#endif
 			/* NB 继续活跃注入时间 */
 			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
 			/* Get ConnectTime */
@@ -1871,7 +1895,7 @@ void NET_MQTTSN_Event_Sleep(MQTTSN_ClientsTypeDef* pClient)
 	}
 	else {
 		pClient->DictateRunCtl.dictateEnable = false;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
+		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = LISTEN_RUN_CTL;
 		pClient->SubState = MQTTSN_SUBSTATE_SLEEP;
 		pClient->DictateRunCtl.dictateSleepFailureCnt = 0;
 	}
@@ -2455,5 +2479,133 @@ MQTTSN_StatusTypeDef NET_MQTTSN_SendPayloadPacket(MQTTSN_ClientsTypeDef* pClient
 	
 	return MQTTSNStatus;
 }
+
+
+/**********************************************************************************************************
+ @Function			void NET_MQTTSN_Listen_PollExecution(MQTTSN_ClientsTypeDef* pClient)
+ @Description			NET_MQTTSN_Listen_PollExecution		: MQTTSN监听器处理
+ @Input				pClient							: MQTTSN客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_MQTTSN_Listen_PollExecution(MQTTSN_ClientsTypeDef* pClient)
+{
+	switch (pClient->ListenRunCtl.listenEvent)
+	{
+	case NBMQTTSN_LISTEN_MODE_ENTER_NONE:
+		NET_MQTTSN_NBIOT_Listen_Enable_EnterNone(pClient);
+		break;
+	
+	case NBMQTTSN_LISTEN_MODE_ENTER_PARAMETER:
+#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+		NET_MQTTSN_NBIOT_Listen_Event_EnterParameter(pClient);
+#endif
+		break;
+	}
+}
+
+/**********************************************************************************************************
+ @Function			void NET_MQTTSN_NBIOT_Listen_Enable_EnterNone(MQTTSN_ClientsTypeDef* pClient)
+ @Description			NET_MQTTSN_NBIOT_Listen_Enable_EnterNone	: 事件(进入None模式)监听
+ @Input				pClient								: MQTTSN客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_MQTTSN_NBIOT_Listen_Enable_EnterNone(MQTTSN_ClientsTypeDef* pClient)
+{
+	pClient->DictateRunCtl.dictateEnable = false;
+	pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
+	pClient->SubState = MQTTSN_SUBSTATE_SLEEP;
+	pClient->ListenRunCtl.listenEvent = NBMQTTSN_LISTEN_DEFAULT_BOOTMODE;
+}
+
+#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+/**********************************************************************************************************
+ @Function			void NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter(MQTTSN_ClientsTypeDef* pClient)
+ @Description			NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter: 使能(进入NBIOT运行信息)监听
+ @Input				pClient								: MQTTSN客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter(MQTTSN_ClientsTypeDef* pClient)
+{
+	Stm32_CalculagraphTypeDef listenRunTime;
+	
+	/* Listen Enable */
+	if (pClient->ListenRunCtl.ListenEnterParameter.listenEnable == true) {
+		pClient->ListenRunCtl.ListenEnterParameter.listenStatus = true;
+		Stm32_Calculagraph_CountdownSec(&listenRunTime, pClient->ListenRunCtl.ListenEnterParameter.listenTimereachSec);
+		pClient->ListenRunCtl.ListenEnterParameter.listenRunTime = listenRunTime;
+	}
+}
+
+/**********************************************************************************************************
+ @Function			void NET_MQTTSN_NBIOT_Listen_Event_EnterParameter(MQTTSN_ClientsTypeDef* pClient)
+ @Description			NET_MQTTSN_NBIOT_Listen_Event_EnterParameter	: 事件(进入NBIOT运行信息)监听
+ @Input				pClient								: MQTTSN客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_MQTTSN_NBIOT_Listen_Event_EnterParameter(MQTTSN_ClientsTypeDef* pClient)
+{
+	Stm32_CalculagraphTypeDef eventRunTime;
+	
+	if ((pClient->ListenRunCtl.ListenEnterParameter.listenEnable == true) && (pClient->ListenRunCtl.ListenEnterParameter.listenStatus == true)) {
+		if (Stm32_Calculagraph_IsExpiredSec(&pClient->ListenRunCtl.ListenEnterParameter.listenRunTime) == true) {
+			
+			/* It is the first time to execute */
+			if (pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventEnable != true) {
+				pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventEnable = true;
+				pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventTimeoutSec = 30;
+				Stm32_Calculagraph_CountdownSec(&eventRunTime, pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventTimeoutSec);
+				pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventRunTime = eventRunTime;
+			}
+			
+			if ((NBIOT_Neul_NBxx_CheckReadRSSI(pClient->SocketStack->NBIotStack) == NBIOT_OK) &&
+			    (NBIOT_Neul_NBxx_CheckReadStatisticsRADIO(pClient->SocketStack->NBIotStack) == NBIOT_OK)) {
+				/* Dictate execute is Success */
+				pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventEnable = false;
+				pClient->ListenRunCtl.listenEvent = NBMQTTSN_LISTEN_MODE_ENTER_PARAMETER;
+				pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt = 0;
+#ifdef MQTTSN_DEBUG_LOG_RF_PRINT
+				Radio_Trf_Debug_Printf_Level2("MqttSN Patameter Check Ok");
+				Radio_Trf_Printf("RSSI:%d", pClient->SocketStack->NBIotStack->Parameter.rssi);
+				Radio_Trf_Printf("SNR:%d", pClient->SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR);
+#endif
+			}
+			else {
+				/* Dictate execute is Fail */
+				if (Stm32_Calculagraph_IsExpiredSec(&pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventRunTime) == true) {
+					/* Dictate TimeOut */
+					pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventEnable = false;
+					pClient->ListenRunCtl.listenEvent = NBMQTTSN_LISTEN_MODE_ENTER_PARAMETER;
+					pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
+					pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+					pClient->SubState = MQTTSN_SUBSTATE_INIT;
+					pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_DNS;
+					pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt++;
+					if (pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt > 3) {
+						pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt = 0;
+						pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = STOP_MODE;
+					}
+				}
+				else {
+					/* Dictate isn't TimeOut */
+					pClient->ListenRunCtl.listenEvent = NBMQTTSN_LISTEN_MODE_ENTER_PARAMETER;
+				}
+#ifdef COAP_DEBUG_LOG_RF_PRINT
+				Radio_Trf_Debug_Printf_Level2("MqttSN Patameter Check Fail");
+#endif
+				return;
+			}
+			
+			pClient->ListenRunCtl.ListenEnterParameter.listenEnable = false;
+			pClient->ListenRunCtl.ListenEnterParameter.listenStatus = false;
+			pClient->ListenRunCtl.listenEvent = NBMQTTSN_LISTEN_MODE_ENTER_PARAMETER;
+		}
+	}
+	
+	pClient->DictateRunCtl.dictateEnable = false;
+	pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
+	pClient->SubState = MQTTSN_SUBSTATE_SLEEP;
+	pClient->ListenRunCtl.listenEvent = NBMQTTSN_LISTEN_DEFAULT_BOOTMODE;
+}
+#endif
 
 /********************************************** END OF FLEE **********************************************/

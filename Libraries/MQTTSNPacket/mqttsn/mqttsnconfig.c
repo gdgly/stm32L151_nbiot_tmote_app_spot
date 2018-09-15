@@ -75,6 +75,17 @@ void MQTTSN_Client_Init(MQTTSN_ClientsTypeDef* pClient, MQTTSN_SocketNetTypeDef*
 	pClient->MessageSendCtl.messageInfoResponse					= false;
 	pClient->MessageSendCtl.messageByteStream					= false;
 	
+	/* 事件运行监听器 */
+#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+	pClient->ListenRunCtl.ListenEnterParameter.listenEnable			= false;
+	pClient->ListenRunCtl.ListenEnterParameter.listenStatus			= false;
+	pClient->ListenRunCtl.ListenEnterParameter.listenTimereachSec		= NBMQTTSN_LISTEN_ENTER_PARAMETER_SEC;
+	pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventEnable		= false;
+	pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventTimeoutSec	= 0;
+	pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt	= 0;
+#endif
+	pClient->ListenRunCtl.listenEvent								= NBMQTTSN_LISTEN_DEFAULT_BOOTMODE;
+	
 	pClient->MsgId											= 1;
 	pClient->defaultMessageHandler							= NULL;
 	pClient->SubState										= MQTTSN_SUBSTATE_INIT;

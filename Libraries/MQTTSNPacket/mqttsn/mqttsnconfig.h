@@ -6,8 +6,8 @@
 #include "nbiotconfig.h"
 #include "net_nbiot_app.h"
 
-#define MAX_MSG_ID						65535							/* according to the MQTT specification - do not change! */
-#define MAX_MESSAGE_HANDLERS				5								/* redefinable - how many subscriptions do you want? */
+#define MAX_MSG_ID						65535											/* according to the MQTT specification - do not change! */
+#define MAX_MESSAGE_HANDLERS				5												/* redefinable - how many subscriptions do you want? */
 
 #define MQTTSN_COMMAND_TIMEOUT_SEC			30
 #define MQTTSN_COMMAND_FAILURE_CNT			3
@@ -15,6 +15,23 @@
 /* MQTTSN 协议栈开辟缓存大小 */
 #define MQTTSN_BUFFER_SIZE				512
 #define MQTTSN_DATASTACK_SIZE				512
+
+/* MQTTSN 协议工作时间 */
+#define MQTTSN_EVENT_ACTIVE_DURATION		100												//Active
+#define MQTTSN_EVENT_SLEEP_DURATION		14400											//Sleep
+#define MQTTSN_EVENT_PINGREG_DURATION		7200												//Ping
+#define MQTTSN_EVENT_LOST_DURATION			300												//Lost
+
+/* MQTTSN 事件监听器配置 */
+#define NBMQTTSN_LISTEN_MODE_ENTER_NONE		MQTTSN_ENTER_NONE
+#define NBMQTTSN_LISTEN_MODE_ENTER_PARAMETER	MQTTSN_ENTER_PARAMETER_CHECKOUT
+#define NBMQTTSN_LISTEN_DEFAULT_BOOTMODE	NBMQTTSN_LISTEN_MODE_ENTER_PARAMETER					//MqttSN监听NB默认起始模式
+
+#define NBMQTTSN_LISTEN_ENTER_PARAMETER_SEC	15 + MQTTSN_EVENT_ACTIVE_DURATION						//MqttSN监听NB进入参数检查等待时间
+
+#define NBMQTTSN_LISTEN_PARAMETER_DISABLE	0
+#define NBMQTTSN_LISTEN_PARAMETER_ENABLE	1
+#define NBMQTTSN_LISTEN_PARAMETER_TYPE		NBMQTTSN_LISTEN_PARAMETER_ENABLE						//MqttSN监听NB进入参数检查模式
 
 typedef struct MQTTSN_SocketNetTypeDef		MQTTSN_SocketNetTypeDef;
 typedef struct MQTTSN_MessageTypeDef		MQTTSN_MessageTypeDef;
@@ -50,6 +67,13 @@ typedef enum
 	MQTTSN_SUBSTATE_AWAKE				= 0x04,
 	MQTTSN_SUBSTATE_LOST				= 0x05
 }MQTTSN_SubStateTypeDef;
+
+/* MQTTSN Listen Event */
+typedef enum
+{
+	MQTTSN_ENTER_NONE					= 0x00,											//无监听
+	MQTTSN_ENTER_PARAMETER_CHECKOUT		= 0x01											//进入NBIOT运行信息监听
+}MQTTSN_ListenEventTypeDef;
 
 /* MQTTSN Socket */
 struct MQTTSN_SocketNetTypeDef
@@ -111,6 +135,29 @@ struct MQTTSN_ClientsTypeDef
 		Stm32_CalculagraphTypeDef		dictateRunTime;
 		bool							dictateSubscribeStatus;
 	}DictateRunCtl;
+	
+	/* 事件运行监听器 */
+	struct MQTTSNListenRuningCtlTypeDef
+	{
+#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+		struct MQTTSNListenEnterParameterTypeDef
+		{
+			bool						listenEnable;
+			bool						listenStatus;
+			unsigned int				listenTimereachSec;
+			Stm32_CalculagraphTypeDef	listenRunTime;
+			
+			struct MQTTSNEventCtlParameterTypedef
+			{
+				bool						eventEnable;
+				unsigned int				eventTimeoutSec;
+				unsigned char				eventFailureCnt;
+				Stm32_CalculagraphTypeDef	eventRunTime;
+			}EventCtl;
+		}ListenEnterParameter;
+#endif
+		MQTTSN_ListenEventTypeDef		listenEvent;
+	}ListenRunCtl;
 	
 	struct MQTTSNMessageSendCtlTypeDef
 	{
