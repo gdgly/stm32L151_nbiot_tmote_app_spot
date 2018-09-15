@@ -146,9 +146,6 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NETCoapNeedSendCode.ShortStatus = 0;
 		Inspect_Message_SpotStatusOffSet();
 		TCFG_Utility_Add_Coap_SentCount();
-	#if NBCOAP_LISTEN_IDLE_TYPE == NBCOAP_LISTEN_IDLE_ENABLE
-		NbiotClientHandler.ListenRunCtl.ListenEnterIdle.listenEnable = true;
-	#endif
 	#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
 		NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
 	#endif
@@ -202,9 +199,6 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NETCoapNeedSendCode.LongStatus = 0;
 		Inspect_Message_SpotStatusOffSet();
 		TCFG_Utility_Add_Coap_SentCount();
-	#if NBCOAP_LISTEN_IDLE_TYPE == NBCOAP_LISTEN_IDLE_ENABLE
-		NbiotClientHandler.ListenRunCtl.ListenEnterIdle.listenEnable = true;
-	#endif
 	#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
 		NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
 	#endif
@@ -232,9 +226,6 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NET_Coap_Message_SendDataEnqueue((unsigned char *)&CoapInfoStructure, sizeof(CoapInfoStructure) - sizeof(CoapInfoStructure.InfoData) + len);
 		NETCoapNeedSendCode.WorkInfo = 0;
 		TCFG_Utility_Add_Coap_SentCount();
-	#if NBCOAP_LISTEN_IDLE_TYPE == NBCOAP_LISTEN_IDLE_ENABLE
-		NbiotClientHandler.ListenRunCtl.ListenEnterIdle.listenEnable = NbiotClientHandler.ListenRunCtl.ListenEnterIdle.listenEnable;
-	#endif
 	#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
 		NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
 	#endif
@@ -262,9 +253,6 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NET_Coap_Message_SendDataEnqueue((unsigned char *)&CoapInfoStructure, sizeof(CoapInfoStructure) - sizeof(CoapInfoStructure.InfoData) + len);
 		NETCoapNeedSendCode.BasicInfo = 0;
 		TCFG_Utility_Add_Coap_SentCount();
-	#if NBCOAP_LISTEN_IDLE_TYPE == NBCOAP_LISTEN_IDLE_ENABLE
-		NbiotClientHandler.ListenRunCtl.ListenEnterIdle.listenEnable = true;
-	#endif
 	#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
 		NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
 	#endif
@@ -292,9 +280,6 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NET_Coap_Message_SendDataEnqueue((unsigned char *)&CoapInfoStructure, sizeof(CoapInfoStructure) - sizeof(CoapInfoStructure.InfoData) + len);
 		NETCoapNeedSendCode.DynamicInfo = 0;
 		TCFG_Utility_Add_Coap_SentCount();
-	#if NBCOAP_LISTEN_IDLE_TYPE == NBCOAP_LISTEN_IDLE_ENABLE
-		NbiotClientHandler.ListenRunCtl.ListenEnterIdle.listenEnable = true;
-	#endif
 	#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
 		NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
 	#endif
@@ -319,9 +304,6 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NET_Coap_Message_SendDataEnqueue((unsigned char *)&CoapInfoStructure, sizeof(CoapInfoStructure) - sizeof(CoapInfoStructure.InfoData) + len);
 		NETCoapNeedSendCode.RadarInfo = 0;
 		TCFG_Utility_Add_Coap_SentCount();
-	#if NBCOAP_LISTEN_IDLE_TYPE == NBCOAP_LISTEN_IDLE_ENABLE
-		NbiotClientHandler.ListenRunCtl.ListenEnterIdle.listenEnable = true;
-	#endif
 	#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
 		NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
 	#endif
@@ -345,9 +327,6 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NET_Coap_Message_SendDataEnqueue((unsigned char *)&CoapInfoStructure, sizeof(CoapInfoStructure) - sizeof(CoapInfoStructure.InfoData) + len);
 		NETCoapNeedSendCode.ResponseInfo = 0;
 		TCFG_Utility_Add_Coap_SentCount();
-	#if NBCOAP_LISTEN_IDLE_TYPE == NBCOAP_LISTEN_IDLE_ENABLE
-		NbiotClientHandler.ListenRunCtl.ListenEnterIdle.listenEnable = true;
-	#endif
 	#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
 		NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
 	#endif

@@ -314,9 +314,6 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Recv(PCP_ClientsTypeDef* pClient)
 		pClient->DictateRunCtl.dictateRecvFailureCnt = 0;
 		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
 		
-	#if NBCOAP_LISTEN_IDLE_TYPE == NBCOAP_LISTEN_IDLE_ENABLE
-		NET_COAP_NBIOT_Listen_Enable_EnterIdleMode(pClient->CoAPStack->NBIotStack);
-	#endif
 	#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
 		NET_COAP_NBIOT_Listen_Enable_EnterParameter(pClient->CoAPStack->NBIotStack);
 	#endif

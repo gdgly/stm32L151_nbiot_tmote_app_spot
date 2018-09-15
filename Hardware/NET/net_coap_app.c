@@ -1479,9 +1479,6 @@ void NET_COAP_NBIOT_Event_RecvData(NBIOT_ClientsTypeDef* pClient)
 				}
 				COAP_NBIOT_DictateEvent_SuccessExecute(pClient, SEND_DATA, RECV_DATA);
 				
-			#if NBCOAP_LISTEN_IDLE_TYPE == NBCOAP_LISTEN_IDLE_ENABLE
-				NET_COAP_NBIOT_Listen_Enable_EnterIdleMode(pClient);
-			#endif
 			#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
 				NET_COAP_NBIOT_Listen_Enable_EnterParameter(pClient);
 			#endif
@@ -1745,9 +1742,6 @@ void NET_COAP_NBIOT_Event_RecvDataRANormal(NBIOT_ClientsTypeDef* pClient)
 		NET_Coap_Message_SendDataOffSet();
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, SEND_DATA_RA_NORMAL, RECV_DATA_RA_NORMAL);
 		
-	#if NBCOAP_LISTEN_IDLE_TYPE == NBCOAP_LISTEN_IDLE_ENABLE
-		NET_COAP_NBIOT_Listen_Enable_EnterIdleMode(pClient);
-	#endif
 	#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
 		NET_COAP_NBIOT_Listen_Enable_EnterParameter(pClient);
 	#endif
@@ -2218,12 +2212,6 @@ void NET_COAP_Listen_PollExecution(NBIOT_ClientsTypeDef* pClient)
 		NET_COAP_NBIOT_Listen_Event_EnterNone(pClient);
 		break;
 	
-	case NBCOAP_LISTEN_MODE_ENTER_IDLE:
-#if NBCOAP_LISTEN_IDLE_TYPE == NBCOAP_LISTEN_IDLE_ENABLE
-		NET_COAP_NBIOT_Listen_Event_EnterIdleMode(pClient);
-#endif
-		break;
-	
 	case NBCOAP_LISTEN_MODE_ENTER_PARAMETER:
 #if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
 		NET_COAP_NBIOT_Listen_Event_EnterParameter(pClient);
@@ -2245,103 +2233,6 @@ void NET_COAP_NBIOT_Listen_Event_EnterNone(NBIOT_ClientsTypeDef* pClient)
 	pClient->ListenRunCtl.listenEvent = NBCOAP_LISTEN_DEFAULT_BOOTMODE;
 	pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
 }
-
-#if NBCOAP_LISTEN_IDLE_TYPE == NBCOAP_LISTEN_IDLE_ENABLE
-/**********************************************************************************************************
- @Function			void NET_COAP_NBIOT_Listen_Enable_EnterIdleMode(NBIOT_ClientsTypeDef* pClient)
- @Description			NET_COAP_NBIOT_Listen_Enable_EnterIdleMode	: 使能(进入IDLE模式)监听
- @Input				pClient								: NBIOT客户端实例
- @Return				void
-**********************************************************************************************************/
-void NET_COAP_NBIOT_Listen_Enable_EnterIdleMode(NBIOT_ClientsTypeDef* pClient)
-{
-	Stm32_CalculagraphTypeDef listenRunTime;
-	
-	/* Listen Enable */
-	if (pClient->ListenRunCtl.ListenEnterIdle.listenEnable == true) {
-		pClient->ListenRunCtl.ListenEnterIdle.listenStatus = true;
-		Stm32_Calculagraph_CountdownSec(&listenRunTime, pClient->ListenRunCtl.ListenEnterIdle.listenTimereachSec);
-		pClient->ListenRunCtl.ListenEnterIdle.listenRunTime = listenRunTime;
-	}
-}
-
-/**********************************************************************************************************
- @Function			void NET_COAP_NBIOT_Listen_Event_EnterIdleMode(NBIOT_ClientsTypeDef* pClient)
- @Description			NET_COAP_NBIOT_Listen_Event_EnterIdleMode	: 事件(进入IDLE模式)监听
- @Input				pClient								: NBIOT客户端实例
- @Return				void
-**********************************************************************************************************/
-void NET_COAP_NBIOT_Listen_Event_EnterIdleMode(NBIOT_ClientsTypeDef* pClient)
-{
-	Stm32_CalculagraphTypeDef eventRunTime;
-	
-	if ((pClient->ListenRunCtl.ListenEnterIdle.listenEnable == true) && (pClient->ListenRunCtl.ListenEnterIdle.listenStatus == true)) {
-		if (Stm32_Calculagraph_IsExpiredSec(&pClient->ListenRunCtl.ListenEnterIdle.listenRunTime) == true) {
-			
-			/* It is the first time to execute */
-			if (pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventEnable != true) {
-				pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventEnable = true;
-				pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventTimeoutSec = 30;
-				Stm32_Calculagraph_CountdownSec(&eventRunTime, pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventTimeoutSec);
-				pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventRunTime = eventRunTime;
-			}
-			
-			if (NBIOT_Neul_NBxx_CheckReadSignalConnectionStatus(pClient) == NBIOT_OK) {
-				/* Dictate execute is Success */
-				pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventEnable = false;
-				pClient->ListenRunCtl.listenEvent = NBCOAP_LISTEN_MODE_ENTER_IDLE;
-				pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventFailureCnt = 0;
-			}
-			else {
-				/* Dictate execute is Fail */
-				if (Stm32_Calculagraph_IsExpiredSec(&pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventRunTime) == true) {
-					/* Dictate TimeOut */
-					pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventEnable = false;
-					pClient->ListenRunCtl.listenEvent = NBCOAP_LISTEN_MODE_ENTER_IDLE;
-					pClient->DictateRunCtl.dictateEnable = false;
-					pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-					pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventFailureCnt++;
-					if (pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventFailureCnt > 3) {
-						pClient->ListenRunCtl.ListenEnterIdle.EventCtl.eventFailureCnt = 0;
-						pClient->DictateRunCtl.dictateEvent = STOP_MODE;
-					}
-				}
-				else {
-					/* Dictate isn't TimeOut */
-					pClient->ListenRunCtl.listenEvent = NBCOAP_LISTEN_MODE_ENTER_IDLE;
-				}
-				return;
-			}
-			
-			if (pClient->Parameter.connectedstate == IdleMode) {
-				/* Entered Idle Mode */
-				pClient->ListenRunCtl.ListenEnterIdle.listenEnable = false;
-				pClient->ListenRunCtl.ListenEnterIdle.listenStatus = false;
-				pClient->ListenRunCtl.listenEvent = NBCOAP_LISTEN_MODE_ENTER_IDLE;
-#ifdef COAP_DEBUG_LOG_RF_PRINT
-				Radio_Trf_Debug_Printf_Level2("NB Enter IDLE Mode");
-#endif
-			}
-			else {
-				/* Not Entered Idle Mode */
-				pClient->ListenRunCtl.ListenEnterIdle.listenEnable = false;
-				pClient->ListenRunCtl.ListenEnterIdle.listenStatus = false;
-				pClient->ListenRunCtl.listenEvent = NBCOAP_LISTEN_MODE_ENTER_IDLE;
-				#if NBCOAP_SENDCODE_WORK_INFO
-				NETCoapNeedSendCode.WorkInfo = 1;
-				#endif
-#ifdef COAP_DEBUG_LOG_RF_PRINT
-				Radio_Trf_Debug_Printf_Level2("NB Not Enter IDLE Mode");
-#endif
-			}
-		}
-	}
-	
-	pClient->DictateRunCtl.dictateEnable = false;
-	pClient->DictateRunCtl.dictateEvent = LISTEN_RUN_CTL;
-	pClient->ListenRunCtl.listenEvent = NBCOAP_LISTEN_MODE_ENTER_PARAMETER;
-}
-#endif
 
 #if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
 /**********************************************************************************************************

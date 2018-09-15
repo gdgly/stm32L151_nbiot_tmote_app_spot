@@ -1434,6 +1434,7 @@ void NET_DNS_Event_OverDnsAnalysis(DNS_ClientsTypeDef* pClient)
 {
 	MQTTSN_Transport_Init(&MqttSNSocketNetHandler, &NbiotClientHandler, MQTTSN_SERVER_LOCAL_PORT, (char*)DNS_GetHostIP(pClient, (unsigned char*)MQTTSN_SERVER_HOST_NAME), MQTTSN_SERVER_TELE_PORT);
 	
+	pClient->AnalysisTick = 0;
 	pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
 	pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ATTACH_CHECK;
 	pClient->ProcessState = DNS_PROCESS_CREAT_UDP_SOCKET;
