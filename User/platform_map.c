@@ -187,10 +187,6 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_SystemData.CoapIdleDayTime = 0;
 	TCFG_EEPROM_SetCoapIdleDayTime(TCFG_SystemData.CoapIdleDayTime);
 	
-	/* Coap使用配额时间(一天) */
-	TCFG_SystemData.CoapQuotaTime = NBCOAP_COAP_QUOTA_TIME_TYPE;
-	TCFG_EEPROM_SetCoapQuotaTime(TCFG_SystemData.CoapQuotaTime);
-	
 	/* 升级信号值限制下限 */
 	TCFG_SystemData.UpgradeLimitRssi = NBCOAP_PCP_UPGRADE_LIMIT_RSSI;
 	TCFG_EEPROM_SetUpgradeLimitRssi(TCFG_SystemData.UpgradeLimitRssi);
@@ -360,13 +356,6 @@ void TCFG_EEPROM_ReadConfigData(void)
 	/* Coap休眠时间(一天) */
 	TCFG_SystemData.CoapIdleDayTime = TCFG_EEPROM_GetCoapIdleDayTime();
 	NbiotClientHandler.CoapIdleDayTimeSec = TCFG_SystemData.CoapIdleDayTime;
-	
-	/* Coap使用配额时间(一天) */
-	TCFG_SystemData.CoapQuotaTime = TCFG_EEPROM_GetCoapQuotaTime();
-	if (TCFG_SystemData.CoapQuotaTime < 500) {
-		TCFG_SystemData.CoapQuotaTime = NBCOAP_COAP_QUOTA_TIME_TYPE;
-		TCFG_EEPROM_SetCoapQuotaTime(TCFG_SystemData.CoapQuotaTime);
-	}
 	
 	/* NB核心网地址 */
 	TCFG_SystemData.NBCoapCDPServer.ip.ip32 = TCFG_EEPROM_GetServerIP();
@@ -1783,28 +1772,6 @@ void TCFG_EEPROM_SetCoapIdleDayTime(unsigned short val)
 unsigned short TCFG_EEPROM_GetCoapIdleDayTime(void)
 {
 	return FLASH_EEPROM_ReadHalfWord(TCFG_COAP_IDLE_DAY_OFFSET);
-}
-
-/**********************************************************************************************************
- @Function			void TCFG_EEPROM_SetCoapQuotaTime(unsigned short val)
- @Description			TCFG_EEPROM_SetCoapQuotaTime					: 保存CoapQuotaTime
- @Input				val
- @Return				void
-**********************************************************************************************************/
-void TCFG_EEPROM_SetCoapQuotaTime(unsigned short val)
-{
-	FLASH_EEPROM_WriteHalfWord(TCFG_COAP_QUOTA_TIME_OFFSET, val);
-}
-
-/**********************************************************************************************************
- @Function			unsigned short TCFG_EEPROM_GetCoapQuotaTime(void)
- @Description			TCFG_EEPROM_GetCoapQuotaTime					: 读取CoapQuotaTime
- @Input				void
- @Return				val
-**********************************************************************************************************/
-unsigned short TCFG_EEPROM_GetCoapQuotaTime(void)
-{
-	return FLASH_EEPROM_ReadHalfWord(TCFG_COAP_QUOTA_TIME_OFFSET);
 }
 
 /**********************************************************************************************************

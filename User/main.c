@@ -448,11 +448,9 @@ void MainHandleRoutine(void)
 		if ((val8 != 0 ) && (SystemRunningTime.fifteenMinutes % val8 == 0)) {
 			if (radarCountPre != TCFG_GetRadarCount()) {
 				radarCountPre = TCFG_GetRadarCount();
-				if (TCFG_Utility_GetCoapConnectDayTime() <= (TCFG_EEPROM_GetCoapQuotaTime() / 2)) {
 				#if NBCOAP_SENDCODE_RADAR_INFO
 					NETCoapNeedSendCode.RadarInfo = 1;
 				#endif
-				}
 				#if NBMQTTSN_SENDCODE_RADAR_INFO
 					NETMqttSNNeedSendCode.InfoRadar = 1;
 				#endif

@@ -1982,7 +1982,7 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 	
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 	Radio_Trf_Debug_Printf_Level2("MqttSN Recv Filter:%s, topicid:%d", pClient->messageHandlers[0].topicFilter, pClient->messageHandlers[0].topicid);
-	Radio_Trf_Debug_Printf_Level2("MqttSN Recv Payload:%.*s", messageHandler->message->payloadlen, messageHandler->message->payload);
+	Radio_Trf_Debug_Printf_Level2("MqttSN Recv Payload:%d", messageHandler->message->payloadlen);
 #endif
 	
 	messageHandler->message->payload[messageHandler->message->payloadlen] = '\0';
@@ -2003,6 +2003,7 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 				
 				/* 工作模式配置指令 */
 				if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "Workmode") != NULL) {
+			#if MQTTSN_DOWNLOAD_CMD_WORKMODE
 					u16 mode;
 					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(Workmode):{(val):%hu,(Magic):%hu}}", &mode, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
@@ -2019,9 +2020,11 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					else {
 						ret = NETIP_UNKNOWNERROR;
 					}
+			#endif
 				}
 				/* 传感器灵敏度配置指令 */
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "Sense") != NULL) {
+			#if MQTTSN_DOWNLOAD_CMD_SENSE
 					u16 sense;
 					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(Sense):{(val):%hu,(Magic):%hu}}", &sense, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
@@ -2038,9 +2041,11 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					else {
 						ret = NETIP_UNKNOWNERROR;
 					}
+			#endif
 				}
 				/* 无线心跳间隔时间配置指令 */
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "RFHeart") != NULL) {
+			#if MQTTSN_DOWNLOAD_CMD_RFHEART
 					u16 rfheart;
 					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(RFHeart):{(val):%hu,(Magic):%hu}}", &rfheart, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
@@ -2057,9 +2062,11 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					else {
 						ret = NETIP_UNKNOWNERROR;
 					}
+			#endif
 				}
 				/* 初始化传感器指令 */
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "Background") != NULL) {
+			#if MQTTSN_DOWNLOAD_CMD_BACKGROUND
 					u16 backgroundval;
 					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(Background):{(val):%hu,(Magic):%hu}}", &backgroundval, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
@@ -2074,14 +2081,18 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					else {
 						ret = NETIP_UNKNOWNERROR;
 					}
+			#endif
 				}
 				/* Reboot */
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "Reboot") != NULL) {
+			#if MQTTSN_DOWNLOAD_CMD_REBOOT
 					BEEP_CtrlRepeat_Extend(2, 500, 250);
 					Stm32_System_Software_Reboot();
+			#endif
 				}
 				/* NewSn */
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "Newsn") != NULL) {
+			#if MQTTSN_DOWNLOAD_CMD_NEWSN
 					u32 newsnval;
 					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(Newsn):{(val):%08x,(Magic):%hu}}", &newsnval, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
@@ -2090,9 +2101,11 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					else {
 						ret = NETIP_UNKNOWNERROR;
 					}
+			#endif
 				}
 				/* Active */
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "Active") != NULL) {
+			#if MQTTSN_DOWNLOAD_CMD_ACTIVE
 					u16 activeval;
 					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(Active):{(val):%hu,(Magic):%hu}}", &activeval, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
@@ -2109,9 +2122,11 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					else {
 						ret = NETIP_UNKNOWNERROR;
 					}
+			#endif
 				}
 				/* RadarDbg */
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "RadarDbg") != NULL) {
+			#if MQTTSN_DOWNLOAD_CMD_RADARDBG
 					u16 radarDbgval;
 					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(RadarDbg):{(val):%hu,(Magic):%hu}}", &radarDbgval, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
@@ -2124,9 +2139,11 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					else {
 						ret = NETIP_UNKNOWNERROR;
 					}
+			#endif
 				}
 				/* MagMod */
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "MagMod") != NULL) {
+			#if MQTTSN_DOWNLOAD_CMD_MAGMOD
 					u16 magmodval;
 					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(MagMod):{(val):%hu,(Magic):%hu}}", &magmodval, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
@@ -2136,9 +2153,11 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					else {
 						ret = NETIP_UNKNOWNERROR;
 					}
+			#endif
 				}
 				/* NbHeart */
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "NbHeart") != NULL) {
+			#if MQTTSN_DOWNLOAD_CMD_NBHEART
 					u16 nbheartval;
 					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(NbHeart):{(val):%hu,(Magic):%hu}}", &nbheartval, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
@@ -2148,9 +2167,11 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					else {
 						ret = NETIP_UNKNOWNERROR;
 					}
+			#endif
 				}
 				/* InitRadar */
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "InitRadar") != NULL) {
+			#if MQTTSN_DOWNLOAD_CMD_INITRADAR
 					u32 i32, j32, k32, m32;
 					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
 						"{(InitRadar):{(v23456):%u,(v7890a):%u,(vbcdef):%u,(vg):%u,(Magic):%hu}}", &i32, &j32, &k32, &m32, &recvMagicNum);
@@ -2163,9 +2184,11 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					else {
 						ret = NETIP_UNKNOWNERROR;
 					}
+			#endif
 				}
 				/* InitMag */
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "InitMag") != NULL) {
+			#if MQTTSN_DOWNLOAD_CMD_INITMAG
 					s16 x, y, z;
 					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
 						"{(InitMag):{(x):%hd,(y):%hd,(z):%hd,(Magic):%hu}}", &x, &y, &z, &recvMagicNum);
@@ -2175,9 +2198,11 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					else {
 						ret = NETIP_UNKNOWNERROR;
 					}
+			#endif
 				}
 				/* DisRange */
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "DisRange") != NULL) {
+			#if MQTTSN_DOWNLOAD_CMD_DISRANGE
 					u16 disrangeval;
 					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(DisRange):{(val):%hu,(Magic):%hu}}", &disrangeval, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
@@ -2188,9 +2213,11 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					else {
 						ret = NETIP_UNKNOWNERROR;
 					}
+			#endif
 				}
 				/* CarInDelay */
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "InDelay") != NULL) {
+			#if MQTTSN_DOWNLOAD_CMD_CARINDELAY
 					u16 indelayval;
 					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(InDelay):{(val):%hu,(Magic):%hu}}", &indelayval, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
@@ -2200,9 +2227,11 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					else {
 						ret = NETIP_UNKNOWNERROR;
 					}
+			#endif
 				}
 				/* MagCoef */
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "MagCoef") != NULL) {
+			#if MQTTSN_DOWNLOAD_CMD_MAGTEMPCOEF
 					short magTempCoefX, magTempCoefY, magTempCoefZ;
 					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
 						"{(MagCoef):{(x):%hd,(y):%hd,(z):%hd,(Magic):%hu}}", &magTempCoefX, &magTempCoefY, &magTempCoefZ, &recvMagicNum);
@@ -2215,18 +2244,22 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					else {
 						ret = NETIP_UNKNOWNERROR;
 					}
+			#endif
 				}
 				/* SetQmcCoef */
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "SetQmcCoef") != NULL) {
+			#if MQTTSN_DOWNLOAD_CMD_SETQMCCOEF
 					short magTempCoefX, magTempCoefY, magTempCoefZ;
 					QMC5883L_measure_qmc_coef((signed char*)&magTempCoefX, (signed char*)&magTempCoefY, (signed char*)&magTempCoefZ);
 					TCFG_SystemData.MagCoefX = magTempCoefX;
 					TCFG_SystemData.MagCoefY = magTempCoefY;
 					TCFG_SystemData.MagCoefZ = magTempCoefZ;
 					TCFG_EEPROM_SetMagTempCoef(TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
+			#endif
 				}
 				/* BeepOff */
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "BeepOff") != NULL) {
+			#if MQTTSN_DOWNLOAD_CMD_BEEPOFF
 					u16 beepoff;
 					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(BeepOff):{(val):%hu,(Magic):%hu}}", &beepoff, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
@@ -2236,6 +2269,7 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					else {
 						ret = NETIP_UNKNOWNERROR;
 					}
+			#endif
 				}
 				/* ...... */
 			}
@@ -2243,21 +2277,21 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 				BEEP_CtrlRepeat_Extend(2, 50, 50);
 				/* InfoWork */
 				if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "Workinfo") != NULL) {
-				#if NBMQTTSN_SENDCODE_WORK_INFO
+			#if NBMQTTSN_SENDCODE_WORK_INFO
 					NETMqttSNNeedSendCode.InfoWork = 1;
-				#endif
+			#endif
 				}
 				/* InfoBasic */
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "BasicInfo") != NULL) {
-				#if NBMQTTSN_SENDCODE_BASIC_INFO
+			#if NBMQTTSN_SENDCODE_BASIC_INFO
 					NETMqttSNNeedSendCode.InfoBasic = 1;
-				#endif
+			#endif
 				}
 				/* InfoDynamic */
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "DynamicInfo") != NULL) {
-				#if NBMQTTSN_SENDCODE_DYNAMIC_INFO
+			#if NBMQTTSN_SENDCODE_DYNAMIC_INFO
 					NETMqttSNNeedSendCode.InfoDynamic = 1;
-				#endif
+			#endif
 				}
 				/* ...... */
 			}

@@ -51,10 +51,6 @@
 #define	NBCOAP_SENDDATA_NQMGSCHECK_ENABLE	1
 #define	NBCOAP_SENDDATA_NQMGSCHECK_TYPE	NBCOAP_SENDDATA_NQMGSCHECK_DISABLE		//COAP发送数据NQMGS检查
 
-#define	NBCOAP_QUOTA_TIME_3YEAR			1972
-#define	NBCOAP_QUOTA_TIME_5YEAR			1183
-#define	NBCOAP_COAP_QUOTA_TIME_TYPE		NBCOAP_QUOTA_TIME_3YEAR				//Coap一天使用配额时间
-
 #define	NBCOAP_RATIME_NORMAL_2HOUR		2
 #define	NBCOAP_RATIME_NORMAL_4HOUR		4
 #define	NBCOAP_RATIME_NORMAL_TYPE		NBCOAP_RATIME_NORMAL_2HOUR			//Coap间隔时间发送普通数据包
@@ -115,6 +111,63 @@
 #define	NBMQTTSN_SENDCODE_BASIC_INFO		1								//NB上报信息使能MqttSNBasicInfo
 #define	NBMQTTSN_SENDCODE_DYNAMIC_INFO	1								//NB上报信息使能MqttSNDynamicInfo
 #define	NBMQTTSN_SENDCODE_RADAR_INFO		0								//NB上报信息使能MqttSNRadarInfo
+
+#define	RADIO_DOWNLOAD_CMD_REBOOT		1								//RADIO下行指令Reboot
+#define	RADIO_DOWNLOAD_CMD_NEWSN			1								//RADIO下行指令NewSn
+#define	RADIO_DOWNLOAD_CMD_CDPIP			1								//RADIO下行指令CDPIP
+#define	RADIO_DOWNLOAD_CMD_ACTIVE		1								//RADIO下行指令Active
+#define	RADIO_DOWNLOAD_CMD_RADARDBG		1								//RADIO下行指令RadarDbg
+#define	RADIO_DOWNLOAD_CMD_MAGMOD		1								//RADIO下行指令Magmod
+#define	RADIO_DOWNLOAD_CMD_NBHEART		1								//RADIO下行指令NbHeart
+#define	RADIO_DOWNLOAD_CMD_DISRANGE		1								//RADIO下行指令DisRange
+#define	RADIO_DOWNLOAD_CMD_MAGINIT		1								//RADIO下行指令MagInit
+#define	RADIO_DOWNLOAD_CMD_CARINDELAY		1								//RADIO下行指令CarInDelay
+#define	RADIO_DOWNLOAD_CMD_RFDPRINTLV		1								//RADIO下行指令RFDprintLv
+#define	RADIO_DOWNLOAD_CMD_RATIME		1								//RADIO下行指令RATime
+#define	RADIO_DOWNLOAD_CMD_MAGTEMPCOEF	1								//RADIO下行指令MagTempCoef
+#define	RADIO_DOWNLOAD_CMD_SETQMCCOEF		1								//RADIO下行指令SetQmcCoef
+#define	RADIO_DOWNLOAD_CMD_BEEPOFF		1								//RADIO下行指令BeepOff
+#define	RADIO_DOWNLOAD_CMD_UPLIMIT		1								//RADIO下行指令UpLimit
+#define	RADIO_DOWNLOAD_CMD_RESTORE		1								//RADIO下行指令Restore
+
+#define	NBCOAP_DOWNLOAD_CMD_WORKMODE		1								//NBCOAP下行指令Workmode
+#define	NBCOAP_DOWNLOAD_CMD_SENSE		1								//NBCOAP下行指令Sense
+#define	NBCOAP_DOWNLOAD_CMD_RFHEART		1								//NBCOAP下行指令RFHeart
+#define	NBCOAP_DOWNLOAD_CMD_BACKGROUND	1								//NBCOAP下行指令Background
+#define	NBCOAP_DOWNLOAD_CMD_REBOOT		1								//NBCOAP下行指令Reboot
+#define	NBCOAP_DOWNLOAD_CMD_NEWSN		1								//NBCOAP下行指令NewSn
+#define	NBCOAP_DOWNLOAD_CMD_CDPIP		1								//NBCOAP下行指令CDPIP
+#define	NBCOAP_DOWNLOAD_CMD_ACTIVE		1								//NBCOAP下行指令Active
+#define	NBCOAP_DOWNLOAD_CMD_RADARDBG		1								//NBCOAP下行指令RadarDbg
+#define	NBCOAP_DOWNLOAD_CMD_MAGMOD		1								//NBCOAP下行指令MagMod
+#define	NBCOAP_DOWNLOAD_CMD_NBHEART		1								//NBCOAP下行指令NbHeart
+#define	NBCOAP_DOWNLOAD_CMD_INITRADAR		1								//NBCOAP下行指令InitRadar
+#define	NBCOAP_DOWNLOAD_CMD_INITMAG		1								//NBCOAP下行指令InitMag
+#define	NBCOAP_DOWNLOAD_CMD_DISRANGE		1								//NBCOAP下行指令DisRange
+#define	NBCOAP_DOWNLOAD_CMD_CARINDELAY	1								//NBCOAP下行指令CarInDelay
+#define	NBCOAP_DOWNLOAD_CMD_RATIME		1								//NBCOAP下行指令RATime
+#define	NBCOAP_DOWNLOAD_CMD_MAGTEMPCOEF	1								//NBCOAP下行指令MagTempCoef
+#define	NBCOAP_DOWNLOAD_CMD_SETQMCCOEF	1								//NBCOAP下行指令SetQmcCoef
+#define	NBCOAP_DOWNLOAD_CMD_BEEPOFF		1								//NBCOAP下行指令BeepOff
+#define	NBCOAP_DOWNLOAD_CMD_UPLIMIT		1								//NBCOAP下行指令UpLimit
+
+#define	MQTTSN_DOWNLOAD_CMD_WORKMODE		1								//MQTTSN下行指令Workmode
+#define	MQTTSN_DOWNLOAD_CMD_SENSE		1								//MQTTSN下行指令Sense
+#define	MQTTSN_DOWNLOAD_CMD_RFHEART		1								//MQTTSN下行指令RFHeart
+#define	MQTTSN_DOWNLOAD_CMD_BACKGROUND	1								//MQTTSN下行指令Background
+#define	MQTTSN_DOWNLOAD_CMD_REBOOT		1								//MQTTSN下行指令Reboot
+#define	MQTTSN_DOWNLOAD_CMD_NEWSN		1								//MQTTSN下行指令NewSn
+#define	MQTTSN_DOWNLOAD_CMD_ACTIVE		1								//MQTTSN下行指令Active
+#define	MQTTSN_DOWNLOAD_CMD_RADARDBG		1								//MQTTSN下行指令RadarDbg
+#define	MQTTSN_DOWNLOAD_CMD_MAGMOD		1								//MQTTSN下行指令MagMod
+#define	MQTTSN_DOWNLOAD_CMD_NBHEART		1								//MQTTSN下行指令NbHeart
+#define	MQTTSN_DOWNLOAD_CMD_INITRADAR		1								//MQTTSN下行指令InitRadar
+#define	MQTTSN_DOWNLOAD_CMD_INITMAG		1								//MQTTSN下行指令InitMag
+#define	MQTTSN_DOWNLOAD_CMD_DISRANGE		1								//MQTTSN下行指令DisRange
+#define	MQTTSN_DOWNLOAD_CMD_CARINDELAY	1								//MQTTSN下行指令CarInDelay
+#define	MQTTSN_DOWNLOAD_CMD_MAGTEMPCOEF	1								//MQTTSN下行指令MagTempCoef
+#define	MQTTSN_DOWNLOAD_CMD_SETQMCCOEF	1								//MQTTSN下行指令SetQmcCoef
+#define	MQTTSN_DOWNLOAD_CMD_BEEPOFF		1								//MQTTSN下行指令BeepOff
 
 #define	RF_DPRINT_LV_0					0								//调试信息不打印
 #define	RF_DPRINT_LV_1					1								//基本信息打印
@@ -196,6 +249,10 @@ void RadioPrintWorkinfo(void);											//Radio Print WorkInfo
 void RadioPrintNetinfo(void);												//Radio Print NetInfo
 void RadioPrintDeviceinfo(void);											//Radio Print DeviceInfo
 void RadioPrintUpgradeinfo(void);											//Radio Print UpgradeInfo
+
+
+
+
 
 
 

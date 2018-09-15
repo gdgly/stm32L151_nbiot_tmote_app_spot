@@ -188,13 +188,6 @@ void Inspect_Spot_ExistenceDetect(void)
 			Inspect_Message_SpotStatusEnqueue(SpotStatusData);
 		}
 		time2send_spot = Stm32_GetSecondTick();
-		
-		if (TCFG_Utility_GetCoapConnectDayTime() > (TCFG_EEPROM_GetCoapQuotaTime() * 2 / 3)) {
-			if (TCFG_EEPROM_GetNbiotHeart() < 4) {
-				TCFG_SystemData.NBIotHeart = 4;
-				TCFG_EEPROM_SetNbiotHeart(TCFG_SystemData.NBIotHeart);
-			}
-		}
 	}
 	
 	/* 数据存于缓存 */
@@ -214,11 +207,9 @@ void Inspect_Spot_ExistenceDetect(void)
 				if (SpotStatusDataBackUp.spot_status == SPOT_CAR_FREE) {
 					if ((lasttime2send_radar_at_free + 3600) < Stm32_GetSecondTick()) {
 						lasttime2send_radar_at_free = Stm32_GetSecondTick();
-						if (TCFG_Utility_GetCoapConnectDayTime() <= (TCFG_EEPROM_GetCoapQuotaTime() / 2)) {
 						#if NBCOAP_SENDCODE_RADAR_INFO
 							NETCoapNeedSendCode.RadarInfo = 1;
 						#endif
-						}
 						#if NBMQTTSN_SENDCODE_RADAR_INFO
 							NETMqttSNNeedSendCode.InfoRadar = 1;
 						#endif
@@ -244,11 +235,9 @@ void Inspect_Spot_ExistenceDetect(void)
 		prepare2send_radar--;
 		if ((prepare2send_radar == 0) && (SpotStatusDataBackUp.spot_status == 0)) {
 			lasttime2send_radar_at_free = Stm32_GetSecondTick();
-			if (TCFG_Utility_GetCoapConnectDayTime() <= (TCFG_EEPROM_GetCoapQuotaTime() / 2)) {
 			#if NBCOAP_SENDCODE_RADAR_INFO
 				NETCoapNeedSendCode.RadarInfo = 1;
 			#endif
-			}
 			#if NBMQTTSN_SENDCODE_RADAR_INFO
 				NETMqttSNNeedSendCode.InfoRadar = 1;
 			#endif

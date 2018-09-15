@@ -168,10 +168,10 @@
 #define TCFG_COAP_CON_DAY_LENGTH			2												//CoapConDayTime		Coap一天连接时间
 #define TCFG_COAP_IDLE_DAY_OFFSET			TCFG_COAP_CON_DAY_OFFSET + TCFG_COAP_CON_DAY_LENGTH		//0x08080E18
 #define TCFG_COAP_IDLE_DAY_LENGTH			2												//CoapIdleDayTime		Coap一天休眠时间
-#define TCFG_COAP_QUOTA_TIME_OFFSET		TCFG_COAP_IDLE_DAY_OFFSET + TCFG_COAP_IDLE_DAY_LENGTH		//0x08080E1A
-#define TCFG_COAP_QUOTA_TIME_LENGTH		2												//CoapQuotaTime		Coap一天使用配额时间
+#define TCFG_RESERVED1_OFFSET				TCFG_COAP_IDLE_DAY_OFFSET + TCFG_COAP_IDLE_DAY_LENGTH		//0x08080E1A
+#define TCFG_RESERVED1_LENGTH				2												//RESERVED1			保留
 
-#define TCFG_ONENET_SENTCNT_OFFSET			TCFG_COAP_QUOTA_TIME_OFFSET + TCFG_COAP_QUOTA_TIME_LENGTH	//0x08080E1C
+#define TCFG_ONENET_SENTCNT_OFFSET			TCFG_RESERVED1_OFFSET + TCFG_RESERVED1_LENGTH			//0x08080E1C
 #define TCFG_ONENET_SENTCNT_LENGTH			4												//OneNETSentCnt		ONENET发送包数
 #define TCFG_ONENET_RECVCNT_OFFSET			TCFG_ONENET_SENTCNT_OFFSET + TCFG_ONENET_SENTCNT_LENGTH	//0x08080E20
 #define TCFG_ONENET_RECVCNT_LENGTH			4												//OneNETRecvCnt		ONENET接收包数
@@ -231,7 +231,6 @@ typedef struct
 	unsigned int						CoapIdleTime;										//Coap休眠时间
 	unsigned short						CoapConnectDayTime;									//Coap保持连接时间(一天)
 	unsigned short						CoapIdleDayTime;									//Coap休眠时间(一天)
-	unsigned short						CoapQuotaTime;										//Coap使用配额时间(一天)
 	short							UpgradeLimitRssi;									//信号值限制下限
 	short							UpgradeLimitSnr;									//信号质量限制下限
 	unsigned short						NBIdleLifetime;									//NBIot休眠模式保活时间(10S)
@@ -397,9 +396,6 @@ unsigned short	TCFG_EEPROM_GetCoapConnectDayTime(void);										//读取CoapCon
 
 void			TCFG_EEPROM_SetCoapIdleDayTime(unsigned short val);								//保存CoapIdleDayTime
 unsigned short	TCFG_EEPROM_GetCoapIdleDayTime(void);											//读取CoapIdleDayTime
-
-void			TCFG_EEPROM_SetCoapQuotaTime(unsigned short val);									//保存CoapQuotaTime
-unsigned short	TCFG_EEPROM_GetCoapQuotaTime(void);											//读取CoapQuotaTime
 
 void			TCFG_EEPROM_SetUpgradeLimitRssi(short val);										//保存UpgradeLimitRssi
 short		TCFG_EEPROM_GetUpgradeLimitRssi(void);											//读取UpgradeLimitRssi
