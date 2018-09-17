@@ -25,9 +25,6 @@ char	Radar_GetModel(void);												//获取雷达类型
 void Radar_GetSample(void);												//雷达采样
 void Radar_GetSample_Time(void);											//雷达采样节拍
 
-void Radar_check_background(RADAR_DataStruct* pRadarData);
-void Radar_check_timedomain_background(RADAR_DataStruct* pRadarData);
-
 void Radar_EnterCriticalSection(void);										//雷达启动初始化配置系统时钟HSI
 void Radar_ExitCriticalSection(void);										//雷达退出反初始化配置为原系统时钟MSI
 

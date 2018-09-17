@@ -619,7 +619,7 @@ void QMC5883L_measure_qmc_coef(signed char* kx, signed char* ky, signed char* kz
 	//---------\|/加热,最多加热时间5秒--------------------
 	time_start = Stm32_GetSecondTick();
 	QmsWarmupPower(ON);
-	while ((time_start + 30) > Stm32_GetSecondTick()) {
+	while ((time_start + 20) > Stm32_GetSecondTick()) {
 		//Delay_MS(100);
 		BEEP_CtrlRepeat_Extend(1,30,70);
 		if ((t0 + 2000) < QMC5883L_Temperature_Read()) {

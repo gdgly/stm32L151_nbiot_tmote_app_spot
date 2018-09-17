@@ -1874,6 +1874,9 @@ void NET_MQTTSN_Event_Sleep(MQTTSN_ClientsTypeDef* pClient)
 				/* Dictate isn't TimeOut */
 				pClient->SubState = MQTTSN_SUBSTATE_SLEEP;
 			}
+#ifdef MQTTSN_DEBUG_LOG_RF_PRINT
+			Radio_Trf_Debug_Printf_Level2("MqttSN Connect Server Fail");
+#endif
 			return;
 		}
 		else {
@@ -1882,6 +1885,9 @@ void NET_MQTTSN_Event_Sleep(MQTTSN_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
 			pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
 			pClient->DictateRunCtl.dictateSleepFailureCnt = 0;
+#ifdef MQTTSN_DEBUG_LOG_RF_PRINT
+			Radio_Trf_Debug_Printf_Level2("MqttSN Connect Server Ok");
+#endif
 			return;
 		}
 	}
@@ -1936,6 +1942,9 @@ void NET_MQTTSN_Event_Aweak(MQTTSN_ClientsTypeDef* pClient)
 			/* Dictate isn't TimeOut */
 			pClient->SubState = MQTTSN_SUBSTATE_AWAKE;
 		}
+#ifdef MQTTSN_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("MqttSN Pingreq Server Fail");
+#endif
 		return;
 	}
 	else {
@@ -1944,6 +1953,9 @@ void NET_MQTTSN_Event_Aweak(MQTTSN_ClientsTypeDef* pClient)
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
 		pClient->SubState = MQTTSN_SUBSTATE_SLEEP;
 		pClient->DictateRunCtl.dictateAweakFailureCnt = 0;
+#ifdef MQTTSN_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("MqttSN Pingreq Server Ok");
+#endif
 	}
 	
 	/* Set Pingreg Duration */
@@ -2319,8 +2331,6 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 		/* Not Valid */
 		ret = NETIP_NOTVALID;
 	}
-	
-	/* PCP升级协议下行数据 */
 	
 	return MQTTSN_OK;
 }

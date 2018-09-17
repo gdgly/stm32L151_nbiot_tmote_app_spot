@@ -1594,18 +1594,13 @@ void NET_MqttSN_Message_SendDataEnqueue(unsigned char* dataBuf, unsigned short d
 		return;
 	}
 	
+	NETMqttSNMessageSendPark.Rear = (NETMqttSNMessageSendPark.Rear + 1) % MQTTSN_SEND_PARK_NUM;				//队尾偏移1
+	memset((u8 *)&NETMqttSNMessageSendPark.Park[NETMqttSNMessageSendPark.Rear], 0x0, sizeof(NETMqttSNMessageSendPark.Park[NETMqttSNMessageSendPark.Rear]));
+	memcpy(NETMqttSNMessageSendPark.Park[NETMqttSNMessageSendPark.Rear].Buffer, dataBuf, dataLength);
+	NETMqttSNMessageSendPark.Park[NETMqttSNMessageSendPark.Rear].Length = dataLength;
+	
 	if (NET_MqttSN_Message_SendDataisFull() == true) {												//队列已满
-		NETMqttSNMessageSendPark.Rear = (NETMqttSNMessageSendPark.Rear + 1) % MQTTSN_SEND_PARK_NUM;			//队尾偏移1
-		memset((u8 *)&NETMqttSNMessageSendPark.Park[NETMqttSNMessageSendPark.Rear], 0x0, sizeof(NETMqttSNMessageSendPark.Park[NETMqttSNMessageSendPark.Rear]));
-		memcpy(NETMqttSNMessageSendPark.Park[NETMqttSNMessageSendPark.Rear].Buffer, dataBuf, dataLength);
-		NETMqttSNMessageSendPark.Park[NETMqttSNMessageSendPark.Rear].Length = dataLength;
 		NETMqttSNMessageSendPark.Front = (NETMqttSNMessageSendPark.Front + 1) % MQTTSN_SEND_PARK_NUM;			//队头偏移1
-	}
-	else {																					//队列未满
-		NETMqttSNMessageSendPark.Rear = (NETMqttSNMessageSendPark.Rear + 1) % MQTTSN_SEND_PARK_NUM;			//队尾偏移1
-		memset((u8 *)&NETMqttSNMessageSendPark.Park[NETMqttSNMessageSendPark.Rear], 0x0, sizeof(NETMqttSNMessageSendPark.Park[NETMqttSNMessageSendPark.Rear]));
-		memcpy(NETMqttSNMessageSendPark.Park[NETMqttSNMessageSendPark.Rear].Buffer, dataBuf, dataLength);
-		NETMqttSNMessageSendPark.Park[NETMqttSNMessageSendPark.Rear].Length = dataLength;
 	}
 }
 

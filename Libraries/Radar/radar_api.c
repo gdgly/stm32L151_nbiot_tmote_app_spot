@@ -32,15 +32,16 @@
 #include "string.h"
 #include <math.h>
 
-#define SAMPLE_NUM	TRADAR_SAMPLE_NUM
+#define SAMPLE_NUM			TRADAR_SAMPLE_NUM
+#define SAMPLE_MAX_TIMES		6
 
 enum TRADAR_MODEL_TYPE
 {
-	TRADAR_IMSEMI						= 0x00,
-	TRADAR_INFINEON					= 0x01
+	TRADAR_IMSEMI			= 0x00,
+	TRADAR_INFINEON		= 0x01
 };
 
-//#define	XIAMEN
+#define	XIAMEN
 #define	VDDA2V8														//VDDA = 2.8V 0~2633 -> 0~1.8V
 //#define	VDDA3V3														//VDDA = 3.3V 0~2234 -> 0~1.8V
 //#define	RADAR_VPTAT
@@ -61,16 +62,15 @@ enum TRADAR_MODEL_TYPE
 char radar_model = TRADAR_INFINEON;
 
 short val_vptat, val_vptat_adjust;
-short val_temp, val_temp_adjust;
 
 u16 fre_magBG[TRADAR_BACKGROUND_NUM] = {10};
 s16 time_magBG[TRADAR_BACKGROUND_NUM] = {10};
 
 u32 sample_array0[SAMPLE_NUM] = {0};
-u32 sample_array1[SAMPLE_NUM] = {0};
+
+u16 sample_buffer[SAMPLE_MAX_TIMES][SAMPLE_NUM] = {0};
 
 int n_array = 0;
-int flag_in_array = 0;
 int flag_main_go = 0;
 u8  bgTimes = 1;
 u8  radar_trigged_again = 0;
@@ -93,8 +93,6 @@ void Radar_Init(void)
 	
 	Radar_TIM2_Init(10-1, 32-1);																	//10us中断一次
 	__HAL_TIM_DISABLE(&RADAR_TIM2_Handler);															//先关闭TIM2,等待使用雷达时开启
-	
-	val_temp_adjust = TCFG_EEPROM_GetBackgroundTemp();
 	
 	FLASH_EEPROM_ReadBuffer(EEPROM_BASE_ADDR1, (u8 *)fre_magBG, sizeof(fre_magBG));							//读取EEPROM背景值
 	FLASH_EEPROM_ReadBuffer(EEPROM_BASE_ADDR1+256, (u8 *)time_magBG, sizeof(time_magBG));					//读取EEPROM背景值
@@ -166,7 +164,6 @@ void Radar_InitBG_Cmd(u32 v23456, u32 v7890a, u32 vbcdef, u32 vg)
 	
 	FLASH_EEPROM_WriteBuffer(EEPROM_BASE_ADDR1, (u8 *)fre_magBG, sizeof(fre_magBG));
 	FLASH_EEPROM_WriteBuffer(EEPROM_BASE_ADDR1+256, (u8 *)time_magBG, sizeof(time_magBG));
-	TCFG_EEPROM_SetBackgroundTemp(val_temp);
 	
 	tradar_base_background_set(fre_magBG, (sizeof(fre_magBG))/2);
 	tradar_background_set(fre_magBG, (sizeof(fre_magBG))/2);
@@ -185,7 +182,6 @@ u8 Radar_InitBackground(char mode)
 	RADAR_ENTER_CRITICAL_SECTION();
 	
 	n_array = 0;
-	flag_in_array = 0;
 	flag_main_go = 0;
 	
 	__HAL_TIM_ENABLE(&RADAR_TIM2_Handler);															//启动雷达定时器
@@ -199,24 +195,17 @@ u8 Radar_InitBackground(char mode)
 		while (flag_main_go != 0) {
 			if (Radar_CheckData(sample_array0, SAMPLE_NUM) == TRADAR_OK) {								//雷达数据校验
 				if (bgTimes > 1) {
-					if (flag_main_go == 1) {
-						tradar_background_transform(sample_array0, SAMPLE_NUM, fre_magBG, time_magBG, (sizeof(fre_magBG))/2);
-					}
-					else {
-						tradar_background_transform(sample_array1, SAMPLE_NUM, fre_magBG, time_magBG, (sizeof(fre_magBG))/2);
-					}
+					tradar_background_transform(sample_array0, SAMPLE_NUM, fre_magBG, time_magBG, (sizeof(fre_magBG))/2);
 					
 					bgTimes--;
 					if (bgTimes == 1) {															//初始化背景完成
 						if (mode == TO_SAVE_RADAR_BACKGROUND) {										//保存背景
 							FLASH_EEPROM_WriteBuffer(EEPROM_BASE_ADDR1, (u8 *)fre_magBG, sizeof(fre_magBG));
 							FLASH_EEPROM_WriteBuffer(EEPROM_BASE_ADDR1+256, (u8 *)time_magBG, sizeof(time_magBG));
-							TCFG_EEPROM_SetBackgroundTemp(val_temp);
 							tradar_timedomain_background_set(time_magBG,(sizeof(time_magBG))/2);
 							tradar_base_background_set(fre_magBG,(sizeof(fre_magBG))/2);
 							tradar_background_set(fre_magBG, (sizeof(fre_magBG))/2);
 							val_vptat_adjust = val_vptat;
-							val_temp_adjust  = val_temp;
 						}
 						else if (mode == NOT_SAVE_RADAR_BACKGROUND) {								//不保存背景
 							//微调雷达背景时,雷达背景值不能和之前的背景相差太多.
@@ -282,64 +271,60 @@ tradar_targetinfo_s radar_targetinfo;
 **********************************************************************************************************/
 u8 Radar_GetData(tradar_targetinfo_s* pTargetinfo[], u8 dataNum)
 {
-	u16 tradar_time_mag_buff_test[TRADAR_BACKGROUND_NUM];
+	uint16_t i;
+	uint8_t j;
+	
+	if (dataNum > SAMPLE_MAX_TIMES) return 1;
 	
 	TCFG_AddRadarCount();
 	RADARPOWER(ON);																			//开启雷达电源
-	Delay_MS(10);
 	RADAR_ENTER_CRITICAL_SECTION();
+	Delay_MS(5);
 	
 	n_array = 0;
-	flag_in_array = 0;
 	flag_main_go = 0;
 	
 	__HAL_TIM_ENABLE(&RADAR_TIM2_Handler);															//启动雷达定时器
 	
 	radar_trigged_again = 1;
 	
-	while (dataNum) {
-		while (flag_main_go != 0) {
-			if (flag_main_go == 1) {
-				tradar_target_detect(sample_array0, SAMPLE_NUM, pTargetinfo[dataNum-1]);
+	j = dataNum;
+	while (j) {																				// sample and buffer
+		if (flag_main_go != 0) {
+			j--;
+			for (i = 0; i < SAMPLE_NUM; i++) {
+				sample_buffer[j][i] = sample_array0[i];
 			}
-			else {
-				tradar_target_detect(sample_array1, SAMPLE_NUM, pTargetinfo[dataNum-1]);
-			}
-			
-			if (pTargetinfo[dataNum - 1]->strenth_total_diff > 255) {
-				pTargetinfo[dataNum - 1]->strenth_total_diff = 255;
-			}
-			if (pTargetinfo[dataNum - 1]->strenth_total_diff_v2 > 255) {
-				pTargetinfo[dataNum - 1]->strenth_total_diff_v2 = 255;
-			}
-			
-			if ((pTargetinfo[dataNum-1]->pMagNow[2] <= 3)&&(pTargetinfo[dataNum-1]->pMagNow[3] <= 3)&&(pTargetinfo[dataNum-1]->pMagNow[4] <= 3)) {
-				__NOP();
-			}
-			else {
-				__NOP();
-			}
-			
-			dataNum--;
-					
-			flag_main_go = 0;
-			
-			if (dataNum == 0) {
-				break;
-			}
-			
-			if (dataNum == 2) {
-				memcpy(tradar_time_mag_buff_test, tradar_time_mag_buff, sizeof(tradar_time_mag_buff));
-			}
+			if (j) flag_main_go = 0;
 		}
 	}
 	
 	__HAL_TIM_DISABLE(&RADAR_TIM2_Handler);															//雷达工作结束关闭定时器
 	RADARPOWER(OFF);																			//关闭雷达电源
 	
-	RADAR_EXIT_CRITICAL_SECTION();
+	j = dataNum;
+	while (j) {																				// calculate the data in buffer
+		j--;
+		for (i = 0; i < SAMPLE_NUM; i++) {
+			sample_array0[i] = sample_buffer[j][i];
+		}
+		tradar_target_detect(sample_array0, SAMPLE_NUM, pTargetinfo[j]);
+		if (pTargetinfo[j]->strenth_total_diff > 255) {
+			pTargetinfo[j]->strenth_total_diff = 255;
+		}
+		if (pTargetinfo[j]->strenth_total_diff_v2 > 255) {
+			pTargetinfo[j]->strenth_total_diff_v2 = 255;
+		}
+		if ((pTargetinfo[j]->pMagNow[2] <= 3) && (pTargetinfo[j]->pMagNow[3] <= 3) && (pTargetinfo[j]->pMagNow[4] <= 3)) {
+			__NOP();
+		}
+		else {
+			__NOP();
+		}
+	}
 	
 	memcpy(&radar_targetinfo, pTargetinfo[0], sizeof(radar_targetinfo));
+	RADAR_EXIT_CRITICAL_SECTION();
 	
 #ifdef RADAR_DEBUG_LOG_RF_PRINT
 //	if (DEBUG_WORK == Radio_Trf_Get_Workmode()) {													//调试信息
@@ -368,8 +353,8 @@ u8 Radar_GetData(tradar_targetinfo_s* pTargetinfo[], u8 dataNum)
 			pTargetinfo[0]->pMagBG[6]);
 		}
 		
-		Radio_Trf_Debug_Printf_Level3("%dlow%d.%d-%dst%dds%ddf%d&%d;tdf%d.%d;%d,%d,%d,%d",
-				dataNum,RADER_LOW,val_temp,val_vptat,(uint32_t)radar_targetinfo.status,
+		Radio_Trf_Debug_Printf_Level3("%dlow%d.%dst%dds%ddf%d&%d;tdf%d.%d;%d,%d,%d,%d",
+				dataNum,RADER_LOW,val_vptat,(uint32_t)radar_targetinfo.status,
 				(uint32_t)radar_targetinfo.distance_cm,
 				radar_targetinfo.strenth_total_diff,radar_targetinfo.strenth_total_diff_v2,
 				radar_targetinfo.time_total_square_diff,radar_targetinfo.time_total_diff,
@@ -392,16 +377,6 @@ u8 Radar_GetData(tradar_targetinfo_s* pTargetinfo[], u8 dataNum)
 				pTargetinfo[0]->pMagBG[12],pTargetinfo[0]->pMagBG[13],pTargetinfo[0]->pMagBG[14],
 				pTargetinfo[0]->pMagBG[15],pTargetinfo[0]->pMagBG[16],pTargetinfo[0]->pMagBG[17],
 				talgo_get_timedomain_least());
-		
-		Radio_Trf_Debug_Printf_Level3("t1:%04d %04d %04d %04d;%04d %04d %04d %04d",
-				tradar_time_mag_buff_test[0],tradar_time_mag_buff_test[1],tradar_time_mag_buff_test[2],
-				tradar_time_mag_buff_test[3],tradar_time_mag_buff_test[4],tradar_time_mag_buff_test[5],
-				tradar_time_mag_buff_test[6],tradar_time_mag_buff_test[7]);
-		
-		Radio_Trf_Debug_Printf_Level3("t2:%04d %04d %04d %04d;%04d %04d %04d",
-				tradar_time_mag_buff_test[8],tradar_time_mag_buff_test[9],tradar_time_mag_buff_test[10],
-				tradar_time_mag_buff_test[11],tradar_time_mag_buff_test[12],tradar_time_mag_buff_test[13],
-				tradar_time_mag_buff_test[14]);
 	}
 #endif
 	
@@ -416,39 +391,24 @@ u8 Radar_GetData(tradar_targetinfo_s* pTargetinfo[], u8 dataNum)
 **********************************************************************************************************/
 void Radar_GetSample(void)
 {
-	if (n_array >= SAMPLE_NUM) {
-		if (flag_main_go != 0) {
-			return;
-		}
-		n_array = 0;
-		flag_main_go = 1 + flag_in_array;
-		flag_in_array = 1 - flag_in_array;
+	if (flag_main_go != 0) {
+		return;	
 	}
 	
-	if (flag_in_array == 0) {
-		
-		sample_array0[n_array] = RADAR_ADC_ConvertedValue;
-		
-		/* 设置DAC通道值 */
-		HAL_DAC_SetValue(&RADAR_DAC_Handler, DAC_CHANNEL_1, DAC_ALIGN_12B_R, (SAMPLE_NUM - n_array) * RADER_RANGE + RADER_LOW);
-		
-		/* 启动DAC */
-		HAL_DAC_Start(&RADAR_DAC_Handler, DAC_CHANNEL_1);
-		
-		n_array++;
+	if (n_array >= SAMPLE_NUM) {
+		n_array = 0;
+		flag_main_go = 1;
 	}
-	else {
+	
+	sample_array0[n_array] = RADAR_ADC_ConvertedValue;
 		
-		sample_array1[n_array] = RADAR_ADC_ConvertedValue;
-		
-		/* 设置DAC通道值 */
-		HAL_DAC_SetValue(&RADAR_DAC_Handler, DAC_CHANNEL_1, DAC_ALIGN_12B_R, (SAMPLE_NUM - n_array) * RADER_RANGE + RADER_LOW);
-		
-		/* 启动DAC */
-		HAL_DAC_Start(&RADAR_DAC_Handler, DAC_CHANNEL_1);
-		
-		n_array++;
-	}
+	/* 设置DAC通道值 */
+	HAL_DAC_SetValue(&RADAR_DAC_Handler, DAC_CHANNEL_1, DAC_ALIGN_12B_R, (SAMPLE_NUM - n_array) * RADER_RANGE + RADER_LOW);
+	
+	/* 启动DAC */
+	HAL_DAC_Start(&RADAR_DAC_Handler, DAC_CHANNEL_1);
+	
+	n_array++;
 }
 
 /**********************************************************************************************************
@@ -475,30 +435,6 @@ void Radar_GetSample_Time(void)
 }
 
 /**********************************************************************************************************
- @Function			u16 talgo_get_radartunebase_test(void)
- @Description			talgo_get_radartunebase_test
- @Input				void
- @Return				void
-**********************************************************************************************************/
-u16 talgo_get_radartunebase_test(void)
-{
-	u16 tune_base;
-	
-	val_temp = TEMPERATURE_ADC_Read(100);
-	
-	tune_base = (20 + val_temp) * 5 + 100;
-	
-	if (tune_base < 100) {
-		tune_base = 100;
-	}
-	else if (tune_base > 500) {
-		tune_base = 500;
-	}
-	
-	return tune_base;
-}
-
-/**********************************************************************************************************
  @Function			u16 talgo_get_radartunebase_vptat(void)
  @Description			talgo_get_radartunebase_vptat
  @Input				void
@@ -506,27 +442,8 @@ u16 talgo_get_radartunebase_test(void)
 **********************************************************************************************************/
 u16 talgo_get_radartunebase_vptat(void)
 {
-	u16 tune_base;
-	
 	val_vptat = VPTAT_ADC_Read(100);
-	
-	val_temp = TEMPERATURE_ADC_Read(100);
-	
-	if (val_vptat < 50) {
-		tune_base = (20 + val_temp) * 5 + 100;
-	}
-	else {
-		tune_base = (val_vptat - 105) + 100;
-	}
-	
-	if (tune_base < 100) {
-		tune_base = 100;
-	}
-	else if (tune_base > 500) {
-		tune_base = 500;
-	}
-	
-	return tune_base;
+	return 0;
 }
 
 /**********************************************************************************************************
@@ -538,7 +455,7 @@ u16 talgo_get_radartunebase_vptat(void)
 void Radar_EnterCriticalSection(void)
 {
 #if RADAR_MODEL_TYPE == RADAR_MODEL_V1
-	talgo_get_radartunebase_test();
+	//talgo_get_radartunebase_test();
 #elif RADAR_MODEL_TYPE == RADAR_MODEL_V2
 	talgo_get_radartunebase_vptat();
 	/* -<0.1v 那么是国产雷达- */
@@ -591,183 +508,6 @@ void Radar_ExitCriticalSection(void)
 	Radar_ADC_DeInit();
 	Radar_DMA_DeInit();
 	Radar_DAC_DeInit();
-}
-
-extern short tradar_fre_magBG[TRADAR_BACKGROUND_NUM];
-extern short tradar_fre_magBG_base[TRADAR_BACKGROUND_NUM];
-
-/**********************************************************************************************************
- @Function			u16 Radar_get_increase_sum(short* array0, short* array1, u8 count)
- @Description			获取两个数组的正差值和
- @Input				
- @Return				
-**********************************************************************************************************/
-u16 Radar_get_increase_sum(short* array0, short* array1, u8 count)
-{
-	u16 total_diff = 0;
-	u8 i;
-	
-	for (i = 0; i < count; i++) {
-		if (array0[i] > (array1[i] + 1)) {
-			total_diff += (array0[i] - array1[i]);
-		}
-	}
-	
-	return total_diff;
-}
-
-/**********************************************************************************************************
- @Function			u16 Radar_get_decrease_sum(short* array0, short* array1, u8 count)
- @Description			获取两个数组的负差值和
- @Input				
- @Return				
-**********************************************************************************************************/
-u16 Radar_get_decrease_sum(short* array0, short* array1, u8 count)
-{
-	u16 total_diff = 0;
-	u8 i;
-	
-	for (i = 0; i < count; i++) {
-		if ((array0[i] + 1) < array1[i]) {
-			total_diff += (array1[i] - array0[i]);
-		}
-	}
-	
-	return total_diff;
-}
-
-/**********************************************************************************************************
- @Function			void Radar_check_background(RADAR_DataStruct* pRadarData)
- @Description			check whether to adjust the radar background
- @Input				
- @Return				
-**********************************************************************************************************/
-void Radar_check_background(RADAR_DataStruct* pRadarData)
-{
-	s16 inc_diff, dec_diff, inc_diff_base, dec_diff_base;
-	
-	if (radar_trigged_again == 0) {
-		return;
-	}
-	
-	radar_trigged_again = 0;
-	
-	inc_diff		= Radar_get_increase_sum(tradar_fre_mag_buff, tradar_fre_magBG, 10);
-	inc_diff_base	= Radar_get_increase_sum(tradar_fre_mag_buff, tradar_fre_magBG_base, 10);
-	dec_diff		= Radar_get_decrease_sum(tradar_fre_mag_buff, tradar_fre_magBG, 10);
-	dec_diff_base	= Radar_get_decrease_sum(tradar_fre_mag_buff, tradar_fre_magBG_base, 10);
-	
-#ifdef RADAR_DEBUG_LOG_RF_PRINT
-	Radio_Trf_Debug_Printf_Level3("temp:%d~%d", val_temp, val_temp_adjust);
-#endif
-	
-	/* the changed temperature value is less than 8 */
-	if ((val_temp_adjust - val_temp) < 8 && (val_temp_adjust - val_temp) > -8) {
-		return;
-	}
-	
-	if ((pRadarData->Diff > 32) || ((pRadarData->Diff - pRadarData->Diff_v2) > 32)) {
-		return;
-	}
-	
-	if ((inc_diff > 32) || (dec_diff > 32)) {
-		return;
-	}
-	
-	if ((inc_diff_base > 32) || (dec_diff_base > 32)) {
-		return;
-	}
-	
-	if ((pRadarData->Diff <= 16) && ((pRadarData->Diff - pRadarData->Diff_v2) <= 16) && (inc_diff <= 16) && (dec_diff <= 16)) {
-		if ((pRadarData->Diff > 8) || ((pRadarData->Diff - pRadarData->Diff_v2) > 8)) {
-#ifdef RADAR_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level3("diff:%d,%dbase:%d,%d", inc_diff, dec_diff, inc_diff_base, dec_diff_base);
-#endif
-			tradar_background_set((u16*)tradar_fre_mag_buff, (sizeof(tradar_fre_mag_buff)) / 2);
-			val_vptat_adjust = val_vptat;
-			val_temp_adjust  = val_temp;
-			return;
-		}
-	}
-	
-	if ((pRadarData->Diff_base <= 16) && ((pRadarData->Diff_base - pRadarData->Diff_base_v2) <= 16) && (inc_diff_base <= 16) && (dec_diff_base <= 16)) {
-		if ((pRadarData->Diff_base > 8) || ((pRadarData->Diff_base - pRadarData->Diff_base_v2) > 8)) {
-#ifdef RADAR_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level3("diff:%d,%dbase:%d,%d", inc_diff, dec_diff, inc_diff_base, dec_diff_base);
-#endif
-			tradar_background_set((u16*)tradar_fre_mag_buff, (sizeof(tradar_fre_mag_buff)) / 2);
-			val_vptat_adjust = val_vptat;
-			val_temp_adjust  = val_temp;
-			return;
-		}
-	}
-}
-
-/**********************************************************************************************************
- @Function			void Radar_check_timedomain_background(RADAR_DataStruct* pRadarData)
- @Description			check whether to adjust the radar timedomain background
- @Input				
- @Return				
-**********************************************************************************************************/
-void Radar_check_timedomain_background(RADAR_DataStruct* pRadarData)
-{
-	s16 inc_diff, dec_diff, inc_diff_base, dec_diff_base;
-	
-	if (radar_trigged_again == 0) {
-		return;
-	}
-	
-	dec_diff = dec_diff;
-	dec_diff_base = dec_diff_base;
-	
-	radar_trigged_again = 0;
-	
-	inc_diff		= calculate_time_domain_total_square_diff();
-	
-#ifdef RADAR_DEBUG_LOG_RF_PRINT
-	Radio_Trf_Debug_Printf_Level3("temp:%d~%d", val_temp, val_temp_adjust);
-#endif
-	
-	/* the changed temperature value is less than 8 */
-	if ((val_temp_adjust - val_temp) < 8 && (val_temp_adjust - val_temp) > -8) {
-		return;
-	}
-	
-	if (pRadarData->timedomain_square_dif > 32) {
-		return;
-	}
-	
-	if (inc_diff > 32) {
-		return;
-	}
-	
-	if (inc_diff_base > 32) {
-		return;
-	}
-	
-	if ((pRadarData->Diff <= 16) && (inc_diff <= 16)) {
-		if (pRadarData->Diff > 8) {
-#ifdef RADAR_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level3("diff:%d,%dbase:%d,%d", inc_diff, dec_diff, inc_diff_base, dec_diff_base);
-#endif
-			tradar_background_set((u16*)tradar_fre_mag_buff, (sizeof(tradar_fre_mag_buff)) / 2);
-			val_vptat_adjust = val_vptat;
-			val_temp_adjust  = val_temp;
-			return;
-		}
-	}
-	
-	if ((pRadarData->Diff_base <= 16) && (inc_diff_base <= 16)) {
-		if (pRadarData->Diff_base > 8) {
-#ifdef RADAR_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level3("diff:%d,%dbase:%d,%d", inc_diff, dec_diff, inc_diff_base, dec_diff_base);
-#endif
-			tradar_background_set((u16*)tradar_fre_mag_buff, (sizeof(tradar_fre_mag_buff)) / 2);
-			val_vptat_adjust = val_vptat;
-			val_temp_adjust  = val_temp;
-			return;
-		}
-	}
 }
 
 /**********************************************************************************************************

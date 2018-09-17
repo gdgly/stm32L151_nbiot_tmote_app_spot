@@ -3,6 +3,7 @@ movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内
 
 * 2018-09-17 :
 	* MqttSN下行应答修改103不用返回。
+	* MqttSN增加Connect与Ping调试信息。
 * 2018-09-15 :
 	* 优化监听器代码。
 	* 去掉原先控制发送RadarInfo控制代码。

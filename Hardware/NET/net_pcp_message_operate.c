@@ -119,18 +119,13 @@ void NET_PCP_Message_SendDataEnqueue(unsigned char* dataBuf, unsigned short data
 		return;
 	}
 	
+	NETPcpMessageSendPark.Rear = (NETPcpMessageSendPark.Rear + 1) % PCP_SEND_PACK_NUM;						//队尾偏移1
+	memset((u8 *)&NETPcpMessageSendPark.Park[NETPcpMessageSendPark.Rear], 0x0, sizeof(NETPcpMessageSendPark.Park[NETPcpMessageSendPark.Rear]));
+	memcpy(NETPcpMessageSendPark.Park[NETPcpMessageSendPark.Rear].Buffer, dataBuf, dataLength);
+	NETPcpMessageSendPark.Park[NETPcpMessageSendPark.Rear].Length = dataLength;
+	
 	if (NET_PCP_Message_SendDataisFull() == true) {													//队列已满
-		NETPcpMessageSendPark.Rear = (NETPcpMessageSendPark.Rear + 1) % PCP_SEND_PACK_NUM;					//队尾偏移1
-		memset((u8 *)&NETPcpMessageSendPark.Park[NETPcpMessageSendPark.Rear], 0x0, sizeof(NETPcpMessageSendPark.Park[NETPcpMessageSendPark.Rear]));
-		memcpy(NETPcpMessageSendPark.Park[NETPcpMessageSendPark.Rear].Buffer, dataBuf, dataLength);
-		NETPcpMessageSendPark.Park[NETPcpMessageSendPark.Rear].Length = dataLength;
 		NETPcpMessageSendPark.Front = (NETPcpMessageSendPark.Front + 1) % PCP_SEND_PACK_NUM;					//队头偏移1
-	}
-	else {																					//队列未满
-		NETPcpMessageSendPark.Rear = (NETPcpMessageSendPark.Rear + 1) % PCP_SEND_PACK_NUM;					//队尾偏移1
-		memset((u8 *)&NETPcpMessageSendPark.Park[NETPcpMessageSendPark.Rear], 0x0, sizeof(NETPcpMessageSendPark.Park[NETPcpMessageSendPark.Rear]));
-		memcpy(NETPcpMessageSendPark.Park[NETPcpMessageSendPark.Rear].Buffer, dataBuf, dataLength);
-		NETPcpMessageSendPark.Park[NETPcpMessageSendPark.Rear].Length = dataLength;
 	}
 }
 
@@ -147,18 +142,13 @@ void NET_PCP_Message_RecvDataEnqueue(unsigned char* dataBuf, unsigned short data
 		return;
 	}
 	
+	NETPcpMessageRecvPark.Rear = (NETPcpMessageRecvPark.Rear + 1) % PCP_RECV_PACK_NUM;						//队尾偏移1
+	memset((u8 *)&NETPcpMessageRecvPark.Park[NETPcpMessageRecvPark.Rear], 0x0, sizeof(NETPcpMessageRecvPark.Park[NETPcpMessageRecvPark.Rear]));
+	memcpy(NETPcpMessageRecvPark.Park[NETPcpMessageRecvPark.Rear].Buffer, dataBuf, dataLength);
+	NETPcpMessageRecvPark.Park[NETPcpMessageRecvPark.Rear].Length = dataLength;
+	
 	if (NET_PCP_Message_RecvDataisFull() == true) {													//队列已满
-		NETPcpMessageRecvPark.Rear = (NETPcpMessageRecvPark.Rear + 1) % PCP_RECV_PACK_NUM;					//队尾偏移1
-		memset((u8 *)&NETPcpMessageRecvPark.Park[NETPcpMessageRecvPark.Rear], 0x0, sizeof(NETPcpMessageRecvPark.Park[NETPcpMessageRecvPark.Rear]));
-		memcpy(NETPcpMessageRecvPark.Park[NETPcpMessageRecvPark.Rear].Buffer, dataBuf, dataLength);
-		NETPcpMessageRecvPark.Park[NETPcpMessageRecvPark.Rear].Length = dataLength;
 		NETPcpMessageRecvPark.Front = (NETPcpMessageRecvPark.Front + 1) % PCP_RECV_PACK_NUM;					//队头偏移1
-	}
-	else {																					//队列未满
-		NETPcpMessageRecvPark.Rear = (NETPcpMessageRecvPark.Rear + 1) % PCP_RECV_PACK_NUM;					//队尾偏移1
-		memset((u8 *)&NETPcpMessageRecvPark.Park[NETPcpMessageRecvPark.Rear], 0x0, sizeof(NETPcpMessageRecvPark.Park[NETPcpMessageRecvPark.Rear]));
-		memcpy(NETPcpMessageRecvPark.Park[NETPcpMessageRecvPark.Rear].Buffer, dataBuf, dataLength);
-		NETPcpMessageRecvPark.Park[NETPcpMessageRecvPark.Rear].Length = dataLength;
 	}
 }
 
