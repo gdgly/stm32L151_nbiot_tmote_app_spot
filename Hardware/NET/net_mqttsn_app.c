@@ -2005,7 +2005,8 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 				if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "Workmode") != NULL) {
 			#if MQTTSN_DOWNLOAD_CMD_WORKMODE
 					u16 mode;
-					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(Workmode):{(val):%hu,(Magic):%hu}}", &mode, &recvMagicNum);
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
+						"{(Workmode):{(val):%hu,(Magic):%hu}}", &mode, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
 						TCFG_SystemData.WorkMode = mode;
 						if ((TCFG_SystemData.WorkMode != DEBUG_WORK) && (TCFG_SystemData.WorkMode != NORMAL_WORK)) {
@@ -2026,7 +2027,8 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "Sense") != NULL) {
 			#if MQTTSN_DOWNLOAD_CMD_SENSE
 					u16 sense;
-					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(Sense):{(val):%hu,(Magic):%hu}}", &sense, &recvMagicNum);
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
+						"{(Sense):{(val):%hu,(Magic):%hu}}", &sense, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
 						TCFG_SystemData.Sensitivity = sense;
 						if ((TCFG_SystemData.Sensitivity > SENSE_LOWEST) || (TCFG_SystemData.Sensitivity < SENSE_HIGHEST)) {
@@ -2047,7 +2049,8 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "RFHeart") != NULL) {
 			#if MQTTSN_DOWNLOAD_CMD_RFHEART
 					u16 rfheart;
-					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(RFHeart):{(val):%hu,(Magic):%hu}}", &rfheart, &recvMagicNum);
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
+						"{(RFHeart):{(val):%hu,(Magic):%hu}}", &rfheart, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
 						TCFG_SystemData.Heartinterval = rfheart;
 						if ((TCFG_SystemData.Heartinterval > 120) || (TCFG_SystemData.Heartinterval < 1)) {
@@ -2068,7 +2071,8 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "Background") != NULL) {
 			#if MQTTSN_DOWNLOAD_CMD_BACKGROUND
 					u16 backgroundval;
-					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(Background):{(val):%hu,(Magic):%hu}}", &backgroundval, &recvMagicNum);
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
+						"{(Background):{(val):%hu,(Magic):%hu}}", &backgroundval, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
 						if (((radar_targetinfo.strenth_total_diff > (backgroundval-5)) && (radar_targetinfo.strenth_total_diff < (backgroundval+5))) || (backgroundval == 0)) {
 							Radar_InitBackground(TO_SAVE_RADAR_BACKGROUND);
@@ -2094,7 +2098,8 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "Newsn") != NULL) {
 			#if MQTTSN_DOWNLOAD_CMD_NEWSN
 					u32 newsnval;
-					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(Newsn):{(val):%08x,(Magic):%hu}}", &newsnval, &recvMagicNum);
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
+						"{(Newsn):{(val):%08x,(Magic):%hu}}", &newsnval, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
 						TCFG_EEPROM_Set_MAC_SN(newsnval);
 					}
@@ -2107,7 +2112,8 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "Active") != NULL) {
 			#if MQTTSN_DOWNLOAD_CMD_ACTIVE
 					u16 activeval;
-					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(Active):{(val):%hu,(Magic):%hu}}", &activeval, &recvMagicNum);
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
+						"{(Active):{(val):%hu,(Magic):%hu}}", &activeval, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
 						TCFG_EEPROM_SetActiveDevice(activeval);
 						if (activeval) {
@@ -2128,7 +2134,8 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "RadarDbg") != NULL) {
 			#if MQTTSN_DOWNLOAD_CMD_RADARDBG
 					u16 radarDbgval;
-					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(RadarDbg):{(val):%hu,(Magic):%hu}}", &radarDbgval, &recvMagicNum);
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
+						"{(RadarDbg):{(val):%hu,(Magic):%hu}}", &radarDbgval, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
 						TCFG_EEPROM_SetRadarDbgMode(radarDbgval);
 						TCFG_SystemData.RadarDbgMode = TCFG_EEPROM_GetRadarDbgMode();
@@ -2145,7 +2152,8 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "MagMod") != NULL) {
 			#if MQTTSN_DOWNLOAD_CMD_MAGMOD
 					u16 magmodval;
-					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(MagMod):{(val):%hu,(Magic):%hu}}", &magmodval, &recvMagicNum);
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
+						"{(MagMod):{(val):%hu,(Magic):%hu}}", &magmodval, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
 						TCFG_EEPROM_SetMagMode(magmodval);
 						talgo_set_magmod(magmodval);
@@ -2159,7 +2167,8 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "NbHeart") != NULL) {
 			#if MQTTSN_DOWNLOAD_CMD_NBHEART
 					u16 nbheartval;
-					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(NbHeart):{(val):%hu,(Magic):%hu}}", &nbheartval, &recvMagicNum);
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
+						"{(NbHeart):{(val):%hu,(Magic):%hu}}", &nbheartval, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
 						TCFG_EEPROM_SetNbiotHeart(nbheartval);
 						TCFG_SystemData.NBIotHeart = TCFG_EEPROM_GetNbiotHeart();
@@ -2204,7 +2213,8 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "DisRange") != NULL) {
 			#if MQTTSN_DOWNLOAD_CMD_DISRANGE
 					u16 disrangeval;
-					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(DisRange):{(val):%hu,(Magic):%hu}}", &disrangeval, &recvMagicNum);
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
+						"{(DisRange):{(val):%hu,(Magic):%hu}}", &disrangeval, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
 						tradar_set_distance_range(disrangeval + 4);
 						TCFG_EEPROM_SetRadarRange(disrangeval);
@@ -2219,7 +2229,8 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "InDelay") != NULL) {
 			#if MQTTSN_DOWNLOAD_CMD_CARINDELAY
 					u16 indelayval;
-					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(InDelay):{(val):%hu,(Magic):%hu}}", &indelayval, &recvMagicNum);
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
+						"{(InDelay):{(val):%hu,(Magic):%hu}}", &indelayval, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
 						TCFG_EEPROM_SetCarInDelay(indelayval);
 						TCFG_SystemData.CarInDelay = TCFG_EEPROM_GetCarInDelay();
@@ -2261,7 +2272,8 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "BeepOff") != NULL) {
 			#if MQTTSN_DOWNLOAD_CMD_BEEPOFF
 					u16 beepoff;
-					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "{(BeepOff):{(val):%hu,(Magic):%hu}}", &beepoff, &recvMagicNum);
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
+						"{(BeepOff):{(val):%hu,(Magic):%hu}}", &beepoff, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
 						TCFG_SystemData.BeepCtrlOff = beepoff;
 						TCFG_EEPROM_SetBeepOff(TCFG_SystemData.BeepCtrlOff);
@@ -2299,14 +2311,16 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 		else {
 			ret = NETIP_NOTSUPPORT;
 		}
+		
+		NETMqttSNNeedSendCode.InfoResponseErrcode = ret;
+		NETMqttSNNeedSendCode.InfoResponse = 1;
 	}
 	else {
 		/* Not Valid */
 		ret = NETIP_NOTVALID;
 	}
 	
-	NETMqttSNNeedSendCode.InfoResponseErrcode = ret;
-	NETMqttSNNeedSendCode.InfoResponse = 1;
+	/* PCP升级协议下行数据 */
 	
 	return MQTTSN_OK;
 }

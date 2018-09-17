@@ -1813,7 +1813,8 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 					if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Workmode") != NULL) {
 				#if NBCOAP_DOWNLOAD_CMD_WORKMODE
 						u16 mode;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(Workmode):{(val):%hu,(Magic):%hu}}", &mode, &recvMagicNum);
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
+							"{(Workmode):{(val):%hu,(Magic):%hu}}", &mode, &recvMagicNum);
 						if (recvMagicNum == TCLOD_MAGIC_NUM) {
 							TCFG_SystemData.WorkMode = mode;
 							if ((TCFG_SystemData.WorkMode != DEBUG_WORK) && (TCFG_SystemData.WorkMode != NORMAL_WORK)) {
@@ -1834,7 +1835,8 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Sense") != NULL) {
 				#if NBCOAP_DOWNLOAD_CMD_SENSE
 						u16 sense;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(Sense):{(val):%hu,(Magic):%hu}}", &sense, &recvMagicNum);
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
+							"{(Sense):{(val):%hu,(Magic):%hu}}", &sense, &recvMagicNum);
 						if (recvMagicNum == TCLOD_MAGIC_NUM) {
 							TCFG_SystemData.Sensitivity = sense;
 							if ((TCFG_SystemData.Sensitivity > SENSE_LOWEST) || (TCFG_SystemData.Sensitivity < SENSE_HIGHEST)) {
@@ -1855,7 +1857,8 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "RFHeart") != NULL) {
 				#if NBCOAP_DOWNLOAD_CMD_RFHEART
 						u16 rfheart;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(RFHeart):{(val):%hu,(Magic):%hu}}", &rfheart, &recvMagicNum);
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
+							"{(RFHeart):{(val):%hu,(Magic):%hu}}", &rfheart, &recvMagicNum);
 						if (recvMagicNum == TCLOD_MAGIC_NUM) {
 							TCFG_SystemData.Heartinterval = rfheart;
 							if ((TCFG_SystemData.Heartinterval > 120) || (TCFG_SystemData.Heartinterval < 1)) {
@@ -1876,7 +1879,8 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Background") != NULL) {
 				#if NBCOAP_DOWNLOAD_CMD_BACKGROUND
 						u16 backgroundval;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(Background):{(val):%hu,(Magic):%hu}}", &backgroundval, &recvMagicNum);
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
+							"{(Background):{(val):%hu,(Magic):%hu}}", &backgroundval, &recvMagicNum);
 						if (recvMagicNum == TCLOD_MAGIC_NUM) {
 							if (((radar_targetinfo.strenth_total_diff > (backgroundval-5)) && (radar_targetinfo.strenth_total_diff < (backgroundval+5))) || (backgroundval == 0)) {
 								Radar_InitBackground(TO_SAVE_RADAR_BACKGROUND);
@@ -1902,7 +1906,8 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Newsn") != NULL) {
 				#if NBCOAP_DOWNLOAD_CMD_NEWSN
 						u32 newsnval;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(Newsn):{(val):%08x,(Magic):%hu}}", &newsnval, &recvMagicNum);
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
+							"{(Newsn):{(val):%08x,(Magic):%hu}}", &newsnval, &recvMagicNum);
 						if (recvMagicNum == TCLOD_MAGIC_NUM) {
 							TCFG_EEPROM_Set_MAC_SN(newsnval);
 						}
@@ -1944,7 +1949,8 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Active") != NULL) {
 				#if NBCOAP_DOWNLOAD_CMD_ACTIVE
 						u16 activeval;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(Active):{(val):%hu,(Magic):%hu}}", &activeval, &recvMagicNum);
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
+							"{(Active):{(val):%hu,(Magic):%hu}}", &activeval, &recvMagicNum);
 						if (recvMagicNum == TCLOD_MAGIC_NUM) {
 							TCFG_EEPROM_SetActiveDevice(activeval);
 							if (activeval) {
@@ -1965,7 +1971,8 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "RadarDbg") != NULL) {
 				#if NBCOAP_DOWNLOAD_CMD_RADARDBG
 						u16 radarDbgval;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(RadarDbg):{(val):%hu,(Magic):%hu}}", &radarDbgval, &recvMagicNum);
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
+							"{(RadarDbg):{(val):%hu,(Magic):%hu}}", &radarDbgval, &recvMagicNum);
 						if (recvMagicNum == TCLOD_MAGIC_NUM) {
 							TCFG_EEPROM_SetRadarDbgMode(radarDbgval);
 							TCFG_SystemData.RadarDbgMode = TCFG_EEPROM_GetRadarDbgMode();
@@ -1982,7 +1989,8 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "MagMod") != NULL) {
 				#if NBCOAP_DOWNLOAD_CMD_MAGMOD
 						u16 magmodval;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(MagMod):{(val):%hu,(Magic):%hu}}", &magmodval, &recvMagicNum);
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
+							"{(MagMod):{(val):%hu,(Magic):%hu}}", &magmodval, &recvMagicNum);
 						if (recvMagicNum == TCLOD_MAGIC_NUM) {
 							TCFG_EEPROM_SetMagMode(magmodval);
 							talgo_set_magmod(magmodval);
@@ -1996,7 +2004,8 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "NbHeart") != NULL) {
 				#if NBCOAP_DOWNLOAD_CMD_NBHEART
 						u16 nbheartval;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(NbHeart):{(val):%hu,(Magic):%hu}}", &nbheartval, &recvMagicNum);
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
+							"{(NbHeart):{(val):%hu,(Magic):%hu}}", &nbheartval, &recvMagicNum);
 						if (recvMagicNum == TCLOD_MAGIC_NUM) {
 							TCFG_EEPROM_SetNbiotHeart(nbheartval);
 							TCFG_SystemData.NBIotHeart = TCFG_EEPROM_GetNbiotHeart();
@@ -2041,7 +2050,8 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "DisRange") != NULL) {
 				#if NBCOAP_DOWNLOAD_CMD_DISRANGE
 						u16 disrangeval;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(DisRange):{(val):%hu,(Magic):%hu}}", &disrangeval, &recvMagicNum);
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
+							"{(DisRange):{(val):%hu,(Magic):%hu}}", &disrangeval, &recvMagicNum);
 						if (recvMagicNum == TCLOD_MAGIC_NUM) {
 							tradar_set_distance_range(disrangeval + 4);
 							TCFG_EEPROM_SetRadarRange(disrangeval);
@@ -2056,7 +2066,8 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "InDelay") != NULL) {
 				#if NBCOAP_DOWNLOAD_CMD_CARINDELAY
 						u16 indelayval;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(InDelay):{(val):%hu,(Magic):%hu}}", &indelayval, &recvMagicNum);
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
+							"{(InDelay):{(val):%hu,(Magic):%hu}}", &indelayval, &recvMagicNum);
 						if (recvMagicNum == TCLOD_MAGIC_NUM) {
 							TCFG_EEPROM_SetCarInDelay(indelayval);
 							TCFG_SystemData.CarInDelay = TCFG_EEPROM_GetCarInDelay();
@@ -2070,7 +2081,8 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "RATime") != NULL) {
 				#if NBCOAP_DOWNLOAD_CMD_RATIME
 						u16 ratime;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(RATime):{(val):%hu,(Magic):%hu}}", &ratime, &recvMagicNum);
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
+							"{(RATime):{(val):%hu,(Magic):%hu}}", &ratime, &recvMagicNum);
 						if (recvMagicNum == TCLOD_MAGIC_NUM) {
 							TCFG_EEPROM_SetCoapRATimeHour(ratime);
 							TCFG_SystemData.CoapRATimeHour = TCFG_EEPROM_GetCoapRATimeHour();
@@ -2112,7 +2124,8 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "BeepOff") != NULL) {
 				#if NBCOAP_DOWNLOAD_CMD_BEEPOFF
 						u16 beepoff;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "{(BeepOff):{(val):%hu,(Magic):%hu}}", &beepoff, &recvMagicNum);
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
+							"{(BeepOff):{(val):%hu,(Magic):%hu}}", &beepoff, &recvMagicNum);
 						if (recvMagicNum == TCLOD_MAGIC_NUM) {
 							TCFG_SystemData.BeepCtrlOff = beepoff;
 							TCFG_EEPROM_SetBeepOff(TCFG_SystemData.BeepCtrlOff);

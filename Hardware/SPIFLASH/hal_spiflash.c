@@ -33,6 +33,7 @@ GD25Q_StatusTypeDef GD25QStatus = GD25Q80CSIG_OK;
 void GD25Q_SPIFLASH_Init(void)
 {
 	u32 ReadIdentificationID;
+	GD25QStatus = GD25Q80CSIG_OK;
 	
 	GD25Q_SPIFLASH_Handler.Instance				= GD25Q_FLASH_SPIx;						//SPI1
 	GD25Q_SPIFLASH_Handler.Init.Mode				= SPI_MODE_MASTER;						//设置SPI工作模式为主模式
