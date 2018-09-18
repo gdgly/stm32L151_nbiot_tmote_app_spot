@@ -3,10 +3,10 @@
 
 #include "sys.h"
 
-#define PCP_SEND_BUFFER_SIZE				512
+#define PCP_SEND_BUFFER_SIZE				128
 #define PCP_RECV_BUFFER_SIZE				512
-#define PCP_SEND_PACK_NUM				2
-#define PCP_RECV_PACK_NUM				3
+#define PCP_SEND_PACK_NUM				5
+#define PCP_RECV_PACK_NUM				5
 
 /* 发送数据队列 */
 typedef struct

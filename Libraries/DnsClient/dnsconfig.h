@@ -27,6 +27,10 @@
 #define DNS_ANALYSIS_HOSTIP2				"106.14.142.169"
 #define DNS_ANALYSIS_TYPE2				DNS_ANALYSIS_DISABLE
 
+#define DNS_ANALYSIS_HOSTNAME3			"devilkidcry.top"
+#define DNS_ANALYSIS_HOSTIP3				"47.96.175.6"
+#define DNS_ANALYSIS_TYPE3				DNS_ANALYSIS_DISABLE
+
 typedef struct DNS_SocketNetTypeDef		DNS_SocketNetTypeDef;
 typedef struct DNS_ClientsTypeDef			DNS_ClientsTypeDef;
 
