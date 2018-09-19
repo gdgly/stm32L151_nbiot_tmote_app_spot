@@ -65,6 +65,7 @@ typedef struct
 	unsigned int	fortyMinutes;												//40分钟
 	unsigned int	hours;													//时
 	unsigned int	twoHours;													//2小时
+	unsigned int	fourHours;												//4小时
 	unsigned int	days;													//天
 }Stm32_SystemRunningTime;													//系统运行时间
 

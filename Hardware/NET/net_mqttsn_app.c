@@ -2198,9 +2198,6 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 						"{(InitRadar):{(v23456):%u,(v7890a):%u,(vbcdef):%u,(vg):%u,(Magic):%hu}}", &i32, &j32, &k32, &m32, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
 						Radar_InitBG_Cmd(i32, j32, k32, m32);
-						#if NBMQTTSN_SENDCODE_RADAR_INFO
-						NETMqttSNNeedSendCode.InfoRadar = 1;
-						#endif
 					}
 					else {
 						ret = NETIP_UNKNOWNERROR;

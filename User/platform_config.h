@@ -104,6 +104,8 @@
 #define	NBCOAP_SENDCODE_BASIC_INFO		1								//NB上报信息使能CoapBasicInfo
 #define	NBCOAP_SENDCODE_DYNAMIC_INFO		1								//NB上报信息使能CoapDynamicInfo
 #define	NBCOAP_SENDCODE_RADAR_INFO		0								//NB上报信息使能CoapRadarInfo
+#define	NBCOAP_SENDCODE_RESPONSE_INFO		1								//NB上报信息使能CoapResponseInfo
+#define	NBCOAP_SENDCODE_QMC_DATA			1								//NB上报信息使能CoapQmcData
 
 #define	NBMQTTSN_SENDCODE_STATUS_BASIC	0								//NB上报信息使能MqttSNStatusBasic
 #define	NBMQTTSN_SENDCODE_STATUS_EXTEND	1								//NB上报信息使能MqttSNStatusExtend
@@ -111,6 +113,8 @@
 #define	NBMQTTSN_SENDCODE_BASIC_INFO		1								//NB上报信息使能MqttSNBasicInfo
 #define	NBMQTTSN_SENDCODE_DYNAMIC_INFO	1								//NB上报信息使能MqttSNDynamicInfo
 #define	NBMQTTSN_SENDCODE_RADAR_INFO		0								//NB上报信息使能MqttSNRadarInfo
+#define	NBMQTTSN_SENDCODE_RESPONSE_INFO	1								//NB上报信息使能MqttSNResponseInfo
+#define	NBMQTTSN_SENDCODE_QMC_DATA		1								//NB上报信息使能MqttSNQmcData
 
 #define	RADIO_DOWNLOAD_CMD_REBOOT		1								//RADIO下行指令Reboot
 #define	RADIO_DOWNLOAD_CMD_NEWSN			1								//RADIO下行指令NewSn
@@ -201,6 +205,8 @@
 
 #define	NBIOT_HEART_DATA_HOURS			4								//NB心跳数据包时间
 
+#define	UPLOAD_QMCDATA_MAXPACK			16								//QMC一次上传最大包数
+
 #define	DNS_SERVER_HOST_IP				"114.114.114.114"					//DNS服务器默认配置
 #define	DNS_SERVER_LOCAL_PORT			5000
 #define	DNS_SERVER_TELE_PORT			53
@@ -214,10 +220,14 @@ extern bool BootUp;														//BootUp
 extern bool DeviceIdleMode;												//IDLE MODE
 extern bool DeviceActivedMode;											//ACTIVED MODE
 
+#if NETPROTOCAL == NETCOAP
 extern COAP_PacketShortTypeDef			CoapShortStructure;					//Coap Short Packet
 extern COAP_PacketLongTypeDef				CoapLongStructure;					//Coap Long Packet
 extern COAP_PacketInfoTypeDef				CoapInfoStructure;					//Coap Info Packet
+extern COAP_PacketPrivateTypeDef			CoapPrivateStructure;				//Coap Private Packet
+#endif
 
+#if NETPROTOCAL == NETMQTTSN
 #if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
 extern MQTTSN_StatusBasicTypeDef			MqttSNStatusBasicStructure;			//MqttSN Basic Status Packet
 extern MQTTSN_StatusExtendTypeDef			MqttSNStatusExtendStructure;			//MqttSN Extend Status Packet
@@ -231,6 +241,8 @@ extern MQTTSN_InfoResponseTypeDef			MqttSNInfoResponseStructure;			//MqttSN Resp
 extern MQTTSN_PacketShortTypeDef			MqttSNShortStructure;				//MqttSN Short Packet
 extern MQTTSN_PacketLongTypeDef			MqttSNLongStructure;				//MqttSN Long Packet
 extern MQTTSN_PacketInfoTypeDef			MqttSNInfoStructure;				//MqttSN Info Packet
+extern MQTTSN_PacketPrivateTypeDef			MqttSNPrivateStructure;				//MqttSN Private Packet
+#endif
 #endif
 
 extern NET_NBIOT_ClientsTypeDef			NetNbiotClientHandler;				//NET NBIOT Clinet Handler

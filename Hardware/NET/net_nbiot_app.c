@@ -221,7 +221,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		CoapInfoStructure.HeadPacket.PacketNumber			= 0x00;
 		CoapInfoStructure.MsgPacket.DestSN					= 0x00;
 		CoapInfoStructure.MsgPacket.Version				= 0x01;
-		CoapInfoStructure.MsgPacket.Type					= COAP_MSGTYPE_TYPE_INFO;
+		CoapInfoStructure.MsgPacket.Type					= COAP_MSGTYPE_TYPE_WORK_INFO;
 		len = NET_COAP_Message_Operate_Creat_Json_Work_Info((char *)&CoapInfoStructure.InfoData);
 		NET_Coap_Message_SendDataEnqueue((unsigned char *)&CoapInfoStructure, sizeof(CoapInfoStructure) - sizeof(CoapInfoStructure.InfoData) + len);
 		NETCoapNeedSendCode.WorkInfo = 0;
@@ -248,7 +248,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		CoapInfoStructure.HeadPacket.PacketNumber			= 0x00;
 		CoapInfoStructure.MsgPacket.DestSN					= 0x00;
 		CoapInfoStructure.MsgPacket.Version				= 0x01;
-		CoapInfoStructure.MsgPacket.Type					= COAP_MSGTYPE_TYPE_INFO;
+		CoapInfoStructure.MsgPacket.Type					= COAP_MSGTYPE_TYPE_BASIC_INFO;
 		len = NET_COAP_Message_Operate_Creat_Json_Basic_Info((char *)&CoapInfoStructure.InfoData);
 		NET_Coap_Message_SendDataEnqueue((unsigned char *)&CoapInfoStructure, sizeof(CoapInfoStructure) - sizeof(CoapInfoStructure.InfoData) + len);
 		NETCoapNeedSendCode.BasicInfo = 0;
@@ -275,7 +275,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		CoapInfoStructure.HeadPacket.PacketNumber			= 0x00;
 		CoapInfoStructure.MsgPacket.DestSN					= 0x00;
 		CoapInfoStructure.MsgPacket.Version				= 0x01;
-		CoapInfoStructure.MsgPacket.Type					= COAP_MSGTYPE_TYPE_INFO;
+		CoapInfoStructure.MsgPacket.Type					= COAP_MSGTYPE_TYPE_DYNAMIC_INFO;
 		len = NET_COAP_Message_Operate_Creat_Json_Dynamic_Info((char *)&CoapInfoStructure.InfoData);
 		NET_Coap_Message_SendDataEnqueue((unsigned char *)&CoapInfoStructure, sizeof(CoapInfoStructure) - sizeof(CoapInfoStructure.InfoData) + len);
 		NETCoapNeedSendCode.DynamicInfo = 0;
@@ -309,8 +309,33 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 	#endif
 #endif
 	}
+	/* COAP Qmc5883L DATA ENQUEUE */
+	else if (NETCoapNeedSendCode.QmcData) {
+#if NBCOAP_SENDCODE_QMC_DATA
+		memset((void*)&CoapPrivateStructure.PrivateData, 0, sizeof(CoapPrivateStructure.PrivateData));
+		CoapPrivateStructure.HeadPacket.DeviceSN			= TCFG_EEPROM_Get_MAC_SN();
+		CoapPrivateStructure.HeadPacket.DataLen				= 0x00;
+		CoapPrivateStructure.HeadPacket.ProtocolType			= 0x00;
+		CoapPrivateStructure.HeadPacket.Reserved1			= 0x00;
+		CoapPrivateStructure.HeadPacket.ProtocolVersion		= 0x00;
+		CoapPrivateStructure.HeadPacket.Reserved2			= 0x00;
+		CoapPrivateStructure.HeadPacket.PacketType			= 0x07;
+		CoapPrivateStructure.HeadPacket.PacketNumber			= 0x00;
+		CoapPrivateStructure.MsgPacket.DestSN				= 0x00;
+		CoapPrivateStructure.MsgPacket.Version				= 0x01;
+		CoapPrivateStructure.MsgPacket.Type				= COAP_MSGTYPE_TYPE_QMC_DATA;
+		len = NET_COAP_Message_Operate_Creat_Qmc5883L_Data((unsigned char *)&CoapPrivateStructure.PrivateData);
+		NET_Coap_Message_SendDataEnqueue((unsigned char *)&CoapPrivateStructure, sizeof(CoapPrivateStructure) - sizeof(CoapPrivateStructure.PrivateData) + len);
+		NETCoapNeedSendCode.QmcData = 0;
+		TCFG_Utility_Add_Coap_SentCount();
+	#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
+		NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
+	#endif
+#endif
+	}
 	/* COAP RESPONSE INFO DATA ENQUEUE */
 	else if (NETCoapNeedSendCode.ResponseInfo) {
+#if NBCOAP_SENDCODE_RESPONSE_INFO
 		memset((void*)&CoapInfoStructure.InfoData, 0, sizeof(CoapInfoStructure.InfoData));
 		CoapInfoStructure.HeadPacket.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
 		CoapInfoStructure.HeadPacket.DataLen				= 0x00;
@@ -330,6 +355,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 	#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
 		NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
 	#endif
+#endif
 	}
 	
 #elif NETPROTOCAL == NETMQTTSN
@@ -463,6 +489,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 	}
 	/* MQTTSN INFO RESPONSE DATA ENQUEUE */
 	else if (NETMqttSNNeedSendCode.InfoResponse) {
+#if NBMQTTSN_SENDCODE_RESPONSE_INFO
 		MqttSNInfoResponseStructure.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
 		MqttSNInfoResponseStructure.Errcode				= NETMqttSNNeedSendCode.InfoResponseErrcode;
 		NET_MqttSN_Message_InfoResponseEnqueue(MqttSNInfoResponseStructure);
@@ -471,6 +498,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
 		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
 	#endif
+#endif
 	}
 #endif
 
@@ -573,7 +601,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		MqttSNInfoStructure.HeadPacket.PacketNumber			= 0x00;
 		MqttSNInfoStructure.MsgPacket.DestSN				= 0x00;
 		MqttSNInfoStructure.MsgPacket.Version				= 0x01;
-		MqttSNInfoStructure.MsgPacket.Type					= MQTTSN_MSGTYPE_TYPE_INFO;
+		MqttSNInfoStructure.MsgPacket.Type					= MQTTSN_MSGTYPE_TYPE_WORK_INFO;
 		len = NET_MQTTSN_Message_Operate_Creat_Json_Work_Info((char *)&MqttSNInfoStructure.InfoData);
 		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNInfoStructure, sizeof(MqttSNInfoStructure) - sizeof(MqttSNInfoStructure.InfoData) + len);
 		NETMqttSNNeedSendCode.InfoWork = 0;
@@ -600,7 +628,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		MqttSNInfoStructure.HeadPacket.PacketNumber			= 0x00;
 		MqttSNInfoStructure.MsgPacket.DestSN				= 0x00;
 		MqttSNInfoStructure.MsgPacket.Version				= 0x01;
-		MqttSNInfoStructure.MsgPacket.Type					= MQTTSN_MSGTYPE_TYPE_INFO;
+		MqttSNInfoStructure.MsgPacket.Type					= MQTTSN_MSGTYPE_TYPE_BASIC_INFO;
 		len = NET_MQTTSN_Message_Operate_Creat_Json_Basic_Info((char *)&MqttSNInfoStructure.InfoData);
 		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNInfoStructure, sizeof(MqttSNInfoStructure) - sizeof(MqttSNInfoStructure.InfoData) + len);
 		NETMqttSNNeedSendCode.InfoBasic = 0;
@@ -627,7 +655,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		MqttSNInfoStructure.HeadPacket.PacketNumber			= 0x00;
 		MqttSNInfoStructure.MsgPacket.DestSN				= 0x00;
 		MqttSNInfoStructure.MsgPacket.Version				= 0x01;
-		MqttSNInfoStructure.MsgPacket.Type					= MQTTSN_MSGTYPE_TYPE_INFO;
+		MqttSNInfoStructure.MsgPacket.Type					= MQTTSN_MSGTYPE_TYPE_DYNAMIC_INFO;
 		len = NET_MQTTSN_Message_Operate_Creat_Json_Dynamic_Info((char *)&MqttSNInfoStructure.InfoData);
 		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNInfoStructure, sizeof(MqttSNInfoStructure) - sizeof(MqttSNInfoStructure.InfoData) + len);
 		NETMqttSNNeedSendCode.InfoDynamic = 0;
@@ -661,8 +689,33 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 	#endif
 #endif
 	}
+	/* MQTTSN Qmc5883L DATA ENQUEUE */
+	else if (NETMqttSNNeedSendCode.QmcData) {
+#if NBMQTTSN_SENDCODE_QMC_DATA
+		memset((void*)&MqttSNPrivateStructure.PrivateData, 0, sizeof(MqttSNPrivateStructure.PrivateData));
+		MqttSNPrivateStructure.HeadPacket.DeviceSN			= TCFG_EEPROM_Get_MAC_SN();
+		MqttSNPrivateStructure.HeadPacket.DataLen			= 0x00;
+		MqttSNPrivateStructure.HeadPacket.ProtocolType		= 0x00;
+		MqttSNPrivateStructure.HeadPacket.Reserved1			= 0x00;
+		MqttSNPrivateStructure.HeadPacket.ProtocolVersion		= 0x00;
+		MqttSNPrivateStructure.HeadPacket.Reserved2			= 0x00;
+		MqttSNPrivateStructure.HeadPacket.PacketType			= 0x07;
+		MqttSNPrivateStructure.HeadPacket.PacketNumber		= 0x00;
+		MqttSNPrivateStructure.MsgPacket.DestSN				= 0x00;
+		MqttSNPrivateStructure.MsgPacket.Version			= 0x01;
+		MqttSNPrivateStructure.MsgPacket.Type				= COAP_MSGTYPE_TYPE_QMC_DATA;
+		len = NET_MQTTSN_Message_Operate_Creat_Qmc5883L_Data((unsigned char *)&MqttSNPrivateStructure.PrivateData);
+		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNPrivateStructure, sizeof(MqttSNPrivateStructure) - sizeof(MqttSNPrivateStructure.PrivateData) + len);
+		NETMqttSNNeedSendCode.QmcData = 0;
+		TCFG_Utility_Add_MqttSN_SentCount();
+	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
+	#endif
+#endif
+	}
 	/* MQTTSN INFO RESPONSE DATA ENQUEUE */
 	else if (NETMqttSNNeedSendCode.InfoResponse) {
+#if NBMQTTSN_SENDCODE_RESPONSE_INFO
 		memset((void*)&MqttSNInfoStructure.InfoData, 0, sizeof(MqttSNInfoStructure.InfoData));
 		MqttSNInfoStructure.HeadPacket.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
 		MqttSNInfoStructure.HeadPacket.DataLen				= 0x00;
@@ -682,6 +735,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
 		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
 	#endif
+#endif
 	}
 	
 #endif

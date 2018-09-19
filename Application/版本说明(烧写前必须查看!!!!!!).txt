@@ -1,0 +1,23 @@
+20180914 by Movebroad--KK 
+
+	主版本号v次版本号_NB协议_运营商_NB模组_固件上传日期
+
+          例 : 20v125_Coap_China_Telecom_Auto_180913
+
+	主版本号 : 20 ---> CoAP
+		21 ---> MqttSN
+		22 ---> OneNET
+	
+	次版本号 :	0~255
+
+	NB协议  :	CoAP
+		MqttSN
+		OneNET
+
+	运营商   :	China_Telecom ---> 中国电信
+		China_Mobile   ---> 中国移动
+		China_Unicom  ---> 中国联通
+
+	NB模组 :	Lierda	利尔达
+		Quectel	移远
+		Auto	自动选择

@@ -14,6 +14,10 @@
 #define MQTTSN_MSGTYPE_TYPE_SHORT_STATUS	0x37
 #define MQTTSN_MSGTYPE_TYPE_LONG_STATUS		0x3A
 #define MQTTSN_MSGTYPE_TYPE_INFO			0x35
+#define MQTTSN_MSGTYPE_TYPE_WORK_INFO		0x35
+#define MQTTSN_MSGTYPE_TYPE_BASIC_INFO		0x3C
+#define MQTTSN_MSGTYPE_TYPE_DYNAMIC_INFO	0x3D
+#define MQTTSN_MSGTYPE_TYPE_QMC_DATA		0x3F
 
 #define NET_MESSAGE_GET_MAGICNUM(Byte)		{Byte[0]='T';Byte[1]='C';Byte[2]='L';Byte[3]='D';}
 #define MESSAGE_VERSION					'1'
@@ -150,6 +154,13 @@ typedef __packed struct
 	MQTTSN_PacketMsgTypeDef				MsgPacket;
 	u8								InfoData[300];
 }MQTTSN_PacketInfoTypeDef;																		//Info包314Byte
+
+typedef __packed struct
+{
+	MQTTSN_PacketHeadTypeDef				HeadPacket;
+	MQTTSN_PacketMsgTypeDef				MsgPacket;
+	u8								PrivateData[160];
+}MQTTSN_PacketPrivateTypeDef;																		//Private包174Byte
 
 #endif
 
@@ -371,6 +382,7 @@ int NET_MQTTSN_Message_Operate_Creat_Json_Basic_Info(char* outBuffer);
 int NET_MQTTSN_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer);
 int NET_MQTTSN_Message_Operate_Creat_Json_Radar_Info(char* outBuffer);
 int NET_MQTTSN_Message_Operate_Creat_Json_Response_Info(char* outBuffer, u16 errcode);
+int NET_MQTTSN_Message_Operate_Creat_Qmc5883L_Data(unsigned char* outBuffer);
 
 bool NET_MqttSN_Message_SendDataisFull(void);														//检查发送队列是否已满
 bool NET_MqttSN_Message_SendDataisEmpty(void);														//检查发送队列是否已空

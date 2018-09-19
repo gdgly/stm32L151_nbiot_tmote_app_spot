@@ -18,8 +18,8 @@
 
 /* MQTTSN 协议工作时间 */
 #define MQTTSN_EVENT_ACTIVE_DURATION		100												//Active
-#define MQTTSN_EVENT_SLEEP_DURATION		14400											//Sleep
-#define MQTTSN_EVENT_PINGREG_DURATION		7200												//Ping
+#define MQTTSN_EVENT_SLEEP_DURATION		28800											//Sleep
+#define MQTTSN_EVENT_PINGREG_DURATION		21600											//Ping
 #define MQTTSN_EVENT_LOST_DURATION			300												//Lost
 
 /* MQTTSN 事件监听器配置 */

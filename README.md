@@ -1,6 +1,9 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2018-09-19 :
+	* 增加发送QmcData数据包到服务器。
+	* 修改MqttSN的pingreq包发送机制，sleep时间修改为8小时。
 * 2018-09-18 :
 	* 20V127 :
 	* 版本号修改20V127。
