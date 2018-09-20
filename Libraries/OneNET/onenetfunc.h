@@ -20,17 +20,13 @@ ONENET_StatusTypeDef NBIOT_OneNET_Related_Send_DeregisterRequest(ONENET_ClientsT
 
 ONENET_StatusTypeDef NBIOT_OneNET_Related_Respond_DiscoverRequest(ONENET_ClientsTypeDef* pClient, s32 refer, u32 msgId, u8 result, u16 length, sc8* valuestring, sc8* raiMode);	//响应Discover请求
 ONENET_StatusTypeDef NBIOT_OneNET_Related_Respond_ObserveRequest(ONENET_ClientsTypeDef* pClient, s32 refer, u32 msgId, u8 result, sc8* raiMode);								//响应Observe请求
+ONENET_StatusTypeDef NBIOT_OneNET_Related_Respond_ReadRequest(ONENET_ClientsTypeDef* pClient, s32 refer, u32 msgId, u8 result, ONENET_MessageParaTypeDef* msg, sc8* raiMode);		//响应Read请求
+ONENET_StatusTypeDef NBIOT_OneNET_Related_Respond_WriteRequest(ONENET_ClientsTypeDef* pClient, s32 refer, u32 msgId, u8 result, sc8* raiMode);								//响应Write请求
+ONENET_StatusTypeDef NBIOT_OneNET_Related_Respond_ExecuteRequest(ONENET_ClientsTypeDef* pClient, s32 refer, u32 msgId, u8 result, sc8* raiMode);								//响应Execute请求
+ONENET_StatusTypeDef NBIOT_OneNET_Related_Respond_WriteAttributesRequest(ONENET_ClientsTypeDef* pClient, s32 refer, u32 msgId, u8 result, sc8* raiMode);						//响应WriteAttributes请求
 
+ONENET_StatusTypeDef NBIOT_OneNET_Related_Notify_ApplicationServer(ONENET_ClientsTypeDef* pClient, s32 refer, u32 msgId, ONENET_MessageParaTypeDef* msg, u16 ackid, sc8* raiMode);	//通知数据到平台
 
-
-
-
-
-
-
-
-
-
-
+ONENET_StatusTypeDef NBIOT_OneNET_Related_Send_UpdateRequest(ONENET_ClientsTypeDef* pClient, s32 refer, u32 lifetime, u8 withObjectFlag, sc8* raiMode);						//发送更新生命周期
 
 #endif /* __ONENET_FUNC_H */

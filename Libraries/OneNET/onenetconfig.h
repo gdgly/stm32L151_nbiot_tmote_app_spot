@@ -81,6 +81,18 @@ typedef enum
 	ONENET_Not_the_at_allocated_socket		= 530
 }ONENET_StatusTypeDef;
 
+/* ONENET Status */
+typedef enum
+{
+	ONENET_Content						= 1,
+	ONENET_Changed						= 2,
+	ONENET_BadRequest					= 11,
+	ONENET_Unauthorized					= 12,
+	ONENET_NotFound					= 13,
+	ONENET_MethodNotAllowed				= 14,
+	ONENET_NotAcceptable				= 15
+}ONENET_ResultcodeTypeDef;
+
 /* ONENET Is ProcessState */
 typedef enum
 {
@@ -90,6 +102,19 @@ typedef enum
 	
 	
 }ONENET_ProcessStateTypeDef;
+
+/* ONENET Message Parameter */
+typedef struct
+{
+	u32								objId;											/*< Object identifier >*/
+	s32								insId;											/*< The instance identifier >*/
+	s32								resId;											/*< The resource identifier >*/
+	u8								valueType;										/*< The value type : 1 String, 2 Opaque, 3 Integer, 4 Float, 5 Boolean >*/
+	u32								len;												/*< The value length >*/
+	sc8*								value;											/*< The value >*/
+	s32								index;											/*< The index number of the data >*/
+	s8								flag;											/*< The message indication >*/
+}ONENET_MessageParaTypeDef;
 
 /* ONENET Parameter */
 struct ONENET_ParameterTypeDef
