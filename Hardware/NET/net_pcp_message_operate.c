@@ -138,7 +138,7 @@ void NET_PCP_Message_SendDataEnqueue(unsigned char* dataBuf, unsigned short data
 **********************************************************************************************************/
 void NET_PCP_Message_RecvDataEnqueue(unsigned char* dataBuf, unsigned short dataLength)
 {
-	if ((dataBuf == NULL) || (dataLength > COAP_RECV_BUFFER_SIZE)) {
+	if ((dataBuf == NULL) || (dataLength > PCP_RECV_BUFFER_SIZE)) {
 		return;
 	}
 	
