@@ -81,7 +81,7 @@ typedef enum
 	ONENET_Not_the_at_allocated_socket		= 530
 }ONENET_StatusTypeDef;
 
-/* ONENET Status */
+/* ONENET Result Code */
 typedef enum
 {
 	ONENET_Content						= 1,
