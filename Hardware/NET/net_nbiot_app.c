@@ -183,7 +183,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		CoapLongStructure.RadarDiff						= SpotStatusData.radarData.Diff;
 #if NBIOT_STATUS_MSG_VERSION_TYPE == NBIOT_STATUS_MSG_VERSION_77BYTE_V2
 		CoapLongStructure.NBRssi							= TCFG_Utility_Get_Nbiot_Rssi_IntVal();
-		CoapLongStructure.NBSnr							= TCFG_Utility_Get_Nbiot_RadioSNR() > 127 ? 127 : TCFG_Utility_Get_Nbiot_RadioSNR();
+		CoapLongStructure.NBSnr							= TCFG_Utility_Get_Nbiot_RadioSNR();
 		CoapLongStructure.MCUTemp						= TCFG_Utility_Get_Device_Temperature();
 		CoapLongStructure.QMCTemp						= Qmc5883lData.temp_now;
 		CoapLongStructure.MagneticBackX					= Qmc5883lData.X_Back;
@@ -409,7 +409,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		MqttSNStatusExtendStructure.RadarDiff				= SpotStatusData.radarData.Diff;
 #if MQTTSN_STATUS_MSG_VERSION_TYPE == MQTTSN_STATUS_MSG_VERSION_V2
 		MqttSNStatusExtendStructure.NBRssi					= TCFG_Utility_Get_Nbiot_Rssi_IntVal();
-		MqttSNStatusExtendStructure.NBSnr					= TCFG_Utility_Get_Nbiot_RadioSNR() > 127 ? 127 : TCFG_Utility_Get_Nbiot_RadioSNR();
+		MqttSNStatusExtendStructure.NBSnr					= TCFG_Utility_Get_Nbiot_RadioSNR();
 		MqttSNStatusExtendStructure.MCUTemp				= TCFG_Utility_Get_Device_Temperature();
 		MqttSNStatusExtendStructure.QMCTemp				= Qmc5883lData.temp_now;
 		MqttSNStatusExtendStructure.MagneticBackX			= Qmc5883lData.X_Back;
@@ -563,7 +563,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		MqttSNLongStructure.RadarDiff						= SpotStatusData.radarData.Diff;
 #if MQTTSN_STATUS_MSG_VERSION_TYPE == MQTTSN_STATUS_MSG_VERSION_V2
 		MqttSNLongStructure.NBRssi						= TCFG_Utility_Get_Nbiot_Rssi_IntVal();
-		MqttSNLongStructure.NBSnr						= TCFG_Utility_Get_Nbiot_RadioSNR() > 127 ? 127 : TCFG_Utility_Get_Nbiot_RadioSNR();
+		MqttSNLongStructure.NBSnr						= TCFG_Utility_Get_Nbiot_RadioSNR();
 		MqttSNLongStructure.MCUTemp						= TCFG_Utility_Get_Device_Temperature();
 		MqttSNLongStructure.QMCTemp						= Qmc5883lData.temp_now;
 		MqttSNLongStructure.MagneticBackX					= Qmc5883lData.X_Back;

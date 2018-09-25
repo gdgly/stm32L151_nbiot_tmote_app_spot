@@ -498,8 +498,6 @@ struct NBIOT_ClientsTypeDef
 	
 	unsigned int						CoapConnectTimeSec;
 	unsigned int						CoapIdleTimeSec;
-	unsigned short						CoapConnectDayTimeSec;
-	unsigned short						CoapIdleDayTimeSec;
 	Stm32_EventRunningTimeTypeDef			ConnectTimeMS;
 	Stm32_EventRunningTimeTypeDef			IdleTimeMS;
 	

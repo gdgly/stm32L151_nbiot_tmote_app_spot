@@ -461,16 +461,6 @@ void MainHandleRoutine(void)
 				NET_NBIOT_Initialization();
 			}
 			
-			/* Coap保持连接时间(一天) */
-			TCFG_SystemData.CoapConnectDayTime = 0;
-			NbiotClientHandler.CoapConnectDayTimeSec = TCFG_SystemData.CoapConnectDayTime;
-			TCFG_EEPROM_SetCoapConnectDayTime(TCFG_SystemData.CoapConnectDayTime);
-			
-			/* Coap休眠时间(一天) */
-			TCFG_SystemData.CoapIdleDayTime = 0;
-			NbiotClientHandler.CoapIdleDayTimeSec = TCFG_SystemData.CoapIdleDayTime;
-			TCFG_EEPROM_SetCoapIdleDayTime(TCFG_SystemData.CoapIdleDayTime);
-			
 			if (TCFG_EEPROM_GetNbiotHeart() > NBIOT_HEART_DATA_HOURS) {
 				TCFG_SystemData.NBIotHeart = NBIOT_HEART_DATA_HOURS;
 				TCFG_EEPROM_SetNbiotHeart(TCFG_SystemData.NBIotHeart);
@@ -535,12 +525,6 @@ void MainHandleRoutine(void)
 		
 		TCFG_SystemData.CoapIdleTime = TCFG_Utility_GetCoapIdleTime();
 		TCFG_EEPROM_SetCoapIdleTime(TCFG_SystemData.CoapIdleTime);
-		
-		TCFG_SystemData.CoapConnectDayTime = TCFG_Utility_GetCoapConnectDayTime();
-		TCFG_EEPROM_SetCoapConnectDayTime(TCFG_SystemData.CoapConnectDayTime);
-		
-		TCFG_SystemData.CoapIdleDayTime = TCFG_Utility_GetCoapIdleDayTime();
-		TCFG_EEPROM_SetCoapIdleDayTime(TCFG_SystemData.CoapIdleDayTime);
 		
 		NBIOT_COAP_RA_NORMAL_SET_STATE(&NbiotClientHandler, true);
 		TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_MAX_LIFETIME);

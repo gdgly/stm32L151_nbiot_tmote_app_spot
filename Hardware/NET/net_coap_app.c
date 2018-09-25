@@ -330,9 +330,6 @@ static void COAP_NBIOT_GetConnectTime(NBIOT_ClientsTypeDef* pClient, bool startI
 	/* End ConnectTime */
 	TCFG_SystemData.CoapConnectTime = pClient->CoapConnectTimeSec + uICoapConnectTime;
 	pClient->CoapConnectTimeSec = TCFG_SystemData.CoapConnectTime;
-	/* End ConnectDayTime */
-	TCFG_SystemData.CoapConnectDayTime = pClient->CoapConnectDayTimeSec + uICoapConnectTime;
-	pClient->CoapConnectDayTimeSec = TCFG_SystemData.CoapConnectDayTime;
 	/* Start or End IdleTime */
 	if (startIdleTime != false) {
 		Stm32_EventRunningTime_StartMS(&pClient->IdleTimeMS);
@@ -358,9 +355,6 @@ static void COAP_NBIOT_GetIdleTime(NBIOT_ClientsTypeDef* pClient, bool startConn
 	/* End IdleTime */
 	TCFG_SystemData.CoapIdleTime = pClient->CoapIdleTimeSec + uICoapIdleTime;
 	pClient->CoapIdleTimeSec = TCFG_SystemData.CoapIdleTime;
-	/* End IdleDayTime */
-	TCFG_SystemData.CoapIdleDayTime = pClient->CoapIdleDayTimeSec + uICoapIdleTime;
-	pClient->CoapIdleDayTimeSec = TCFG_SystemData.CoapIdleDayTime;
 	/* Start or End ConnectTime */
 	if (startConnectTime != false) {
 		Stm32_EventRunningTime_StartMS(&pClient->ConnectTimeMS);

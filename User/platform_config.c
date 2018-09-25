@@ -95,7 +95,6 @@ void RadioPrintWorkinfo(void)
 	Radio_Trf_Printf("CellId:%d", TCFG_Utility_Get_Nbiot_RadioCellID());
 	Radio_Trf_Printf("Cmdcnt:%d.%d", TCFG_EEPROM_GetRFCmdCnt(), TCFG_EEPROM_GetNBCmdCnt());
 	Radio_Trf_Printf("Nbruntime:%d.%d", TCFG_Utility_GetCoapConnectTime(), TCFG_Utility_GetCoapIdleTime());
-	Radio_Trf_Printf("NbruntimeDay:%d.%d", TCFG_Utility_GetCoapConnectDayTime(), TCFG_Utility_GetCoapIdleDayTime());
 	Radio_Trf_Printf("Coef:%d.%d.%d", TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
 #elif NETPROTOCAL == NETMQTTSN
 	Radio_Trf_Printf("Soft:%d:%d.%d", TCFG_EEPROM_GetBootVersion(), TCFG_Utility_Get_Major_Softnumber(), TCFG_Utility_Get_Sub_Softnumber());
@@ -107,7 +106,6 @@ void RadioPrintWorkinfo(void)
 	Radio_Trf_Printf("CellId:%d", TCFG_Utility_Get_Nbiot_RadioCellID());
 	Radio_Trf_Printf("Cmdcnt:%d.%d", TCFG_EEPROM_GetRFCmdCnt(), TCFG_EEPROM_GetNBCmdCnt());
 	Radio_Trf_Printf("Nbruntime:%d.%d", TCFG_Utility_GetCoapConnectTime(), TCFG_Utility_GetCoapIdleTime());
-	Radio_Trf_Printf("NbruntimeDay:%d.%d", TCFG_Utility_GetCoapConnectDayTime(), TCFG_Utility_GetCoapIdleDayTime());
 	Radio_Trf_Printf("Coef:%d.%d.%d", TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
 #endif
 }

@@ -179,14 +179,6 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_SystemData.CoapIdleTime = 0;
 	TCFG_EEPROM_SetCoapIdleTime(TCFG_SystemData.CoapIdleTime);
 	
-	/* Coap保持连接时间(一天) */
-	TCFG_SystemData.CoapConnectDayTime = 0;
-	TCFG_EEPROM_SetCoapConnectDayTime(TCFG_SystemData.CoapConnectDayTime);
-	
-	/* Coap休眠时间(一天) */
-	TCFG_SystemData.CoapIdleDayTime = 0;
-	TCFG_EEPROM_SetCoapIdleDayTime(TCFG_SystemData.CoapIdleDayTime);
-	
 	/* 升级信号值限制下限 */
 	TCFG_SystemData.UpgradeLimitRssi = NBCOAP_PCP_UPGRADE_LIMIT_RSSI;
 	TCFG_EEPROM_SetUpgradeLimitRssi(TCFG_SystemData.UpgradeLimitRssi);
@@ -348,14 +340,6 @@ void TCFG_EEPROM_ReadConfigData(void)
 	/* Coap休眠时间 */
 	TCFG_SystemData.CoapIdleTime = TCFG_EEPROM_GetCoapIdleTime();
 	NbiotClientHandler.CoapIdleTimeSec = TCFG_SystemData.CoapIdleTime;
-	
-	/* Coap保持连接时间(一天) */
-	TCFG_SystemData.CoapConnectDayTime = TCFG_EEPROM_GetCoapConnectDayTime();
-	NbiotClientHandler.CoapConnectDayTimeSec = TCFG_SystemData.CoapConnectDayTime;
-	
-	/* Coap休眠时间(一天) */
-	TCFG_SystemData.CoapIdleDayTime = TCFG_EEPROM_GetCoapIdleDayTime();
-	NbiotClientHandler.CoapIdleDayTimeSec = TCFG_SystemData.CoapIdleDayTime;
 	
 	/* NB核心网地址 */
 	TCFG_SystemData.NBCoapCDPServer.ip.ip32 = TCFG_EEPROM_GetServerIP();
@@ -1731,50 +1715,6 @@ unsigned int TCFG_EEPROM_GetCoapIdleTime(void)
 }
 
 /**********************************************************************************************************
- @Function			void TCFG_EEPROM_SetCoapConnectDayTime(unsigned short val)
- @Description			TCFG_EEPROM_SetCoapConnectDayTime				: 保存CoapConnectDayTime
- @Input				val
- @Return				void
-**********************************************************************************************************/
-void TCFG_EEPROM_SetCoapConnectDayTime(unsigned short val)
-{
-	FLASH_EEPROM_WriteHalfWord(TCFG_COAP_CON_DAY_OFFSET, val);
-}
-
-/**********************************************************************************************************
- @Function			unsigned short TCFG_EEPROM_GetCoapConnectDayTime(void)
- @Description			TCFG_EEPROM_GetCoapConnectDayTime				: 读取CoapConnectDayTime
- @Input				void
- @Return				val
-**********************************************************************************************************/
-unsigned short TCFG_EEPROM_GetCoapConnectDayTime(void)
-{
-	return FLASH_EEPROM_ReadHalfWord(TCFG_COAP_CON_DAY_OFFSET);
-}
-
-/**********************************************************************************************************
- @Function			void TCFG_EEPROM_SetCoapIdleDayTime(unsigned short val)
- @Description			TCFG_EEPROM_SetCoapIdleDayTime				: 保存CoapIdleDayTime
- @Input				val
- @Return				void
-**********************************************************************************************************/
-void TCFG_EEPROM_SetCoapIdleDayTime(unsigned short val)
-{
-	FLASH_EEPROM_WriteHalfWord(TCFG_COAP_IDLE_DAY_OFFSET, val);
-}
-
-/**********************************************************************************************************
- @Function			unsigned short TCFG_EEPROM_GetCoapIdleDayTime(void)
- @Description			TCFG_EEPROM_GetCoapIdleDayTime				: 读取CoapIdleDayTime
- @Input				void
- @Return				val
-**********************************************************************************************************/
-unsigned short TCFG_EEPROM_GetCoapIdleDayTime(void)
-{
-	return FLASH_EEPROM_ReadHalfWord(TCFG_COAP_IDLE_DAY_OFFSET);
-}
-
-/**********************************************************************************************************
  @Function			void TCFG_EEPROM_SetUpgradeLimitRssi(short val)
  @Description			TCFG_EEPROM_SetUpgradeLimitRssi				: 保存UpgradeLimitRssi
  @Input				val
@@ -2319,13 +2259,20 @@ int TCFG_Utility_Get_Nbiot_RadioECL(void)
 **********************************************************************************************************/
 int TCFG_Utility_Get_Nbiot_RadioSNR(void)
 {
+	int nbRadioSnr = 0;
+	
 #if NETPROTOCAL == NETCOAP
-	return NbiotClientHandler.Parameter.statisticsRADIO.SNR;
+	nbRadioSnr = NbiotClientHandler.Parameter.statisticsRADIO.SNR >  127 ?  127 : NbiotClientHandler.Parameter.statisticsRADIO.SNR;
+	nbRadioSnr = NbiotClientHandler.Parameter.statisticsRADIO.SNR < -127 ? -127 : NbiotClientHandler.Parameter.statisticsRADIO.SNR;
 #elif NETPROTOCAL == NETMQTTSN
-	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR;
+	nbRadioSnr = MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR >  127 ?  127 : MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR;
+	nbRadioSnr = MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR < -127 ? -127 : MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR;
 #elif NETPROTOCAL == NETONENET
-	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR;
+	nbRadioSnr = OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR >  127 ?  127 : OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR;
+	nbRadioSnr = OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR < -127 ? -127 : OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR;
 #endif
+	
+	return nbRadioSnr;
 }
 
 /**********************************************************************************************************
@@ -2489,13 +2436,20 @@ int TCFG_Utility_Get_Nbiot_CellCellrssi(void)
 **********************************************************************************************************/
 int TCFG_Utility_Get_Nbiot_CellSnr(void)
 {
+	int nbRadioSnr = 0;
+	
 #if NETPROTOCAL == NETCOAP
-	return NbiotClientHandler.Parameter.statisticsCELL.snr;
+	nbRadioSnr = NbiotClientHandler.Parameter.statisticsCELL.snr >  127 ?  127 : NbiotClientHandler.Parameter.statisticsCELL.snr;
+	nbRadioSnr = NbiotClientHandler.Parameter.statisticsCELL.snr < -127 ? -127 : NbiotClientHandler.Parameter.statisticsCELL.snr;
 #elif NETPROTOCAL == NETMQTTSN
-	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsCELL.snr;
+	nbRadioSnr = MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsCELL.snr >  127 ?  127 : MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsCELL.snr;
+	nbRadioSnr = MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsCELL.snr < -127 ? -127 : MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsCELL.snr;
 #elif NETPROTOCAL == NETONENET
-	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsCELL.snr;
+	nbRadioSnr = OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsCELL.snr >  127 ?  127 : OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsCELL.snr;
+	nbRadioSnr = OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsCELL.snr < -127 ? -127 : OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsCELL.snr;
 #endif
+	
+	return nbRadioSnr;
 }
 
 /**********************************************************************************************************
@@ -2552,28 +2506,6 @@ unsigned int TCFG_Utility_GetCoapConnectTime(void)
 unsigned int TCFG_Utility_GetCoapIdleTime(void)
 {
 	return NbiotClientHandler.CoapIdleTimeSec;
-}
-
-/**********************************************************************************************************
- @Function			unsigned short TCFG_Utility_GetCoapConnectDayTime(void)
- @Description			TCFG_Utility_GetCoapConnectDayTime				: 读取Nbiot CoapConnectDayTime值
- @Input				void
- @Return				Nbiot_CoapConnectDayTime
-**********************************************************************************************************/
-unsigned short TCFG_Utility_GetCoapConnectDayTime(void)
-{
-	return NbiotClientHandler.CoapConnectDayTimeSec;
-}
-
-/**********************************************************************************************************
- @Function			unsigned short TCFG_Utility_GetCoapIdleDayTime(void)
- @Description			TCFG_Utility_GetCoapIdleDayTime				: 读取Nbiot CoapIdleDayTime值
- @Input				void
- @Return				Nbiot_CoapIdleDayTime
-**********************************************************************************************************/
-unsigned short TCFG_Utility_GetCoapIdleDayTime(void)
-{
-	return NbiotClientHandler.CoapIdleDayTimeSec;
 }
 
 /**********************************************************************************************************

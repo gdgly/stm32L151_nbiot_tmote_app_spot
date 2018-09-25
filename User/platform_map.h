@@ -164,14 +164,14 @@
 #define TCFG_UPDATA_LIMITSNR_OFFSET		TCFG_UPDATA_LIMITRSSI_OFFSET + TCFG_UPDATA_LIMITRSSI_LENGTH	//0x08080E14
 #define TCFG_UPDATA_LIMITSNR_LENGTH		2												//UpdataLimitSnr		升级限制Snr值
 
-#define TCFG_COAP_CON_DAY_OFFSET			TCFG_UPDATA_LIMITSNR_OFFSET + TCFG_UPDATA_LIMITSNR_LENGTH	//0x08080E16
-#define TCFG_COAP_CON_DAY_LENGTH			2												//CoapConDayTime		Coap一天连接时间
-#define TCFG_COAP_IDLE_DAY_OFFSET			TCFG_COAP_CON_DAY_OFFSET + TCFG_COAP_CON_DAY_LENGTH		//0x08080E18
-#define TCFG_COAP_IDLE_DAY_LENGTH			2												//CoapIdleDayTime		Coap一天休眠时间
-#define TCFG_RESERVED1_OFFSET				TCFG_COAP_IDLE_DAY_OFFSET + TCFG_COAP_IDLE_DAY_LENGTH		//0x08080E1A
+#define TCFG_RESERVED1_OFFSET				TCFG_UPDATA_LIMITSNR_OFFSET + TCFG_UPDATA_LIMITSNR_LENGTH	//0x08080E16
 #define TCFG_RESERVED1_LENGTH				2												//RESERVED1			保留
+#define TCFG_RESERVED2_OFFSET				TCFG_RESERVED1_OFFSET + TCFG_RESERVED1_LENGTH			//0x08080E18
+#define TCFG_RESERVED2_LENGTH				2												//RESERVED2			保留
+#define TCFG_RESERVED3_OFFSET				TCFG_RESERVED2_OFFSET + TCFG_RESERVED2_LENGTH			//0x08080E1A
+#define TCFG_RESERVED3_LENGTH				2												//RESERVED3			保留
 
-#define TCFG_ONENET_SENTCNT_OFFSET			TCFG_RESERVED1_OFFSET + TCFG_RESERVED1_LENGTH			//0x08080E1C
+#define TCFG_ONENET_SENTCNT_OFFSET			TCFG_RESERVED3_OFFSET + TCFG_RESERVED3_LENGTH			//0x08080E1C
 #define TCFG_ONENET_SENTCNT_LENGTH			4												//OneNETSentCnt		ONENET发送包数
 #define TCFG_ONENET_RECVCNT_OFFSET			TCFG_ONENET_SENTCNT_OFFSET + TCFG_ONENET_SENTCNT_LENGTH	//0x08080E20
 #define TCFG_ONENET_RECVCNT_LENGTH			4												//OneNETRecvCnt		ONENET接收包数
@@ -229,8 +229,6 @@ typedef struct
 	unsigned char						CoapRATimeHour;									//Coap间隔时间发送普通数据包用于接收下行数据
 	unsigned int						CoapConnectTime;									//Coap保持连接时间
 	unsigned int						CoapIdleTime;										//Coap休眠时间
-	unsigned short						CoapConnectDayTime;									//Coap保持连接时间(一天)
-	unsigned short						CoapIdleDayTime;									//Coap休眠时间(一天)
 	short							UpgradeLimitRssi;									//信号值限制下限
 	short							UpgradeLimitSnr;									//信号质量限制下限
 	unsigned short						NBIdleLifetime;									//NBIot休眠模式保活时间(10S)
@@ -391,12 +389,6 @@ unsigned int	TCFG_EEPROM_GetCoapConnectTime(void);											//读取CoapConnect
 void			TCFG_EEPROM_SetCoapIdleTime(unsigned int val);									//保存CoapIdleTime
 unsigned int	TCFG_EEPROM_GetCoapIdleTime(void);												//读取CoapIdleTime
 
-void			TCFG_EEPROM_SetCoapConnectDayTime(unsigned short val);								//保存CoapConnectDayTime
-unsigned short	TCFG_EEPROM_GetCoapConnectDayTime(void);										//读取CoapConnectDayTime
-
-void			TCFG_EEPROM_SetCoapIdleDayTime(unsigned short val);								//保存CoapIdleDayTime
-unsigned short	TCFG_EEPROM_GetCoapIdleDayTime(void);											//读取CoapIdleDayTime
-
 void			TCFG_EEPROM_SetUpgradeLimitRssi(short val);										//保存UpgradeLimitRssi
 short		TCFG_EEPROM_GetUpgradeLimitRssi(void);											//读取UpgradeLimitRssi
 
@@ -460,8 +452,6 @@ unsigned int	TCFG_Utility_Get_Nbiot_NetworkRegistStatusCellID(void);							//读
 
 unsigned int	TCFG_Utility_GetCoapConnectTime(void);											//读取Nbiot CoapConnectTime值
 unsigned int	TCFG_Utility_GetCoapIdleTime(void);											//读取Nbiot CoapIdleTime值
-unsigned short	TCFG_Utility_GetCoapConnectDayTime(void);										//读取Nbiot CoapConnectDayTime值
-unsigned short	TCFG_Utility_GetCoapIdleDayTime(void);											//读取Nbiot CoapIdleDayTime值
 
 char*		TCFG_Utility_Get_Nbiot_Manufacturer(void);										//读取Nbiot Manufacturer值
 char*		TCFG_Utility_Get_Nbiot_Manufacturermode(void);									//读取Nbiot Manufacturermode值

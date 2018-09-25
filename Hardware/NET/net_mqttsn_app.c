@@ -359,9 +359,6 @@ static void MQTTSN_NBIOT_GetConnectTime(MQTTSN_ClientsTypeDef* pClient, bool sta
 	/* End ConnectTime */
 	TCFG_SystemData.CoapConnectTime = pClient->SocketStack->NBIotStack->CoapConnectTimeSec + uICoapConnectTime;
 	pClient->SocketStack->NBIotStack->CoapConnectTimeSec = TCFG_SystemData.CoapConnectTime;
-	/* End ConnectDayTime */
-	TCFG_SystemData.CoapConnectDayTime = pClient->SocketStack->NBIotStack->CoapConnectDayTimeSec + uICoapConnectTime;
-	pClient->SocketStack->NBIotStack->CoapConnectDayTimeSec = TCFG_SystemData.CoapConnectDayTime;
 	/* Start or End IdleTime */
 	if (startIdleTime != false) {
 		Stm32_EventRunningTime_StartMS(&pClient->SocketStack->NBIotStack->IdleTimeMS);
@@ -387,9 +384,6 @@ static void MQTTSN_NBIOT_GetIdleTime(MQTTSN_ClientsTypeDef* pClient, bool startC
 	/* End IdleTime */
 	TCFG_SystemData.CoapIdleTime = pClient->SocketStack->NBIotStack->CoapIdleTimeSec + uICoapIdleTime;
 	pClient->SocketStack->NBIotStack->CoapIdleTimeSec = TCFG_SystemData.CoapIdleTime;
-	/* End IdleDayTime */
-	TCFG_SystemData.CoapIdleDayTime = pClient->SocketStack->NBIotStack->CoapIdleDayTimeSec + uICoapIdleTime;
-	pClient->SocketStack->NBIotStack->CoapIdleDayTimeSec = TCFG_SystemData.CoapIdleDayTime;
 	/* Start or End ConnectTime */
 	if (startConnectTime != false) {
 		Stm32_EventRunningTime_StartMS(&pClient->SocketStack->NBIotStack->ConnectTimeMS);
