@@ -4,6 +4,7 @@ movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内
 * 2018-09-25 :
 	* NBIOT SNR 设定上下限 127 ~ -127。
 	* 去掉 nbruntimeday 相关代码。
+	* MqttSN PCP协议基础框架构建完成，链路层开始建立。
 * 2018-09-21 :
 	* MqttSN PCP协议文件结构创建。
 * 2018-09-20 :

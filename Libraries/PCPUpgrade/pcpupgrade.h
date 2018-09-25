@@ -38,4 +38,4 @@ PCP_ResultCodeTypeDef PCP_Upgrade_AfterUpdata(PCP_ClientsTypeDef* pClient);					
 u8 CalculateSumCheckCode(u32 regCode, uint8_t* buf, uint32_t length);														//加和校验
 u8 CalculateStringToHex(u8 HighChar, u8 LowChar);																		//字符转换
 
-#endif
+#endif /* __PCP_UPGRADE_H */
