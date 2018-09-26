@@ -221,6 +221,23 @@ static void MQTTSN_DictateEvent_SetTime(MQTTSN_ClientsTypeDef* pClient, unsigned
 	}
 }
 
+/**********************************************************************************************************
+ @Function			static void MQTTSN_NormalDictateEvent_SetTime(MQTTSN_ClientsTypeDef* pClient, Stm32_CalculagraphTypeDef* pTimer, unsigned int TimeoutSec)
+ @Description			MQTTSN_NormalDictateEvent_SetTime		: 事件运行控制器注入时间(内部使用)
+ @Input				pClient							: MQTTSN客户端实例
+					TimeoutSec						: 注入超时时间
+ @Return				void
+ @attention			事件运行之前判断是否需要注入时间
+**********************************************************************************************************/
+static void MQTTSN_NormalDictateEvent_SetTime(MQTTSN_ClientsTypeDef* pClient, Stm32_CalculagraphTypeDef* pTimer, unsigned int TimeoutSec)
+{
+	Stm32_CalculagraphTypeDef dictateRunTime;
+	
+	pClient->DictateRunCtl.dictateTimeoutSec = TimeoutSec;
+	Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
+	*pTimer = dictateRunTime;
+}
+
 static unsigned char* MQTTSN_NBIOT_GetDictateFailureCnt(MQTTSN_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateNoTimeOut)
 {
 	unsigned char* dictateFailureCnt;
@@ -1231,7 +1248,7 @@ void NET_MQTTSN_Event_Disconnect(MQTTSN_ClientsTypeDef* pClient)
 	
 	/* Connecting MQTTSN Server */
 	options.clientID.cstring = MQTTSN_CLIENT_ID;
-	options.duration = TNET_MQTTSN_ACTIVE_DURATION;
+	options.duration = TNET_MQTTSN_ACTIVE_DURATION + 40;
 	options.cleansession = false;
 	if (MQTTSN_Connect(pClient, &options) != MQTTSN_OK) {
 		/* Dictate execute is Fail */
@@ -1266,6 +1283,8 @@ void NET_MQTTSN_Event_Disconnect(MQTTSN_ClientsTypeDef* pClient)
 		pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
 		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
 		pClient->DictateRunCtl.dictateDisconnectFailureCnt = 0;
+		/* Set Active Duration */
+		MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("MqttSN Connect Server Ok");
 #endif
@@ -1365,6 +1384,8 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageStatusBasic = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_StatusBasicOffSet();
+			/* Set Active Duration */
+			MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
 		#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
 			NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter(pClient);
 		#endif
@@ -1419,6 +1440,8 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageStatusExtend = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_StatusExtendOffSet();
+			/* Set Active Duration */
+			MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
 		#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
 			NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter(pClient);
 		#endif
@@ -1473,6 +1496,8 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageInfoWork = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoWorkOffSet();
+			/* Set Active Duration */
+			MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
 		#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
 			NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter(pClient);
 		#endif
@@ -1527,6 +1552,8 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageInfoBasic = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoBasicOffSet();
+			/* Set Active Duration */
+			MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
 		#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
 			NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter(pClient);
 		#endif
@@ -1581,6 +1608,8 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageInfoDynamic = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoDynamicOffSet();
+			/* Set Active Duration */
+			MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
 		#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
 			NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter(pClient);
 		#endif
@@ -1635,6 +1664,8 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageInfoRadar = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoRadarOffSet();
+			/* Set Active Duration */
+			MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
 		#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
 			NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter(pClient);
 		#endif
@@ -1688,6 +1719,8 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageInfoResponse = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoResponseOffSet();
+			/* Set Active Duration */
+			MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
 		#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
 			NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter(pClient);
 		#endif
@@ -1738,6 +1771,8 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			pClient->MessageSendCtl.messageByteStream = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_SendDataOffSet();
+			/* Set Active Duration */
+			MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
 		#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
 			NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter(pClient);
 		#endif
@@ -1753,7 +1788,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 #endif
 	
 	/* Keep active for Active seconds before to Sleep, so we can send messsage contiguously */
-	if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
+	if (Stm32_Calculagraph_IsExpiredSec(&pClient->ActiveTimer) == true) {
 		/* Arrival time for Sleep */
 		if (MQTTSN_DisConnect(pClient, TNET_MQTTSN_SLEEP_DURATION) != MQTTSN_OK) {
 			/* Dictate execute is Fail */
@@ -1846,7 +1881,7 @@ void NET_MQTTSN_Event_Sleep(MQTTSN_ClientsTypeDef* pClient)
 	if ( pClient->MessageSendCtl.messageByteStream != false ) {
 #endif
 		options.clientID.cstring = MQTTSN_CLIENT_ID;
-		options.duration = TNET_MQTTSN_ACTIVE_DURATION;
+		options.duration = TNET_MQTTSN_ACTIVE_DURATION + 40;
 		options.cleansession = false;
 		if (MQTTSN_Connect(pClient, &options) != MQTTSN_OK) {
 			/* Dictate execute is Fail */
@@ -1879,6 +1914,8 @@ void NET_MQTTSN_Event_Sleep(MQTTSN_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
 			pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
 			pClient->DictateRunCtl.dictateSleepFailureCnt = 0;
+			/* Set Active Duration */
+			MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Connect Server Ok");
 #endif
@@ -1910,7 +1947,6 @@ void NET_MQTTSN_Event_Sleep(MQTTSN_ClientsTypeDef* pClient)
 void NET_MQTTSN_Event_Aweak(MQTTSN_ClientsTypeDef* pClient)
 {
 	MQTTSNString clientid = MQTTSNString_initializer;
-	Stm32_CalculagraphTypeDef dictateRunTime;
 	
 	MQTTSN_DictateEvent_SetTime(pClient, 60);
 	
@@ -1953,9 +1989,7 @@ void NET_MQTTSN_Event_Aweak(MQTTSN_ClientsTypeDef* pClient)
 	}
 	
 	/* Set Pingreg Duration */
-	pClient->DictateRunCtl.dictateTimeoutSec = TNET_MQTTSN_PINGREG_DURATION;
-	Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
-	pClient->PingTimer = dictateRunTime;
+	MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->PingTimer, TNET_MQTTSN_PINGREG_DURATION);
 }
 
 /**********************************************************************************************************
@@ -1981,10 +2015,11 @@ void NET_MQTTSN_Event_Lost(MQTTSN_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTTSN_MessageDataTypeDef* messageHandler)
 {
+	bool recvPCPUpgradeFlag = false;
+	bool recvEffective = false;
 	u16 recvBufOffset = 0;
 	u16 recvMagicNum = 0;
 	u8 ret = NETIP_OK;
-	bool recvEffective = false;
 	
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 	Radio_Trf_Debug_Printf_Level2("MqttSN Recv Filter:%s, topicid:%d", pClient->messageHandlers[0].topicFilter, pClient->messageHandlers[0].topicid);
@@ -1992,6 +2027,8 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 #endif
 	
 	messageHandler->message->payload[messageHandler->message->payloadlen] = '\0';
+	
+	/* 私有普通下行数据 */
 	for (int i = 0; i < messageHandler->message->payloadlen; i++) {
 		if ((messageHandler->message->payload[i] == 'T') && (messageHandler->message->payload[i+1] == 'C') && \
 		    (messageHandler->message->payload[i+2] == 'L') && (messageHandler->message->payload[i+3] == 'D')) {
@@ -2321,6 +2358,19 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 	else {
 		/* Not Valid */
 		ret = NETIP_NOTVALID;
+	}
+	
+	/* MqttSNPCP升级协议下行数据 */
+	for (int i = 0; i < messageHandler->message->payloadlen; i++) {
+		if ((messageHandler->message->payload[i] == 0xFF) && (messageHandler->message->payload[i+1] == 0xFE)) {
+			recvBufOffset = i;
+			recvPCPUpgradeFlag = true;
+		}
+	}
+	
+	if (recvPCPUpgradeFlag != false) {
+		/* Find "0xFFFE" */
+		NET_MqttSN_PCP_Message_RecvDataEnqueue(messageHandler->message->payload + recvBufOffset, messageHandler->message->payloadlen - recvBufOffset);
 	}
 	
 	return MQTTSN_OK;

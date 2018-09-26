@@ -13,14 +13,14 @@
 #define MQTTSN_COMMAND_FAILURE_CNT			3
 
 /* MQTTSN 协议栈开辟缓存大小 */
-#define MQTTSN_BUFFER_SIZE				512
-#define MQTTSN_DATASTACK_SIZE				512
+#define MQTTSN_BUFFER_SIZE				520
+#define MQTTSN_DATASTACK_SIZE				520
 
 /* MQTTSN 协议工作时间 */
-#define MQTTSN_EVENT_ACTIVE_DURATION		100												//Active
-#define MQTTSN_EVENT_SLEEP_DURATION		28800											//Sleep
-#define MQTTSN_EVENT_PINGREG_DURATION		21600											//Ping
-#define MQTTSN_EVENT_LOST_DURATION			300												//Lost
+#define MQTTSN_EVENT_ACTIVE_DURATION		60												//Active	00:01:00
+#define MQTTSN_EVENT_SLEEP_DURATION		28800											//Sleep	08:00:00
+#define MQTTSN_EVENT_PINGREG_DURATION		21600											//Ping	06:00:00
+#define MQTTSN_EVENT_LOST_DURATION			300												//Lost	00:05:00
 
 /* MQTTSN 事件监听器配置 */
 #define NBMQTTSN_LISTEN_MODE_ENTER_NONE		MQTTSN_ENTER_NONE
@@ -185,6 +185,7 @@ struct MQTTSN_ClientsTypeDef
 	NET_NBIOT_ClientsTypeDef*			NetNbiotStack;
 	
 	Stm32_CalculagraphTypeDef			PingTimer;
+	Stm32_CalculagraphTypeDef			ActiveTimer;
 };
 
 typedef MQTTSN_StatusTypeDef (*messageHandlerFp)(MQTTSN_ClientsTypeDef*, MQTTSN_MessageDataTypeDef*);
