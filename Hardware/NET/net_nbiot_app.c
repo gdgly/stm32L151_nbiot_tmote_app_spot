@@ -18,6 +18,7 @@
 #include "net_pcp_app.h"
 #include "net_dns_app.h"
 #include "net_mqttsn_app.h"
+#include "net_mqttsn_pcp_app.h"
 #include "net_onenet_app.h"
 #include "stm32l1xx_config.h"
 #include "platform_config.h"
@@ -67,6 +68,12 @@ void NET_NBIOT_Initialization(void)
 	MQTTSN_Transport_Init(&MqttSNSocketNetHandler, &NbiotClientHandler, MQTTSN_SERVER_LOCAL_PORT, MQTTSN_SERVER_HOST_IP, MQTTSN_SERVER_TELE_PORT);
 	/* MQTTSN客户端初始化 */
 	MQTTSN_Client_Init(&MqttSNClientHandler, &MqttSNSocketNetHandler, &NetNbiotClientHandler);
+	
+	/* MQTTSN PCP数据传输接口初始化 */
+	MqttPCP_Transport_Init(&MqttSNPCPMqttNetHandler, &MqttSNClientHandler);
+	
+	/* MQTTSN PCP客户端初始化 */
+	MqttPCP_Client_Init(&MqttSNPCPClientHandler, &MqttSNPCPMqttNetHandler, &NetNbiotClientHandler);
 	
 #elif (NETPROTOCAL == NETONENET)
 	

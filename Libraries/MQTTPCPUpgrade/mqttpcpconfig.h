@@ -3,6 +3,9 @@
 
 #include "sys.h"
 #include "nbiotconfig.h"
+#include "mqttsnconfig.h"
+#include "mqttsnfunc.h"
+#include "mqttsntransport.h"
 
 #define MQTTSN_PCP_DEBUG_LOG_RF_PRINT														//定义开启RF输出DEBUG信息
 
@@ -160,7 +163,7 @@ struct MqttSNPCP_ParameterTypeDef
 /* MQTTSN_PCP MqttSN Transport */
 struct MqttSNPCP_MqttNetTransportTypeDef
 {
-	NBIOT_ClientsTypeDef*					NBIotStack;
+	MQTTSN_ClientsTypeDef*					MqttSNStack;
 	MqttSNPCP_StatusTypeDef					(*Write)(MqttSNPCP_MqttNetTransportTypeDef*, const char*, u16);
 	MqttSNPCP_StatusTypeDef					(*Read)(MqttSNPCP_MqttNetTransportTypeDef*, char*, u16*);
 };

@@ -6,6 +6,7 @@
 #include "net_pcp_app.h"
 #include "net_dns_app.h"
 #include "net_mqttsn_app.h"
+#include "net_mqttsn_pcp_app.h"
 #include "net_onenet_app.h"
 
 //#define	MVB_SUBSN						0x81011000						//设备号
@@ -254,6 +255,8 @@ extern DNS_SocketNetTypeDef				DNSSocketNetHandler;				//DNS Net Handler
 extern DNS_ClientsTypeDef				DNSClientHandler;					//DNS Clinet Handler
 extern MQTTSN_SocketNetTypeDef			MqttSNSocketNetHandler;				//MqttSN Net Handler
 extern MQTTSN_ClientsTypeDef				MqttSNClientHandler;				//MqttSN Clinet Handler
+extern MqttSNPCP_MqttNetTransportTypeDef	MqttSNPCPMqttNetHandler;				//MqttSN PCP Net Handler
+extern MqttSNPCP_ClientsTypeDef			MqttSNPCPClientHandler;				//MqttSN PCP Clinet Handler
 extern ONENET_LWM2MTransportTypeDef		OneNETLWM2MNetHandler;				//ONENET Net Handler
 extern ONENET_ClientsTypeDef				OneNETClientHandler;				//ONENET Clinet Handler
 

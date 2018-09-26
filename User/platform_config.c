@@ -20,51 +20,53 @@
 #include "radio_hal_rf.h"
 #include "pcpupgrade.h"
 
-bool BootUp				= true;										//BootUp
+bool BootUp					= true;									//BootUp
 
 /* Work Mode */
-bool DeviceIdleMode			= false;										//IDLE MODE
-bool DeviceActivedMode		= true;										//ACTIVED MODE
+bool DeviceIdleMode				= false;									//IDLE MODE
+bool DeviceActivedMode			= true;									//ACTIVED MODE
 
 #if NETPROTOCAL == NETCOAP
 /* Coap Packet */
-COAP_PacketShortTypeDef		CoapShortStructure;								//Coap Short Packet
-COAP_PacketLongTypeDef		CoapLongStructure;								//Coap Long Packet
-COAP_PacketInfoTypeDef		CoapInfoStructure;								//Coap Info Packet
-COAP_PacketPrivateTypeDef	CoapPrivateStructure;							//Coap Private Packet
+COAP_PacketShortTypeDef			CoapShortStructure;							//Coap Short Packet
+COAP_PacketLongTypeDef			CoapLongStructure;							//Coap Long Packet
+COAP_PacketInfoTypeDef			CoapInfoStructure;							//Coap Info Packet
+COAP_PacketPrivateTypeDef		CoapPrivateStructure;						//Coap Private Packet
 #endif
 
 #if NETPROTOCAL == NETMQTTSN
 /* MqttSN Packet */
 #if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
-MQTTSN_StatusBasicTypeDef	MqttSNStatusBasicStructure;						//MqttSN Basic Status Packet
-MQTTSN_StatusExtendTypeDef	MqttSNStatusExtendStructure;						//MqttSN Extend Status Packet
-MQTTSN_InfoWorkTypeDef		MqttSNInfoWorkStructure;							//MqttSN Work Info Packet
-MQTTSN_InfoBasicTypeDef		MqttSNInfoBasicStructure;						//MqttSN Basic Info Packet
-MQTTSN_InfoDynamicTypeDef	MqttSNInfoDynamicStructure;						//MqttSN Dynamic Info Packet
-MQTTSN_InfoRadarTypeDef		MqttSNInfoRadarStructure;						//MqttSN Radar Info Packet
-MQTTSN_InfoResponseTypeDef	MqttSNInfoResponseStructure;						//MqttSN Response Info Packet
+MQTTSN_StatusBasicTypeDef		MqttSNStatusBasicStructure;					//MqttSN Basic Status Packet
+MQTTSN_StatusExtendTypeDef		MqttSNStatusExtendStructure;					//MqttSN Extend Status Packet
+MQTTSN_InfoWorkTypeDef			MqttSNInfoWorkStructure;						//MqttSN Work Info Packet
+MQTTSN_InfoBasicTypeDef			MqttSNInfoBasicStructure;					//MqttSN Basic Info Packet
+MQTTSN_InfoDynamicTypeDef		MqttSNInfoDynamicStructure;					//MqttSN Dynamic Info Packet
+MQTTSN_InfoRadarTypeDef			MqttSNInfoRadarStructure;					//MqttSN Radar Info Packet
+MQTTSN_InfoResponseTypeDef		MqttSNInfoResponseStructure;					//MqttSN Response Info Packet
 #endif
 #if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
-MQTTSN_PacketShortTypeDef	MqttSNShortStructure;							//MqttSN Short Packet
-MQTTSN_PacketLongTypeDef		MqttSNLongStructure;							//MqttSN Long Packet
-MQTTSN_PacketInfoTypeDef		MqttSNInfoStructure;							//MqttSN Info Packet
-MQTTSN_PacketPrivateTypeDef	MqttSNPrivateStructure;							//MqttSN Private Packet
+MQTTSN_PacketShortTypeDef		MqttSNShortStructure;						//MqttSN Short Packet
+MQTTSN_PacketLongTypeDef			MqttSNLongStructure;						//MqttSN Long Packet
+MQTTSN_PacketInfoTypeDef			MqttSNInfoStructure;						//MqttSN Info Packet
+MQTTSN_PacketPrivateTypeDef		MqttSNPrivateStructure;						//MqttSN Private Packet
 #endif
 #endif
 
 /* NET Handler */
-NET_NBIOT_ClientsTypeDef		NetNbiotClientHandler;							//NET NBIOT Clinet Handler
-NBIOT_ATCmdTypeDef			NbiotATCmdHandler;								//NBIOT AT Cmd Handler
-NBIOT_ClientsTypeDef		NbiotClientHandler;								//Coap Clinet Handler
-PCP_CoAPNetTransportTypeDef	PCPCoAPNetHandler;								//PCP Net Handler
-PCP_ClientsTypeDef			PCPClientHandler;								//PCP Clinet Handler
-DNS_SocketNetTypeDef		DNSSocketNetHandler;							//DNS Net Handler
-DNS_ClientsTypeDef			DNSClientHandler;								//DNS Clinet Handler
-MQTTSN_SocketNetTypeDef		MqttSNSocketNetHandler;							//MqttSN Net Handler
-MQTTSN_ClientsTypeDef		MqttSNClientHandler;							//MqttSN Clinet Handler
-ONENET_LWM2MTransportTypeDef	OneNETLWM2MNetHandler;							//ONENET Net Handler
-ONENET_ClientsTypeDef		OneNETClientHandler;							//ONENET Clinet Handler
+NET_NBIOT_ClientsTypeDef			NetNbiotClientHandler;						//NET NBIOT Clinet Handler
+NBIOT_ATCmdTypeDef				NbiotATCmdHandler;							//NBIOT AT Cmd Handler
+NBIOT_ClientsTypeDef			NbiotClientHandler;							//Coap Clinet Handler
+PCP_CoAPNetTransportTypeDef		PCPCoAPNetHandler;							//PCP Net Handler
+PCP_ClientsTypeDef				PCPClientHandler;							//PCP Clinet Handler
+DNS_SocketNetTypeDef			DNSSocketNetHandler;						//DNS Net Handler
+DNS_ClientsTypeDef				DNSClientHandler;							//DNS Clinet Handler
+MQTTSN_SocketNetTypeDef			MqttSNSocketNetHandler;						//MqttSN Net Handler
+MQTTSN_ClientsTypeDef			MqttSNClientHandler;						//MqttSN Clinet Handler
+MqttSNPCP_MqttNetTransportTypeDef	MqttSNPCPMqttNetHandler;						//MqttSN PCP Net Handler
+MqttSNPCP_ClientsTypeDef			MqttSNPCPClientHandler;						//MqttSN PCP Clinet Handler
+ONENET_LWM2MTransportTypeDef		OneNETLWM2MNetHandler;						//ONENET Net Handler
+ONENET_ClientsTypeDef			OneNETClientHandler;						//ONENET Clinet Handler
 
 /**********************************************************************************************************
  @Function			void RadioPrintWorkinfo(void)
