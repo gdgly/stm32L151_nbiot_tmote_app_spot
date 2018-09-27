@@ -1823,6 +1823,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_RecvAck(pClient);
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
 		pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
+		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
 	}
 }
 
@@ -2681,7 +2682,9 @@ void NET_MQTTSN_NBIOT_Listen_Event_EnterParameter(MQTTSN_ClientsTypeDef* pClient
 					pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt++;
 					if (pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt > 3) {
 						pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt = 0;
-						pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = STOP_MODE;
+						pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
+						pClient->SubState = MQTTSN_SUBSTATE_LOST;
+						pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
 					}
 				}
 				else {

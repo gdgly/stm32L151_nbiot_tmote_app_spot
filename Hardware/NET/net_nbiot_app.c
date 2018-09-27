@@ -800,7 +800,7 @@ void NET_NBIOT_TaskProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		break;
 	
 	case NET_POLL_EXECUTION_PCP:
-		pClient->PollExecution = NET_POLL_EXECUTION_DNS;
+		NET_MqttSN_PCP_APP_PollExecution(&MqttSNPCPClientHandler);
 		break;
 	
 	case NET_POLL_EXECUTION_ONENET:
