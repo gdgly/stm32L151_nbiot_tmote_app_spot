@@ -30,7 +30,7 @@ void NET_MqttSN_PCP_APP_PollExecution(MqttSNPCP_ClientsTypeDef* pClient)
 	switch (pClient->DictateRunCtl.dictateEvent)
 	{
 	case MQTTSN_PCP_EVENT_STOP:
-		
+		NET_MqttSN_PCP_NBIOT_Event_StopMode(pClient);
 		break;
 	
 	case MQTTSN_PCP_EVENT_INITIALIZED:
@@ -69,6 +69,71 @@ void NET_MqttSN_PCP_APP_PollExecution(MqttSNPCP_ClientsTypeDef* pClient)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+/**********************************************************************************************************
+ @Function			MqttSNPCP_StatusTypeDef NET_MqttSN_PCP_NBIOT_Event_StopMode(MqttSNPCP_ClientsTypeDef* pClient)
+ @Description			NET_MqttSN_PCP_NBIOT_Event_StopMode		: 停止模式
+ @Input				pClient								: PCP客户端实例
+ @Return				void
+**********************************************************************************************************/
+MqttSNPCP_StatusTypeDef NET_MqttSN_PCP_NBIOT_Event_StopMode(MqttSNPCP_ClientsTypeDef* pClient)
+{
+	MqttSNPCP_StatusTypeDef PCPStatus = MQTTSN_PCP_OK;
+	Stm32_CalculagraphTypeDef dictateRunTime;
+	static unsigned char MqttSNPcpSendMessageIndex;
+	static unsigned char MqttSNPcpRecvMessageIndex;
+	
+	/* It is the first time to execute */
+	if (pClient->DictateRunCtl.dictateEnable != true) {
+		pClient->DictateRunCtl.dictateEnable = true;
+		pClient->DictateRunCtl.dictateTimeoutSec = 1800;
+		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
+		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
+		pClient->UpgradeExecution.upgradeStatus = MQTTSN_PCP_UPGRADE_FAILED;
+		/* Send Message Index */
+		MqttSNPcpSendMessageIndex = NET_MqttSN_PCP_Message_SendDataRear();
+		/* Recv Message Index */
+		MqttSNPcpRecvMessageIndex = NET_MqttSN_PCP_Message_RecvDataRear();
+#ifdef MQTTSN_PCP_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("PCP Enter Stop");
+#endif
+	}
+	
+	if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
+		/* Dictate TimeOut */
+		pClient->DictateRunCtl.dictateEnable = false;
+		pClient->DictateRunCtl.dictateEvent = MQTTSN_PCP_EVENT_READY;
+		pClient->UpgradeExecution.upgradeStatus = MQTTSN_PCP_UPGRADE_STANDBY;
+		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
+	}
+	else {
+		/* Dictate isn't TimeOut */
+		if ((NET_MqttSN_PCP_Message_SendDataRear() != MqttSNPcpSendMessageIndex) || (NET_MqttSN_PCP_Message_RecvDataRear() != MqttSNPcpRecvMessageIndex)) {
+			/* Have new pcp message need to execute */
+			pClient->DictateRunCtl.dictateEnable = false;
+			pClient->DictateRunCtl.dictateEvent = MQTTSN_PCP_EVENT_READY;
+			pClient->UpgradeExecution.upgradeStatus = MQTTSN_PCP_UPGRADE_STANDBY;
+			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
+		}
+		else {
+			pClient->DictateRunCtl.dictateEvent = MQTTSN_PCP_EVENT_STOP;
+			pClient->UpgradeExecution.upgradeStatus = MQTTSN_PCP_UPGRADE_STANDBY;
+			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
+		}
+	}
+	
+	return PCPStatus;
+}
 
 /**********************************************************************************************************
  @Function			MqttSNPCP_StatusTypeDef NET_MqttSN_PCP_NBIOT_Event_Initialized(MqttSNPCP_ClientsTypeDef* pClient)

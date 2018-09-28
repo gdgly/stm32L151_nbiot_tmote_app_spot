@@ -16,7 +16,7 @@
 #include "platform_map.h"
 
 void NET_MqttSN_PCP_APP_PollExecution(MqttSNPCP_ClientsTypeDef* pClient);									//PCP逻辑处理
-
+MqttSNPCP_StatusTypeDef NET_MqttSN_PCP_NBIOT_Event_StopMode(MqttSNPCP_ClientsTypeDef* pClient);				//停止模式
 MqttSNPCP_StatusTypeDef NET_MqttSN_PCP_NBIOT_Event_Initialized(MqttSNPCP_ClientsTypeDef* pClient);				//初始化PCP
 MqttSNPCP_StatusTypeDef NET_MqttSN_PCP_NBIOT_Event_Ready(MqttSNPCP_ClientsTypeDef* pClient);					//PCP准备中
 
