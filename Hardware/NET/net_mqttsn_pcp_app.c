@@ -54,7 +54,7 @@ void NET_MqttSN_PCP_APP_PollExecution(MqttSNPCP_ClientsTypeDef* pClient)
 		break;
 	
 	case MQTTSN_PCP_EVENT_ACTIVEUPLOAD:
-		
+		NET_MqttSN_PCP_NBIOT_Event_ActiveUpload(pClient);
 		break;
 	}
 }
@@ -210,57 +210,33 @@ exit:
 	return PCPStatus;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/**********************************************************************************************************
+ @Function			MqttSNPCP_StatusTypeDef NET_MqttSN_PCP_NBIOT_Event_ActiveUpload(MqttSNPCP_ClientsTypeDef* pClient)
+ @Description			NET_MqttSN_PCP_NBIOT_Event_ActiveUpload	: PCP主动上传数据
+ @Input				pClient							: PCP客户端实例
+ @Return				void
+**********************************************************************************************************/
+MqttSNPCP_StatusTypeDef NET_MqttSN_PCP_NBIOT_Event_ActiveUpload(MqttSNPCP_ClientsTypeDef* pClient)
+{
+	MqttSNPCP_StatusTypeDef PCPStatus = MQTTSN_PCP_OK;
+	
+	/* 判断不同主动上传数据码处理不同命令 */
+	if ((PCPStatus = MqttPCP_Func_SelectUpgradeStatusExecuteCmd(pClient)) != MQTTSN_PCP_OK) {
+		pClient->DictateRunCtl.dictateEnable = false;
+		pClient->DictateRunCtl.dictateEvent = MQTTSN_PCP_EVENT_READY;
+		pClient->DictateRunCtl.dictateActiveUploadFailureCnt = 0;
+		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
+		goto exit;
+	}
+	
+	/* 命令处理完成 */
+	pClient->DictateRunCtl.dictateEnable = false;
+	pClient->DictateRunCtl.dictateEvent = MQTTSN_PCP_EVENT_READY;
+	pClient->DictateRunCtl.dictateActiveUploadFailureCnt = 0;
+	pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
+	
+exit:
+	return PCPStatus;
+}
 
 /********************************************** END OF FLEE **********************************************/

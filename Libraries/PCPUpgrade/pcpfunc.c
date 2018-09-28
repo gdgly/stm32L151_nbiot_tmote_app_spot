@@ -538,7 +538,7 @@ PCP_StatusTypeDef PCP_Func_ReportUpgrades(PCP_ClientsTypeDef* pClient)
 	PCP_MessageDataTypeDef* PCPMessageProcess = (PCP_MessageDataTypeDef*)pClient->DataProcessStack;
 	PCP_ReportUpgradesTypeDef* PCPReportUpgrades = (PCP_ReportUpgradesTypeDef*)PCPMessageProcess->pPacketData;
 	
-	/* 上报升级包下载状态尝试次数 */
+	/* 上报升级结果尝试次数 */
 	pClient->DictateRunCtl.dictateUpgradeInstallCnt++;
 	if (pClient->DictateRunCtl.dictateUpgradeInstallCnt > 5) {
 		pClient->DictateRunCtl.dictateUpgradeInstallCnt = 0;

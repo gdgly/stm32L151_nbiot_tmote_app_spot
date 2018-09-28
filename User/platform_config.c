@@ -76,13 +76,6 @@ ONENET_ClientsTypeDef			OneNETClientHandler;						//ONENET Clinet Handler
 **********************************************************************************************************/
 void RadioPrintWorkinfo(void)
 {
-#if NBCOAP_SENDCODE_WORK_INFO
-	NETCoapNeedSendCode.WorkInfo = 1;
-#endif
-#if NBMQTTSN_SENDCODE_WORK_INFO
-	NETMqttSNNeedSendCode.InfoWork = 1;
-#endif
-	
 	TCFG_EEPROM_GetMagTempCoef(&TCFG_SystemData.MagCoefX, &TCFG_SystemData.MagCoefY, &TCFG_SystemData.MagCoefZ);
 	
 	Radio_Trf_Printf("WorkInfo:");
@@ -120,19 +113,6 @@ void RadioPrintWorkinfo(void)
 **********************************************************************************************************/
 void RadioPrintNetinfo(void)
 {
-#if NBCOAP_SENDCODE_BASIC_INFO
-	NETCoapNeedSendCode.BasicInfo = 1;
-#endif
-#if NBCOAP_SENDCODE_DYNAMIC_INFO
-	NETCoapNeedSendCode.DynamicInfo = 1;
-#endif
-#if NBMQTTSN_SENDCODE_BASIC_INFO
-	NETMqttSNNeedSendCode.InfoBasic = 1;
-#endif
-#if NBMQTTSN_SENDCODE_DYNAMIC_INFO
-	NETMqttSNNeedSendCode.InfoDynamic = 1;
-#endif
-	
 	Radio_Trf_Printf("NetInfo:");
 	
 #if NETPROTOCAL == NETCOAP
@@ -233,14 +213,14 @@ void RadioPrintUpgradeinfo(void)
 	Radio_Trf_Printf("APP1 BlockNum: %d", APP1Info.BlockNum);
 	Radio_Trf_Printf("APP1 BlockLen: %d", APP1Info.BlockLen);
 	Radio_Trf_Printf("APP1 DataLen: %d", APP1Info.DataLen);
-	Radio_Trf_Printf("APP1 SoftVer: V%d.%d", APP1Info.SoftVer>>16, APP1Info.SoftVer&0xFFFF);
+	Radio_Trf_Printf("APP1 SoftwareVer: V%d.%d", APP1Info.SoftVer>>16, APP1Info.SoftVer&0xFFFF);
 	Radio_Trf_Printf("APP1 CheckCode: %X", APP1Info.CheckCode);
 	Radio_Trf_Printf("APP2 Status: %02X", APP2Info.Status);
 	Radio_Trf_Printf("APP2 BaseAddr: %08X", APP2Info.BaseAddr);
 	Radio_Trf_Printf("APP2 BlockNum: %d", APP2Info.BlockNum);
 	Radio_Trf_Printf("APP2 BlockLen: %d", APP2Info.BlockLen);
 	Radio_Trf_Printf("APP2 DataLen: %d", APP2Info.DataLen);
-	Radio_Trf_Printf("APP2 SoftVer: V%d.%d", APP2Info.SoftVer>>16, APP2Info.SoftVer&0xFFFF);
+	Radio_Trf_Printf("APP2 SoftwareVer: V%d.%d", APP2Info.SoftVer>>16, APP2Info.SoftVer&0xFFFF);
 	Radio_Trf_Printf("APP2 CheckCode: %X", APP2Info.CheckCode);
 #else
 	Radio_Trf_Printf("SPI FLASH Invalid");

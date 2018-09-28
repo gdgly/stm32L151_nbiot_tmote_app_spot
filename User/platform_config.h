@@ -99,6 +99,9 @@
 #define	RADIO_PRINT_DEVINFO				1								//无线输出DeviceInfo
 #define	RADIO_PRINT_UPGRADEINFO			1								//无线输出UpgradeInfo
 
+#define	RADIO_CMD_UPLOAD_WORKINFO		1								//无线命令主动上报WorkInfo
+#define	RADIO_CMD_UPLOAD_NETINFO			1								//无线命令主动上报NetInfo
+
 #define	NBCOAP_SENDCODE_SHORT_STATUS		0								//NB上报信息使能CoapShortStatus
 #define	NBCOAP_SENDCODE_LONG_STATUS		1								//NB上报信息使能CoapLongStatus
 #define	NBCOAP_SENDCODE_WORK_INFO		1								//NB上报信息使能CoapWorkInfo

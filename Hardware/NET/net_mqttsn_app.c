@@ -304,15 +304,49 @@ static unsigned char* MQTTSN_NBIOT_GetDictateFailureCnt(MQTTSN_ClientsTypeDef* p
 	return dictateFailureCnt;
 }
 
+static unsigned char* MQTTSN_GetDictateFailureCnt(MQTTSN_ClientsTypeDef* pClient, MQTTSN_SubStateTypeDef dictateNoTimeOut)
+{
+	unsigned char* dictateFailureCnt;
+	
+	switch (dictateNoTimeOut)
+	{
+	case MQTTSN_SUBSTATE_INIT:
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateInitFailureCnt;
+		break;
+	
+	case MQTTSN_SUBSTATE_DISCONNECT:
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateDisconnectFailureCnt;
+		break;
+	
+	case MQTTSN_SUBSTATE_ACTIVE:
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateActiveFailureCnt;
+		break;
+	
+	case MQTTSN_SUBSTATE_SLEEP:
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateSleepFailureCnt;
+		break;
+	
+	case MQTTSN_SUBSTATE_AWAKE:
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateAweakFailureCnt;
+		break;
+	
+	case MQTTSN_SUBSTATE_LOST:
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateLostFailureCnt;
+		break;
+	}
+	
+	return dictateFailureCnt;
+}
+
 /**********************************************************************************************************
  @Function			static void MQTTSN_NBIOT_DictateEvent_FailExecute(MQTTSN_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateTimeOut, \
 																					  NBIOT_DictateEventTypeDef dictateFail, \
 																					  NBIOT_DictateEventTypeDef dictateNoTimeOut)
  @Description			MQTTSN_NBIOT_DictateEvent_FailExecute	: 事件运行控制器出错执行(内部使用)
  @Input				pClient							: MQTTSN客户端实例
-					dictateTimeOut						: 事假处理错误超时
+					dictateTimeOut						: 事件处理错误超时
 					dictateFail						: 事件处理错误次数溢出
-					dictateNoTimeOut					: 事假处理错误未超时
+					dictateNoTimeOut					: 事件处理错误未超时
  @Return				void
 **********************************************************************************************************/
 static void MQTTSN_NBIOT_DictateEvent_FailExecute(MQTTSN_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateTimeOut, \
@@ -344,8 +378,8 @@ static void MQTTSN_NBIOT_DictateEvent_FailExecute(MQTTSN_ClientsTypeDef* pClient
 																						NBIOT_DictateEventTypeDef dictateNoTimeOut)
  @Description			MQTTSN_NBIOT_DictateEvent_SuccessExecute: 事件运行控制器正确执行(内部使用)
  @Input				pClient							: MQTTSN客户端实例
-					dictateSuccess						: 事假处理正确
-					dictateNoTimeOut					: 事假处理错误未超时
+					dictateSuccess						: 事件处理正确
+					dictateNoTimeOut					: 事件处理错误未超时
  @Return				void
 **********************************************************************************************************/
 static void MQTTSN_NBIOT_DictateEvent_SuccessExecute(MQTTSN_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateSuccess, \
@@ -358,6 +392,77 @@ static void MQTTSN_NBIOT_DictateEvent_SuccessExecute(MQTTSN_ClientsTypeDef* pCli
 	pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
 	pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = dictateSuccess;
 	*dictateFailureCnt = 0;
+}
+
+/**********************************************************************************************************
+ @Function			static void MQTTSN_DictateEvent_FailExecute(MQTTSN_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateTimeOut, \
+																				 MQTTSN_SubStateTypeDef dictateSubTimeOut, \
+																				 MQTTSN_SubStateTypeDef dictateSubNoTimeOut)
+ @Description			MQTTSN_DictateEvent_FailExecute		: 事件运行控制器出错执行(内部使用)
+ @Input				pClient							: MQTTSN客户端实例
+					dictateTimeOut						: 事件处理错误超时
+					dictateSubTimeOut					: 事件处理错误次数溢出
+					dictateNoTimeOut					: 事件处理错误未超时
+ @Return				void
+**********************************************************************************************************/
+static void MQTTSN_DictateEvent_FailExecute(MQTTSN_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateTimeOut, \
+															 MQTTSN_SubStateTypeDef dictateSubTimeOut, \
+															 MQTTSN_SubStateTypeDef dictateSubNoTimeOut)
+{
+	unsigned char* dictateFailureCnt;
+	
+	dictateFailureCnt = MQTTSN_GetDictateFailureCnt(pClient, dictateSubNoTimeOut);
+	
+	if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
+		/* Dictate TimeOut */
+		pClient->DictateRunCtl.dictateEnable = false;
+		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = dictateTimeOut;
+		pClient->SubState = dictateSubTimeOut;
+		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_DNS;
+		*dictateFailureCnt += 1;
+		if (*dictateFailureCnt > 3) {
+			*dictateFailureCnt = 0;
+			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
+			pClient->SubState = MQTTSN_SUBSTATE_LOST;
+			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
+		}
+	}
+	else {
+		/* Dictate isn't TimeOut */
+		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
+		pClient->SubState = dictateSubNoTimeOut;
+		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
+	}
+}
+
+/**********************************************************************************************************
+ @Function			static void MQTTSN_DictateEvent_SuccessExecute(MQTTSN_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateSuccess, \
+																				    MQTTSN_SubStateTypeDef dictateSubSuccess, \
+																				    MQTTSN_SubStateTypeDef dictateSubNoTimeOut, \
+																				    bool dictateFailureCntState)
+ @Description			MQTTSN_DictateEvent_SuccessExecute		: 事件运行控制器正确执行(内部使用)
+ @Input				pClient							: MQTTSN客户端实例
+					dictateSuccess						: 事件处理正确
+					dictateSubSuccess					: 事件处理正确
+					dictateNoTimeOut					: 事件处理错误未超时
+ @Return				void
+**********************************************************************************************************/
+static void MQTTSN_DictateEvent_SuccessExecute(MQTTSN_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateSuccess, \
+															    MQTTSN_SubStateTypeDef dictateSubSuccess, \
+															    MQTTSN_SubStateTypeDef dictateSubNoTimeOut, \
+															    bool dictateFailureCntState)
+{
+	unsigned char* dictateFailureCnt;
+	
+	if (dictateFailureCntState) {
+		dictateFailureCnt = MQTTSN_GetDictateFailureCnt(pClient, dictateSubNoTimeOut);
+		pClient->DictateRunCtl.dictateEnable = false;
+		*dictateFailureCnt = 0;
+	}
+	
+	pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = dictateSuccess;
+	pClient->SubState = dictateSubSuccess;
+	pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
 }
 
 /**********************************************************************************************************
@@ -1189,37 +1294,14 @@ void NET_MQTTSN_Event_Init(MQTTSN_ClientsTypeDef* pClient)
 	/* Creat UDP Socket */
 	if (pClient->SocketStack->Open(pClient->SocketStack) == MQTTSN_OK) {
 		/* Dictate execute is Success */
-		pClient->DictateRunCtl.dictateEnable = false;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-		pClient->SubState = MQTTSN_SUBSTATE_DISCONNECT;
-		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
-		pClient->DictateRunCtl.dictateInitFailureCnt = 0;
+		MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_DISCONNECT, MQTTSN_SUBSTATE_INIT, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("MqttSN Creat UDP Ok");
 #endif
 	}
 	else {
 		/* Dictate execute is Fail */
-		if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-			/* Dictate TimeOut */
-			pClient->DictateRunCtl.dictateEnable = false;
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-			pClient->SubState = MQTTSN_SUBSTATE_INIT;
-			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_DNS;
-			pClient->DictateRunCtl.dictateInitFailureCnt++;
-			if (pClient->DictateRunCtl.dictateInitFailureCnt > 3) {
-				pClient->DictateRunCtl.dictateInitFailureCnt = 0;
-				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = STOP_MODE;
-				pClient->SubState = MQTTSN_SUBSTATE_INIT;
-				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
-			}
-		}
-		else {
-			/* Dictate isn't TimeOut */
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-			pClient->SubState = MQTTSN_SUBSTATE_INIT;
-			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
-		}
+		MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_INIT);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("MqttSN Creat UDP Fail");
 #endif
@@ -1252,37 +1334,14 @@ void NET_MQTTSN_Event_Disconnect(MQTTSN_ClientsTypeDef* pClient)
 	options.cleansession = false;
 	if (MQTTSN_Connect(pClient, &options) != MQTTSN_OK) {
 		/* Dictate execute is Fail */
-		if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-			/* Dictate TimeOut */
-			pClient->DictateRunCtl.dictateEnable = false;
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-			pClient->SubState = MQTTSN_SUBSTATE_INIT;
-			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_DNS;
-			pClient->DictateRunCtl.dictateDisconnectFailureCnt++;
-			if (pClient->DictateRunCtl.dictateDisconnectFailureCnt > 3) {
-				pClient->DictateRunCtl.dictateDisconnectFailureCnt = 0;
-				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-				pClient->SubState = MQTTSN_SUBSTATE_LOST;
-				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
-			}
-		}
-		else {
-			/* Dictate isn't TimeOut */
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-			pClient->SubState = MQTTSN_SUBSTATE_DISCONNECT;
-			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
-		}
+		MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_DISCONNECT);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("MqttSN Connect Server Fail");
 #endif
 	}
 	else {
 		/* Dictate execute is Success */
-		pClient->DictateRunCtl.dictateEnable = false;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-		pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
-		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
-		pClient->DictateRunCtl.dictateDisconnectFailureCnt = 0;
+		MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_DISCONNECT, true);
 		/* Set Active Duration */
 		MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
@@ -1305,26 +1364,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 	if (pClient->DictateRunCtl.dictateSubscribeStatus != true) {
 		if (MQTTSN_Subscribe(pClient, MQTTSN_SUBSCRIBE_ID, QOS2, messageHandlerFunction) != MQTTSN_OK) {
 			/* Dictate execute is Fail */
-			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-				/* Dictate TimeOut */
-				pClient->DictateRunCtl.dictateEnable = false;
-				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-				pClient->SubState = MQTTSN_SUBSTATE_INIT;
-				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_DNS;
-				pClient->DictateRunCtl.dictateActiveFailureCnt++;
-				if (pClient->DictateRunCtl.dictateActiveFailureCnt > 3) {
-					pClient->DictateRunCtl.dictateActiveFailureCnt = 0;
-					pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-					pClient->SubState = MQTTSN_SUBSTATE_LOST;
-					pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
-				}
-			}
-			else {
-				/* Dictate isn't TimeOut */
-				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-				pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
-				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
-			}
+			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Subscrib %s Fail", MQTTSN_SUBSCRIBE_ID);
 #endif
@@ -1332,9 +1372,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 		}
 		else {
 			/* Dictate execute is Success */
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-			pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
-			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
+			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, false);
 			pClient->DictateRunCtl.dictateSubscribeStatus = true;
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Subscrib %s Ok", MQTTSN_SUBSCRIBE_ID);
@@ -1354,24 +1392,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 	if (pClient->MessageSendCtl.messageStatusBasic != false) {
 		if (NET_MQTTSN_SendPayloadPacket(pClient, OBJECT_TYPE_TMOTES_STATUS_BASIC_PUT) != MQTTSN_OK) {
 			/* Dictate execute is Fail */
-			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-				/* Dictate TimeOut */
-				pClient->DictateRunCtl.dictateEnable = false;
-				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-				pClient->SubState = MQTTSN_SUBSTATE_INIT;
-				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_DNS;
-				pClient->DictateRunCtl.dictateActiveFailureCnt++;
-				if (pClient->DictateRunCtl.dictateActiveFailureCnt > 3) {
-					pClient->DictateRunCtl.dictateActiveFailureCnt = 0;
-					pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-					pClient->SubState = MQTTSN_SUBSTATE_LOST;
-					pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
-				}
-			}
-			else {
-				/* Dictate isn't TimeOut */
-				pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
-			}
+			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send StatusBasic Fail");
 #endif
@@ -1379,8 +1400,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 		}
 		else {
 			/* Dictate execute is Success */
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-			pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
+			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, false);
 			pClient->MessageSendCtl.messageStatusBasic = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_StatusBasicOffSet();
@@ -1410,24 +1430,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 	if (pClient->MessageSendCtl.messageStatusExtend != false) {
 		if (NET_MQTTSN_SendPayloadPacket(pClient, OBJECT_TYPE_TMOTES_STATUS_EXTEND_PUT) != MQTTSN_OK) {
 			/* Dictate execute is Fail */
-			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-				/* Dictate TimeOut */
-				pClient->DictateRunCtl.dictateEnable = false;
-				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-				pClient->SubState = MQTTSN_SUBSTATE_INIT;
-				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_DNS;
-				pClient->DictateRunCtl.dictateActiveFailureCnt++;
-				if (pClient->DictateRunCtl.dictateActiveFailureCnt > 3) {
-					pClient->DictateRunCtl.dictateActiveFailureCnt = 0;
-					pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-					pClient->SubState = MQTTSN_SUBSTATE_LOST;
-					pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
-				}
-			}
-			else {
-				/* Dictate isn't TimeOut */
-				pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
-			}
+			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send StatusExtend Fail");
 #endif
@@ -1435,8 +1438,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 		}
 		else {
 			/* Dictate execute is Success */
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-			pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
+			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, false);
 			pClient->MessageSendCtl.messageStatusExtend = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_StatusExtendOffSet();
@@ -1466,24 +1468,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 	if (pClient->MessageSendCtl.messageInfoWork != false) {
 		if (NET_MQTTSN_SendPayloadPacket(pClient, OBJECT_TYPE_TMOTES_INFO_WORK_PUT) != MQTTSN_OK) {
 			/* Dictate execute is Fail */
-			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-				/* Dictate TimeOut */
-				pClient->DictateRunCtl.dictateEnable = false;
-				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-				pClient->SubState = MQTTSN_SUBSTATE_INIT;
-				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_DNS;
-				pClient->DictateRunCtl.dictateActiveFailureCnt++;
-				if (pClient->DictateRunCtl.dictateActiveFailureCnt > 3) {
-					pClient->DictateRunCtl.dictateActiveFailureCnt = 0;
-					pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-					pClient->SubState = MQTTSN_SUBSTATE_LOST;
-					pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
-				}
-			}
-			else {
-				/* Dictate isn't TimeOut */
-				pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
-			}
+			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoWork Fail");
 #endif
@@ -1491,8 +1476,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 		}
 		else {
 			/* Dictate execute is Success */
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-			pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
+			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, false);
 			pClient->MessageSendCtl.messageInfoWork = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoWorkOffSet();
@@ -1522,24 +1506,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 	if (pClient->MessageSendCtl.messageInfoBasic != false) {
 		if (NET_MQTTSN_SendPayloadPacket(pClient, OBJECT_TYPE_TMOTES_INFO_BASIC_PUT) != MQTTSN_OK) {
 			/* Dictate execute is Fail */
-			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-				/* Dictate TimeOut */
-				pClient->DictateRunCtl.dictateEnable = false;
-				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-				pClient->SubState = MQTTSN_SUBSTATE_INIT;
-				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_DNS;
-				pClient->DictateRunCtl.dictateActiveFailureCnt++;
-				if (pClient->DictateRunCtl.dictateActiveFailureCnt > 3) {
-					pClient->DictateRunCtl.dictateActiveFailureCnt = 0;
-					pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-					pClient->SubState = MQTTSN_SUBSTATE_LOST;
-					pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
-				}
-			}
-			else {
-				/* Dictate isn't TimeOut */
-				pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
-			}
+			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoBasic Fail");
 #endif
@@ -1547,8 +1514,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 		}
 		else {
 			/* Dictate execute is Success */
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-			pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
+			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, false);
 			pClient->MessageSendCtl.messageInfoBasic = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoBasicOffSet();
@@ -1578,24 +1544,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 	if (pClient->MessageSendCtl.messageInfoDynamic != false) {
 		if (NET_MQTTSN_SendPayloadPacket(pClient, OBJECT_TYPE_TMOTES_INFO_DYNAMIC_PUT) != MQTTSN_OK) {
 			/* Dictate execute is Fail */
-			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-				/* Dictate TimeOut */
-				pClient->DictateRunCtl.dictateEnable = false;
-				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-				pClient->SubState = MQTTSN_SUBSTATE_INIT;
-				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_DNS;
-				pClient->DictateRunCtl.dictateActiveFailureCnt++;
-				if (pClient->DictateRunCtl.dictateActiveFailureCnt > 3) {
-					pClient->DictateRunCtl.dictateActiveFailureCnt = 0;
-					pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-					pClient->SubState = MQTTSN_SUBSTATE_LOST;
-					pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
-				}
-			}
-			else {
-				/* Dictate isn't TimeOut */
-				pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
-			}
+			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoDynamic Fail");
 #endif
@@ -1603,8 +1552,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 		}
 		else {
 			/* Dictate execute is Success */
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-			pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
+			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, false);
 			pClient->MessageSendCtl.messageInfoDynamic = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoDynamicOffSet();
@@ -1634,24 +1582,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 	if (pClient->MessageSendCtl.messageInfoRadar != false) {
 		if (NET_MQTTSN_SendPayloadPacket(pClient, OBJECT_TYPE_TMOTES_INFO_RADAR_PUT) != MQTTSN_OK) {
 			/* Dictate execute is Fail */
-			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-				/* Dictate TimeOut */
-				pClient->DictateRunCtl.dictateEnable = false;
-				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-				pClient->SubState = MQTTSN_SUBSTATE_INIT;
-				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_DNS;
-				pClient->DictateRunCtl.dictateActiveFailureCnt++;
-				if (pClient->DictateRunCtl.dictateActiveFailureCnt > 3) {
-					pClient->DictateRunCtl.dictateActiveFailureCnt = 0;
-					pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-					pClient->SubState = MQTTSN_SUBSTATE_LOST;
-					pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
-				}
-			}
-			else {
-				/* Dictate isn't TimeOut */
-				pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
-			}
+			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoRadar Fail");
 #endif
@@ -1659,8 +1590,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 		}
 		else {
 			/* Dictate execute is Success */
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-			pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
+			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, false);
 			pClient->MessageSendCtl.messageInfoRadar = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoRadarOffSet();
@@ -1689,24 +1619,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 	if (pClient->MessageSendCtl.messageInfoResponse != false) {
 		if (NET_MQTTSN_SendPayloadPacket(pClient, OBJECT_TYPE_TMOTES_INFO_RESPONSE_PUT) != MQTTSN_OK) {
 			/* Dictate execute is Fail */
-			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-				/* Dictate TimeOut */
-				pClient->DictateRunCtl.dictateEnable = false;
-				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-				pClient->SubState = MQTTSN_SUBSTATE_INIT;
-				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_DNS;
-				pClient->DictateRunCtl.dictateActiveFailureCnt++;
-				if (pClient->DictateRunCtl.dictateActiveFailureCnt > 3) {
-					pClient->DictateRunCtl.dictateActiveFailureCnt = 0;
-					pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-					pClient->SubState = MQTTSN_SUBSTATE_LOST;
-					pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
-				}
-			}
-			else {
-				/* Dictate isn't TimeOut */
-				pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
-			}
+			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoResponse Fail");
 #endif
@@ -1714,8 +1627,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 		}
 		else {
 			/* Dictate execute is Success */
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-			pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
+			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, false);
 			pClient->MessageSendCtl.messageInfoResponse = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoResponseOffSet();
@@ -1745,29 +1657,14 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 	if (pClient->MessageSendCtl.messageByteStream != false) {
 		if (NET_MQTTSN_SendPayloadPacket(pClient, OBJECT_TYPE_TMOTES_BYTE_STREAM_PUT) != MQTTSN_OK) {
 			/* Dictate execute is Fail */
-			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-				/* Dictate TimeOut */
-				pClient->DictateRunCtl.dictateEnable = false;
-				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-				pClient->SubState = MQTTSN_SUBSTATE_INIT;
-				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_DNS;
-				pClient->DictateRunCtl.dictateActiveFailureCnt++;
-				if (pClient->DictateRunCtl.dictateActiveFailureCnt > 3) {
-					pClient->DictateRunCtl.dictateActiveFailureCnt = 0;
-					pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-					pClient->SubState = MQTTSN_SUBSTATE_LOST;
-					pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
-				}
-			}
-			else {
-				/* Dictate isn't TimeOut */
-				pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
-			}
+			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
+#ifdef MQTTSN_DEBUG_LOG_RF_PRINT
+			Radio_Trf_Debug_Printf_Level2("MqttSN Send Payload Fail");
+#endif
 		}
 		else {
 			/* Dictate execute is Success */
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-			pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
+			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, false);
 			pClient->MessageSendCtl.messageByteStream = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_SendDataOffSet();
@@ -1792,27 +1689,14 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 		/* Arrival time for Sleep */
 		if (MQTTSN_DisConnect(pClient, TNET_MQTTSN_SLEEP_DURATION) != MQTTSN_OK) {
 			/* Dictate execute is Fail */
-			pClient->DictateRunCtl.dictateEnable = false;
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-			pClient->SubState = MQTTSN_SUBSTATE_INIT;
-			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_DNS;
-			pClient->DictateRunCtl.dictateActiveFailureCnt++;
-			if (pClient->DictateRunCtl.dictateActiveFailureCnt > 3) {
-				pClient->DictateRunCtl.dictateActiveFailureCnt = 0;
-				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-				pClient->SubState = MQTTSN_SUBSTATE_LOST;
-				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
-			}
+			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN DisConnect Fail");
 #endif
 		}
 		else {
 			/* Dictate execute is Success */
-			pClient->DictateRunCtl.dictateEnable = false;
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-			pClient->SubState = MQTTSN_SUBSTATE_AWAKE;
-			pClient->DictateRunCtl.dictateActiveFailureCnt = 0;
+			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_AWAKE, MQTTSN_SUBSTATE_ACTIVE, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN DisConnect Ok");
 #endif
@@ -1886,24 +1770,7 @@ void NET_MQTTSN_Event_Sleep(MQTTSN_ClientsTypeDef* pClient)
 		options.cleansession = false;
 		if (MQTTSN_Connect(pClient, &options) != MQTTSN_OK) {
 			/* Dictate execute is Fail */
-			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-				/* Dictate TimeOut */
-				pClient->DictateRunCtl.dictateEnable = false;
-				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-				pClient->SubState = MQTTSN_SUBSTATE_INIT;
-				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_DNS;
-				pClient->DictateRunCtl.dictateSleepFailureCnt++;
-				if (pClient->DictateRunCtl.dictateSleepFailureCnt > 3) {
-					pClient->DictateRunCtl.dictateSleepFailureCnt = 0;
-					pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-					pClient->SubState = MQTTSN_SUBSTATE_LOST;
-					pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
-				}
-			}
-			else {
-				/* Dictate isn't TimeOut */
-				pClient->SubState = MQTTSN_SUBSTATE_SLEEP;
-			}
+			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_SLEEP);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("MqttSN Connect Server Fail");
 #endif
@@ -1911,10 +1778,7 @@ void NET_MQTTSN_Event_Sleep(MQTTSN_ClientsTypeDef* pClient)
 		}
 		else {
 			/* Dictate execute is Success */
-			pClient->DictateRunCtl.dictateEnable = false;
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-			pClient->SubState = MQTTSN_SUBSTATE_ACTIVE;
-			pClient->DictateRunCtl.dictateSleepFailureCnt = 0;
+			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_SLEEP, true);
 			/* Set Active Duration */
 			MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
@@ -1926,16 +1790,10 @@ void NET_MQTTSN_Event_Sleep(MQTTSN_ClientsTypeDef* pClient)
 	
 	/* If time to Aweak, then send a pingreq */
 	if (Stm32_Calculagraph_IsExpiredSec(&pClient->PingTimer) == true) {
-		pClient->DictateRunCtl.dictateEnable = false;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-		pClient->SubState = MQTTSN_SUBSTATE_AWAKE;
-		pClient->DictateRunCtl.dictateSleepFailureCnt = 0;
+		MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_AWAKE, MQTTSN_SUBSTATE_SLEEP, true);
 	}
 	else {
-		pClient->DictateRunCtl.dictateEnable = false;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = LISTEN_RUN_CTL;
-		pClient->SubState = MQTTSN_SUBSTATE_SLEEP;
-		pClient->DictateRunCtl.dictateSleepFailureCnt = 0;
+		MQTTSN_DictateEvent_SuccessExecute(pClient, LISTEN_RUN_CTL, MQTTSN_SUBSTATE_SLEEP, MQTTSN_SUBSTATE_SLEEP, true);
 	}
 }
 
@@ -1955,24 +1813,7 @@ void NET_MQTTSN_Event_Aweak(MQTTSN_ClientsTypeDef* pClient)
 	clientid.cstring = MQTTSN_CLIENT_ID;
 	if (MQTTSN_Pingreq(pClient, &clientid) != MQTTSN_OK) {
 		/* Dictate execute is Fail */
-		if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-			/* Dictate TimeOut */
-			pClient->DictateRunCtl.dictateEnable = false;
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-			pClient->SubState = MQTTSN_SUBSTATE_INIT;
-			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_DNS;
-			pClient->DictateRunCtl.dictateAweakFailureCnt++;
-			if (pClient->DictateRunCtl.dictateAweakFailureCnt > 3) {
-				pClient->DictateRunCtl.dictateAweakFailureCnt = 0;
-				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-				pClient->SubState = MQTTSN_SUBSTATE_LOST;
-				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
-			}
-		}
-		else {
-			/* Dictate isn't TimeOut */
-			pClient->SubState = MQTTSN_SUBSTATE_AWAKE;
-		}
+		MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_AWAKE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("MqttSN Pingreq Server Fail");
 #endif
@@ -1980,10 +1821,7 @@ void NET_MQTTSN_Event_Aweak(MQTTSN_ClientsTypeDef* pClient)
 	}
 	else {
 		/* Dictate execute is Success */
-		pClient->DictateRunCtl.dictateEnable = false;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
-		pClient->SubState = MQTTSN_SUBSTATE_SLEEP;
-		pClient->DictateRunCtl.dictateAweakFailureCnt = 0;
+		MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_SLEEP, MQTTSN_SUBSTATE_AWAKE, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("MqttSN Pingreq Server Ok");
 #endif
@@ -2001,10 +1839,7 @@ void NET_MQTTSN_Event_Aweak(MQTTSN_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_MQTTSN_Event_Lost(MQTTSN_ClientsTypeDef* pClient)
 {
-	pClient->DictateRunCtl.dictateEnable = false;
-	pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = STOP_MODE;
-	pClient->SubState = MQTTSN_SUBSTATE_INIT;
-	pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
+	MQTTSN_DictateEvent_SuccessExecute(pClient, STOP_MODE, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_LOST, true);
 }
 
 /**********************************************************************************************************

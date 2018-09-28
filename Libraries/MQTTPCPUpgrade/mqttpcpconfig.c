@@ -98,7 +98,7 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_UpgradeDataNewVersionNotice_Callback(MqttSNP
 	Radio_Trf_Debug_Printf_Level2("PackCheckCode: %X", MqttSNCalculateStringToHex(pClient->Parameter.UpgradePackCheckCode>>8, pClient->Parameter.UpgradePackCheckCode&0xFF));
 #endif
 	
-	
+	PCPResultCodeStatus = MqttPCP_Upgrade_NewVersionNotice(pClient);
 	
 	return PCPResultCodeStatus;
 }
@@ -114,14 +114,13 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_UpgradeDataNewVersionNotice_Callback(MqttSNP
 **********************************************************************************************************/
 MqttSNPCP_ResultCodeTypeDef MqttPCP_UpgradeDataDownload_Callback(MqttSNPCP_ClientsTypeDef* pClient, u16 SliceIndex, u8* UpgradeData, u16 UpgradeDataLength)
 {
-	
 	MqttSNPCP_ResultCodeTypeDef PCPResultCodeStatus = MQTTSN_PCP_ExecuteSuccess;
 	
 #ifdef MQTTSN_PCP_DEBUG_LOG_RF_PRINT
 	Radio_Trf_Debug_Printf_Level2("Down%d.%d: OK", SliceIndex, UpgradeDataLength);
 #endif
 	
-	
+	PCPResultCodeStatus = MqttPCP_Upgrade_DataDownload(pClient, SliceIndex, UpgradeData, UpgradeDataLength);
 	
 	return PCPResultCodeStatus;
 }
@@ -140,7 +139,7 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_UpgradeDataAssemble_Callback(MqttSNPCP_Clien
 	Radio_Trf_Debug_Printf_Level2("Download Over!!");
 #endif
 	
-	
+	PCPResultCodeStatus = MqttPCP_Upgrade_DataAssemble(pClient);
 	
 	return PCPResultCodeStatus;
 }
@@ -159,7 +158,7 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_UpgradeDataReportUpgrades_Callback(MqttSNPCP
 	Radio_Trf_Debug_Printf_Level2("Upgrade Over!!");
 #endif
 	
-	
+	PCPResultCodeStatus = MqttPCP_Upgrade_AfterUpdata(pClient);
 	
 	return PCPResultCodeStatus;
 }

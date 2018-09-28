@@ -352,37 +352,222 @@ exit:
 }
 
 
+/**********************************************************************************************************
+ @Function			MqttSNPCP_StatusTypeDef MqttPCP_Func_SelectUpgradeStatusExecuteCmd(MqttSNPCP_ClientsTypeDef* pClient)
+ @Description			MqttPCP_Func_SelectUpgradeStatusExecuteCmd	: PCP判断不同主动上传数据码处理不同命令
+ @Input				pClient								: PCP客户端实例
+ @Return				void
+**********************************************************************************************************/
+MqttSNPCP_StatusTypeDef MqttPCP_Func_SelectUpgradeStatusExecuteCmd(MqttSNPCP_ClientsTypeDef* pClient)
+{
+	MqttSNPCP_StatusTypeDef PCPStatus = MQTTSN_PCP_OK;
+	
+	/* 查询设备版本应答包 */
+	if (pClient->UpgradeExecution.upgradeStatus == MQTTSN_PCP_UPGRADE_QUERYVERSION) {
+		PCPStatus = MqttPCP_Func_QueryDeviceVersion(pClient);
+#ifdef MQTTSN_PCP_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("PCP SdQueryDeviceVersion %s", pClient->UpgradeExecution.DeviceSoftVersion);
+#endif
+		goto exit;
+	}
+	
+	/* 请求升级包 */
+	if (pClient->UpgradeExecution.upgradeStatus == MQTTSN_PCP_UPGRADE_DOWNLOAD) {
+		PCPStatus = MqttPCP_Func_RequestUpgradePackage(pClient);
+#ifdef MQTTSN_PCP_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("PCP SdRequestUpgradePackage %d", pClient->UpgradeExecution.PackSliceIndex);
+#endif
+		goto exit;
+	}
+	
+	/* 上报升级包下载状态 */
+	if (pClient->UpgradeExecution.upgradeStatus == MQTTSN_PCP_UPGRADE_ASSEMBLE) {
+		PCPStatus = MqttPCP_Func_ReportDownloadStatus(pClient);
+#ifdef MQTTSN_PCP_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("PCP SdReportDownloadStatus");
+#endif
+		goto exit;
+	}
+	
+	/* 上报升级结果 */
+	if (pClient->UpgradeExecution.upgradeStatus == MQTTSN_PCP_UPGRADE_INSTALL) {
+		PCPStatus = MqttPCP_Func_ReportUpgrades(pClient);
+#ifdef MQTTSN_PCP_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("PCP SdReportUpgrades");
+#endif
+		goto exit;
+	}
+	
+exit:
+	return PCPStatus;
+}
 
+/**********************************************************************************************************
+ @Function			MqttSNPCP_StatusTypeDef MqttPCP_Func_QueryDeviceVersion(MqttSNPCP_ClientsTypeDef* pClient)
+ @Description			MqttPCP_Func_QueryDeviceVersion		: PCP查询设备版本应答包
+ @Input				pClient							: PCP客户端实例
+ @Return				void
+**********************************************************************************************************/
+MqttSNPCP_StatusTypeDef MqttPCP_Func_QueryDeviceVersion(MqttSNPCP_ClientsTypeDef* pClient)
+{
+	MqttSNPCP_StatusTypeDef PCPStatus = MQTTSN_PCP_OK;
+	MqttSNPCP_MessageDataTypeDef* PCPMessageProcess = (MqttSNPCP_MessageDataTypeDef*)pClient->DataProcessStack;
+	MqttSNPCP_AckQueryDeviceVersionTypeDef* PCPAckQueryDeviceVersion = (MqttSNPCP_AckQueryDeviceVersionTypeDef*)PCPMessageProcess->pPacketData;
+	
+	/* 查询设备版本应答包尝试次数 */
+	pClient->DictateRunCtl.dictateUpgradeQueryVersionCnt++;
+	if (pClient->DictateRunCtl.dictateUpgradeQueryVersionCnt > 2) {
+		/* 确实没有需要升级包 */
+		pClient->DictateRunCtl.dictateUpgradeQueryVersionCnt = 0;
+		pClient->UpgradeExecution.upgradeStatus = MQTTSN_PCP_UPGRADE_STANDBY;
+		goto exit;
+	}
+	
+	memset((void*)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
+	
+	/* 写入查询设备版本应答 */
+	PCPMessageProcess->StartX = MqttPCPSock_htons(MQTTSN_PCP_START_X);
+	PCPMessageProcess->ProtocolType = MQTTSN_PCP_PROTOCOL_TYPE;
+	PCPMessageProcess->MessageType = MQTTSN_PCP_QueryDeviceVersion;
+	PCPMessageProcess->CRCCheckCode = 0x0000;
+	PCPMessageProcess->PacketDataLength = MqttPCPSock_htons(sizeof(MqttSNPCP_AckQueryDeviceVersionTypeDef));
+	
+	PCPAckQueryDeviceVersion->ResultCode = MQTTSN_PCP_ExecuteSuccess;
+	memcpy(PCPAckQueryDeviceVersion->DeviceSoftVersion, pClient->UpgradeExecution.DeviceSoftVersion, sizeof(PCPAckQueryDeviceVersion->DeviceSoftVersion));
+	
+	PCPMessageProcess->CRCCheckCode = \
+	MqttPCPSock_htons(MqttPCPCrcCheck_getCrcCheckCode(pClient->DataProcessStack, sizeof(MqttSNPCP_MessageDataTypeDef) + sizeof(MqttSNPCP_AckQueryDeviceVersionTypeDef) - 1));
+	
+	NET_MqttSN_PCP_Message_SendDataEnqueue(pClient->DataProcessStack, sizeof(MqttSNPCP_MessageDataTypeDef) + sizeof(MqttSNPCP_AckQueryDeviceVersionTypeDef) - 1);
+	
+exit:
+	return PCPStatus;
+}
 
+/**********************************************************************************************************
+ @Function			MqttSNPCP_StatusTypeDef MqttPCP_Func_RequestUpgradePackage(MqttSNPCP_ClientsTypeDef* pClient)
+ @Description			MqttPCP_Func_RequestUpgradePackage		: PCP请求升级包
+ @Input				pClient							: PCP客户端实例
+ @Return				void
+**********************************************************************************************************/
+MqttSNPCP_StatusTypeDef MqttPCP_Func_RequestUpgradePackage(MqttSNPCP_ClientsTypeDef* pClient)
+{
+	MqttSNPCP_StatusTypeDef PCPStatus = MQTTSN_PCP_OK;
+	MqttSNPCP_MessageDataTypeDef* PCPMessageProcess = (MqttSNPCP_MessageDataTypeDef*)pClient->DataProcessStack;
+	MqttSNPCP_RequestUpgradePackageTypeDef* PCPRequestUpgradePackage = (MqttSNPCP_RequestUpgradePackageTypeDef*)PCPMessageProcess->pPacketData;
+	
+	/* 请求升级包尝试次数 */
+	pClient->DictateRunCtl.dictateUpgradeDownloadCnt++;
+	if (pClient->DictateRunCtl.dictateUpgradeDownloadCnt > 5) {
+		pClient->DictateRunCtl.dictateUpgradeDownloadCnt = 0;
+		pClient->UpgradeExecution.upgradeStatus = MQTTSN_PCP_UPGRADE_FAILED;
+		goto exit;
+	}
+	
+	memset((void*)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
+	
+	/* 写入请求升级包 */
+	PCPMessageProcess->StartX = MqttPCPSock_htons(MQTTSN_PCP_START_X);
+	PCPMessageProcess->ProtocolType = MQTTSN_PCP_PROTOCOL_TYPE;
+	PCPMessageProcess->MessageType = MQTTSN_PCP_RequestUpgradePackage;
+	PCPMessageProcess->CRCCheckCode = 0x0000;
+	PCPMessageProcess->PacketDataLength = MqttPCPSock_htons(sizeof(MqttSNPCP_RequestUpgradePackageTypeDef));
+	
+	memcpy(PCPRequestUpgradePackage->PlatformSoftVersion, pClient->UpgradeExecution.PlatformSoftVersion, sizeof(PCPRequestUpgradePackage->PlatformSoftVersion));
+	PCPRequestUpgradePackage->UpgradePackSliceIndex = MqttPCPSock_htons(pClient->UpgradeExecution.PackSliceIndex);
+	
+	PCPMessageProcess->CRCCheckCode = \
+	MqttPCPSock_htons(MqttPCPCrcCheck_getCrcCheckCode(pClient->DataProcessStack, sizeof(MqttSNPCP_MessageDataTypeDef) + sizeof(MqttSNPCP_RequestUpgradePackageTypeDef) - 1));
+	
+	NET_MqttSN_PCP_Message_SendDataEnqueue(pClient->DataProcessStack, sizeof(MqttSNPCP_MessageDataTypeDef) + sizeof(MqttSNPCP_RequestUpgradePackageTypeDef) - 1);
+	
+exit:
+	return PCPStatus;
+}
 
+/**********************************************************************************************************
+ @Function			MqttSNPCP_StatusTypeDef MqttPCP_Func_ReportDownloadStatus(MqttSNPCP_ClientsTypeDef* pClient)
+ @Description			MqttPCP_Func_ReportDownloadStatus		: PCP上报升级包下载状态
+ @Input				pClient							: PCP客户端实例
+ @Return				void
+**********************************************************************************************************/
+MqttSNPCP_StatusTypeDef MqttPCP_Func_ReportDownloadStatus(MqttSNPCP_ClientsTypeDef* pClient)
+{
+	MqttSNPCP_StatusTypeDef PCPStatus = MQTTSN_PCP_OK;
+	MqttSNPCP_ResultCodeTypeDef PCPResultCodeStatus = MQTTSN_PCP_ExecuteSuccess;
+	MqttSNPCP_MessageDataTypeDef* PCPMessageProcess = (MqttSNPCP_MessageDataTypeDef*)pClient->DataProcessStack;
+	
+	/* 上报升级包下载状态尝试次数 */
+	pClient->DictateRunCtl.dictateUpgradeAssembleCnt++;
+	if (pClient->DictateRunCtl.dictateUpgradeAssembleCnt > 5) {
+		pClient->DictateRunCtl.dictateUpgradeAssembleCnt = 0;
+		pClient->UpgradeExecution.upgradeStatus = MQTTSN_PCP_UPGRADE_FAILED;
+		goto exit;
+	}
+	
+	/* 组装升级包处理回调 */
+	PCPResultCodeStatus = MqttPCP_UpgradeDataAssemble_Callback(pClient);
+	if (PCPResultCodeStatus != MQTTSN_PCP_ExecuteSuccess) {
+		pClient->UpgradeExecution.upgradeStatus = MQTTSN_PCP_UPGRADE_STANDBY;
+	}
+	
+	memset((void*)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
+	
+	/* 写入上报升级包下载状态 */
+	PCPMessageProcess->StartX = MqttPCPSock_htons(MQTTSN_PCP_START_X);
+	PCPMessageProcess->ProtocolType = MQTTSN_PCP_PROTOCOL_TYPE;
+	PCPMessageProcess->MessageType = MQTTSN_PCP_ReportDownloadStatus;
+	PCPMessageProcess->CRCCheckCode = 0x0000;
+	PCPMessageProcess->PacketDataLength = MqttPCPSock_htons(1);
+	PCPMessageProcess->pPacketData[0] = PCPResultCodeStatus;
+	
+	PCPMessageProcess->CRCCheckCode = MqttPCPSock_htons(MqttPCPCrcCheck_getCrcCheckCode(pClient->DataProcessStack, sizeof(MqttSNPCP_MessageDataTypeDef)));
+	
+	NET_MqttSN_PCP_Message_SendDataEnqueue(pClient->DataProcessStack, sizeof(MqttSNPCP_MessageDataTypeDef));
+	
+exit:
+	return PCPStatus;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/**********************************************************************************************************
+ @Function			MqttSNPCP_StatusTypeDef MqttPCP_Func_ReportUpgrades(MqttSNPCP_ClientsTypeDef* pClient)
+ @Description			MqttPCP_Func_ReportUpgrades			: PCP上报升级结果
+ @Input				pClient							: PCP客户端实例
+ @Return				void
+**********************************************************************************************************/
+MqttSNPCP_StatusTypeDef MqttPCP_Func_ReportUpgrades(MqttSNPCP_ClientsTypeDef* pClient)
+{
+	MqttSNPCP_StatusTypeDef PCPStatus = MQTTSN_PCP_OK;
+	MqttSNPCP_MessageDataTypeDef* PCPMessageProcess = (MqttSNPCP_MessageDataTypeDef*)pClient->DataProcessStack;
+	MqttSNPCP_ReportUpgradesTypeDef* PCPReportUpgrades = (MqttSNPCP_ReportUpgradesTypeDef*)PCPMessageProcess->pPacketData;
+	
+	/* 上报升级结果尝试次数 */
+	pClient->DictateRunCtl.dictateUpgradeInstallCnt++;
+	if (pClient->DictateRunCtl.dictateUpgradeInstallCnt > 5) {
+		pClient->DictateRunCtl.dictateUpgradeInstallCnt = 0;
+		pClient->UpgradeExecution.upgradeStatus = MQTTSN_PCP_UPGRADE_FAILED;
+		goto exit;
+	}
+	
+	memset((void*)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
+	
+	/* 写入上报升级结果 */
+	PCPMessageProcess->StartX = MqttPCPSock_htons(MQTTSN_PCP_START_X);
+	PCPMessageProcess->ProtocolType = MQTTSN_PCP_PROTOCOL_TYPE;
+	PCPMessageProcess->MessageType = MQTTSN_PCP_ReportUpgrades;
+	PCPMessageProcess->CRCCheckCode = 0x0000;
+	PCPMessageProcess->PacketDataLength = MqttPCPSock_htons(sizeof(MqttSNPCP_ReportUpgradesTypeDef));
+	
+	PCPReportUpgrades->ResultCode = MQTTSN_PCP_ExecuteSuccess;
+	memcpy(PCPReportUpgrades->DeviceSoftVersion, pClient->UpgradeExecution.PlatformSoftVersion, sizeof(PCPReportUpgrades->DeviceSoftVersion));
+	
+	PCPMessageProcess->CRCCheckCode = \
+	MqttPCPSock_htons(MqttPCPCrcCheck_getCrcCheckCode(pClient->DataProcessStack, sizeof(MqttSNPCP_MessageDataTypeDef) + sizeof(MqttSNPCP_ReportUpgradesTypeDef) - 1));
+	
+	NET_MqttSN_PCP_Message_SendDataEnqueue(pClient->DataProcessStack, sizeof(MqttSNPCP_MessageDataTypeDef) + sizeof(MqttSNPCP_ReportUpgradesTypeDef) - 1);
+	
+exit:
+	return PCPStatus;
+}
 
 /********************************************** END OF FLEE **********************************************/

@@ -22,13 +22,6 @@ MqttSNPCP_StatusTypeDef NET_MqttSN_PCP_NBIOT_Event_Ready(MqttSNPCP_ClientsTypeDe
 
 
 MqttSNPCP_StatusTypeDef NET_MqttSN_PCP_NBIOT_Event_Execute(MqttSNPCP_ClientsTypeDef* pClient);					//PCP数据处理
-
-
-
-
-
-
-
-
+MqttSNPCP_StatusTypeDef NET_MqttSN_PCP_NBIOT_Event_ActiveUpload(MqttSNPCP_ClientsTypeDef* pClient);				//PCP主动上传数据
 
 #endif /* __NET_MQTTSN_PCP_APP_H */
