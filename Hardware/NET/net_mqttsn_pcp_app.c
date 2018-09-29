@@ -42,11 +42,11 @@ void NET_MqttSN_PCP_APP_PollExecution(MqttSNPCP_ClientsTypeDef* pClient)
 		break;
 	
 	case MQTTSN_PCP_EVENT_FRAME_RECV:
-		
+		NET_MqttSN_PCP_NBIOT_Event_Recv(pClient);
 		break;
 	
 	case MQTTSN_PCP_EVENT_FRAME_SEND:
-		
+		NET_MqttSN_PCP_NBIOT_Event_Send(pClient);
 		break;
 	
 	case MQTTSN_PCP_EVENT_EXECUTE:
@@ -59,26 +59,43 @@ void NET_MqttSN_PCP_APP_PollExecution(MqttSNPCP_ClientsTypeDef* pClient)
 	}
 }
 
+/**********************************************************************************************************
+ @Function			static void MqttPCP_NBIOT_DictateEvent_SetTime(MqttSNPCP_ClientsTypeDef* pClient, unsigned int TimeoutSec)
+ @Description			MqttPCP_NBIOT_DictateEvent_SetTime		: 事件运行控制器注入时间(内部使用)
+ @Input				pClient							: PCP客户端实例
+					TimeoutSec						: 注入超时时间
+ @Return				void
+ @attention			事件运行之前判断是否需要注入时间
+**********************************************************************************************************/
+static void MqttPCP_NBIOT_DictateEvent_SetTime(MqttSNPCP_ClientsTypeDef* pClient, unsigned int TimeoutSec)
+{
+	Stm32_CalculagraphTypeDef dictateRunTime;
+	
+	/* It is the first time to execute */
+	if (pClient->DictateRunCtl.dictateEnable != true) {
+		pClient->DictateRunCtl.dictateEnable = true;
+		pClient->DictateRunCtl.dictateTimeoutSec = TimeoutSec;
+		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
+		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
+	}
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/**********************************************************************************************************
+ @Function			static void MqttPCP_NormalDictateEvent_SetTime(MqttSNPCP_ClientsTypeDef* pClient, Stm32_CalculagraphTypeDef* pTimer, unsigned int TimeoutSec)
+ @Description			MqttPCP_NormalDictateEvent_SetTime		: 事件运行控制器注入时间(内部使用)
+ @Input				pClient							: MQTTSN客户端实例
+					TimeoutSec						: 注入超时时间
+ @Return				void
+ @attention			事件运行之前判断是否需要注入时间
+**********************************************************************************************************/
+static void MqttPCP_NormalDictateEvent_SetTime(MqttSNPCP_ClientsTypeDef* pClient, Stm32_CalculagraphTypeDef* pTimer, unsigned int TimeoutSec)
+{
+	Stm32_CalculagraphTypeDef dictateRunTime;
+	
+	pClient->MqttSNStack->MqttSNStack->DictateRunCtl.dictateTimeoutSec = TimeoutSec;
+	Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->MqttSNStack->MqttSNStack->DictateRunCtl.dictateTimeoutSec);
+	*pTimer = dictateRunTime;
+}
 
 /**********************************************************************************************************
  @Function			MqttSNPCP_StatusTypeDef NET_MqttSN_PCP_NBIOT_Event_StopMode(MqttSNPCP_ClientsTypeDef* pClient)
@@ -204,26 +221,89 @@ MqttSNPCP_StatusTypeDef NET_MqttSN_PCP_NBIOT_Event_Ready(MqttSNPCP_ClientsTypeDe
 	return PCPStatus;
 }
 
+/**********************************************************************************************************
+ @Function			MqttSNPCP_StatusTypeDef NET_MqttSN_PCP_NBIOT_Event_Recv(MqttSNPCP_ClientsTypeDef* pClient)
+ @Description			NET_MqttSN_PCP_NBIOT_Event_Recv		: PCP接收数据
+ @Input				pClient							: PCP客户端实例
+ @Return				void
+**********************************************************************************************************/
+MqttSNPCP_StatusTypeDef NET_MqttSN_PCP_NBIOT_Event_Recv(MqttSNPCP_ClientsTypeDef* pClient)
+{
+	MqttSNPCP_StatusTypeDef PCPStatus = MQTTSN_PCP_OK;
+	
+	pClient->MqttSNStack->Read(pClient->MqttSNStack, (char *)pClient->Recvbuf, (u16 *)&pClient->Recvlen);
+	
+	pClient->DictateRunCtl.dictateEnable = false;
+	pClient->DictateRunCtl.dictateEvent = MQTTSN_PCP_EVENT_READY;
+	pClient->DictateRunCtl.dictateRecvFailureCnt = 0;
+	pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
+	
+	return PCPStatus;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/**********************************************************************************************************
+ @Function			MqttSNPCP_StatusTypeDef NET_MqttSN_PCP_NBIOT_Event_Send(MqttSNPCP_ClientsTypeDef* pClient)
+ @Description			NET_MqttSN_PCP_NBIOT_Event_Send		: PCP发送数据
+ @Input				pClient							: PCP客户端实例
+ @Return				void
+**********************************************************************************************************/
+MqttSNPCP_StatusTypeDef NET_MqttSN_PCP_NBIOT_Event_Send(MqttSNPCP_ClientsTypeDef* pClient)
+{
+	MqttSNPCP_StatusTypeDef PCPStatus = MQTTSN_PCP_OK;
+	
+	MqttPCP_NBIOT_DictateEvent_SetTime(pClient, 60);
+	
+	/* Data packets need to be sent*/
+	if (NET_MqttSN_PCP_Message_SendDataDequeue(pClient->Sendbuf, (unsigned short *)&pClient->Sendlen) == true) {
+		/* 发送负载数据 */
+		if ((PCPStatus = pClient->MqttSNStack->Write(pClient->MqttSNStack, (char *)pClient->Sendbuf, pClient->Sendlen)) != PCP_OK) {
+			/* Dictate execute is Fail */
+			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
+				/* Dictate TimeOut */
+				pClient->DictateRunCtl.dictateEnable = false;
+				pClient->DictateRunCtl.dictateEvent = MQTTSN_PCP_EVENT_READY;
+				pClient->DictateRunCtl.dictateSendFailureCnt++;
+				pClient->MqttSNStack->MqttSNStack->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_DNS;
+				if (pClient->DictateRunCtl.dictateSendFailureCnt > 3) {
+					pClient->DictateRunCtl.dictateSendFailureCnt = 0;
+					pClient->DictateRunCtl.dictateEvent = MQTTSN_PCP_EVENT_STOP;
+				}
+			}
+			else {
+				/* Dictate isn't TimeOut */
+				pClient->DictateRunCtl.dictateEvent = MQTTSN_PCP_EVENT_FRAME_SEND;
+				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
+			}
+#ifdef MQTTSN_PCP_DEBUG_LOG_RF_PRINT
+			Radio_Trf_Debug_Printf_Level2("PCP Send Payload Fail ECde %d", PCPStatus);
+#endif
+			goto exit;
+		}
+		else {
+			/* Send Data Success */
+			NET_MqttSN_PCP_Message_SendDataOffSet();
+			MqttPCP_NormalDictateEvent_SetTime(pClient, &pClient->MqttSNStack->MqttSNStack->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
+			pClient->DictateRunCtl.dictateEnable = false;
+			pClient->DictateRunCtl.dictateEvent = MQTTSN_PCP_EVENT_FRAME_RECV;
+			pClient->DictateRunCtl.dictateSendFailureCnt = 0;
+			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
+#ifdef MQTTSN_PCP_DEBUG_LOG_RF_PRINT
+			Radio_Trf_Debug_Printf_Level2("PCP Send Payload Ok");
+#endif
+		}
+	}
+	/* No packets need to be sent */
+	else {
+		pClient->DictateRunCtl.dictateEnable = false;
+		pClient->DictateRunCtl.dictateEvent = MQTTSN_PCP_EVENT_READY;
+		pClient->DictateRunCtl.dictateSendFailureCnt = 0;
+		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
+	}
+	
+exit:
+	return PCPStatus;
+}
 
 /**********************************************************************************************************
  @Function			MqttSNPCP_StatusTypeDef NET_MqttSN_PCP_NBIOT_Event_Execute(MqttSNPCP_ClientsTypeDef* pClient)

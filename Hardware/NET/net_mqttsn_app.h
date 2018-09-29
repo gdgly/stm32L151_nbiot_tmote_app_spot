@@ -30,6 +30,7 @@
 #define TOPICID_MOTEINFO					27922							//27922 -->mvb/51/1/info
 
 #define TOPICID_STANDARD					27931							//27931 -->mvb/51/1/standard
+#define TOPICID_UPGRADE					27941							//27941 -->mvb/51/1/upgrade
 
 #define TOPICID_PARKINGDEVICEMVB_A_STATUS	28921							//28921 -->ParkingDeviceMvb/A/status
 #define TOPICID_PARKINGDEVICEMVB_A_MOTEINFO	28922							//28921 -->ParkingDeviceMvb/A/moteinfo

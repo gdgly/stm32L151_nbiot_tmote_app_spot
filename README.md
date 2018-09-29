@@ -5,6 +5,7 @@ movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内
 	* 20V128 :
 	* 版本号修改20V128。
 	* 上报NB核心网和PDPType。
+	* MqttSN PCP 升级初步构建完成。
 * 2018-09-28 :
 	* MqttSN PCP的需求，精简MqttSN协议Flash，公用相同相似代码。
 * 2018-09-26 :

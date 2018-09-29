@@ -270,7 +270,7 @@ void MainRollingUpwardsActived(void)
 				NET_NBIOT_Initialization();
 				NBIOTPOWER(OFF);
 			}
-			Radio_Trf_Printf("imei:%s", NbiotClientHandler.Parameter.imei);
+			Radio_Trf_Printf("imei:%s", TCFG_Utility_Get_Nbiot_Imei_String());
 		}
 	}
 	
