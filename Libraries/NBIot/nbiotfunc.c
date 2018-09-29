@@ -583,8 +583,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCGDCONT(NBIOT_ClientsTypeDef* pClie
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+CGDCONT?\r", strlen("AT+CGDCONT?\r"), "OK", "ERROR");
 	
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
-		memset((void *)pClient->Parameter.cgdcont, 0x0, sizeof(pClient->Parameter.cgdcont));
-		sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+CGDCONT]%*[^,],%*[^,],%[^,]", pClient->Parameter.cgdcont);
+		memset((void *)pClient->Parameter.cgdcontPDPType, 0x0, sizeof(pClient->Parameter.cgdcontPDPType));
+		memset((void *)pClient->Parameter.cgdcontAPN, 0x0, sizeof(pClient->Parameter.cgdcontAPN));
+		sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+CGDCONT]%*[^,],\"%[^\"]\",\"%[^\"]", pClient->Parameter.cgdcontPDPType, pClient->Parameter.cgdcontAPN);
 	}
 #if NBIOT_PRINT_ERROR_CODE_TYPE
 	else {

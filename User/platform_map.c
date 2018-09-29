@@ -2560,6 +2560,40 @@ char* TCFG_Utility_Get_Nbiot_ModelVersion(void)
 }
 
 /**********************************************************************************************************
+ @Function			char* TCFG_Utility_Get_Nbiot_PDPType(void)
+ @Description			TCFG_Utility_Get_Nbiot_PDPType				: 读取Nbiot PDPType值
+ @Input				void
+ @Return				Nbiot_PDPType
+**********************************************************************************************************/
+char* TCFG_Utility_Get_Nbiot_PDPType(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return NbiotClientHandler.Parameter.cgdcontPDPType;
+#elif NETPROTOCAL == NETMQTTSN
+	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.cgdcontPDPType;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.cgdcontPDPType;
+#endif
+}
+
+/**********************************************************************************************************
+ @Function			char* TCFG_Utility_Get_Nbiot_APN(void)
+ @Description			TCFG_Utility_Get_Nbiot_APN					: 读取Nbiot APN值
+ @Input				void
+ @Return				Nbiot_APN
+**********************************************************************************************************/
+char* TCFG_Utility_Get_Nbiot_APN(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return NbiotClientHandler.Parameter.cgdcontAPN;
+#elif NETPROTOCAL == NETMQTTSN
+	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.cgdcontAPN;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.cgdcontAPN;
+#endif
+}
+
+/**********************************************************************************************************
  @Function			unsigned int TCFG_Utility_Get_Nbiot_SentCount(void)
  @Description			TCFG_Utility_Get_Nbiot_SentCount				: 读取Nbiot SentCount值
  @Input				void

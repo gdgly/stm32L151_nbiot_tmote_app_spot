@@ -359,7 +359,8 @@ struct NBIOT_ParameterTypeDef
 	char								iccid[25];										//运营商卡号
 	char								imsi[20];											//IMSI
 	char								cgpaddr[20];										//核心网地址
-	char								cgdcont[30];										//核心网名称
+	char								cgdcontPDPType[10];									//核心网类型
+	char								cgdcontAPN[15];									//核心网名称
 	int								rssi;											//信号质量
 	
 	struct NetworkRegistrationStatusTypeDef

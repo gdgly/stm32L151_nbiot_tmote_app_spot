@@ -123,7 +123,8 @@ void RadioPrintNetinfo(void)
 	Radio_Trf_Printf("ICCID:%s", NbiotClientHandler.Parameter.iccid);
 	Radio_Trf_Printf("IMSI:%s", NbiotClientHandler.Parameter.imsi);
 	Radio_Trf_Printf("CGP:%s", NbiotClientHandler.Parameter.cgpaddr);
-	Radio_Trf_Printf("CGD:%s", NbiotClientHandler.Parameter.cgdcont);
+	Radio_Trf_Printf("PDPType:%s", NbiotClientHandler.Parameter.cgdcontPDPType);
+	Radio_Trf_Printf("APN:%s", NbiotClientHandler.Parameter.cgdcontAPN);
 	Radio_Trf_Printf("RSSI:%d", NbiotClientHandler.Parameter.rssi);
 	Radio_Trf_Printf("SNR:%d", NbiotClientHandler.Parameter.statisticsRADIO.SNR);
 	Radio_Trf_Printf("CDPHost:%s", NbiotClientHandler.Parameter.cdpserver.CDPServerHost);
@@ -136,7 +137,8 @@ void RadioPrintNetinfo(void)
 	Radio_Trf_Printf("ICCID:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.iccid);
 	Radio_Trf_Printf("IMSI:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.imsi);
 	Radio_Trf_Printf("CGP:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.cgpaddr);
-	Radio_Trf_Printf("CGD:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.cgdcont);
+	Radio_Trf_Printf("PDPType:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.cgdcontPDPType);
+	Radio_Trf_Printf("APN:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.cgdcontAPN);
 	Radio_Trf_Printf("RSSI:%d", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.rssi);
 	Radio_Trf_Printf("SNR:%d", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR);
 	Radio_Trf_Printf("MqttSN :%s", MQTTSN_SERVER_HOST_NAME);
@@ -213,14 +215,14 @@ void RadioPrintUpgradeinfo(void)
 	Radio_Trf_Printf("APP1 BlockNum: %d", APP1Info.BlockNum);
 	Radio_Trf_Printf("APP1 BlockLen: %d", APP1Info.BlockLen);
 	Radio_Trf_Printf("APP1 DataLen: %d", APP1Info.DataLen);
-	Radio_Trf_Printf("APP1 SoftwareVer: V%d.%d", APP1Info.SoftVer>>16, APP1Info.SoftVer&0xFFFF);
+	Radio_Trf_Printf("APP1 SoftVer: V%d.%d", APP1Info.SoftVer>>16, APP1Info.SoftVer&0xFFFF);
 	Radio_Trf_Printf("APP1 CheckCode: %X", APP1Info.CheckCode);
 	Radio_Trf_Printf("APP2 Status: %02X", APP2Info.Status);
 	Radio_Trf_Printf("APP2 BaseAddr: %08X", APP2Info.BaseAddr);
 	Radio_Trf_Printf("APP2 BlockNum: %d", APP2Info.BlockNum);
 	Radio_Trf_Printf("APP2 BlockLen: %d", APP2Info.BlockLen);
 	Radio_Trf_Printf("APP2 DataLen: %d", APP2Info.DataLen);
-	Radio_Trf_Printf("APP2 SoftwareVer: V%d.%d", APP2Info.SoftVer>>16, APP2Info.SoftVer&0xFFFF);
+	Radio_Trf_Printf("APP2 SoftVer: V%d.%d", APP2Info.SoftVer>>16, APP2Info.SoftVer&0xFFFF);
 	Radio_Trf_Printf("APP2 CheckCode: %X", APP2Info.CheckCode);
 #else
 	Radio_Trf_Printf("SPI FLASH Invalid");
