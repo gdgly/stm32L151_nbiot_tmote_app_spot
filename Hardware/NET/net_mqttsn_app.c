@@ -1855,6 +1855,7 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 	bool recvEffective = false;
 	u16 recvBufOffset = 0;
 	u16 recvMagicNum = 0;
+	u16 recvIndex = 0;
 	u8 ret = NETIP_OK;
 	
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
@@ -1870,6 +1871,7 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 		    (messageHandler->message->payload[i+2] == 'L') && (messageHandler->message->payload[i+3] == 'D')) {
 			recvBufOffset = i;
 			recvEffective = true;
+			break;
 		}
 	}
 	
@@ -2198,10 +2200,12 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 	
 	/* MqttSNPCP升级协议下行数据 */
 	for (int i = 0; i < messageHandler->message->payloadlen; i++) {
-		if ((messageHandler->message->payload[i] == 0xFF) && (messageHandler->message->payload[i+1] == 0xFE)) {
-			recvBufOffset = i;
+		if ((messageHandler->message->payload[recvIndex] == 0xFF) && (messageHandler->message->payload[recvIndex+1] == 0xFE)) {
+			recvBufOffset = recvIndex;
 			recvPCPUpgradeFlag = true;
+			break;
 		}
+		recvIndex++;
 	}
 	
 	if (recvPCPUpgradeFlag != false) {
