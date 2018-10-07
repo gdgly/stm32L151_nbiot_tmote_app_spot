@@ -2118,7 +2118,7 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					}
 			#endif
 				}
-				/* MagCoef */
+				/* MagTempCoef */
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "MagCoef") != NULL) {
 			#if MQTTSN_DOWNLOAD_CMD_MAGTEMPCOEF
 					short magTempCoefX, magTempCoefY, magTempCoefZ;
@@ -2155,6 +2155,23 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
 						TCFG_SystemData.BeepCtrlOff = beepoff;
 						TCFG_EEPROM_SetBeepOff(TCFG_SystemData.BeepCtrlOff);
+					}
+					else {
+						ret = NETIP_UNKNOWNERROR;
+					}
+			#endif
+				}
+				/* UpLimit */
+				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "UpLimit") != NULL) {
+			#if MQTTSN_DOWNLOAD_CMD_UPLIMIT
+					short limitRssi, limitSnr;
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
+						"{(UpLimit):{%hd,%hd,(Magic):%hu}}", &limitRssi, &limitSnr, &recvMagicNum);
+					if (recvMagicNum == TCLOD_MAGIC_NUM) {
+						TCFG_SystemData.UpgradeLimitRssi = limitRssi;
+						TCFG_SystemData.UpgradeLimitSnr = limitSnr;
+						TCFG_EEPROM_SetUpgradeLimitRssi(TCFG_SystemData.UpgradeLimitRssi);
+						TCFG_EEPROM_SetUpgradeLimitSnr(TCFG_SystemData.UpgradeLimitSnr);
 					}
 					else {
 						ret = NETIP_UNKNOWNERROR;

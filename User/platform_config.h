@@ -176,6 +176,7 @@
 #define	MQTTSN_DOWNLOAD_CMD_MAGTEMPCOEF	1								//MQTTSN下行指令MagTempCoef
 #define	MQTTSN_DOWNLOAD_CMD_SETQMCCOEF	1								//MQTTSN下行指令SetQmcCoef
 #define	MQTTSN_DOWNLOAD_CMD_BEEPOFF		1								//MQTTSN下行指令BeepOff
+#define	MQTTSN_DOWNLOAD_CMD_UPLIMIT		1								//MQTTSN下行指令UpLimit
 
 #define	RF_DPRINT_LV_0					0								//调试信息不打印
 #define	RF_DPRINT_LV_1					1								//基本信息打印
