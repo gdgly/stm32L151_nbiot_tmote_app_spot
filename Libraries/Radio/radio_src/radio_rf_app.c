@@ -342,17 +342,6 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					}
 			#endif
 				}
-				/* RadarDbg */
-				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "radardbg")) {
-			#if RADIO_DOWNLOAD_CMD_RADARDBG
-					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "radardbg:%hu", &uval16);
-					TCFG_EEPROM_SetRadarDbgMode(uval16);
-					TCFG_SystemData.RadarDbgMode = TCFG_EEPROM_GetRadarDbgMode();
-				#if RADIO_CMD_ECHO_TYPE
-					Radio_Trf_Printf("RadarDbg : %hu", TCFG_SystemData.RadarDbgMode);
-				#endif
-			#endif
-				}
 				/* Magmod */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "magmod")) {
 			#if RADIO_DOWNLOAD_CMD_MAGMOD

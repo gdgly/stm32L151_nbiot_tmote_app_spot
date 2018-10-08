@@ -92,10 +92,10 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_UpgradeDataNewVersionNotice_Callback(MqttSNP
 	MqttSNPCP_ResultCodeTypeDef PCPResultCodeStatus = MQTTSN_PCP_ExecuteSuccess;
 	
 #ifdef MQTTSN_PCP_DEBUG_LOG_RF_PRINT
-	Radio_Trf_Debug_Printf_Level2("PlatSoftVer: %s", pClient->Parameter.PlatformSoftVersion);
-	Radio_Trf_Debug_Printf_Level2("PackSliceSize: %d", pClient->Parameter.UpgradePackSliceSize);
-	Radio_Trf_Debug_Printf_Level2("PackSliceNum: %d", pClient->Parameter.UpgradePackSliceNum);
-	Radio_Trf_Debug_Printf_Level2("PackCheckCode: %X", MqttSNCalculateStringToHex(pClient->Parameter.UpgradePackCheckCode>>8, pClient->Parameter.UpgradePackCheckCode&0xFF));
+	Radio_Trf_Debug_Printf_Level2("PlatVer: %s", pClient->Parameter.PlatformSoftVersion);
+	Radio_Trf_Debug_Printf_Level2("SliceSize: %d", pClient->Parameter.UpgradePackSliceSize);
+	Radio_Trf_Debug_Printf_Level2("SliceNum: %d", pClient->Parameter.UpgradePackSliceNum);
+	Radio_Trf_Debug_Printf_Level2("CheckCode: %X", MqttSNCalculateStringToHex(pClient->Parameter.UpgradePackCheckCode>>8, pClient->Parameter.UpgradePackCheckCode&0xFF));
 #endif
 	
 	PCPResultCodeStatus = MqttPCP_Upgrade_NewVersionNotice(pClient);

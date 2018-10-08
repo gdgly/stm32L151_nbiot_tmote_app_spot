@@ -75,7 +75,7 @@ PCP_StatusTypeDef PCP_Func_SelectMessageExecuteCmd(PCP_ClientsTypeDef* pClient)
 	if (pClient->Parameter.MessageType == PCP_QueryDeviceVersion) {
 		PCPStatus = PCP_Func_AckQueryDeviceVersion(pClient);
 #ifdef PCP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("PCP RvQueryDevVer %s", pClient->UpgradeExecution.DeviceSoftVersion);
+		Radio_Trf_Debug_Printf_Level2("PCP RvQyDevVer %s", pClient->UpgradeExecution.DeviceSoftVersion);
 #endif
 		goto exit;
 	}
@@ -84,7 +84,7 @@ PCP_StatusTypeDef PCP_Func_SelectMessageExecuteCmd(PCP_ClientsTypeDef* pClient)
 	if (pClient->Parameter.MessageType == PCP_NewVersionNotice) {
 		PCPStatus = PCP_Func_AckNewVersionNotice(pClient);
 #ifdef PCP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("PCP RvNewVerNotice %s", pClient->Parameter.PlatformSoftVersion);
+		Radio_Trf_Debug_Printf_Level2("PCP RvNewVerNot %s", pClient->Parameter.PlatformSoftVersion);
 #endif
 		goto exit;
 	}
@@ -93,7 +93,7 @@ PCP_StatusTypeDef PCP_Func_SelectMessageExecuteCmd(PCP_ClientsTypeDef* pClient)
 	if (pClient->Parameter.MessageType == PCP_RequestUpgradePackage) {
 		PCPStatus = PCP_Func_AckRequestUpgradePackage(pClient);
 #ifdef PCP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("PCP RvRequestUpgradeAck %d", pClient->Parameter.UpgradePackSliceIndex);
+		Radio_Trf_Debug_Printf_Level2("PCP RvRqUpAck %d", pClient->Parameter.UpgradePackSliceIndex);
 #endif
 		goto exit;
 	}
@@ -102,7 +102,7 @@ PCP_StatusTypeDef PCP_Func_SelectMessageExecuteCmd(PCP_ClientsTypeDef* pClient)
 	if (pClient->Parameter.MessageType == PCP_ReportDownloadStatus) {
 		PCPStatus = PCP_Func_AckReportDownloadStatus(pClient);
 #ifdef PCP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("PCP RvReportDownloadStatusAck %d", PCPStatus);
+		Radio_Trf_Debug_Printf_Level2("PCP RvRpDwStaAck %d", PCPStatus);
 #endif
 		goto exit;
 	}
@@ -111,7 +111,7 @@ PCP_StatusTypeDef PCP_Func_SelectMessageExecuteCmd(PCP_ClientsTypeDef* pClient)
 	if (pClient->Parameter.MessageType == PCP_PerformUpgrade) {
 		PCPStatus = PCP_Func_AckPerformUpgrade(pClient);
 #ifdef PCP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("PCP RvPerformUpgrade %d", PCPStatus);
+		Radio_Trf_Debug_Printf_Level2("PCP RvPfUpgrade %d", PCPStatus);
 #endif
 		goto exit;
 	}
@@ -120,7 +120,7 @@ PCP_StatusTypeDef PCP_Func_SelectMessageExecuteCmd(PCP_ClientsTypeDef* pClient)
 	if (pClient->Parameter.MessageType == PCP_ReportUpgrades) {
 		PCPStatus = PCP_Func_AckReportUpgrades(pClient);
 #ifdef PCP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("PCP RvReportUpgradesAck %d", PCPStatus);
+		Radio_Trf_Debug_Printf_Level2("PCP RvRpUpAck %d", PCPStatus);
 #endif
 		goto exit;
 	}
@@ -365,7 +365,7 @@ PCP_StatusTypeDef PCP_Func_SelectUpgradeStatusExecuteCmd(PCP_ClientsTypeDef* pCl
 	if (pClient->UpgradeExecution.upgradeStatus == PCP_UPGRADE_QUERYVERSION) {
 		PCPStatus = PCP_Func_QueryDeviceVersion(pClient);
 #ifdef PCP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("PCP SdQueryDeviceVersion %s", pClient->UpgradeExecution.DeviceSoftVersion);
+		Radio_Trf_Debug_Printf_Level2("PCP SdQyDevVer %s", pClient->UpgradeExecution.DeviceSoftVersion);
 #endif
 		goto exit;
 	}
@@ -374,7 +374,7 @@ PCP_StatusTypeDef PCP_Func_SelectUpgradeStatusExecuteCmd(PCP_ClientsTypeDef* pCl
 	if (pClient->UpgradeExecution.upgradeStatus == PCP_UPGRADE_DOWNLOAD) {
 		PCPStatus = PCP_Func_RequestUpgradePackage(pClient);
 #ifdef PCP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("PCP SdRequestUpgradePackage %d", pClient->UpgradeExecution.PackSliceIndex);
+		Radio_Trf_Debug_Printf_Level2("PCP SdRqUpPack %d", pClient->UpgradeExecution.PackSliceIndex);
 #endif
 		goto exit;
 	}
@@ -383,7 +383,7 @@ PCP_StatusTypeDef PCP_Func_SelectUpgradeStatusExecuteCmd(PCP_ClientsTypeDef* pCl
 	if (pClient->UpgradeExecution.upgradeStatus == PCP_UPGRADE_ASSEMBLE) {
 		PCPStatus = PCP_Func_ReportDownloadStatus(pClient);
 #ifdef PCP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("PCP SdReportDownloadStatus");
+		Radio_Trf_Debug_Printf_Level2("PCP SdRpDwSta");
 #endif
 		goto exit;
 	}
@@ -392,7 +392,7 @@ PCP_StatusTypeDef PCP_Func_SelectUpgradeStatusExecuteCmd(PCP_ClientsTypeDef* pCl
 	if (pClient->UpgradeExecution.upgradeStatus == PCP_UPGRADE_INSTALL) {
 		PCPStatus = PCP_Func_ReportUpgrades(pClient);
 #ifdef PCP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("PCP SdReportUpgrades");
+		Radio_Trf_Debug_Printf_Level2("PCP SdRpUpSta");
 #endif
 		goto exit;
 	}

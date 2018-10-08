@@ -531,7 +531,6 @@ void NET_MQTTSN_NBIOT_Event_StopMode(MQTTSN_ClientsTypeDef* pClient)
 	static unsigned char MqttSNInfoWorkIndex;
 	static unsigned char MqttSNInfoBasicIndex;
 	static unsigned char MqttSNInfoDynamicIndex;
-	static unsigned char MqttSNInfoRadarIndex;
 	static unsigned char MqttSNInfoResponseIndex;
 #endif
 #if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
@@ -553,7 +552,6 @@ void NET_MQTTSN_NBIOT_Event_StopMode(MQTTSN_ClientsTypeDef* pClient)
 		MqttSNInfoWorkIndex = NET_MqttSN_Message_InfoWorkRear();
 		MqttSNInfoBasicIndex = NET_MqttSN_Message_InfoBasicRear();
 		MqttSNInfoDynamicIndex = NET_MqttSN_Message_InfoDynamicRear();
-		MqttSNInfoRadarIndex = NET_MqttSN_Message_InfoRadarRear();
 		MqttSNInfoResponseIndex = NET_MqttSN_Message_InfoResponseRear();
 #endif
 #if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
@@ -579,7 +577,6 @@ void NET_MQTTSN_NBIOT_Event_StopMode(MQTTSN_ClientsTypeDef* pClient)
 			(NET_MqttSN_Message_InfoWorkRear() != MqttSNInfoWorkIndex) ||
 			(NET_MqttSN_Message_InfoBasicRear() != MqttSNInfoBasicIndex) ||
 			(NET_MqttSN_Message_InfoDynamicRear() != MqttSNInfoDynamicIndex) ||
-			(NET_MqttSN_Message_InfoRadarRear() != MqttSNInfoRadarIndex) ||
 			(NET_MqttSN_Message_InfoResponseRear() != MqttSNInfoResponseIndex) ) {
 #endif
 #if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
@@ -1572,44 +1569,6 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 	}
 #endif
 	
-	/* OBJECT_TYPE_TMOTES_INFO_RADAR_PUT */
-#if NBMQTTSN_SENDCODE_RADAR_INFO
-	if (NET_MqttSN_Message_InfoRadarisEmpty() != true) {
-		pClient->MessageSendCtl.messageInfoRadar = true;
-		/* Get IdleTime */
-		MQTTSN_NBIOT_GetIdleTime(pClient, true);
-	}
-	if (pClient->MessageSendCtl.messageInfoRadar != false) {
-		if (NET_MQTTSN_SendPayloadPacket(pClient, OBJECT_TYPE_TMOTES_INFO_RADAR_PUT) != MQTTSN_OK) {
-			/* Dictate execute is Fail */
-			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
-#ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoRadar Fail");
-#endif
-			return;
-		}
-		else {
-			/* Dictate execute is Success */
-			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, false);
-			pClient->MessageSendCtl.messageInfoRadar = false;
-			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
-			NET_MqttSN_Message_InfoRadarOffSet();
-			/* Set Active Duration */
-			MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
-		#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
-			NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter(pClient);
-		#endif
-			/* NB 继续活跃注入时间 */
-			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
-			/* Get ConnectTime */
-			MQTTSN_NBIOT_GetConnectTime(pClient, true);
-#ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoRadar Ok");
-#endif
-		}
-	}
-#endif
-	
 	/* OBJECT_TYPE_TMOTES_INFO_RESPONSE_PUT */
 	if (NET_MqttSN_Message_InfoResponseisEmpty() != true) {
 		pClient->MessageSendCtl.messageInfoResponse = true;
@@ -1740,9 +1699,6 @@ void NET_MQTTSN_Event_Sleep(MQTTSN_ClientsTypeDef* pClient)
 	if (NET_MqttSN_Message_InfoDynamicisEmpty() != true) {
 		pClient->MessageSendCtl.messageInfoDynamic = true;
 	}
-	if (NET_MqttSN_Message_InfoRadarisEmpty() != true) {
-		pClient->MessageSendCtl.messageInfoRadar = true;
-	}
 	if (NET_MqttSN_Message_InfoResponseisEmpty() != true) {
 		pClient->MessageSendCtl.messageInfoResponse = true;
 	}
@@ -1759,7 +1715,6 @@ void NET_MQTTSN_Event_Sleep(MQTTSN_ClientsTypeDef* pClient)
 		(pClient->MessageSendCtl.messageInfoWork != false) ||
 		(pClient->MessageSendCtl.messageInfoBasic != false) ||
 		(pClient->MessageSendCtl.messageInfoDynamic != false) ||
-		(pClient->MessageSendCtl.messageInfoRadar != false) ||
 		(pClient->MessageSendCtl.messageInfoResponse != false) ) {
 #endif
 #if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
@@ -2005,24 +1960,6 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 							DeviceActivedMode = false;
 							BEEP_CtrlRepeat_Extend(1,500,0);
 						}
-					}
-					else {
-						ret = NETIP_UNKNOWNERROR;
-					}
-			#endif
-				}
-				/* RadarDbg */
-				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "RadarDbg") != NULL) {
-			#if MQTTSN_DOWNLOAD_CMD_RADARDBG
-					u16 radarDbgval;
-					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
-						"{(RadarDbg):{(val):%hu,(Magic):%hu}}", &radarDbgval, &recvMagicNum);
-					if (recvMagicNum == TCLOD_MAGIC_NUM) {
-						TCFG_EEPROM_SetRadarDbgMode(radarDbgval);
-						TCFG_SystemData.RadarDbgMode = TCFG_EEPROM_GetRadarDbgMode();
-						#if NBMQTTSN_SENDCODE_DYNAMIC_INFO
-						NETMqttSNNeedSendCode.InfoDynamic = 1;
-						#endif
 					}
 					else {
 						ret = NETIP_UNKNOWNERROR;
@@ -2363,28 +2300,6 @@ MQTTSN_StatusTypeDef NET_MQTTSN_SendPayloadPacket(MQTTSN_ClientsTypeDef* pClient
 			pMsg->MsgHead.MsgId			=	MSGID_PUT;
 			
 			message.payloadlen			=	NET_Message_Operate_Creat_Json_MoteInfo_Dynamic(pMsg->pData) + sizeof(NET_Message_TcldHeadTypeDef);
-			
-			topic.type = MQTTSN_TOPIC_TYPE_PREDEFINED;
-			topic.data.id = TOPICID_MOTEINFO;
-			if ((MQTTSNStatus = MQTTSN_Publish(pClient, topic, &message)) != MQTTSN_OK) {
-				//Todo
-			}
-#endif
-#endif
-			break;
-		}
-		
-		case OBJECT_TYPE_TMOTES_INFO_RADAR_PUT:
-		{
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
-#if NBMQTTSN_SENDCODE_RADAR_INFO
-			NET_MESSAGE_GET_MAGICNUM(pMsg->MsgHead.MagicNum);
-			pMsg->MsgHead.MsgType		=	MSG_JSON;
-			pMsg->MsgHead.Version		=	MESSAGE_VERSION;
-			pMsg->MsgHead.EncryptMode	=	ENCRYPT_NONE;
-			pMsg->MsgHead.MsgId			=	MSGID_PUT;
-			
-			message.payloadlen			=	NET_Message_Operate_Creat_Json_MoteInfo_Radar(pMsg->pData) + sizeof(NET_Message_TcldHeadTypeDef);
 			
 			topic.type = MQTTSN_TOPIC_TYPE_PREDEFINED;
 			topic.data.id = TOPICID_MOTEINFO;

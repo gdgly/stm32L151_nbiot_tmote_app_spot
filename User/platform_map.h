@@ -75,7 +75,7 @@
 #define TCFG_SECU_BRANCHKEY_LENGTH			32												//Reserved			未使用
 
 #define TCFG_RECORD_RUNTIME_OFFSET			TCFG_SECU_BRANCHKEY_OFFSET + TCFG_SECU_BRANCHKEY_LENGTH	//0x08080477
-#define TCFG_RECORD_RUNTIME_LENGTH			4												//Reserved			未使用
+#define TCFG_RECORD_RUNTIME_LENGTH			4												//Reserved			运行时间标志(App运行时间)
 
 #define TCFG_RECORD_BOOTCNT_OFFSET			TCFG_RECORD_RUNTIME_OFFSET + TCFG_RECORD_RUNTIME_LENGTH	//0x0808047B
 #define TCFG_RECORD_BOOTCNT_LENGTH			1												//BootCnt				正常运行标志(Boot启动次数)
@@ -106,7 +106,7 @@
 #define TCFG_NBIOT_BOOTCNT_OFFSET			TCFG_ACTIVE_DEVICE_OFFSET + TCFG_ACTIVE_DEVICE_LENGTH		//0x080804BF
 #define TCFG_NBIOT_BOOTCNT_LENGTH			4												//NBIOTBootCnt			NB重启次数
 #define TCFG_NBIOT_SENTCNT_OFFSET			TCFG_NBIOT_BOOTCNT_OFFSET + TCFG_NBIOT_BOOTCNT_LENGTH		//0x080804C3
-#define TCFG_NBIOT_SENTCNT_LENGTH			4												//NBIOTSentCnt			NB发送次数(预留)
+#define TCFG_NBIOT_SENTCNT_LENGTH			4												//NBIOTSentCnt			NB发送次数
 #define TCFG_DEV_BOOTCNT_OFFSET			TCFG_NBIOT_SENTCNT_OFFSET + TCFG_NBIOT_SENTCNT_LENGTH		//0x080804C7
 #define TCFG_DEV_BOOTCNT_LENGTH			2												//DevBootCnt			设备重启次数
 #define TCFG_EVENT_TIME_OFFSET			TCFG_DEV_BOOTCNT_OFFSET + TCFG_DEV_BOOTCNT_LENGTH			//0x080804C9
@@ -175,6 +175,11 @@
 #define TCFG_ONENET_SENTCNT_LENGTH			4												//OneNETSentCnt		ONENET发送包数
 #define TCFG_ONENET_RECVCNT_OFFSET			TCFG_ONENET_SENTCNT_OFFSET + TCFG_ONENET_SENTCNT_LENGTH	//0x08080E20
 #define TCFG_ONENET_RECVCNT_LENGTH			4												//OneNETRecvCnt		ONENET接收包数
+
+#define TCFG_SOFTWARE_MAJOR_OFFSET			TCFG_ONENET_RECVCNT_OFFSET + TCFG_ONENET_RECVCNT_LENGTH	//0x08080E24
+#define TCFG_SOFTWARE_MAJOR_LENGTH			1												//SoftwareMajor		软件版本号
+#define TCFG_SOFTWARE_SUB_OFFSET			TCFG_SOFTWARE_MAJOR_OFFSET + TCFG_SOFTWARE_MAJOR_LENGTH	//0x08080E25
+#define TCFG_SOFTWARE_SUB_LENGTH			1												//SoftwareSub			软件版本号
 /************************************************************** End **************************************************************/
 
 enum TCFG_SENSITIVITY																	//传感器灵敏度
@@ -210,13 +215,11 @@ typedef struct
 	unsigned char						RFDprintLv;										//无线调试信息输出等级
 	unsigned char						MagMode;											//地磁模式
 	unsigned int						RadarCount;										//雷达次数
-	unsigned char						RadarDbgMode;										//雷达调试模式
 	unsigned char						RadarRange;										//雷达检测范围
 	unsigned char						CarInDelay;										//车辆进入延时上报时间
 	unsigned int						SpotStatusCount;									//车位检测车辆次数
 	unsigned char						NBIotHeart;										//NBIot心跳间隔
 	unsigned int						NBIotBootCount;									//NBIot重启次数
-	unsigned char						NBIotPSMEnable;									//NBIotPSM模式
 	unsigned int						CoapSentCount;										//Coap发送包数
 	unsigned int						CoapRecvCount;										//Coap接收包数
 	unsigned int						MqttSNSentCount;									//MqttSN发送包数
@@ -244,6 +247,15 @@ extern TCFG_SystemDataTypeDef				TCFG_SystemData;
 void			TCFG_EEPROM_SystemInfo_Init(void);												//系统信息初始化
 void			TCFG_EEPROM_WriteConfigData(void);												//写入系统配置信息
 void			TCFG_EEPROM_ReadConfigData(void);												//读取系统配置信息
+
+void			TCFG_EEPROM_SetSoftwareMajor(unsigned char softwaremajor);							//保存softwaremajor软件版本号
+unsigned char	TCFG_EEPROM_GetSoftwareMajor(void);											//读取softwaremajor软件版本号
+
+void			TCFG_EEPROM_SetSoftwareSub(unsigned char softwaresub);								//保存softwaresub软件版本号
+unsigned char	TCFG_EEPROM_GetSoftwareSub(void);												//读取softwaresub软件版本号
+
+bool			TCFG_EEPROM_CheckNewSoftware(void);											//检查新软件版本号
+void			TCFG_EEPROM_WriteParameterData(void);											//写入系统参数信息
 
 void			TCFG_EEPROM_SetBootMode(char bootmode);											//保存Boot启动模式
 char			TCFG_EEPROM_GetBootMode(void);												//读取Boot启动模式
@@ -296,9 +308,6 @@ unsigned int	TCFG_EEPROM_GetRadarCount(void);												//读取RadarCount
 void			TCFG_AddRadarCount(void);													//RadarCount++
 unsigned int	TCFG_GetRadarCount(void);													//获取RadarCount
 
-void			TCFG_EEPROM_SetRadarDbgMode(unsigned char val);									//保存RadarDbgMode
-unsigned char	TCFG_EEPROM_GetRadarDbgMode(void);												//读取RadarDbgMode
-
 void			TCFG_EEPROM_SetStatusCount(unsigned int val);									//保存StatusCount
 unsigned int	TCFG_EEPROM_GetStatusCount(void);												//读取StatusCount
 
@@ -307,9 +316,6 @@ unsigned char	TCFG_EEPROM_GetRfChannel(void);												//读取RfChannel
 
 void			TCFG_EEPROM_SetRFDprintLv(uint8_t val);											//保存RFDprintLv
 unsigned char	TCFG_EEPROM_GetRFDprintLv(void);												//读取RFDprintLv
-
-void			TCFG_EEPROM_SetEnableNBiotPSM(unsigned char val);									//保存EnableNBiotPSM
-unsigned char	TCFG_EEPROM_GetEnableNBiotPSM(void);											//读取EnableNBiotPSM
 
 void			TCFG_EEPROM_SetActiveDevice(unsigned char val);									//保存ActiveDevice
 unsigned char	TCFG_EEPROM_GetActiveDevice(void);												//读取ActiveDevice
@@ -475,5 +481,13 @@ unsigned char	TCFG_Utility_Get_Sub_Softnumber(void);											//读取Sub_Softn
 unsigned char	TCFG_Utility_Get_Major_Hardnumber(void);										//读取Major_Hardnumber
 char*		TCFG_Utility_Get_Softwear_Version_String(void);									//读取Softwear Version字符串
 char*		TCFG_Utility_Get_Hardwear_Version_String(void);									//读取Hardwear Version字符串
+
+void			TCFG_EEPROM_SetStandardByte(unsigned int Address, unsigned char val);
+void			TCFG_EEPROM_SetStandardHalfWord(unsigned int Address, unsigned short val);
+void			TCFG_EEPROM_SetStandardWord(unsigned int Address, unsigned int val);
+
+unsigned char	TCFG_EEPROM_GetStandardByte(unsigned int Address);
+unsigned short	TCFG_EEPROM_GetStandardHalfWord(unsigned int Address);
+unsigned int	TCFG_EEPROM_GetStandardWord(unsigned int Address);
 
 #endif

@@ -292,30 +292,6 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 	#endif
 #endif
 	}
-	/* COAP RADAR INFO DATA ENQUEUE */
-	else if (NETCoapNeedSendCode.RadarInfo) {
-#if NBCOAP_SENDCODE_RADAR_INFO
-		memset((void*)&CoapInfoStructure.InfoData, 0, sizeof(CoapInfoStructure.InfoData));
-		CoapInfoStructure.HeadPacket.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
-		CoapInfoStructure.HeadPacket.DataLen				= 0x00;
-		CoapInfoStructure.HeadPacket.ProtocolType			= 0x00;
-		CoapInfoStructure.HeadPacket.Reserved1				= 0x00;
-		CoapInfoStructure.HeadPacket.ProtocolVersion			= 0x00;
-		CoapInfoStructure.HeadPacket.Reserved2				= 0x00;
-		CoapInfoStructure.HeadPacket.PacketType				= 0x05;
-		CoapInfoStructure.HeadPacket.PacketNumber			= 0x00;
-		CoapInfoStructure.MsgPacket.DestSN					= 0x00;
-		CoapInfoStructure.MsgPacket.Version				= 0x01;
-		CoapInfoStructure.MsgPacket.Type					= COAP_MSGTYPE_TYPE_INFO;
-		len = NET_COAP_Message_Operate_Creat_Json_Radar_Info((char *)&CoapInfoStructure.InfoData);
-		NET_Coap_Message_SendDataEnqueue((unsigned char *)&CoapInfoStructure, sizeof(CoapInfoStructure) - sizeof(CoapInfoStructure.InfoData) + len);
-		NETCoapNeedSendCode.RadarInfo = 0;
-		TCFG_Utility_Add_Coap_SentCount();
-	#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
-		NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
-	#endif
-#endif
-	}
 	/* COAP Qmc5883L DATA ENQUEUE */
 	else if (NETCoapNeedSendCode.QmcData) {
 #if NBCOAP_SENDCODE_QMC_DATA
@@ -476,18 +452,6 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		MqttSNInfoDynamicStructure.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
 		NET_MqttSN_Message_InfoDynamicEnqueue(MqttSNInfoDynamicStructure);
 		NETMqttSNNeedSendCode.InfoDynamic = 0;
-		TCFG_Utility_Add_MqttSN_SentCount();
-	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
-		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
-	#endif
-#endif
-	}
-	/* MQTTSN INFO RADAR DATA ENQUEUE */
-	else if (NETMqttSNNeedSendCode.InfoRadar) {
-#if NBMQTTSN_SENDCODE_RADAR_INFO
-		MqttSNInfoRadarStructure.DeviceSN					= TCFG_EEPROM_Get_MAC_SN();
-		NET_MqttSN_Message_InfoRadarEnqueue(MqttSNInfoRadarStructure);
-		NETMqttSNNeedSendCode.InfoRadar = 0;
 		TCFG_Utility_Add_MqttSN_SentCount();
 	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
 		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
@@ -666,30 +630,6 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		len = NET_MQTTSN_Message_Operate_Creat_Json_Dynamic_Info((char *)&MqttSNInfoStructure.InfoData);
 		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNInfoStructure, sizeof(MqttSNInfoStructure) - sizeof(MqttSNInfoStructure.InfoData) + len);
 		NETMqttSNNeedSendCode.InfoDynamic = 0;
-		TCFG_Utility_Add_MqttSN_SentCount();
-	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
-		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
-	#endif
-#endif
-	}
-	/* MQTTSN INFO RADAR DATA ENQUEUE */
-	else if (NETMqttSNNeedSendCode.InfoRadar) {
-#if NBMQTTSN_SENDCODE_RADAR_INFO
-		memset((void*)&MqttSNInfoStructure.InfoData, 0, sizeof(MqttSNInfoStructure.InfoData));
-		MqttSNInfoStructure.HeadPacket.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
-		MqttSNInfoStructure.HeadPacket.DataLen				= 0x00;
-		MqttSNInfoStructure.HeadPacket.ProtocolType			= 0x00;
-		MqttSNInfoStructure.HeadPacket.Reserved1			= 0x00;
-		MqttSNInfoStructure.HeadPacket.ProtocolVersion		= 0x00;
-		MqttSNInfoStructure.HeadPacket.Reserved2			= 0x00;
-		MqttSNInfoStructure.HeadPacket.PacketType			= 0x05;
-		MqttSNInfoStructure.HeadPacket.PacketNumber			= 0x00;
-		MqttSNInfoStructure.MsgPacket.DestSN				= 0x00;
-		MqttSNInfoStructure.MsgPacket.Version				= 0x01;
-		MqttSNInfoStructure.MsgPacket.Type					= MQTTSN_MSGTYPE_TYPE_INFO;
-		len = NET_MQTTSN_Message_Operate_Creat_Json_Radar_Info((char *)&MqttSNInfoStructure.InfoData);
-		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNInfoStructure, sizeof(MqttSNInfoStructure) - sizeof(MqttSNInfoStructure.InfoData) + len);
-		NETMqttSNNeedSendCode.InfoRadar = 0;
 		TCFG_Utility_Add_MqttSN_SentCount();
 	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
 		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;

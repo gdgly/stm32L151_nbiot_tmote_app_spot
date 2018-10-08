@@ -1,6 +1,11 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2018-10-08 :
+	* 20V129 :
+	* 版本号修改20V129。
+	* 增加当固件升级或更替时，CDP服务器地址重设，方便之后联通与电信设备固件更替时修改CDP地址。
+	* 精简无用RadarDbg调试信息上报代码。
 * 2018-10-07 :
 	* MqttSN PCP 升级限制Uplimit:rsst,snr指令加入MqttSN下行指令中。
 * 2018-09-30 :

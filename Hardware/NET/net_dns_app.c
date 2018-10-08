@@ -400,7 +400,6 @@ void NET_DNS_NBIOT_Event_StopMode(DNS_ClientsTypeDef* pClient)
 	static unsigned char DNSMqttSNInfoWorkIndex;
 	static unsigned char DNSMqttSNInfoBasicIndex;
 	static unsigned char DNSMqttSNInfoDynamicIndex;
-	static unsigned char DNSMqttSNInfoRadarIndex;
 	static unsigned char DNSMqttSNInfoResponseIndex;
 #endif
 #if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
@@ -422,7 +421,6 @@ void NET_DNS_NBIOT_Event_StopMode(DNS_ClientsTypeDef* pClient)
 		DNSMqttSNInfoWorkIndex = NET_MqttSN_Message_InfoWorkRear();
 		DNSMqttSNInfoBasicIndex = NET_MqttSN_Message_InfoBasicRear();
 		DNSMqttSNInfoDynamicIndex = NET_MqttSN_Message_InfoDynamicRear();
-		DNSMqttSNInfoRadarIndex = NET_MqttSN_Message_InfoRadarRear();
 		DNSMqttSNInfoResponseIndex = NET_MqttSN_Message_InfoResponseRear();
 #endif
 #if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
@@ -448,7 +446,6 @@ void NET_DNS_NBIOT_Event_StopMode(DNS_ClientsTypeDef* pClient)
 			(NET_MqttSN_Message_InfoWorkRear() != DNSMqttSNInfoWorkIndex) ||
 			(NET_MqttSN_Message_InfoBasicRear() != DNSMqttSNInfoBasicIndex) ||
 			(NET_MqttSN_Message_InfoDynamicRear() != DNSMqttSNInfoDynamicIndex) ||
-			(NET_MqttSN_Message_InfoRadarRear() != DNSMqttSNInfoRadarIndex) ||
 			(NET_MqttSN_Message_InfoResponseRear() != DNSMqttSNInfoResponseIndex) ) {
 #endif
 #if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM

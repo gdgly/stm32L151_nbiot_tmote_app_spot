@@ -1961,24 +1961,6 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						}
 				#endif
 					}
-					/* RadarDbg */
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "RadarDbg") != NULL) {
-				#if NBCOAP_DOWNLOAD_CMD_RADARDBG
-						u16 radarDbgval;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
-							"{(RadarDbg):{(val):%hu,(Magic):%hu}}", &radarDbgval, &recvMagicNum);
-						if (recvMagicNum == TCLOD_MAGIC_NUM) {
-							TCFG_EEPROM_SetRadarDbgMode(radarDbgval);
-							TCFG_SystemData.RadarDbgMode = TCFG_EEPROM_GetRadarDbgMode();
-							#if NBCOAP_SENDCODE_DYNAMIC_INFO
-							NETCoapNeedSendCode.DynamicInfo = 1;
-							#endif
-						}
-						else {
-							ret = NETIP_UNKNOWNERROR;
-						}
-				#endif
-					}
 					/* MagMod */
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "MagMod") != NULL) {
 				#if NBCOAP_DOWNLOAD_CMD_MAGMOD

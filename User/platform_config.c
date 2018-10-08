@@ -42,7 +42,6 @@ MQTTSN_StatusExtendTypeDef		MqttSNStatusExtendStructure;					//MqttSN Extend Sta
 MQTTSN_InfoWorkTypeDef			MqttSNInfoWorkStructure;						//MqttSN Work Info Packet
 MQTTSN_InfoBasicTypeDef			MqttSNInfoBasicStructure;					//MqttSN Basic Info Packet
 MQTTSN_InfoDynamicTypeDef		MqttSNInfoDynamicStructure;					//MqttSN Dynamic Info Packet
-MQTTSN_InfoRadarTypeDef			MqttSNInfoRadarStructure;					//MqttSN Radar Info Packet
 MQTTSN_InfoResponseTypeDef		MqttSNInfoResponseStructure;					//MqttSN Response Info Packet
 #endif
 #if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
@@ -161,7 +160,6 @@ void RadioPrintDeviceinfo(void)
 	Radio_Trf_Printf("RadarLib:%d", TCFG_Utility_Get_RadarLibNum());
 	Radio_Trf_Printf("RadarCnt:%d", TCFG_GetRadarCount());
 	Radio_Trf_Printf("Temperature:%d", TCFG_Utility_Get_Device_Temperature());
-	Radio_Trf_Printf("RadarDbgMode:%d", TCFG_EEPROM_GetRadarDbgMode());
 	Radio_Trf_Printf("AlgoLib:%d", TCFG_Utility_Get_AlgoLibNum());
 	Radio_Trf_Printf("QmcReboot:%d", TCFG_Utility_Get_ReInitModuleCount());
 	Radio_Trf_Printf("Nbboot:%d", TCFG_Utility_Get_Nbiot_BootCount());

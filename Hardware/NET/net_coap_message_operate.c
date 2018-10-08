@@ -138,8 +138,6 @@ int NET_COAP_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer)
 				"\"Rlib\":\"%d\","
 				"\"Rcnt\":%d,"
 				"\"Temp\":%d,"
-				"\"Rdgb\":%d,"
-				"\"Psm\":%d,"
 				"\"Algo\":%d,"
 				"\"Qmcrbt\":%d,"
 				"\"Nbboot\":%d,"
@@ -158,8 +156,6 @@ int NET_COAP_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer)
 		TCFG_Utility_Get_RadarLibNum(),
 		TCFG_GetRadarCount(),
 		TCFG_Utility_Get_Device_Temperature(),
-		TCFG_EEPROM_GetRadarDbgMode(),
-		TCFG_EEPROM_GetEnableNBiotPSM(),
 		TCFG_Utility_Get_AlgoLibNum(),
 		TCFG_Utility_Get_ReInitModuleCount(),
 		TCFG_Utility_Get_Nbiot_BootCount(),
@@ -167,59 +163,6 @@ int NET_COAP_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer)
 		TCFG_Utility_Get_Nbiot_RecvCount(),
 		TCFG_EEPROM_GetCarInDelay(),
 		TCFG_EEPROM_GetNbiotHeart()
-	);
-	
-	return strlen(outBuffer);
-}
-
-/**********************************************************************************************************
- @Function			int NET_COAP_Message_Operate_Creat_Json_Radar_Info(char* outBuffer)
- @Description			NET_COAP_Message_Operate_Creat_Json_Radar_Info
- @Input				outBuffer
- @Return				Length
- @attention			!!<<< MaxLength 300Byte >>>!!
-**********************************************************************************************************/
-int NET_COAP_Message_Operate_Creat_Json_Radar_Info(char* outBuffer)
-{
-	sprintf(outBuffer, 
-		"{"
-			"\"SN\":\"%08x\","
-			"\"RadarDbg\":"
-			"{"
-				"\"dif\":%d,"
-				"\"x\":%d,"
-				"\"y\":%d,"
-				"\"z\":%d,"
-				"\"snr\":%d,"
-				"\"rssi\":%d,"
-				"\"temp\":%d,"
-				"\"qtemp\":%d,"
-				"\"other\":\"%02d%02d%02d%02d%02d,%02d%02d%02d%02d%02d,%02d%02d%02d%02d%02d%02d;%02d%02d%02d%02d%02d,%02d%02d%02d.dif=%d.frl=%d&%d(%d,%d,%d)%u\""
-			"}"
-		"}",
-		
-		TCFG_EEPROM_Get_MAC_SN(),
-		sRadarData.Diff,
-		Qmc5883lData.X_Now,
-		Qmc5883lData.Y_Now,
-		Qmc5883lData.Z_Now,
-		TCFG_Utility_Get_Nbiot_RadioSNR(),
-		TCFG_Utility_Get_Nbiot_Rssi_IntVal(),
-		TCFG_Utility_Get_Device_Temperature(),
-		Qmc5883lData.temp_now,
-		radar_targetinfo.pMagNow[2],  radar_targetinfo.pMagNow[3],  radar_targetinfo.pMagNow[4],  radar_targetinfo.pMagNow[5],
-		radar_targetinfo.pMagNow[6],  radar_targetinfo.pMagNow[7],  radar_targetinfo.pMagNow[8],  radar_targetinfo.pMagNow[9],
-		radar_targetinfo.pMagNow[10], radar_targetinfo.pMagNow[11], radar_targetinfo.pMagNow[12], radar_targetinfo.pMagNow[13],
-		radar_targetinfo.pMagNow[14], radar_targetinfo.pMagNow[15], radar_targetinfo.pMagNow[16], radar_targetinfo.pMagNow[17],
-		radar_targetinfo.pMagBG[2], radar_targetinfo.pMagBG[3], radar_targetinfo.pMagBG[4], radar_targetinfo.pMagBG[5],
-		radar_targetinfo.pMagBG[6], radar_targetinfo.pMagBG[7], radar_targetinfo.pMagBG[8], radar_targetinfo.pMagBG[9],
-		sRadarData.Diff_v2,
-		talgo_get_fredomain_least(),
-		talgo_get_fredomain_least_inhalfhour(),
-		Qmc5883lData.X_Back,
-		Qmc5883lData.Y_Back,
-		Qmc5883lData.Z_Back,
-		errcode
 	);
 	
 	return strlen(outBuffer);

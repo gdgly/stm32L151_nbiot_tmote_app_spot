@@ -30,7 +30,6 @@ MQTTSN_SwapStatusExtendTypeDef	NETMqttSNMessageParkStatusExtend;
 MQTTSN_SwapInfoWorkTypeDef		NETMqttSNMessageParkInfoWork;
 MQTTSN_SwapInfoBasicTypeDef		NETMqttSNMessageParkInfoBasic;
 MQTTSN_SwapInfoDynamicTypeDef		NETMqttSNMessageParkInfoDynamic;
-MQTTSN_SwapInfoRadarTypeDef		NETMqttSNMessageParkInfoRadar;
 MQTTSN_SwapInfoResponseTypeDef	NETMqttSNMessageParkInfoResponse;
 
 #endif
@@ -308,8 +307,6 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Dynamic(char* outBuffer)
 				"\"Rlib\":\"%d\","
 				"\"Rcnt\":%d,"
 				"\"Temp\":%d,"
-				"\"Rdgb\":%d,"
-				"\"Psm\":%d,"
 				"\"Algo\":%d,"
 				"\"Qmcrbt\":%d,"
 				"\"Nbboot\":%d,"
@@ -328,8 +325,6 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Dynamic(char* outBuffer)
 		TCFG_Utility_Get_RadarLibNum(),
 		TCFG_GetRadarCount(),
 		TCFG_Utility_Get_Device_Temperature(),
-		TCFG_EEPROM_GetRadarDbgMode(),
-		TCFG_EEPROM_GetEnableNBiotPSM(),
 		TCFG_Utility_Get_AlgoLibNum(),
 		TCFG_Utility_Get_ReInitModuleCount(),
 		TCFG_Utility_Get_Nbiot_BootCount(),
@@ -337,65 +332,6 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Dynamic(char* outBuffer)
 		TCFG_Utility_Get_Nbiot_RecvCount(),
 		TCFG_EEPROM_GetCarInDelay(),
 		TCFG_EEPROM_GetNbiotHeart()
-	);
-	
-	return strlen(outBuffer);
-}
-
-/**********************************************************************************************************
- @Function			int NET_Message_Operate_Creat_Json_MoteInfo_Radar(char* outBuffer)
- @Description			NET_Message_Operate_Creat_Json_MoteInfo_Radar
- @Input				outBuffer
- @Return				Length
- @attention			!!<<< MaxLength 512Byte >>>!!
-**********************************************************************************************************/
-int NET_Message_Operate_Creat_Json_MoteInfo_Radar(char* outBuffer)
-{
-	MQTTSN_InfoRadarTypeDef dataBuf;
-	
-	if (NET_MqttSN_Message_InfoRadarDequeue(&dataBuf) != true) {
-		return 0;
-	}
-	
-	sprintf(outBuffer, 
-		"{"
-			"\"SN\":\"%08x\","
-			"\"RadarDbg\":"
-			"{"
-				"\"dif\":%d,"
-				"\"x\":%d,"
-				"\"y\":%d,"
-				"\"z\":%d,"
-				"\"snr\":%d,"
-				"\"rssi\":%d,"
-				"\"temp\":%d,"
-				"\"qtemp\":%d,"
-				"\"other\":\"%02d%02d%02d%02d%02d,%02d%02d%02d%02d%02d,%02d%02d%02d%02d%02d%02d;%02d%02d%02d%02d%02d,%02d%02d%02d.dif=%d.frl=%d&%d(%d,%d,%d)%u\""
-			"}"
-		"}",
-		
-		dataBuf.DeviceSN,
-		sRadarData.Diff,
-		Qmc5883lData.X_Now,
-		Qmc5883lData.Y_Now,
-		Qmc5883lData.Z_Now,
-		TCFG_Utility_Get_Nbiot_RadioSNR(),
-		TCFG_Utility_Get_Nbiot_Rssi_IntVal(),
-		TCFG_Utility_Get_Device_Temperature(),
-		Qmc5883lData.temp_now,
-		radar_targetinfo.pMagNow[2],  radar_targetinfo.pMagNow[3],  radar_targetinfo.pMagNow[4],  radar_targetinfo.pMagNow[5],
-		radar_targetinfo.pMagNow[6],  radar_targetinfo.pMagNow[7],  radar_targetinfo.pMagNow[8],  radar_targetinfo.pMagNow[9],
-		radar_targetinfo.pMagNow[10], radar_targetinfo.pMagNow[11], radar_targetinfo.pMagNow[12], radar_targetinfo.pMagNow[13],
-		radar_targetinfo.pMagNow[14], radar_targetinfo.pMagNow[15], radar_targetinfo.pMagNow[16], radar_targetinfo.pMagNow[17],
-		radar_targetinfo.pMagBG[2], radar_targetinfo.pMagBG[3], radar_targetinfo.pMagBG[4], radar_targetinfo.pMagBG[5],
-		radar_targetinfo.pMagBG[6], radar_targetinfo.pMagBG[7], radar_targetinfo.pMagBG[8], radar_targetinfo.pMagBG[9],
-		sRadarData.Diff_v2,
-		talgo_get_fredomain_least(),
-		talgo_get_fredomain_least_inhalfhour(),
-		Qmc5883lData.X_Back,
-		Qmc5883lData.Y_Back,
-		Qmc5883lData.Z_Back,
-		errcode
 	);
 	
 	return strlen(outBuffer);
@@ -550,8 +486,6 @@ int NET_MQTTSN_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer)
 				"\"Rlib\":\"%d\","
 				"\"Rcnt\":%d,"
 				"\"Temp\":%d,"
-				"\"Rdgb\":%d,"
-				"\"Psm\":%d,"
 				"\"Algo\":%d,"
 				"\"Qmcrbt\":%d,"
 				"\"Nbboot\":%d,"
@@ -570,8 +504,6 @@ int NET_MQTTSN_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer)
 		TCFG_Utility_Get_RadarLibNum(),
 		TCFG_GetRadarCount(),
 		TCFG_Utility_Get_Device_Temperature(),
-		TCFG_EEPROM_GetRadarDbgMode(),
-		TCFG_EEPROM_GetEnableNBiotPSM(),
 		TCFG_Utility_Get_AlgoLibNum(),
 		TCFG_Utility_Get_ReInitModuleCount(),
 		TCFG_Utility_Get_Nbiot_BootCount(),
@@ -579,59 +511,6 @@ int NET_MQTTSN_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer)
 		TCFG_Utility_Get_Nbiot_RecvCount(),
 		TCFG_EEPROM_GetCarInDelay(),
 		TCFG_EEPROM_GetNbiotHeart()
-	);
-	
-	return strlen(outBuffer);
-}
-
-/**********************************************************************************************************
- @Function			int NET_MQTTSN_Message_Operate_Creat_Json_Radar_Info(char* outBuffer)
- @Description			NET_MQTTSN_Message_Operate_Creat_Json_Radar_Info
- @Input				outBuffer
- @Return				Length
- @attention			!!<<< MaxLength 300Byte >>>!!
-**********************************************************************************************************/
-int NET_MQTTSN_Message_Operate_Creat_Json_Radar_Info(char* outBuffer)
-{
-	sprintf(outBuffer, 
-		"{"
-			"\"SN\":\"%08x\","
-			"\"RadarDbg\":"
-			"{"
-				"\"dif\":%d,"
-				"\"x\":%d,"
-				"\"y\":%d,"
-				"\"z\":%d,"
-				"\"snr\":%d,"
-				"\"rssi\":%d,"
-				"\"temp\":%d,"
-				"\"qtemp\":%d,"
-				"\"other\":\"%02d%02d%02d%02d%02d,%02d%02d%02d%02d%02d,%02d%02d%02d%02d%02d%02d;%02d%02d%02d%02d%02d,%02d%02d%02d.dif=%d.frl=%d&%d(%d,%d,%d)%u\""
-			"}"
-		"}",
-		
-		TCFG_EEPROM_Get_MAC_SN(),
-		sRadarData.Diff,
-		Qmc5883lData.X_Now,
-		Qmc5883lData.Y_Now,
-		Qmc5883lData.Z_Now,
-		TCFG_Utility_Get_Nbiot_RadioSNR(),
-		TCFG_Utility_Get_Nbiot_Rssi_IntVal(),
-		TCFG_Utility_Get_Device_Temperature(),
-		Qmc5883lData.temp_now,
-		radar_targetinfo.pMagNow[2],  radar_targetinfo.pMagNow[3],  radar_targetinfo.pMagNow[4],  radar_targetinfo.pMagNow[5],
-		radar_targetinfo.pMagNow[6],  radar_targetinfo.pMagNow[7],  radar_targetinfo.pMagNow[8],  radar_targetinfo.pMagNow[9],
-		radar_targetinfo.pMagNow[10], radar_targetinfo.pMagNow[11], radar_targetinfo.pMagNow[12], radar_targetinfo.pMagNow[13],
-		radar_targetinfo.pMagNow[14], radar_targetinfo.pMagNow[15], radar_targetinfo.pMagNow[16], radar_targetinfo.pMagNow[17],
-		radar_targetinfo.pMagBG[2], radar_targetinfo.pMagBG[3], radar_targetinfo.pMagBG[4], radar_targetinfo.pMagBG[5],
-		radar_targetinfo.pMagBG[6], radar_targetinfo.pMagBG[7], radar_targetinfo.pMagBG[8], radar_targetinfo.pMagBG[9],
-		sRadarData.Diff_v2,
-		talgo_get_fredomain_least(),
-		talgo_get_fredomain_least_inhalfhour(),
-		Qmc5883lData.X_Back,
-		Qmc5883lData.Y_Back,
-		Qmc5883lData.Z_Back,
-		errcode
 	);
 	
 	return strlen(outBuffer);
@@ -805,27 +684,6 @@ bool NET_MqttSN_Message_InfoDynamicisFull(void)
 }
 
 /**********************************************************************************************************
- @Function			bool NET_MqttSN_Message_InfoRadarisFull(void)
- @Description			NET_MqttSN_Message_InfoRadarisFull
- @Input				void
- @Return				true							: 已满
-					false						: 未满
-**********************************************************************************************************/
-bool NET_MqttSN_Message_InfoRadarisFull(void)
-{
-	bool MessageState;
-	
-	if ((NETMqttSNMessageParkInfoRadar.Rear + 1) % MQTTSN_INFO_RADAR_PARK_NUM == NETMqttSNMessageParkInfoRadar.Front) {
-		MessageState = true;
-	}
-	else {
-		MessageState = false;
-	}
-	
-	return MessageState;
-}
-
-/**********************************************************************************************************
  @Function			bool NET_MqttSN_Message_InfoResponseisFull(void)
  @Description			NET_MqttSN_Message_InfoResponseisFull
  @Input				void
@@ -943,27 +801,6 @@ bool NET_MqttSN_Message_InfoDynamicisEmpty(void)
 	bool MessageState;
 	
 	if (NETMqttSNMessageParkInfoDynamic.Front == NETMqttSNMessageParkInfoDynamic.Rear) {
-		MessageState = true;
-	}
-	else {
-		MessageState = false;
-	}
-	
-	return MessageState;
-}
-
-/**********************************************************************************************************
- @Function			bool NET_MqttSN_Message_InfoRadarisEmpty(void)
- @Description			NET_MqttSN_Message_InfoRadarisEmpty
- @Input				void
- @Return				true							: 已空
-					false						: 未空
-**********************************************************************************************************/
-bool NET_MqttSN_Message_InfoRadarisEmpty(void)
-{
-	bool MessageState;
-	
-	if (NETMqttSNMessageParkInfoRadar.Front == NETMqttSNMessageParkInfoRadar.Rear) {
 		MessageState = true;
 	}
 	else {
@@ -1100,22 +937,6 @@ void NET_MqttSN_Message_InfoDynamicEnqueue(MQTTSN_InfoDynamicTypeDef dataBuf)
 	
 	if (NET_MqttSN_Message_InfoDynamicisFull() == true) {															//队列已满
 		NETMqttSNMessageParkInfoDynamic.Front = (NETMqttSNMessageParkInfoDynamic.Front + 1) % MQTTSN_INFO_DYNAMIC_PARK_NUM;	//队头偏移1
-	}
-}
-
-/**********************************************************************************************************
- @Function			void NET_MqttSN_Message_InfoRadarEnqueue(MQTTSN_InfoRadarTypeDef dataBuf)
- @Description			NET_MqttSN_Message_InfoRadarEnqueue
- @Input				dataBuf	 		 				: 需写入数据
- @Return				void
-**********************************************************************************************************/
-void NET_MqttSN_Message_InfoRadarEnqueue(MQTTSN_InfoRadarTypeDef dataBuf)
-{
-	NETMqttSNMessageParkInfoRadar.Rear = (NETMqttSNMessageParkInfoRadar.Rear + 1) % MQTTSN_INFO_RADAR_PARK_NUM;				//队尾偏移1
-	NETMqttSNMessageParkInfoRadar.InfoRadar[NETMqttSNMessageParkInfoRadar.Rear].DeviceSN = dataBuf.DeviceSN;
-	
-	if (NET_MqttSN_Message_InfoRadarisFull() == true) {															//队列已满
-		NETMqttSNMessageParkInfoRadar.Front = (NETMqttSNMessageParkInfoRadar.Front + 1) % MQTTSN_INFO_RADAR_PARK_NUM;			//队头偏移1
 	}
 }
 
@@ -1286,30 +1107,6 @@ bool NET_MqttSN_Message_InfoDynamicDequeue(MQTTSN_InfoDynamicTypeDef* dataBuf)
 }
 
 /**********************************************************************************************************
- @Function			bool NET_MqttSN_Message_InfoRadarDequeue(MQTTSN_InfoRadarTypeDef* dataBuf)
- @Description			NET_MqttSN_Message_InfoRadarDequeue
- @Input				dataBuf	 		 				: 需读出数据地址
- @Return				true								: 未空
-					false							: 已空
-**********************************************************************************************************/
-bool NET_MqttSN_Message_InfoRadarDequeue(MQTTSN_InfoRadarTypeDef* dataBuf)
-{
-	bool MessageState;
-	unsigned char front;
-	
-	if (NET_MqttSN_Message_InfoRadarisEmpty() == true) {															//队列已空
-		MessageState = false;
-	}
-	else {																								//队列未空
-		front = (NETMqttSNMessageParkInfoRadar.Front + 1) % MQTTSN_INFO_RADAR_PARK_NUM;									//队头偏移1
-		dataBuf->DeviceSN = NETMqttSNMessageParkInfoRadar.InfoRadar[front].DeviceSN;
-		MessageState = true;
-	}
-	
-	return MessageState;
-}
-
-/**********************************************************************************************************
  @Function			bool NET_MqttSN_Message_InfoResponseDequeue(MQTTSN_InfoResponseTypeDef* dataBuf)
  @Description			NET_MqttSN_Message_InfoResponseDequeue
  @Input				dataBuf	 		 				: 需读出数据地址
@@ -1446,28 +1243,6 @@ bool NET_MqttSN_Message_InfoDynamicOffSet(void)
 }
 
 /**********************************************************************************************************
- @Function			bool NET_MqttSN_Message_InfoRadarOffSet(void)
- @Description			NET_MqttSN_Message_InfoRadarOffSet
- @Input				void
- @Return				true							: 未空
-					false						: 已空
-**********************************************************************************************************/
-bool NET_MqttSN_Message_InfoRadarOffSet(void)
-{
-	bool MessageState;
-	
-	if (NET_MqttSN_Message_InfoRadarisEmpty() == true) {															//队列已空
-		MessageState = false;
-	}
-	else {																								//队列未空
-		NETMqttSNMessageParkInfoRadar.Front = (NETMqttSNMessageParkInfoRadar.Front + 1) % MQTTSN_INFO_RADAR_PARK_NUM;
-		MessageState = true;
-	}
-	
-	return MessageState;
-}
-
-/**********************************************************************************************************
  @Function			bool NET_MqttSN_Message_InfoResponseOffSet(void)
  @Description			NET_MqttSN_Message_InfoResponseOffSet
  @Input				void
@@ -1543,17 +1318,6 @@ unsigned char NET_MqttSN_Message_InfoBasicRear(void)
 unsigned char NET_MqttSN_Message_InfoDynamicRear(void)
 {
 	return NETMqttSNMessageParkInfoDynamic.Rear;
-}
-
-/**********************************************************************************************************
- @Function			unsigned char NET_MqttSN_Message_InfoRadarRear(void)
- @Description			NET_MqttSN_Message_InfoRadarRear
- @Input				void
- @Return				队尾值
-**********************************************************************************************************/
-unsigned char NET_MqttSN_Message_InfoRadarRear(void)
-{
-	return NETMqttSNMessageParkInfoRadar.Rear;
 }
 
 /**********************************************************************************************************

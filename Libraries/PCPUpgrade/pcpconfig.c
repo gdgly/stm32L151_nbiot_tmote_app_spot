@@ -92,10 +92,10 @@ PCP_ResultCodeTypeDef PCP_UpgradeDataNewVersionNotice_Callback(PCP_ClientsTypeDe
 	PCP_ResultCodeTypeDef PCPResultCodeStatus = PCP_ExecuteSuccess;
 	
 #ifdef PCP_DEBUG_LOG_RF_PRINT
-	Radio_Trf_Debug_Printf_Level2("PlatSoftVer: %s", pClient->Parameter.PlatformSoftVersion);
-	Radio_Trf_Debug_Printf_Level2("PackSliceSize: %d", pClient->Parameter.UpgradePackSliceSize);
-	Radio_Trf_Debug_Printf_Level2("PackSliceNum: %d", pClient->Parameter.UpgradePackSliceNum);
-	Radio_Trf_Debug_Printf_Level2("PackCheckCode: %X", CalculateStringToHex(pClient->Parameter.UpgradePackCheckCode>>8, pClient->Parameter.UpgradePackCheckCode&0xFF));
+	Radio_Trf_Debug_Printf_Level2("PlatVer: %s", pClient->Parameter.PlatformSoftVersion);
+	Radio_Trf_Debug_Printf_Level2("SliceSize: %d", pClient->Parameter.UpgradePackSliceSize);
+	Radio_Trf_Debug_Printf_Level2("SliceNum: %d", pClient->Parameter.UpgradePackSliceNum);
+	Radio_Trf_Debug_Printf_Level2("CheckCode: %X", CalculateStringToHex(pClient->Parameter.UpgradePackCheckCode>>8, pClient->Parameter.UpgradePackCheckCode&0xFF));
 #endif
 	
 	PCPResultCodeStatus = PCP_Upgrade_NewVersionNotice(pClient);

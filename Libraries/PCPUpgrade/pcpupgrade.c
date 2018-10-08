@@ -173,7 +173,7 @@ PCP_ResultCodeTypeDef PCP_Upgrade_NewVersionNotice(PCP_ClientsTypeDef* pClient)
 		goto exit;
 	}
 	
-	Radio_Trf_Printf("NewVersion APP ...");
+	Radio_Trf_Printf("NewVer APP ...");
 	
 	/* 信号质量与信噪比低中断升级 */
 	if ((TCFG_Utility_Get_Nbiot_Rssi_IntVal() < UPGRADE_LOW_LIMIT_RSSI) || (TCFG_Utility_Get_Nbiot_RadioSNR() < UPGRADE_LOW_LIMIT_SNR)) {
@@ -232,7 +232,7 @@ PCP_ResultCodeTypeDef PCP_Upgrade_NewVersionNotice(PCP_ClientsTypeDef* pClient)
 	GD25Q_SPIFLASH_SetWord(APP1_DATA_CHECK_CODE_OFFSET, CalculateStringToHex(pClient->Parameter.UpgradePackCheckCode>>8, pClient->Parameter.UpgradePackCheckCode&0xFF));
 	
 	GD25Q_SPIFLASH_PowerDown();
-	Radio_Trf_Printf("APP will start to upgrade");
+	Radio_Trf_Printf("APP will start upgrade");
 	
 exit:
 	return PCPResultCodeStatus;
@@ -271,14 +271,14 @@ PCP_ResultCodeTypeDef PCP_Upgrade_DataDownload(PCP_ClientsTypeDef* pClient, u16 
 		/* 该分片数据已写入 */
 		pClient->UpgradeExecution.PackSliceIndex = SliceIndex + 1;
 		GD25Q_SPIFLASH_PowerDown();
-		Radio_Trf_Printf("PackSlice has been write");
+		Radio_Trf_Printf("Pack has been write");
 		goto exit;
 	}
 	
 	if (UpgradeDataLength > pClient->UpgradeExecution.PackSliceSize) {
 		/* 该分片数据长度异常 */
 		GD25Q_SPIFLASH_PowerDown();
-		Radio_Trf_Printf("PackSlice Size Fail");
+		Radio_Trf_Printf("Pack Size Fail");
 		goto exit;
 	}
 	
@@ -289,7 +289,7 @@ PCP_ResultCodeTypeDef PCP_Upgrade_DataDownload(PCP_ClientsTypeDef* pClient, u16 
 	
 	pClient->UpgradeExecution.PackSliceIndex = SliceIndex + 1;
 	GD25Q_SPIFLASH_PowerDown();
-	Radio_Trf_Printf("PackSlice write to flash");
+	Radio_Trf_Printf("Pack wt flash");
 	
 exit:
 	return PCPResultCodeStatus;
@@ -367,7 +367,7 @@ PCP_ResultCodeTypeDef PCP_Upgrade_AfterUpdata(PCP_ClientsTypeDef* pClient)
 		goto exit;
 	}
 	
-	Radio_Trf_Printf("Start Boot Upgrade APP ...");
+	Radio_Trf_Printf("Start Btup APP ...");
 	Radio_Rf_Interrupt_Deinit();
 	GD25Q_SPIFLASH_WakeUp();
 	GD25Q_SPIFLASH_Init();

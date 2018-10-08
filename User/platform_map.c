@@ -103,10 +103,6 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_SystemData.RadarCount = 0;
 	TCFG_EEPROM_SetRadarCount(TCFG_SystemData.RadarCount);
 	
-	/* 雷达调试模式 */
-	TCFG_SystemData.RadarDbgMode = 8;
-	TCFG_EEPROM_SetRadarDbgMode(TCFG_SystemData.RadarDbgMode);
-	
 	/* 雷达检测范围 */
 	TCFG_SystemData.RadarRange = 0;
 	TCFG_EEPROM_SetRadarRange(TCFG_SystemData.RadarRange);
@@ -130,10 +126,6 @@ void TCFG_EEPROM_WriteConfigData(void)
 	/* NBIot重启次数 */
 	TCFG_SystemData.NBIotBootCount = 0;
 	TCFG_EEPROM_SetNbiotBootCnt(TCFG_SystemData.NBIotBootCount);
-	
-	/* NBIotPSM模式 */
-	TCFG_SystemData.NBIotPSMEnable = 0;
-	TCFG_EEPROM_SetEnableNBiotPSM(TCFG_SystemData.NBIotPSMEnable);
 	
 	/* NBIot Coap 接收数据次数 */
 	TCFG_SystemData.CoapRecvCount = 0;
@@ -278,9 +270,6 @@ void TCFG_EEPROM_ReadConfigData(void)
 	/* 雷达次数 */
 	TCFG_SystemData.RadarCount = TCFG_EEPROM_GetRadarCount();
 	
-	/* 雷达调试模式 */
-	TCFG_SystemData.RadarDbgMode = TCFG_EEPROM_GetRadarDbgMode();
-	
 	/* 雷达检测范围 */
 	TCFG_SystemData.RadarRange = TCFG_EEPROM_GetRadarRange();
 	
@@ -304,9 +293,6 @@ void TCFG_EEPROM_ReadConfigData(void)
 	
 	/* NBIot重启次数 */
 	TCFG_SystemData.NBIotBootCount = TCFG_EEPROM_GetNbiotBootCnt();
-	
-	/* NBIotPSM模式 */
-	TCFG_SystemData.NBIotPSMEnable = TCFG_EEPROM_GetEnableNBiotPSM();
 	
 	/* NBIot Coap 接收数据次数 */
 	TCFG_SystemData.CoapRecvCount = TCFG_EEPROM_GetCoapRecvCnt();
@@ -353,6 +339,98 @@ void TCFG_EEPROM_ReadConfigData(void)
 		TCFG_SystemData.NBCoapCDPServer.port = COAPCDPPORT;
 		TCFG_EEPROM_SetServerIP(TCFG_SystemData.NBCoapCDPServer.ip.ip32);
 		TCFG_EEPROM_SetServerPort(TCFG_SystemData.NBCoapCDPServer.port);
+	}
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_WriteParameterData(void)
+ @Description			TCFG_EEPROM_WriteParameterData				: 写入系统参数信息
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_WriteParameterData(void)
+{
+	int serverip[4];
+	
+	TCFG_EEPROM_SetSoftwareMajor(SOFTWAREMAJOR);
+	TCFG_EEPROM_SetSoftwareSub(SOFTWARESUB);
+	
+	/* 升级信号值限制下限 */
+	TCFG_SystemData.UpgradeLimitRssi = NBCOAP_PCP_UPGRADE_LIMIT_RSSI;
+	TCFG_EEPROM_SetUpgradeLimitRssi(TCFG_SystemData.UpgradeLimitRssi);
+	
+	/* 升级信号质量限制下限 */
+	TCFG_SystemData.UpgradeLimitSnr = NBCOAP_PCP_UPGRADE_LIMIT_SNR;
+	TCFG_EEPROM_SetUpgradeLimitSnr(TCFG_SystemData.UpgradeLimitSnr);
+	
+	/* NB核心网地址 */
+	sscanf(COAPCDPADDR, "%d.%d.%d.%d", &serverip[3], &serverip[2], &serverip[1], &serverip[0]);
+	TCFG_SystemData.NBCoapCDPServer.ip.ip8[3] = serverip[3];
+	TCFG_SystemData.NBCoapCDPServer.ip.ip8[2] = serverip[2];
+	TCFG_SystemData.NBCoapCDPServer.ip.ip8[1] = serverip[1];
+	TCFG_SystemData.NBCoapCDPServer.ip.ip8[0] = serverip[0];
+	TCFG_SystemData.NBCoapCDPServer.port = COAPCDPPORT;
+	TCFG_EEPROM_SetServerIP(TCFG_SystemData.NBCoapCDPServer.ip.ip32);
+	TCFG_EEPROM_SetServerPort(TCFG_SystemData.NBCoapCDPServer.port);
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetSoftwareMajor(unsigned char softwaremajor)
+ @Description			TCFG_EEPROM_SetSoftwareMajor					: 保存softwaremajor软件版本号
+ @Input				softwaremajor
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetSoftwareMajor(unsigned char softwaremajor)
+{
+	FLASH_EEPROM_WriteByte(TCFG_SOFTWARE_MAJOR_OFFSET, softwaremajor);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned char TCFG_EEPROM_GetSoftwareMajor(void)
+ @Description			TCFG_EEPROM_GetSoftwareMajor					: 读取softwaremajor软件版本号
+ @Input				void
+ @Return				softwaremajor
+**********************************************************************************************************/
+unsigned char TCFG_EEPROM_GetSoftwareMajor(void)
+{
+	return FLASH_EEPROM_ReadByte(TCFG_SOFTWARE_MAJOR_OFFSET);
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetSoftwareSub(unsigned char softwaresub)
+ @Description			TCFG_EEPROM_SetSoftwareSub					: 保存softwaresub软件版本号
+ @Input				softwaresub
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetSoftwareSub(unsigned char softwaresub)
+{
+	FLASH_EEPROM_WriteByte(TCFG_SOFTWARE_SUB_OFFSET, softwaresub);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned char TCFG_EEPROM_GetSoftwareSub(void)
+ @Description			TCFG_EEPROM_GetSoftwareSub					: 读取softwaresub软件版本号
+ @Input				void
+ @Return				softwaresub
+**********************************************************************************************************/
+unsigned char TCFG_EEPROM_GetSoftwareSub(void)
+{
+	return FLASH_EEPROM_ReadByte(TCFG_SOFTWARE_SUB_OFFSET);
+}
+
+/**********************************************************************************************************
+ @Function			bool TCFG_EEPROM_CheckNewSoftware(void)
+ @Description			TCFG_EEPROM_CheckNewSoftware					: 检测新的软件版本号
+ @Input				void
+ @Return				bool
+**********************************************************************************************************/
+bool TCFG_EEPROM_CheckNewSoftware(void)
+{
+	if ((TCFG_EEPROM_GetSoftwareMajor() != SOFTWAREMAJOR) || (TCFG_EEPROM_GetSoftwareSub() != SOFTWARESUB)) {
+		return true;
+	}
+	else {
+		return false;
 	}
 }
 
@@ -885,36 +963,6 @@ unsigned int TCFG_GetRadarCount(void)
 }
 
 /**********************************************************************************************************
- @Function			void TCFG_EEPROM_SetRadarDbgMode(unsigned char val)
- @Description			TCFG_EEPROM_SetRadarDbgMode					: 保存RadarDbgMode
- @Input				val
- @Return				void
-**********************************************************************************************************/
-void TCFG_EEPROM_SetRadarDbgMode(unsigned char val)
-{
-	if (val > 8) val = 0;
-	else val = 8 - val;
-	FLASH_EEPROM_WriteByte(TCFG_RADARDBG_OFFSET, val);
-}
-
-/**********************************************************************************************************
- @Function			unsigned char TCFG_EEPROM_GetRadarDbgMode(void)
- @Description			TCFG_EEPROM_GetRadarDbgMode					: 读取RadarDbgMode
- @Input				void
- @Return				val
-**********************************************************************************************************/
-unsigned char TCFG_EEPROM_GetRadarDbgMode(void)
-{
-	unsigned char val8;
-	
-	val8 = FLASH_EEPROM_ReadByte(TCFG_RADARDBG_OFFSET);
-	if (val8 > 8) return 0;
-	else val8 = 8 - val8;
-	
-	return val8;
-}
-
-/**********************************************************************************************************
  @Function			void TCFG_EEPROM_SetStatusCount(unsigned int val)
  @Description			TCFG_EEPROM_SetStatusCount					: 保存StatusCount
  @Input				val
@@ -1003,28 +1051,6 @@ void TCFG_EEPROM_SetRFDprintLv(uint8_t val)
 unsigned char TCFG_EEPROM_GetRFDprintLv(void)
 {
 	return FLASH_EEPROM_ReadByte(TCFG_RF_DPRINT_LV_OFFSET);
-}
-
-/**********************************************************************************************************
- @Function			void TCFG_EEPROM_SetEnableNBiotPSM(unsigned char val)
- @Description			TCFG_EEPROM_SetEnableNBiotPSM					: 保存EnableNBiotPSM
- @Input				val
- @Return				void
-**********************************************************************************************************/
-void TCFG_EEPROM_SetEnableNBiotPSM(unsigned char val)
-{
-	FLASH_EEPROM_WriteByte(TCFG_ENABLE_NBIOTPSM_OFFSET, val);
-}
-
-/**********************************************************************************************************
- @Function			unsigned char TCFG_EEPROM_GetEnableNBiotPSM(void)
- @Description			TCFG_EEPROM_GetEnableNBiotPSM					: 读取EnableNBiotPSM
- @Input				void
- @Return				val
-**********************************************************************************************************/
-unsigned char TCFG_EEPROM_GetEnableNBiotPSM(void)
-{
-	return FLASH_EEPROM_ReadByte(TCFG_ENABLE_NBIOTPSM_OFFSET);
 }
 
 /**********************************************************************************************************
@@ -2902,6 +2928,72 @@ char* TCFG_Utility_Get_Hardwear_Version_String(void)
 #endif
 	
 	return (char*)TCFG_SystemData.HardVersion;
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetStandardByte(unsigned int Address, unsigned char val)
+ @Description			TCFG_EEPROM_SetStandardByte
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetStandardByte(unsigned int Address, unsigned char val)
+{
+	FLASH_EEPROM_WriteByte(Address, val);
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetStandardHalfWord(unsigned int Address, unsigned short val)
+ @Description			TCFG_EEPROM_SetStandardHalfWord
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetStandardHalfWord(unsigned int Address, unsigned short val)
+{
+	FLASH_EEPROM_WriteHalfWord(Address, val);
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetStandardWord(unsigned int Address, unsigned int val)
+ @Description			TCFG_EEPROM_SetStandardWord
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetStandardWord(unsigned int Address, unsigned int val)
+{
+	FLASH_EEPROM_WriteWord(Address, val);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned char TCFG_EEPROM_GetStandardByte(unsigned int Address)
+ @Description			TCFG_EEPROM_GetStandardByte
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned char TCFG_EEPROM_GetStandardByte(unsigned int Address)
+{
+	return FLASH_EEPROM_ReadByte(Address);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned short TCFG_EEPROM_GetStandardHalfWord(unsigned int Address)
+ @Description			TCFG_EEPROM_GetStandardHalfWord
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned short TCFG_EEPROM_GetStandardHalfWord(unsigned int Address)
+{
+	return FLASH_EEPROM_ReadHalfWord(Address);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned int TCFG_EEPROM_GetStandardWord(unsigned int Address)
+ @Description			TCFG_EEPROM_GetStandardWord
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned int TCFG_EEPROM_GetStandardWord(unsigned int Address)
+{
+	return FLASH_EEPROM_ReadWord(Address);
 }
 
 /********************************************** END OF FLEE **********************************************/

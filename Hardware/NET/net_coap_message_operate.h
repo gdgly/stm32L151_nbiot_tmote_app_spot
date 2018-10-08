@@ -121,7 +121,6 @@ typedef struct
 int NET_COAP_Message_Operate_Creat_Json_Work_Info(char* outBuffer);
 int NET_COAP_Message_Operate_Creat_Json_Basic_Info(char* outBuffer);
 int NET_COAP_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer);
-int NET_COAP_Message_Operate_Creat_Json_Radar_Info(char* outBuffer);
 int NET_COAP_Message_Operate_Creat_Json_Response_Info(char* outBuffer, u16 errcode);
 int NET_COAP_Message_Operate_Creat_Qmc5883L_Data(unsigned char* outBuffer);
 

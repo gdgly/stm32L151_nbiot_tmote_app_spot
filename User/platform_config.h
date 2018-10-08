@@ -90,7 +90,7 @@
 #define	BEEP_OFF_US					230								//无源蜂鸣器关时间
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					128								//从固件版本
+#define	SOFTWARESUB					129								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 
@@ -107,7 +107,6 @@
 #define	NBCOAP_SENDCODE_WORK_INFO		1								//NB上报信息使能CoapWorkInfo
 #define	NBCOAP_SENDCODE_BASIC_INFO		1								//NB上报信息使能CoapBasicInfo
 #define	NBCOAP_SENDCODE_DYNAMIC_INFO		1								//NB上报信息使能CoapDynamicInfo
-#define	NBCOAP_SENDCODE_RADAR_INFO		0								//NB上报信息使能CoapRadarInfo
 #define	NBCOAP_SENDCODE_RESPONSE_INFO		1								//NB上报信息使能CoapResponseInfo
 #define	NBCOAP_SENDCODE_QMC_DATA			1								//NB上报信息使能CoapQmcData
 
@@ -116,7 +115,6 @@
 #define	NBMQTTSN_SENDCODE_WORK_INFO		1								//NB上报信息使能MqttSNWorkInfo
 #define	NBMQTTSN_SENDCODE_BASIC_INFO		1								//NB上报信息使能MqttSNBasicInfo
 #define	NBMQTTSN_SENDCODE_DYNAMIC_INFO	1								//NB上报信息使能MqttSNDynamicInfo
-#define	NBMQTTSN_SENDCODE_RADAR_INFO		0								//NB上报信息使能MqttSNRadarInfo
 #define	NBMQTTSN_SENDCODE_RESPONSE_INFO	1								//NB上报信息使能MqttSNResponseInfo
 #define	NBMQTTSN_SENDCODE_QMC_DATA		1								//NB上报信息使能MqttSNQmcData
 
@@ -124,7 +122,6 @@
 #define	RADIO_DOWNLOAD_CMD_NEWSN			1								//RADIO下行指令NewSn
 #define	RADIO_DOWNLOAD_CMD_CDPIP			1								//RADIO下行指令CDPIP
 #define	RADIO_DOWNLOAD_CMD_ACTIVE		1								//RADIO下行指令Active
-#define	RADIO_DOWNLOAD_CMD_RADARDBG		1								//RADIO下行指令RadarDbg
 #define	RADIO_DOWNLOAD_CMD_MAGMOD		1								//RADIO下行指令MagMod
 #define	RADIO_DOWNLOAD_CMD_NBHEART		1								//RADIO下行指令NbHeart
 #define	RADIO_DOWNLOAD_CMD_MAGINIT		1								//RADIO下行指令MagInit
@@ -146,7 +143,6 @@
 #define	NBCOAP_DOWNLOAD_CMD_NEWSN		1								//NBCOAP下行指令NewSn
 #define	NBCOAP_DOWNLOAD_CMD_CDPIP		1								//NBCOAP下行指令CDPIP
 #define	NBCOAP_DOWNLOAD_CMD_ACTIVE		1								//NBCOAP下行指令Active
-#define	NBCOAP_DOWNLOAD_CMD_RADARDBG		1								//NBCOAP下行指令RadarDbg
 #define	NBCOAP_DOWNLOAD_CMD_MAGMOD		1								//NBCOAP下行指令MagMod
 #define	NBCOAP_DOWNLOAD_CMD_NBHEART		1								//NBCOAP下行指令NbHeart
 #define	NBCOAP_DOWNLOAD_CMD_INITRADAR		1								//NBCOAP下行指令InitRadar
@@ -166,7 +162,6 @@
 #define	MQTTSN_DOWNLOAD_CMD_REBOOT		1								//MQTTSN下行指令Reboot
 #define	MQTTSN_DOWNLOAD_CMD_NEWSN		1								//MQTTSN下行指令NewSn
 #define	MQTTSN_DOWNLOAD_CMD_ACTIVE		1								//MQTTSN下行指令Active
-#define	MQTTSN_DOWNLOAD_CMD_RADARDBG		1								//MQTTSN下行指令RadarDbg
 #define	MQTTSN_DOWNLOAD_CMD_MAGMOD		1								//MQTTSN下行指令MagMod
 #define	MQTTSN_DOWNLOAD_CMD_NBHEART		1								//MQTTSN下行指令NbHeart
 #define	MQTTSN_DOWNLOAD_CMD_INITRADAR		1								//MQTTSN下行指令InitRadar
@@ -239,7 +234,6 @@ extern MQTTSN_StatusExtendTypeDef			MqttSNStatusExtendStructure;			//MqttSN Exte
 extern MQTTSN_InfoWorkTypeDef				MqttSNInfoWorkStructure;				//MqttSN Work Info Packet
 extern MQTTSN_InfoBasicTypeDef			MqttSNInfoBasicStructure;			//MqttSN Basic Info Packet
 extern MQTTSN_InfoDynamicTypeDef			MqttSNInfoDynamicStructure;			//MqttSN Dynamic Info Packet
-extern MQTTSN_InfoRadarTypeDef			MqttSNInfoRadarStructure;			//MqttSN Radar Info Packet
 extern MQTTSN_InfoResponseTypeDef			MqttSNInfoResponseStructure;			//MqttSN Response Info Packet
 #endif
 #if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
