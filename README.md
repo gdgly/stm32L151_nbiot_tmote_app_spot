@@ -1,6 +1,8 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2018-10-09 :
+	* 增加MqttSN等待应答消息调试打印。
 * 2018-10-08 :
 	* 20V129 :
 	* 版本号修改20V129。

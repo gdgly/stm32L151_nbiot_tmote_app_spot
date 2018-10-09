@@ -186,6 +186,9 @@ int main(void)
 **********************************************************************************************************/
 void MainMajorCycle(void)
 {
+	/* MqttSN等待数据接收 */
+	Radio_Trf_Printf("MqttSN Wait Ack");
+	
 	/* 小无线处理 */
 	Radio_Trf_App_Task();
 	
