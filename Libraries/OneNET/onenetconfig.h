@@ -97,10 +97,10 @@ typedef enum
 typedef enum
 {
 	ONENET_PROCESSSTATE_INIT				= 0x00,
+	ONENET_PROCESSSTATE_SUITE			= 0x01,
 	
 	
-	
-	
+	ONENET_PROCESSSTATE_LOST				= 0x08
 }ONENET_ProcessStateTypeDef;
 
 /* ONENET Message Parameter */
@@ -157,8 +157,10 @@ struct ONENET_ClientsTypeDef
 		bool							dictateEnable;
 		unsigned int					dictateTimeoutSec;
 		unsigned char					dictateInitFailureCnt;
+		unsigned char					dictateSuiteFailureCnt;
 		
 		
+		unsigned char					dictateLostFailureCnt;
 		Stm32_CalculagraphTypeDef		dictateRunTime;
 	}DictateRunCtl;
 	

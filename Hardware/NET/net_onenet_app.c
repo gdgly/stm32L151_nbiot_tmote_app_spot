@@ -154,14 +154,18 @@ void NET_ONENET_APP_ProcessExecution(ONENET_ClientsTypeDef* pClient)
 		NET_ONENET_Event_Init(pClient);
 		break;
 	
+	case ONENET_PROCESSSTATE_SUITE:
+		
+		break;
 	
 	
 	
 	
 	
 	
-	
-	
+	case ONENET_PROCESSSTATE_LOST:
+		
+		break;
 	}
 }
 
@@ -194,18 +198,18 @@ static void ONENET_NBIOT_DictateEvent_SetTime(ONENET_ClientsTypeDef* pClient, un
  @Return				void
  @attention			事件运行之前判断是否需要注入时间
 **********************************************************************************************************/
-//static void ONENET_DictateEvent_SetTime(ONENET_ClientsTypeDef* pClient, unsigned int TimeoutSec)
-//{
-//	Stm32_CalculagraphTypeDef dictateRunTime;
-//	
-//	/* It is the first time to execute */
-//	if (pClient->DictateRunCtl.dictateEnable != true) {
-//		pClient->DictateRunCtl.dictateEnable = true;
-//		pClient->DictateRunCtl.dictateTimeoutSec = TimeoutSec;
-//		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
-//		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
-//	}
-//}
+static void ONENET_DictateEvent_SetTime(ONENET_ClientsTypeDef* pClient, unsigned int TimeoutSec)
+{
+	Stm32_CalculagraphTypeDef dictateRunTime;
+	
+	/* It is the first time to execute */
+	if (pClient->DictateRunCtl.dictateEnable != true) {
+		pClient->DictateRunCtl.dictateEnable = true;
+		pClient->DictateRunCtl.dictateTimeoutSec = TimeoutSec;
+		Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
+		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
+	}
+}
 
 static unsigned char* ONENET_NBIOT_GetDictateFailureCnt(ONENET_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateNoTimeOut)
 {
@@ -273,6 +277,32 @@ static unsigned char* ONENET_NBIOT_GetDictateFailureCnt(ONENET_ClientsTypeDef* p
 	return dictateFailureCnt;
 }
 
+static unsigned char* ONENET_GetDictateFailureCnt(ONENET_ClientsTypeDef* pClient, ONENET_ProcessStateTypeDef dictateNoTimeOut)
+{
+	unsigned char* dictateFailureCnt;
+	
+	switch (dictateNoTimeOut)
+	{
+	case ONENET_PROCESSSTATE_INIT:
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateInitFailureCnt;
+		break;
+	
+	case ONENET_PROCESSSTATE_SUITE:
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateSuiteFailureCnt;
+		break;
+	
+	
+	
+	
+	
+	case ONENET_PROCESSSTATE_LOST:
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateLostFailureCnt;
+		break;
+	}
+	
+	return dictateFailureCnt;
+}
+
 /**********************************************************************************************************
  @Function			static void ONENET_NBIOT_DictateEvent_FailExecute(ONENET_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateTimeOut, \
 																					  NBIOT_DictateEventTypeDef dictateFail, \
@@ -327,6 +357,77 @@ static void ONENET_NBIOT_DictateEvent_SuccessExecute(ONENET_ClientsTypeDef* pCli
 	pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEnable = false;
 	pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent = dictateSuccess;
 	*dictateFailureCnt = 0;
+}
+
+/**********************************************************************************************************
+ @Function			static void ONENET_DictateEvent_FailExecute(ONENET_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateTimeOut, \
+																				 ONENET_ProcessStateTypeDef dictateSubTimeOut, \
+																				 ONENET_ProcessStateTypeDef dictateSubNoTimeOut)
+ @Description			ONENET_DictateEvent_FailExecute		: 事件运行控制器出错执行(内部使用)
+ @Input				pClient							: OneNET客户端实例
+					dictateTimeOut						: 事件处理错误超时
+					dictateSubTimeOut					: 事件处理错误次数溢出
+					dictateNoTimeOut					: 事件处理错误未超时
+ @Return				void
+**********************************************************************************************************/
+static void ONENET_DictateEvent_FailExecute(ONENET_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateTimeOut, \
+															 ONENET_ProcessStateTypeDef dictateSubTimeOut, \
+															 ONENET_ProcessStateTypeDef dictateSubNoTimeOut)
+{
+	unsigned char* dictateFailureCnt;
+	
+	dictateFailureCnt = ONENET_GetDictateFailureCnt(pClient, dictateSubNoTimeOut);
+	
+	if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
+		/* Dictate TimeOut */
+		pClient->DictateRunCtl.dictateEnable = false;
+		pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent = dictateTimeOut;
+		pClient->ProcessState = dictateSubTimeOut;
+		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_ONENET;
+		*dictateFailureCnt += 1;
+		if (*dictateFailureCnt > 3) {
+			*dictateFailureCnt = 0;
+			pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent = ONENET_PROCESS_STACK;
+			pClient->ProcessState = ONENET_PROCESSSTATE_LOST;
+			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_ONENET;
+		}
+	}
+	else {
+		/* Dictate isn't TimeOut */
+		pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent = ONENET_PROCESS_STACK;
+		pClient->ProcessState = dictateSubNoTimeOut;
+		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_ONENET;
+	}
+}
+
+/**********************************************************************************************************
+ @Function			static void MQTTSN_DictateEvent_SuccessExecute(MQTTSN_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateSuccess, \
+																				    MQTTSN_SubStateTypeDef dictateSubSuccess, \
+																				    MQTTSN_SubStateTypeDef dictateSubNoTimeOut, \
+																				    bool dictateFailureCntState)
+ @Description			MQTTSN_DictateEvent_SuccessExecute		: 事件运行控制器正确执行(内部使用)
+ @Input				pClient							: MQTTSN客户端实例
+					dictateSuccess						: 事件处理正确
+					dictateSubSuccess					: 事件处理正确
+					dictateNoTimeOut					: 事件处理错误未超时
+ @Return				void
+**********************************************************************************************************/
+static void ONENET_DictateEvent_SuccessExecute(ONENET_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateSuccess, \
+															    ONENET_ProcessStateTypeDef dictateSubSuccess, \
+															    ONENET_ProcessStateTypeDef dictateSubNoTimeOut, \
+															    bool dictateFailureCntState)
+{
+	unsigned char* dictateFailureCnt;
+	
+	if (dictateFailureCntState) {
+		dictateFailureCnt = ONENET_GetDictateFailureCnt(pClient, dictateSubNoTimeOut);
+		pClient->DictateRunCtl.dictateEnable = false;
+		*dictateFailureCnt = 0;
+	}
+	
+	pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent = dictateSuccess;
+	pClient->ProcessState = dictateSubSuccess;
+	pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_ONENET;
 }
 
 /**********************************************************************************************************
@@ -1052,25 +1153,32 @@ void NET_ONENET_NBIOT_Event_ParameterCheckOut(ONENET_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_ONENET_Event_Init(ONENET_ClientsTypeDef* pClient)
 {
-#ifdef DegOneNET
-	ONENET_StatusTypeDef retError;
-	s32 refer;
+	ONENET_StatusTypeDef ONStatus = ONStatus;
 	
-	retError = NBIOT_OneNET_Related_AccessConfig_AckTimeout(pClient, 20);
+	ONENET_DictateEvent_SetTime(pClient, 30);
 	
-	retError = NBIOT_OneNET_Related_Create_SuiteInstance(pClient, &refer);
-	retError = NBIOT_OneNET_Related_Add_LwM2MObject(pClient, refer, 6203, 2, (sc8*)"11", 1, 0);
-	retError = NBIOT_OneNET_Related_Send_RegisterRequest(pClient, refer, 3600, 60);
-	
-	retError = NBIOT_OneNET_Related_Respond_DiscoverRequest(pClient, refer, 50944, 1, 4, (sc8*)"1000", (sc8*)"0x200");
-	retError = NBIOT_OneNET_Related_Respond_DiscoverRequest(pClient, refer, 50944, 1, 4, (sc8*)"1000", NULL);
-	
-	retError = NBIOT_OneNET_Related_Send_DeregisterRequest(pClient, refer);
-	retError = NBIOT_OneNET_Related_Del_LwM2MObject(pClient, refer, 6203);
-	retError = NBIOT_OneNET_Related_Delete_SuiteInstance(pClient, refer);
-	
-	retError = retError;
+	/* Access Configuration LwM2MServer AckTimeout and ObserveAutoack */
+	if (((ONStatus = NBIOT_OneNET_Related_AccessConfig_LwM2MServer(pClient, ONENET_LWM2MSERVER_MODE, (sc8*)ONENET_LWM2MSERVER_ADDR, ONENET_LWM2MSERVER_PORT)) == ONENET_OK) && 
+	    ((ONStatus = NBIOT_OneNET_Related_AccessConfig_AckTimeout(pClient, ONENET_LWM2MSERVER_ACKTIMEOUT)) == ONENET_OK) && 
+	    ((ONStatus = NBIOT_OneNET_Related_AccessConfig_ObserveAutoack(pClient, ONENET_OBSAUTOACK_TYPE)) == ONENET_OK)) {
+		/* Dictate execute is Success */
+		ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_SUITE, ONENET_PROCESSSTATE_INIT, true);
+#ifdef ONENET_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("OneNET Access Config Ok");
 #endif
+	}
+	else {
+		/* Dictate execute is Fail */
+		ONENET_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, ONENET_PROCESSSTATE_INIT, ONENET_PROCESSSTATE_INIT);
+#ifdef ONENET_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("OneNET Access Config Fail ECde %d", ONStatus);
+	#else
+		Radio_Trf_Debug_Printf_Level2("OneNET Access Config Fail");
+	#endif
+#endif
+		return;
+	}
 }
 
 

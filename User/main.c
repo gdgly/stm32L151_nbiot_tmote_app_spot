@@ -265,6 +265,7 @@ void MainRollingUpwardsActived(void)
 	MainHandleRoutine();
 	
 	if (!((NETCoapNeedSendCode.WorkInfoWait > 0) && (NETMqttSNNeedSendCode.InfoWorkWait > 0))) {
+#if PRODUCTTEST_READ_TYPE
 		if (ProductTest_Read()) {
 			/* NBIOT APP Task */
 			NET_NBIOT_App_Task();
@@ -278,6 +279,10 @@ void MainRollingUpwardsActived(void)
 			}
 			Radio_Trf_Printf("imei:%s", TCFG_Utility_Get_Nbiot_Imei_String());
 		}
+#else
+		/* NBIOT APP Task */
+		NET_NBIOT_App_Task();
+#endif
 	}
 	
 	/* 小无线处理 */
@@ -348,6 +353,7 @@ void MainRollingEnteredDownSleepKeepActived(void)
 	MainHandleRoutine();
 	
 	if (!((NETCoapNeedSendCode.WorkInfoWait > 0) && (NETMqttSNNeedSendCode.InfoWorkWait > 0))) {
+#if PRODUCTTEST_READ_TYPE
 		if (ProductTest_Read()) {
 			/* NBIOT APP Task */
 			NET_NBIOT_App_Task();
@@ -359,6 +365,10 @@ void MainRollingEnteredDownSleepKeepActived(void)
 				NBIOTPOWER(OFF);
 			}
 		}
+#else
+		/* NBIOT APP Task */
+		NET_NBIOT_App_Task();
+#endif
 	}
 }
 

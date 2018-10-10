@@ -48,7 +48,10 @@ void OneNET_Client_Init(ONENET_ClientsTypeDef* pClient, ONENET_LWM2MTransportTyp
 	pClient->DictateRunCtl.dictateEnable					= false;
 	pClient->DictateRunCtl.dictateTimeoutSec				= 0;
 	pClient->DictateRunCtl.dictateInitFailureCnt				= 0;
+	pClient->DictateRunCtl.dictateSuiteFailureCnt			= 0;
 	
+	
+	pClient->DictateRunCtl.dictateLostFailureCnt				= 0;
 	
 	
 	
