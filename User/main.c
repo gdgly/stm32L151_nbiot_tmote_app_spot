@@ -93,7 +93,7 @@ int main(void)
 	}
 	if (TCFG_EEPROM_CheckNewSoftware() == true) {											//检测新软件版本号
 		TCFG_EEPROM_WriteParameterData();													//写入系统参数信息
-	} 
+	}
 	TCFG_EEPROM_SystemInfo_Init();														//系统运行信息初始化
 	
 	BEEP_CtrlRepeat_Extend(5, 50, 25);														//蜂鸣器

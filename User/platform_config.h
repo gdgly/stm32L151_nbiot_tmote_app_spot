@@ -28,6 +28,11 @@
 #define	NETONENET						2								//ONENET
 #define	NETPROTOCAL					NETCOAP							//网络模式
 
+#define	NETCHINATELECOM				00								//中国电信
+#define	NETCHINAMOBILE					10								//中国移动
+#define	NETCHINAUNICOM					20								//中国联通
+#define	NETCARRIER					NETCHINATELECOM					//运营商
+
 #define	NBIOT_PRINT_ERRORCODE_DISABLE		0
 #define	NBIOT_PRINT_ERRORCODE_ENABLE		1
 #define	NBIOT_PRINT_ERROR_CODE_TYPE		NBIOT_PRINT_ERRORCODE_ENABLE			//NBIOT输出错误码模式

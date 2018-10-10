@@ -352,8 +352,8 @@ void TCFG_EEPROM_WriteParameterData(void)
 {
 	int serverip[4];
 	
-	TCFG_EEPROM_SetSoftwareMajor(SOFTWAREMAJOR);
-	TCFG_EEPROM_SetSoftwareSub(SOFTWARESUB);
+	TCFG_EEPROM_SetSoftwareMajor(TCFG_Utility_Get_Major_Softnumber());
+	TCFG_EEPROM_SetSoftwareSub(TCFG_Utility_Get_Sub_Softnumber());
 	
 	/* 升级信号值限制下限 */
 	TCFG_SystemData.UpgradeLimitRssi = NBCOAP_PCP_UPGRADE_LIMIT_RSSI;
@@ -426,7 +426,7 @@ unsigned char TCFG_EEPROM_GetSoftwareSub(void)
 **********************************************************************************************************/
 bool TCFG_EEPROM_CheckNewSoftware(void)
 {
-	if ((TCFG_EEPROM_GetSoftwareMajor() != SOFTWAREMAJOR) || (TCFG_EEPROM_GetSoftwareSub() != SOFTWARESUB)) {
+	if ((TCFG_EEPROM_GetSoftwareMajor() != TCFG_Utility_Get_Major_Softnumber()) || (TCFG_EEPROM_GetSoftwareSub() != TCFG_Utility_Get_Sub_Softnumber())) {
 		return true;
 	}
 	else {
@@ -2832,7 +2832,7 @@ unsigned short TCFG_Utility_Get_DistanceRange(void)
 **********************************************************************************************************/
 unsigned char TCFG_Utility_Get_Major_Softnumber(void)
 {
-	return SOFTWAREMAJOR + NETPROTOCAL;
+	return SOFTWAREMAJOR + NETPROTOCAL + NETCARRIER;
 }
 
 /**********************************************************************************************************
