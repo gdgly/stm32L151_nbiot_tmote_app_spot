@@ -18,14 +18,6 @@
 
 #define DNS_DEBUG_LOG_RF_PRINT											//定义开启RF输出DEBUG信息
 
-#define DNS_NBIOT_BAND1					NBand_2100MHz
-#define DNS_NBIOT_BAND3					NBand_1800MHz
-#define DNS_NBIOT_BAND5					NBand_850MHz
-#define DNS_NBIOT_BAND8					NBand_900MHz
-#define DNS_NBIOT_BAND20					NBand_800MHz
-#define DNS_NBIOT_BAND28					NBand_700MHz
-#define DNS_NBIOT_BAND_TYPE				DNS_NBIOT_BAND8
-
 void NET_DNS_APP_PollExecution(DNS_ClientsTypeDef* pClient);					//DNS逻辑处理
 void NET_DNS_NBIOT_Event_StopMode(DNS_ClientsTypeDef* pClient);					//停止模式
 void NET_DNS_NBIOT_Event_HardwareReboot(DNS_ClientsTypeDef* pClient);				//硬件重启

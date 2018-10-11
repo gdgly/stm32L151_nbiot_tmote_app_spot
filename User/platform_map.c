@@ -2832,7 +2832,7 @@ unsigned short TCFG_Utility_Get_DistanceRange(void)
 **********************************************************************************************************/
 unsigned char TCFG_Utility_Get_Major_Softnumber(void)
 {
-	return SOFTWAREMAJOR + NETPROTOCAL + NETCARRIER;
+	return SOFTWAREMAJOR + NETPROTOCAL + NETCARRIERTYPE;
 }
 
 /**********************************************************************************************************
