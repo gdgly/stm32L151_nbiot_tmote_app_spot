@@ -181,14 +181,15 @@ void RadioPrintUpgradeinfo(void)
 	PCP_APPInfoTypeDef APP1Info;
 	PCP_APPInfoTypeDef APP2Info;
 	
-	if (GD25Q80CSIG_OK != GD25Q_SPIFLASH_Get_Status()) {
-		Radio_Trf_Printf("SPI FLASH Fail");
-		return;
-	}
-	
 	Radio_Rf_Interrupt_Deinit();
 	GD25Q_SPIFLASH_WakeUp();
 	GD25Q_SPIFLASH_Init();
+	
+	if (GD25Q80CSIG_OK != GD25Q_SPIFLASH_Get_Status()) {
+		GD25Q_SPIFLASH_PowerDown();
+		Radio_Trf_Printf("SPI FLASH Fail");
+		return;
+	}
 	
 	APP1Info.Status	= GD25Q_SPIFLASH_GetByte(APP1_INFO_UPGRADE_STATUS_OFFSET);
 	APP1Info.BaseAddr	= GD25Q_SPIFLASH_GetWord(APP1_INFO_UPGRADE_BASEADDR_OFFSET);

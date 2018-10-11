@@ -66,9 +66,16 @@ void GD25Q_SPIFLASH_Init(void)
 	}
 	
 	GD25Q_SPIFLASH_WakeUp();
-	ReadIdentificationID = GD25Q_SPIFLASH_ReadIdentificationID();
-	if ((ReadIdentificationID != GD25Q80CSIGIdentificationID) && (ReadIdentificationID != GD25Q40BSIGIdentificationID)) {
-		GD25QStatus = GD25Q80CSIG_ERROR;
+	
+	for (int nCount = 0; nCount < 3; nCount++) {
+		ReadIdentificationID = GD25Q_SPIFLASH_ReadIdentificationID();
+		if ((ReadIdentificationID != GD25Q80CSIGIdentificationID) && (ReadIdentificationID != GD25Q40BSIGIdentificationID)) {
+			GD25QStatus = GD25Q80CSIG_ERROR;
+		}
+		else {
+			GD25QStatus = GD25Q80CSIG_OK;
+			break;
+		}
 	}
 }
 
