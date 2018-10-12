@@ -4,9 +4,9 @@
 
           例 : 20v125_Coap_China_Telecom_Auto_180913
 
-	主版本号 : 20 ---> CoAP
-		21 ---> MqttSN
-		22 ---> OneNET
+	主版本号 :	2 --->中国电信                    0 ---> CoAP
+		3 --->中国移动                    1 ---> MqttSN
+		4 --->中国联通                    2 ---> OneNET
 	
 	次版本号 :	0~255
 
