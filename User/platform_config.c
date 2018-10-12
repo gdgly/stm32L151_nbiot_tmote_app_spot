@@ -187,7 +187,7 @@ void RadioPrintUpgradeinfo(void)
 	
 	if (GD25Q80CSIG_OK != GD25Q_SPIFLASH_Get_Status()) {
 		GD25Q_SPIFLASH_PowerDown();
-		Radio_Trf_Printf("SPI FLASH Fail");
+		Radio_Trf_Printf("SPI FLASH Fail %d", GD25Q_SPIFLASH_Get_Status());
 		return;
 	}
 	

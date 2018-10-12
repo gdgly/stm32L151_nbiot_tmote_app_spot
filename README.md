@@ -1,6 +1,8 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2018-10-12 :
+	* SPIFlash 读取型号ID有点问题，改为读取设备ID。
 * 2018-10-11 :
 	* 更换了雷达库,便于区分覆水场景还是普通场景下切换到了无车状态。--by Bindaz
 	* 修复Radio下发命令不同设备号蜂鸣器也叫。

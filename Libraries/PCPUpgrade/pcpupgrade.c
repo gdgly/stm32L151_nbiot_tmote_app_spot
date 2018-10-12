@@ -274,14 +274,14 @@ PCP_ResultCodeTypeDef PCP_Upgrade_DataDownload(PCP_ClientsTypeDef* pClient, u16 
 		/* 该分片数据已写入 */
 		pClient->UpgradeExecution.PackSliceIndex = SliceIndex + 1;
 		GD25Q_SPIFLASH_PowerDown();
-		Radio_Trf_Printf("Pack has been write");
+		Radio_Trf_Printf("PackSlice has been write");
 		goto exit;
 	}
 	
 	if (UpgradeDataLength > pClient->UpgradeExecution.PackSliceSize) {
 		/* 该分片数据长度异常 */
 		GD25Q_SPIFLASH_PowerDown();
-		Radio_Trf_Printf("Pack Size Fail");
+		Radio_Trf_Printf("PackSlice Size Fail");
 		goto exit;
 	}
 	
@@ -292,7 +292,7 @@ PCP_ResultCodeTypeDef PCP_Upgrade_DataDownload(PCP_ClientsTypeDef* pClient, u16 
 	
 	pClient->UpgradeExecution.PackSliceIndex = SliceIndex + 1;
 	GD25Q_SPIFLASH_PowerDown();
-	Radio_Trf_Printf("Pack wt flash");
+	Radio_Trf_Printf("Pack write to flash");
 	
 exit:
 	return PCPResultCodeStatus;

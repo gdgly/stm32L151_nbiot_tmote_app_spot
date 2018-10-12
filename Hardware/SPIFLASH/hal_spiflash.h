@@ -163,7 +163,8 @@
 typedef enum
 {
 	GD25Q80CSIG_OK								= 0x00,
-	GD25Q80CSIG_ERROR							= 0x01
+	GD25Q80CSIG_ERROR							= 0x01,
+	GD25Q80CSIG_SPI_ERROR						= 0x02
 }GD25Q_StatusTypeDef;
 
 extern SPI_HandleTypeDef GD25Q_SPIFLASH_Handler;
