@@ -103,6 +103,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_HardwarePoweroff(NBIOT_ClientsTypeDef* pClie
 **********************************************************************************************************/
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_HardwareReboot(NBIOT_ClientsTypeDef* pClient, u32 rebootTimeoutMS)
 {
+	static char RebootErrornCount = 0;
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	GPIO_InitTypeDef GPIO_Initure;
 	
@@ -132,11 +133,21 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_HardwareReboot(NBIOT_ClientsTypeDef* pClient
 	NBStatus = pClient->ATCmdStack->Read(pClient->ATCmdStack);
 	/* NBIOT串口波特率计算 */
 	if (NBStatus == NBIOT_OK) {
+		/* Dictate execute is Success */
+		RebootErrornCount = 0;
 		NBIOTBaudRate.Baud = 10 * ((NBIOTBaudRate.NBIOTBaudRateCal.TotalNum * 10000) / 
 							 ((NBIOTBaudRate.NBIOTBaudRateCal.EndMs - NBIOTBaudRate.NBIOTBaudRateCal.StartMs - 1) * 10 + 
 							 ((SysTick->LOAD - NBIOTBaudRate.NBIOTBaudRateCal.EndClock + NBIOTBaudRate.NBIOTBaudRateCal.StartClock) * 10) / SysTick->LOAD));
 		if ((NBIOTBaudRate.Baud > 8600) && (NBIOTBaudRate.Baud < 10600)) {
 			Uart1_Init(NBIOTBaudRate.Baud);
+		}
+	}
+	else {
+		/* Dictate execute is Fail */
+		RebootErrornCount += 1;
+		if (RebootErrornCount > NBIOT_MODULE_REBOOT_ERROR_COUNT) {
+			RebootErrornCount = 0;
+			Stm32_System_Software_Reboot();
 		}
 	}
 	NBIOTBaudRate.EnBaudRateState = false;

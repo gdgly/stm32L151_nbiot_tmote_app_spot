@@ -214,6 +214,8 @@
 
 #define	NBIOT_HEART_DATA_HOURS			4								//NB心跳数据包时间
 
+#define	NBIOT_MODULE_REBOOT_ERROR_COUNT	5								//NB重启错误限定次数
+
 #define	UPLOAD_QMCDATA_MAXPACK			16								//QMC一次上传最大包数
 
 #define	DNS_SERVER_HOST_IP				"114.114.114.114"					//DNS服务器默认配置
