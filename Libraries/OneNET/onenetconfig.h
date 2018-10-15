@@ -12,6 +12,12 @@
 #define ONENET_BUFFER_SIZE				512
 #define ONENET_DATASTACK_SIZE				512
 
+/* ONENET 对象设置 */
+#define ONENET_OBJECT_OBJID				6203												// 对象ID
+#define ONENET_OBJECT_INSCOUNT			2												// 实例个数
+#define ONENET_OBJECT_INSBITMAP			"11"												// 实例位使能
+#define ONENET_OBJECT_ATTRCOUNT			1												// 可读写属性个数
+#define ONENET_OBJECT_ACTCOUNT			0												// 可执行属性个数
 
 typedef struct ONENET_ParameterTypeDef		ONENET_ParameterTypeDef;
 typedef struct ONENET_LWM2MTransportTypeDef	ONENET_LWM2MTransportTypeDef;
@@ -98,6 +104,9 @@ typedef enum
 {
 	ONENET_PROCESSSTATE_INIT				= 0x00,
 	ONENET_PROCESSSTATE_SUITE			= 0x01,
+	ONENET_PROCESSSTATE_OBJECT			= 0x02,
+	ONENET_PROCESSSTATE_OPEN				= 0x03,
+	
 	
 	
 	ONENET_PROCESSSTATE_LOST				= 0x08
@@ -116,11 +125,22 @@ typedef struct
 	s8								flag;											/*< The message indication >*/
 }ONENET_MessageParaTypeDef;
 
+/* ONENET Object Parameter */
+typedef struct
+{
+	u32								objId;											/*< Object identifier >*/
+	u16								insCount;											/*< The instance count >*/
+	sc8*								insBitmap;										/*< The instance bitmap >*/
+	u16								attrCount;										/*< The attribute count >*/
+	u16								actCount;											/*< The action count >*/
+}ONENET_ObjectParaTypeDef;
+
 /* ONENET Parameter */
 struct ONENET_ParameterTypeDef
 {
 	char								suiteVersion[20];									//通信套件版本
-	
+	int								suiteRefer;										//通信套件
+	ONENET_ObjectParaTypeDef				objectInfo;										//对象信息
 	
 	
 };
@@ -158,6 +178,8 @@ struct ONENET_ClientsTypeDef
 		unsigned int					dictateTimeoutSec;
 		unsigned char					dictateInitFailureCnt;
 		unsigned char					dictateSuiteFailureCnt;
+		unsigned char					dictateObjectFailureCnt;
+		unsigned char					dictateOpenFailureCnt;
 		
 		
 		unsigned char					dictateLostFailureCnt;

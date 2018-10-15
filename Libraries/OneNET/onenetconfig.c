@@ -49,6 +49,8 @@ void OneNET_Client_Init(ONENET_ClientsTypeDef* pClient, ONENET_LWM2MTransportTyp
 	pClient->DictateRunCtl.dictateTimeoutSec				= 0;
 	pClient->DictateRunCtl.dictateInitFailureCnt				= 0;
 	pClient->DictateRunCtl.dictateSuiteFailureCnt			= 0;
+	pClient->DictateRunCtl.dictateObjectFailureCnt			= 0;
+	pClient->DictateRunCtl.dictateOpenFailureCnt				= 0;
 	
 	
 	pClient->DictateRunCtl.dictateLostFailureCnt				= 0;
@@ -56,6 +58,11 @@ void OneNET_Client_Init(ONENET_ClientsTypeDef* pClient, ONENET_LWM2MTransportTyp
 	
 	
 	
+	pClient->Parameter.objectInfo.objId					= ONENET_OBJECT_OBJID;
+	pClient->Parameter.objectInfo.insCount					= ONENET_OBJECT_INSCOUNT;
+	pClient->Parameter.objectInfo.insBitmap					= (sc8*)ONENET_OBJECT_INSBITMAP;
+	pClient->Parameter.objectInfo.attrCount					= ONENET_OBJECT_ATTRCOUNT;
+	pClient->Parameter.objectInfo.actCount					= ONENET_OBJECT_ACTCOUNT;
 	
 	pClient->ProcessState								= ONENET_PROCESSSTATE_INIT;
 	pClient->LWM2MStack									= NetSock;

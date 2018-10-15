@@ -87,7 +87,7 @@
     - [五、NBIoT上报平台数据解析](#五nbiot上报平台数据解析)
         - [1.WorkInfo:](#1workinfo)
         - [2.BasicInfo:](#2basicinfo)
-        - [３.DynamicInfo:](#３dynamicinfo)
+        - [3.DynamicInfo:](#3dynamicinfo)
     - [六、设备异常分析](#六设备异常分析)
         - [1.设备运行异常，处理器运行不起来，30秒左右重启设备，且会进入Boot模式出不来。](#1设备运行异常处理器运行不起来30秒左右重启设备且会进入boot模式出不来)
         - [2.小无线打印ICCID Error。](#2小无线打印iccid-error)
@@ -669,7 +669,7 @@
 * Ver : NBIoT固件版本
 * Rmold : 雷达类型
 
-### ３.DynamicInfo:
+### 3.DynamicInfo:
 ```C
 	sprintf(outBuffer, 
 		"{"

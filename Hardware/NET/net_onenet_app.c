@@ -155,9 +155,16 @@ void NET_ONENET_APP_ProcessExecution(ONENET_ClientsTypeDef* pClient)
 		break;
 	
 	case ONENET_PROCESSSTATE_SUITE:
-		
+		NET_ONENET_Event_Suite(pClient);
 		break;
 	
+	case ONENET_PROCESSSTATE_OBJECT:
+		NET_ONENET_Event_Object(pClient);
+		break;
+	
+	case ONENET_PROCESSSTATE_OPEN:
+		NET_ONENET_Event_Open(pClient);
+		break;
 	
 	
 	
@@ -289,6 +296,14 @@ static unsigned char* ONENET_GetDictateFailureCnt(ONENET_ClientsTypeDef* pClient
 	
 	case ONENET_PROCESSSTATE_SUITE:
 		dictateFailureCnt = &pClient->DictateRunCtl.dictateSuiteFailureCnt;
+		break;
+	
+	case ONENET_PROCESSSTATE_OBJECT:
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateObjectFailureCnt;
+		break;
+	
+	case ONENET_PROCESSSTATE_OPEN:
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateOpenFailureCnt;
 		break;
 	
 	
@@ -1181,11 +1196,94 @@ void NET_ONENET_Event_Init(ONENET_ClientsTypeDef* pClient)
 	}
 }
 
+/**********************************************************************************************************
+ @Function			void NET_ONENET_Event_Suite(ONENET_ClientsTypeDef* pClient)
+ @Description			NET_ONENET_Event_Suite				: SUITE
+ @Input				pClient							: OneNET客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_ONENET_Event_Suite(ONENET_ClientsTypeDef* pClient)
+{
+	ONENET_StatusTypeDef ONStatus = ONStatus;
+	
+	ONENET_DictateEvent_SetTime(pClient, 30);
+	
+	/* Create SuiteInstance and Check Read SuiteVersion */
+	if (((ONStatus = NBIOT_OneNET_Related_Create_SuiteInstance(pClient, &pClient->Parameter.suiteRefer)) == ONENET_OK) && 
+	    ((ONStatus = NBIOT_OneNET_Related_CheckRead_SuiteVersion(pClient)) == ONENET_OK)) {
+		/* Dictate execute is Success */
+		ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_OBJECT, ONENET_PROCESSSTATE_SUITE, true);
+#ifdef ONENET_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("OneNET Suite Create %d.%s Ok", pClient->Parameter.suiteRefer, pClient->Parameter.suiteVersion);
+#endif
+	}
+	else {
+		/* Dictate execute is Fail */
+		ONENET_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, ONENET_PROCESSSTATE_INIT, ONENET_PROCESSSTATE_SUITE);
+#ifdef ONENET_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("OneNET Suite Create Fail ECde %d", ONStatus);
+	#else
+		Radio_Trf_Debug_Printf_Level2("OneNET Suite Create Fail");
+	#endif
+#endif
+		return;
+	}
+}
 
+/**********************************************************************************************************
+ @Function			void NET_ONENET_Event_Object(ONENET_ClientsTypeDef* pClient)
+ @Description			NET_ONENET_Event_Object				: OBJECT
+ @Input				pClient							: OneNET客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_ONENET_Event_Object(ONENET_ClientsTypeDef* pClient)
+{
+	ONENET_StatusTypeDef ONStatus = ONStatus;
+	
+	ONENET_DictateEvent_SetTime(pClient, 30);
+	
+	/* Add LwM2M Object */
+	if ((ONStatus = NBIOT_OneNET_Related_Add_LwM2MObject(pClient, pClient->Parameter.suiteRefer, \
+													  pClient->Parameter.objectInfo.objId, \
+													  pClient->Parameter.objectInfo.insCount, \
+													  pClient->Parameter.objectInfo.insBitmap, \
+													  pClient->Parameter.objectInfo.attrCount, \
+													  pClient->Parameter.objectInfo.actCount)) == ONENET_OK) {
+		/* Dictate execute is Success */
+		ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_OPEN, ONENET_PROCESSSTATE_OBJECT, true);
+#ifdef ONENET_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("OneNET LMObject Add Ok");
+#endif
+	}
+	else {
+		/* Dictate execute is Fail */
+		ONENET_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, ONENET_PROCESSSTATE_INIT, ONENET_PROCESSSTATE_OBJECT);
+#ifdef ONENET_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("OneNET LMObject Add Fail ECde %d", ONStatus);
+	#else
+		Radio_Trf_Debug_Printf_Level2("OneNET LMObject Add Fail");
+	#endif
+#endif
+		return;
+	}
+}
 
-
-
-
+/**********************************************************************************************************
+ @Function			void NET_ONENET_Event_Open(ONENET_ClientsTypeDef* pClient)
+ @Description			NET_ONENET_Event_Open				: OPEN
+ @Input				pClient							: OneNET客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_ONENET_Event_Open(ONENET_ClientsTypeDef* pClient)
+{
+	
+	
+	
+	
+	
+}
 
 
 
