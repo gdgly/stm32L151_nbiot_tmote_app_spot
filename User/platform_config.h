@@ -127,6 +127,14 @@
 #define	NBMQTTSN_SENDCODE_RESPONSE_INFO	1								//NB上报信息使能MqttSNResponseInfo
 #define	NBMQTTSN_SENDCODE_QMC_DATA		1								//NB上报信息使能MqttSNQmcData
 
+#define	NBONENET_SENDCODE_SHORT_STATUS	0								//NB上报信息使能OneNETShortStatus
+#define	NBONENET_SENDCODE_LONG_STATUS		1								//NB上报信息使能OneNETLongStatus
+#define	NBONENET_SENDCODE_WORK_INFO		1								//NB上报信息使能OneNETWorkInfo
+#define	NBONENET_SENDCODE_BASIC_INFO		1								//NB上报信息使能OneNETBasicInfo
+#define	NBONENET_SENDCODE_DYNAMIC_INFO	1								//NB上报信息使能OneNETDynamicInfo
+#define	NBONENET_SENDCODE_RESPONSE_INFO	1								//NB上报信息使能OneNETResponseInfo
+#define	NBONENET_SENDCODE_QMC_DATA		1								//NB上报信息使能OneNETQmcData
+
 #define	RADIO_DOWNLOAD_CMD_REBOOT		1								//RADIO下行指令Reboot
 #define	RADIO_DOWNLOAD_CMD_NEWSN			1								//RADIO下行指令NewSn
 #define	RADIO_DOWNLOAD_CMD_CDPIP			1								//RADIO下行指令CDPIP

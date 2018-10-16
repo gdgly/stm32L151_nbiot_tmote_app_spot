@@ -30,6 +30,7 @@
 
 NETCoapNeedSendCodeTypeDef	NETCoapNeedSendCode = NETCoapNeedSendCode_initializer;
 NETMqttSNNeedSendCodeTypeDef	NETMqttSNNeedSendCode = NETMqttSNNeedSendCode_initializer;
+NETOneNETNeedSendCodeTypeDef	NETOneNETNeedSendCode = NETOneNETNeedSendCode_initializer;
 
 /**********************************************************************************************************
  @Function			void NET_NBIOT_Initialization(void)
@@ -684,8 +685,209 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 	#endif
 #endif
 	}
-	
 #endif
+	
+#elif NETPROTOCAL == NETONENET
+	
+	u32 len = 0;
+	SpotStatusTypedef SpotStatusData;
+	
+	/* 检查是否有数据需要发送 */
+	if (Inspect_Message_SpotStatusisEmpty() == false) {
+	#if NBONENET_SENDCODE_LONG_STATUS
+		NETOneNETNeedSendCode.LongStatus = 1;
+	#endif
+	}
+	
+	/* ONENET SHORT STATUS DATA ENQUEUE */
+	if (NETOneNETNeedSendCode.ShortStatus) {
+#if NBONENET_SENDCODE_SHORT_STATUS
+		Inspect_Message_SpotStatusDequeue(&SpotStatusData);
+		OneNETShortStructure.HeadPacket.DeviceSN			= TCFG_EEPROM_Get_MAC_SN();
+		OneNETShortStructure.HeadPacket.DataLen				= 0x00;
+		OneNETShortStructure.HeadPacket.ProtocolType			= 0x00;
+		OneNETShortStructure.HeadPacket.Reserved1			= 0x00;
+		OneNETShortStructure.HeadPacket.ProtocolVersion		= 0x00;
+		OneNETShortStructure.HeadPacket.Reserved2			= 0x00;
+		OneNETShortStructure.HeadPacket.PacketType			= 0x05;
+		OneNETShortStructure.HeadPacket.PacketNumber			= 0x00;
+		OneNETShortStructure.MsgPacket.DestSN				= 0x00;
+		OneNETShortStructure.MsgPacket.Version				= 0x01;
+		OneNETShortStructure.MsgPacket.Type				= ONENET_MSGTYPE_TYPE_SHORT_STATUS;
+		OneNETShortStructure.DateTime						= SpotStatusData.unixTime;
+		OneNETShortStructure.SpotStatus					= SpotStatusData.spot_status;
+		OneNETShortStructure.SpotCount					= SpotStatusData.spot_count;
+		NET_OneNET_Message_SendDataEnqueue((unsigned char *)&OneNETShortStructure, sizeof(OneNETShortStructure));
+		NETOneNETNeedSendCode.ShortStatus = 0;
+		Inspect_Message_SpotStatusOffSet();
+		TCFG_Utility_Add_OneNET_SentCount();
+#endif
+	}
+	/* ONENET LONG STATUS DATA ENQUEUE */
+	else if (NETOneNETNeedSendCode.LongStatus) {
+#if NBONENET_SENDCODE_LONG_STATUS
+		Inspect_Message_SpotStatusDequeue(&SpotStatusData);
+		OneNETLongStructure.HeadPacket.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
+		OneNETLongStructure.HeadPacket.DataLen				= 0x00;
+		OneNETLongStructure.HeadPacket.ProtocolType			= 0x00;
+		OneNETLongStructure.HeadPacket.Reserved1			= 0x00;
+		OneNETLongStructure.HeadPacket.ProtocolVersion		= 0x00;
+		OneNETLongStructure.HeadPacket.Reserved2			= 0x00;
+		OneNETLongStructure.HeadPacket.PacketType			= 0x05;
+		OneNETLongStructure.HeadPacket.PacketNumber			= 0x00;
+		OneNETLongStructure.MsgPacket.DestSN				= 0x00;
+#if ONENET_STATUS_MSG_VERSION_TYPE == ONENET_STATUS_MSG_VERSION_33BYTE_V1
+		OneNETLongStructure.MsgPacket.Version				= 0x01;
+#elif ONENET_STATUS_MSG_VERSION_TYPE == ONENET_STATUS_MSG_VERSION_77BYTE_V2
+		OneNETLongStructure.MsgPacket.Version				= 0x02;
+#endif
+		OneNETLongStructure.MsgPacket.Type					= ONENET_MSGTYPE_TYPE_LONG_STATUS;
+		OneNETLongStructure.DateTime						= SpotStatusData.unixTime;
+		OneNETLongStructure.SpotStatus					= SpotStatusData.spot_status;
+		OneNETLongStructure.SpotCount						= SpotStatusData.spot_count;
+		OneNETLongStructure.MagneticX						= SpotStatusData.qmc5883lData.X_Now;
+		OneNETLongStructure.MagneticY						= SpotStatusData.qmc5883lData.Y_Now;
+		OneNETLongStructure.MagneticZ						= SpotStatusData.qmc5883lData.Z_Now;
+		OneNETLongStructure.MagneticDiff					= SpotStatusData.qmc5883lDiff.BackVal_Diff;
+		OneNETLongStructure.RadarDistance					= SpotStatusData.radarData.DisVal;
+		OneNETLongStructure.RadarStrength					= SpotStatusData.radarData.MagVal;
+		OneNETLongStructure.RadarCoverCount				= SpotStatusData.radarData.Diff_v2;
+		OneNETLongStructure.RadarDiff						= SpotStatusData.radarData.Diff;
+#if ONENET_STATUS_MSG_VERSION_TYPE == ONENET_STATUS_MSG_VERSION_77BYTE_V2
+		OneNETLongStructure.NBRssi						= TCFG_Utility_Get_Nbiot_Rssi_IntVal();
+		OneNETLongStructure.NBSnr						= TCFG_Utility_Get_Nbiot_RadioSNR();
+		OneNETLongStructure.MCUTemp						= TCFG_Utility_Get_Device_Temperature();
+		OneNETLongStructure.QMCTemp						= Qmc5883lData.temp_now;
+		OneNETLongStructure.MagneticBackX					= Qmc5883lData.X_Back;
+		OneNETLongStructure.MagneticBackY					= Qmc5883lData.Y_Back;
+		OneNETLongStructure.MagneticBackZ					= Qmc5883lData.Z_Back;
+		OneNETLongStructure.Debugval						= SpotStatusData.radarData.timedomain_dif;
+		for (int i = 0; i < 16; i++) {
+			OneNETLongStructure.Radarval[i] = radar_targetinfo.pMagNow[i+2]>255?255:radar_targetinfo.pMagNow[i+2];
+			OneNETLongStructure.Radarback[i] = radar_targetinfo.pMagBG[i+2]>255?255:radar_targetinfo.pMagBG[i+2];
+		}
+#endif
+		NET_OneNET_Message_SendDataEnqueue((unsigned char *)&OneNETLongStructure, sizeof(OneNETLongStructure));
+		NETOneNETNeedSendCode.LongStatus = 0;
+		Inspect_Message_SpotStatusOffSet();
+		TCFG_Utility_Add_OneNET_SentCount();
+#endif
+	}
+	/* ONENET WORK INFO DATA ENQUEUE */
+	else if (NETOneNETNeedSendCode.WorkInfo) {
+#if NBONENET_SENDCODE_WORK_INFO
+		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
+			return;
+		}
+		memset((void*)&OneNETInfoStructure.InfoData, 0, sizeof(OneNETInfoStructure.InfoData));
+		OneNETInfoStructure.HeadPacket.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
+		OneNETInfoStructure.HeadPacket.DataLen				= 0x00;
+		OneNETInfoStructure.HeadPacket.ProtocolType			= 0x00;
+		OneNETInfoStructure.HeadPacket.Reserved1			= 0x00;
+		OneNETInfoStructure.HeadPacket.ProtocolVersion		= 0x00;
+		OneNETInfoStructure.HeadPacket.Reserved2			= 0x00;
+		OneNETInfoStructure.HeadPacket.PacketType			= 0x05;
+		OneNETInfoStructure.HeadPacket.PacketNumber			= 0x00;
+		OneNETInfoStructure.MsgPacket.DestSN				= 0x00;
+		OneNETInfoStructure.MsgPacket.Version				= 0x01;
+		OneNETInfoStructure.MsgPacket.Type					= ONENET_MSGTYPE_TYPE_WORK_INFO;
+		len = NET_ONENET_Message_Operate_Creat_Json_Work_Info((char *)&OneNETInfoStructure.InfoData);
+		NET_OneNET_Message_SendDataEnqueue((unsigned char *)&OneNETInfoStructure, sizeof(OneNETInfoStructure) - sizeof(OneNETInfoStructure.InfoData) + len);
+		NETOneNETNeedSendCode.WorkInfo = 0;
+		TCFG_Utility_Add_OneNET_SentCount();
+#endif
+	}
+	/* ONENET BASIC INFO DATA ENQUEUE */
+	else if (NETOneNETNeedSendCode.BasicInfo) {
+#if NBONENET_SENDCODE_BASIC_INFO
+		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
+			return;
+		}
+		memset((void*)&OneNETInfoStructure.InfoData, 0, sizeof(OneNETInfoStructure.InfoData));
+		OneNETInfoStructure.HeadPacket.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
+		OneNETInfoStructure.HeadPacket.DataLen				= 0x00;
+		OneNETInfoStructure.HeadPacket.ProtocolType			= 0x00;
+		OneNETInfoStructure.HeadPacket.Reserved1			= 0x00;
+		OneNETInfoStructure.HeadPacket.ProtocolVersion		= 0x00;
+		OneNETInfoStructure.HeadPacket.Reserved2			= 0x00;
+		OneNETInfoStructure.HeadPacket.PacketType			= 0x05;
+		OneNETInfoStructure.HeadPacket.PacketNumber			= 0x00;
+		OneNETInfoStructure.MsgPacket.DestSN				= 0x00;
+		OneNETInfoStructure.MsgPacket.Version				= 0x01;
+		OneNETInfoStructure.MsgPacket.Type					= ONENET_MSGTYPE_TYPE_BASIC_INFO;
+		len = NET_ONENET_Message_Operate_Creat_Json_Basic_Info((char *)&OneNETInfoStructure.InfoData);
+		NET_OneNET_Message_SendDataEnqueue((unsigned char *)&OneNETInfoStructure, sizeof(OneNETInfoStructure) - sizeof(OneNETInfoStructure.InfoData) + len);
+		NETOneNETNeedSendCode.BasicInfo = 0;
+		TCFG_Utility_Add_OneNET_SentCount();
+#endif
+	}
+	/* ONENET DYNAMIC INFO DATA ENQUEUE */
+	else if (NETOneNETNeedSendCode.DynamicInfo) {
+#if NBONENET_SENDCODE_DYNAMIC_INFO
+		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
+			return;
+		}
+		memset((void*)&OneNETInfoStructure.InfoData, 0, sizeof(OneNETInfoStructure.InfoData));
+		OneNETInfoStructure.HeadPacket.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
+		OneNETInfoStructure.HeadPacket.DataLen				= 0x00;
+		OneNETInfoStructure.HeadPacket.ProtocolType			= 0x00;
+		OneNETInfoStructure.HeadPacket.Reserved1			= 0x00;
+		OneNETInfoStructure.HeadPacket.ProtocolVersion		= 0x00;
+		OneNETInfoStructure.HeadPacket.Reserved2			= 0x00;
+		OneNETInfoStructure.HeadPacket.PacketType			= 0x05;
+		OneNETInfoStructure.HeadPacket.PacketNumber			= 0x00;
+		OneNETInfoStructure.MsgPacket.DestSN				= 0x00;
+		OneNETInfoStructure.MsgPacket.Version				= 0x01;
+		OneNETInfoStructure.MsgPacket.Type					= ONENET_MSGTYPE_TYPE_DYNAMIC_INFO;
+		len = NET_ONENET_Message_Operate_Creat_Json_Dynamic_Info((char *)&OneNETInfoStructure.InfoData);
+		NET_OneNET_Message_SendDataEnqueue((unsigned char *)&OneNETInfoStructure, sizeof(OneNETInfoStructure) - sizeof(OneNETInfoStructure.InfoData) + len);
+		NETOneNETNeedSendCode.DynamicInfo = 0;
+		TCFG_Utility_Add_OneNET_SentCount();
+#endif
+	}
+	/* ONENET Qmc5883L DATA ENQUEUE */
+	else if (NETOneNETNeedSendCode.QmcData) {
+#if NBONENET_SENDCODE_QMC_DATA
+		memset((void*)&OneNETPrivateStructure.PrivateData, 0, sizeof(OneNETPrivateStructure.PrivateData));
+		OneNETPrivateStructure.HeadPacket.DeviceSN			= TCFG_EEPROM_Get_MAC_SN();
+		OneNETPrivateStructure.HeadPacket.DataLen			= 0x00;
+		OneNETPrivateStructure.HeadPacket.ProtocolType		= 0x00;
+		OneNETPrivateStructure.HeadPacket.Reserved1			= 0x00;
+		OneNETPrivateStructure.HeadPacket.ProtocolVersion		= 0x00;
+		OneNETPrivateStructure.HeadPacket.Reserved2			= 0x00;
+		OneNETPrivateStructure.HeadPacket.PacketType			= 0x07;
+		OneNETPrivateStructure.HeadPacket.PacketNumber		= 0x00;
+		OneNETPrivateStructure.MsgPacket.DestSN				= 0x00;
+		OneNETPrivateStructure.MsgPacket.Version			= 0x01;
+		OneNETPrivateStructure.MsgPacket.Type				= ONENET_MSGTYPE_TYPE_QMC_DATA;
+		len = NET_ONENET_Message_Operate_Creat_Qmc5883L_Data((unsigned char *)&OneNETPrivateStructure.PrivateData);
+		NET_OneNET_Message_SendDataEnqueue((unsigned char *)&OneNETPrivateStructure, sizeof(OneNETPrivateStructure) - sizeof(OneNETPrivateStructure.PrivateData) + len);
+		NETOneNETNeedSendCode.QmcData = 0;
+		TCFG_Utility_Add_OneNET_SentCount();
+#endif
+	}
+	/* ONENET RESPONSE INFO DATA ENQUEUE */
+	else if (NETOneNETNeedSendCode.ResponseInfo) {
+#if NBONENET_SENDCODE_RESPONSE_INFO
+		memset((void*)&OneNETInfoStructure.InfoData, 0, sizeof(OneNETInfoStructure.InfoData));
+		OneNETInfoStructure.HeadPacket.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
+		OneNETInfoStructure.HeadPacket.DataLen				= 0x00;
+		OneNETInfoStructure.HeadPacket.ProtocolType			= 0x00;
+		OneNETInfoStructure.HeadPacket.Reserved1			= 0x00;
+		OneNETInfoStructure.HeadPacket.ProtocolVersion		= 0x00;
+		OneNETInfoStructure.HeadPacket.Reserved2			= 0x00;
+		OneNETInfoStructure.HeadPacket.PacketType			= 0x05;
+		OneNETInfoStructure.HeadPacket.PacketNumber			= 0x00;
+		OneNETInfoStructure.MsgPacket.DestSN				= 0x00;
+		OneNETInfoStructure.MsgPacket.Version				= 0x01;
+		OneNETInfoStructure.MsgPacket.Type					= ONENET_MSGTYPE_TYPE_INFO;
+		len = NET_ONENET_Message_Operate_Creat_Json_Response_Info((char *)&OneNETInfoStructure.InfoData, NETOneNETNeedSendCode.ResponseInfoErrcode);
+		NET_OneNET_Message_SendDataEnqueue((unsigned char *)&OneNETInfoStructure, sizeof(OneNETInfoStructure) - sizeof(OneNETInfoStructure.InfoData) + len);
+		NETOneNETNeedSendCode.ResponseInfo = 0;
+		TCFG_Utility_Add_OneNET_SentCount();
+#endif
+	}
+	
 #endif
 }
 

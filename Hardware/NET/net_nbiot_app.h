@@ -5,6 +5,7 @@
 
 #define NETCoapNeedSendCode_initializer		{ 0, 0, 1, 0, 1, 1, 0, 0, NETIP_OK }
 #define NETMqttSNNeedSendCode_initializer	{ 0, 0, 1, 0, 1, 1, 0, 0, NETIP_OK }
+#define NETOneNETNeedSendCode_initializer	{ 0, 0, 1, 0, 1, 1, 0, 0, NETIP_OK }
 
 typedef struct NET_NBIOT_ClientsTypeDef		NET_NBIOT_ClientsTypeDef;
 
@@ -37,6 +38,21 @@ typedef struct
 }NETMqttSNNeedSendCodeTypeDef;
 
 extern NETMqttSNNeedSendCodeTypeDef NETMqttSNNeedSendCode;
+
+typedef struct
+{
+	char								ShortStatus;
+	char								LongStatus;
+	char								WorkInfo;
+	char								WorkInfoWait;
+	char								BasicInfo;
+	char								DynamicInfo;
+	char								QmcData;
+	char								ResponseInfo;
+	u16								ResponseInfoErrcode;
+}NETOneNETNeedSendCodeTypeDef;
+
+extern NETOneNETNeedSendCodeTypeDef NETOneNETNeedSendCode;
 
 /* NET Is PollExecution */
 typedef enum
