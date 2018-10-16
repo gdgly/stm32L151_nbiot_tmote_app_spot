@@ -54,8 +54,10 @@ MQTTSN_PacketPrivateTypeDef		MqttSNPrivateStructure;						//MqttSN Private Packe
 
 #if NETPROTOCAL == NETONENET
 /* OneNET Packet */
-
-
+ONENET_PacketShortTypeDef		OneNETShortStructure;						//ONENET Short Packet
+ONENET_PacketLongTypeDef			OneNETLongStructure;						//ONENET Long Packet
+ONENET_PacketInfoTypeDef			OneNETInfoStructure;						//ONENET Info Packet
+ONENET_PacketPrivateTypeDef		OneNETPrivateStructure;						//ONENET Private Packet
 #endif
 
 /* NET Handler */

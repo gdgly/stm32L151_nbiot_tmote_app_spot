@@ -64,8 +64,8 @@
 #define	NBCOAP_PCP_UPGRADE_LIMIT_RSSI		10								//PCP升级限制信号值
 #define	NBCOAP_PCP_UPGRADE_LIMIT_SNR		5								//PCP升级限制信噪比
 
-#define	NBIOT_CONTINUE_LIFETIME			2								//NBIOT休眠正反继续活跃20秒
-#define	NBIOT_MAX_LIFETIME				12								//NBIOT休眠正反最大活跃120秒
+#define	NBIOT_CONTINUE_LIFETIME			2								//NBIOT休眠正放继续活跃20秒
+#define	NBIOT_MAX_LIFETIME				12								//NBIOT休眠正放最大活跃120秒
 
 #define	RADIO_CMD_ECHO_DISABLE			0
 #define	RADIO_CMD_ECHO_ENABLE			1
@@ -340,8 +340,10 @@ extern MQTTSN_PacketPrivateTypeDef			MqttSNPrivateStructure;				//MqttSN Private
 #endif
 
 #if NETPROTOCAL == NETONENET
-
-
+extern ONENET_PacketShortTypeDef			OneNETShortStructure;				//ONENET Short Packet
+extern ONENET_PacketLongTypeDef			OneNETLongStructure;				//ONENET Long Packet
+extern ONENET_PacketInfoTypeDef			OneNETInfoStructure;				//ONENET Info Packet
+extern ONENET_PacketPrivateTypeDef			OneNETPrivateStructure;				//ONENET Private Packet
 #endif
 
 extern NET_NBIOT_ClientsTypeDef			NetNbiotClientHandler;				//NET NBIOT Clinet Handler
