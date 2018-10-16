@@ -1,6 +1,8 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2018-10-16 :
+	* 选择编译Net Hander，精简SRam。
 * 2018-10-12 :
 	* SPIFlash 读取型号ID有点问题，改为读取设备ID。
 	* 增加NB硬件重启异常连续超过5次，重启设备。

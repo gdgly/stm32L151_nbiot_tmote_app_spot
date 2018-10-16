@@ -52,20 +52,35 @@ MQTTSN_PacketPrivateTypeDef		MqttSNPrivateStructure;						//MqttSN Private Packe
 #endif
 #endif
 
+#if NETPROTOCAL == NETONENET
+/* OneNET Packet */
+
+
+#endif
+
 /* NET Handler */
 NET_NBIOT_ClientsTypeDef			NetNbiotClientHandler;						//NET NBIOT Clinet Handler
 NBIOT_ATCmdTypeDef				NbiotATCmdHandler;							//NBIOT AT Cmd Handler
 NBIOT_ClientsTypeDef			NbiotClientHandler;							//Coap Clinet Handler
+
+#if NETPROTOCAL == NETCOAP
 PCP_CoAPNetTransportTypeDef		PCPCoAPNetHandler;							//PCP Net Handler
 PCP_ClientsTypeDef				PCPClientHandler;							//PCP Clinet Handler
+#endif
+
+#if NETPROTOCAL == NETMQTTSN
 DNS_SocketNetTypeDef			DNSSocketNetHandler;						//DNS Net Handler
 DNS_ClientsTypeDef				DNSClientHandler;							//DNS Clinet Handler
 MQTTSN_SocketNetTypeDef			MqttSNSocketNetHandler;						//MqttSN Net Handler
 MQTTSN_ClientsTypeDef			MqttSNClientHandler;						//MqttSN Clinet Handler
 MqttSNPCP_MqttNetTransportTypeDef	MqttSNPCPMqttNetHandler;						//MqttSN PCP Net Handler
 MqttSNPCP_ClientsTypeDef			MqttSNPCPClientHandler;						//MqttSN PCP Clinet Handler
+#endif
+
+#if NETPROTOCAL == NETONENET
 ONENET_LWM2MTransportTypeDef		OneNETLWM2MNetHandler;						//ONENET Net Handler
 ONENET_ClientsTypeDef			OneNETClientHandler;						//ONENET Clinet Handler
+#endif
 
 /**********************************************************************************************************
  @Function			void RadioPrintWorkinfo(void)

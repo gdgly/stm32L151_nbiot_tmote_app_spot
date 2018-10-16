@@ -339,19 +339,33 @@ extern MQTTSN_PacketPrivateTypeDef			MqttSNPrivateStructure;				//MqttSN Private
 #endif
 #endif
 
+#if NETPROTOCAL == NETONENET
+
+
+#endif
+
 extern NET_NBIOT_ClientsTypeDef			NetNbiotClientHandler;				//NET NBIOT Clinet Handler
 extern NBIOT_ATCmdTypeDef				NbiotATCmdHandler;					//NBIOT AT Cmd Handler
 extern NBIOT_ClientsTypeDef				NbiotClientHandler;					//Coap Clinet Handler
+
+#if NETPROTOCAL == NETCOAP
 extern PCP_CoAPNetTransportTypeDef			PCPCoAPNetHandler;					//PCP Net Handler
 extern PCP_ClientsTypeDef				PCPClientHandler;					//PCP Clinet Handler
+#endif
+
+#if NETPROTOCAL == NETMQTTSN
 extern DNS_SocketNetTypeDef				DNSSocketNetHandler;				//DNS Net Handler
 extern DNS_ClientsTypeDef				DNSClientHandler;					//DNS Clinet Handler
 extern MQTTSN_SocketNetTypeDef			MqttSNSocketNetHandler;				//MqttSN Net Handler
 extern MQTTSN_ClientsTypeDef				MqttSNClientHandler;				//MqttSN Clinet Handler
 extern MqttSNPCP_MqttNetTransportTypeDef	MqttSNPCPMqttNetHandler;				//MqttSN PCP Net Handler
 extern MqttSNPCP_ClientsTypeDef			MqttSNPCPClientHandler;				//MqttSN PCP Clinet Handler
+#endif
+
+#if NETPROTOCAL == NETONENET
 extern ONENET_LWM2MTransportTypeDef		OneNETLWM2MNetHandler;				//ONENET Net Handler
 extern ONENET_ClientsTypeDef				OneNETClientHandler;				//ONENET Clinet Handler
+#endif
 
 void RadioPrintWorkinfo(void);											//Radio Print WorkInfo
 void RadioPrintNetinfo(void);												//Radio Print NetInfo
