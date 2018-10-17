@@ -162,8 +162,8 @@ void NET_ONENET_APP_ProcessExecution(ONENET_ClientsTypeDef* pClient)
 		NET_ONENET_Event_Object(pClient);
 		break;
 	
-	case ONENET_PROCESSSTATE_OPEN:
-		NET_ONENET_Event_Open(pClient);
+	case ONENET_PROCESSSTATE_REGISTER:
+		NET_ONENET_Event_Register(pClient);
 		break;
 	
 	
@@ -302,7 +302,7 @@ static unsigned char* ONENET_GetDictateFailureCnt(ONENET_ClientsTypeDef* pClient
 		dictateFailureCnt = &pClient->DictateRunCtl.dictateObjectFailureCnt;
 		break;
 	
-	case ONENET_PROCESSSTATE_OPEN:
+	case ONENET_PROCESSSTATE_REGISTER:
 		dictateFailureCnt = &pClient->DictateRunCtl.dictateOpenFailureCnt;
 		break;
 	
@@ -1250,7 +1250,7 @@ void NET_ONENET_Event_Object(ONENET_ClientsTypeDef* pClient)
 													  pClient->Parameter.objectInfo.attrCount, \
 													  pClient->Parameter.objectInfo.actCount)) == ONENET_OK) {
 		/* Dictate execute is Success */
-		ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_OPEN, ONENET_PROCESSSTATE_OBJECT, true);
+		ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_REGISTER, ONENET_PROCESSSTATE_OBJECT, true);
 #ifdef ONENET_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("OneNET LMObject Add Ok");
 #endif
@@ -1270,12 +1270,12 @@ void NET_ONENET_Event_Object(ONENET_ClientsTypeDef* pClient)
 }
 
 /**********************************************************************************************************
- @Function			void NET_ONENET_Event_Open(ONENET_ClientsTypeDef* pClient)
- @Description			NET_ONENET_Event_Open				: OPEN
+ @Function			void NET_ONENET_Event_Register(ONENET_ClientsTypeDef* pClient)
+ @Description			NET_ONENET_Event_Register			: REGISTER
  @Input				pClient							: OneNET客户端实例
  @Return				void
 **********************************************************************************************************/
-void NET_ONENET_Event_Open(ONENET_ClientsTypeDef* pClient)
+void NET_ONENET_Event_Register(ONENET_ClientsTypeDef* pClient)
 {
 	
 	

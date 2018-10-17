@@ -320,18 +320,76 @@
 ### 18.发送workinfo:
 * <font color="#dd00dd"> workinfo </font>
 * 小无线打印workinfo信息，NB发送workinfo包。
+```c
+	Radio_Trf_Printf("Soft:%d:%d.%d", TCFG_EEPROM_GetBootVersion(), TCFG_Utility_Get_Major_Softnumber(), TCFG_Utility_Get_Sub_Softnumber());
+	Radio_Trf_Printf("Sense:%d", TCFG_EEPROM_GetSavedSensitivity());
+	Radio_Trf_Printf("Mode:%s", TCFG_EEPROM_Get_WorkMode_String());
+	Radio_Trf_Printf("Channel:%d", TCFG_EEPROM_GetRfChannel());
+	Radio_Trf_Printf("Range:%d", TCFG_Utility_Get_DistanceRange());
+	Radio_Trf_Printf("Earfcn:%d", TCFG_Utility_Get_Nbiot_RadioEARFCN());
+	Radio_Trf_Printf("Tac:%X", TCFG_Utility_Get_Nbiot_NetworkRegStatusTac());
+	Radio_Trf_Printf("Ci:%X", TCFG_Utility_Get_Nbiot_NetworkRegStatusCellID());
+	Radio_Trf_Printf("Cmdcnt:%d.%d", TCFG_EEPROM_GetRFCmdCnt(), TCFG_EEPROM_GetNBCmdCnt());
+	Radio_Trf_Printf("Nbruntime:%d.%d", TCFG_Utility_GetCoapConnectTime(), TCFG_Utility_GetCoapIdleTime());
+	Radio_Trf_Printf("Coef:%d.%d.%d", TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
+```
 
 ### 19.发送netinfo:
 * <font color="#dd00dd"> netinfo </font>
 * 小无线打印netinfo信息，NB发送Tmoteinfo包。
+```c
+	Radio_Trf_Printf("Muftur:%s", NbiotClientHandler.Parameter.manufacturer);
+	Radio_Trf_Printf("MufturMd:%s", NbiotClientHandler.Parameter.manufacturermode);
+	Radio_Trf_Printf("MduVer:%s", NbiotClientHandler.Parameter.modelversion);
+	Radio_Trf_Printf("IMEI:%s", NbiotClientHandler.Parameter.imei);
+	Radio_Trf_Printf("ICCID:%s", NbiotClientHandler.Parameter.iccid);
+	Radio_Trf_Printf("IMSI:%s", NbiotClientHandler.Parameter.imsi);
+	Radio_Trf_Printf("CGP:%s", NbiotClientHandler.Parameter.cgpaddr);
+	Radio_Trf_Printf("PDPType:%s", NbiotClientHandler.Parameter.cgdcontPDPType);
+	Radio_Trf_Printf("APN:%s", NbiotClientHandler.Parameter.cgdcontAPN);
+	Radio_Trf_Printf("RSSI:%d", NbiotClientHandler.Parameter.rssi);
+	Radio_Trf_Printf("SNR:%d", NbiotClientHandler.Parameter.statisticsRADIO.SNR);
+	Radio_Trf_Printf("CDPHost:%s", NbiotClientHandler.Parameter.cdpserver.CDPServerHost);
+	Radio_Trf_Printf("CDPPort:%d", NbiotClientHandler.Parameter.cdpserver.CDPServerPort);
+	Radio_Trf_Printf("MqttSN :%s", MQTTSN_SERVER_HOST_NAME);
+	Radio_Trf_Printf("MqttSN :%s:%d", MqttSNClientHandler.SocketStack->ServerHost, MqttSNClientHandler.SocketStack->ServerPort);
+```
 
 ### 20.发送devinfo:
 * <font color="#dd00dd"> devinfo </font>
 * 小无线打印deviceinfo信息。
+```c
+	Radio_Trf_Printf("Runtime:%d", TCFG_Utility_Get_Run_Time());
+	Radio_Trf_Printf("Batt:%d", TCFG_Utility_Get_Device_Batt_ShortVal());
+	Radio_Trf_Printf("RdLib:%d", TCFG_Utility_Get_RadarLibNum());
+	Radio_Trf_Printf("RdCnt:%d", TCFG_GetRadarCount());
+	Radio_Trf_Printf("MCUTemp:%d", TCFG_Utility_Get_Device_Temperature());
+	Radio_Trf_Printf("AlgoLib:%d", TCFG_Utility_Get_AlgoLibNum());
+	Radio_Trf_Printf("QmcReboot:%d", TCFG_Utility_Get_ReInitModuleCount());
+	Radio_Trf_Printf("Nbboot:%d", TCFG_Utility_Get_Nbiot_BootCount());
+	Radio_Trf_Printf("Nbsent:%d", TCFG_Utility_Get_Nbiot_SentCount());
+	Radio_Trf_Printf("Nbrecv:%d", TCFG_Utility_Get_Nbiot_RecvCount());
+```
 
 ### 21.发送upgradeinfo:
 * <font color="#dd00dd"> upgradeinfo </font>
 * 小无线答应upgradeinfo信息。
+```c
+	Radio_Trf_Printf("APP1 Status: %02X", APP1Info.Status);
+	Radio_Trf_Printf("APP1 BaseAddr: %08X", APP1Info.BaseAddr);
+	Radio_Trf_Printf("APP1 BlockNum: %d", APP1Info.BlockNum);
+	Radio_Trf_Printf("APP1 BlockLen: %d", APP1Info.BlockLen);
+	Radio_Trf_Printf("APP1 DataLen: %d", APP1Info.DataLen);
+	Radio_Trf_Printf("APP1 SoftVer: V%d.%d", APP1Info.SoftVer>>16, APP1Info.SoftVer&0xFFFF);
+	Radio_Trf_Printf("APP1 CheckCode: %X", APP1Info.CheckCode);
+	Radio_Trf_Printf("APP2 Status: %02X", APP2Info.Status);
+	Radio_Trf_Printf("APP2 BaseAddr: %08X", APP2Info.BaseAddr);
+	Radio_Trf_Printf("APP2 BlockNum: %d", APP2Info.BlockNum);
+	Radio_Trf_Printf("APP2 BlockLen: %d", APP2Info.BlockLen);
+	Radio_Trf_Printf("APP2 DataLen: %d", APP2Info.DataLen);
+	Radio_Trf_Printf("APP2 SoftVer: V%d.%d", APP2Info.SoftVer>>16, APP2Info.SoftVer&0xFFFF);
+	Radio_Trf_Printf("APP2 CheckCode: %X", APP2Info.CheckCode);
+```
 
 ## 三、NBIoT指令下发
 > * NBIoT命令下发与小无线命令基本兼容。

@@ -50,7 +50,7 @@ void NET_ONENET_APP_ProcessExecution(ONENET_ClientsTypeDef* pClient);				//OneNE
 void NET_ONENET_Event_Init(ONENET_ClientsTypeDef* pClient);						//INIT
 void NET_ONENET_Event_Suite(ONENET_ClientsTypeDef* pClient);					//SUITE
 void NET_ONENET_Event_Object(ONENET_ClientsTypeDef* pClient);					//OBJECT
-void NET_ONENET_Event_Open(ONENET_ClientsTypeDef* pClient);						//OPEN
+void NET_ONENET_Event_Register(ONENET_ClientsTypeDef* pClient);					//REGISTER
 
 
 
