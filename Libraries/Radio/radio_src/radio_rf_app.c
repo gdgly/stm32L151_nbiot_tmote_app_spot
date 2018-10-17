@@ -483,11 +483,18 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				/* WorkInfo */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "workinfo")) {
 			#if RADIO_CMD_UPLOAD_WORKINFO
-				#if NBCOAP_SENDCODE_WORK_INFO
+				#if NETPROTOCAL == NETCOAP
+					#if NBCOAP_SENDCODE_WORK_INFO
 					NETCoapNeedSendCode.WorkInfo = 1;
-				#endif
-				#if NBMQTTSN_SENDCODE_WORK_INFO
+					#endif
+				#elif NETPROTOCAL == NETMQTTSN
+					#if NBMQTTSN_SENDCODE_WORK_INFO
 					NETMqttSNNeedSendCode.InfoWork = 1;
+					#endif
+				#elif NETPROTOCAL == NETONENET
+					#if NBONENET_SENDCODE_WORK_INFO
+					NETOneNETNeedSendCode.WorkInfo = 1;
+					#endif
 				#endif
 			#endif
 			#if RADIO_PRINT_WORKINFO
@@ -497,17 +504,27 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				/* NetInfo */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "netinfo")) {
 			#if RADIO_CMD_UPLOAD_NETINFO
-				#if NBCOAP_SENDCODE_BASIC_INFO
+				#if NETPROTOCAL == NETCOAP
+					#if NBCOAP_SENDCODE_BASIC_INFO
 					NETCoapNeedSendCode.BasicInfo = 1;
-				#endif
-				#if NBCOAP_SENDCODE_DYNAMIC_INFO
+					#endif
+					#if NBCOAP_SENDCODE_DYNAMIC_INFO
 					NETCoapNeedSendCode.DynamicInfo = 1;
-				#endif
-				#if NBMQTTSN_SENDCODE_BASIC_INFO
+					#endif
+				#elif NETPROTOCAL == NETMQTTSN
+					#if NBMQTTSN_SENDCODE_BASIC_INFO
 					NETMqttSNNeedSendCode.InfoBasic = 1;
-				#endif
-				#if NBMQTTSN_SENDCODE_DYNAMIC_INFO
+					#endif
+					#if NBMQTTSN_SENDCODE_DYNAMIC_INFO
 					NETMqttSNNeedSendCode.InfoDynamic = 1;
+					#endif
+				#elif NETPROTOCAL == NETONENET
+					#if NBONENET_SENDCODE_BASIC_INFO
+					NETOneNETNeedSendCode.BasicInfo = 1;
+					#endif
+					#if NBONENET_SENDCODE_DYNAMIC_INFO
+					NETOneNETNeedSendCode.DynamicInfo = 1;
+					#endif
 				#endif
 			#endif
 			#if RADIO_PRINT_NETINFO

@@ -103,7 +103,8 @@ void RadioPrintWorkinfo(void)
 	Radio_Trf_Printf("Channel:%d", TCFG_EEPROM_GetRfChannel());
 	Radio_Trf_Printf("Range:%d", TCFG_Utility_Get_DistanceRange());
 	Radio_Trf_Printf("Earfcn:%d", TCFG_Utility_Get_Nbiot_RadioEARFCN());
-	Radio_Trf_Printf("CellId:%d", TCFG_Utility_Get_Nbiot_RadioCellID());
+	Radio_Trf_Printf("Tac:%X", TCFG_Utility_Get_Nbiot_NetworkRegStatusTac());
+	Radio_Trf_Printf("Ci:%X", TCFG_Utility_Get_Nbiot_NetworkRegStatusCellID());
 	Radio_Trf_Printf("Cmdcnt:%d.%d", TCFG_EEPROM_GetRFCmdCnt(), TCFG_EEPROM_GetNBCmdCnt());
 	Radio_Trf_Printf("Nbruntime:%d.%d", TCFG_Utility_GetCoapConnectTime(), TCFG_Utility_GetCoapIdleTime());
 	Radio_Trf_Printf("Coef:%d.%d.%d", TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
@@ -114,7 +115,20 @@ void RadioPrintWorkinfo(void)
 	Radio_Trf_Printf("Channel:%d", TCFG_EEPROM_GetRfChannel());
 	Radio_Trf_Printf("Range:%d", TCFG_Utility_Get_DistanceRange());
 	Radio_Trf_Printf("Earfcn:%d", TCFG_Utility_Get_Nbiot_RadioEARFCN());
-	Radio_Trf_Printf("CellId:%d", TCFG_Utility_Get_Nbiot_RadioCellID());
+	Radio_Trf_Printf("Tac:%X", TCFG_Utility_Get_Nbiot_NetworkRegStatusTac());
+	Radio_Trf_Printf("Ci:%X", TCFG_Utility_Get_Nbiot_NetworkRegStatusCellID());
+	Radio_Trf_Printf("Cmdcnt:%d.%d", TCFG_EEPROM_GetRFCmdCnt(), TCFG_EEPROM_GetNBCmdCnt());
+	Radio_Trf_Printf("Nbruntime:%d.%d", TCFG_Utility_GetCoapConnectTime(), TCFG_Utility_GetCoapIdleTime());
+	Radio_Trf_Printf("Coef:%d.%d.%d", TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
+#elif NETPROTOCAL == NETONENET
+	Radio_Trf_Printf("Soft:%d:%d.%d", TCFG_EEPROM_GetBootVersion(), TCFG_Utility_Get_Major_Softnumber(), TCFG_Utility_Get_Sub_Softnumber());
+	Radio_Trf_Printf("Sense:%d", TCFG_EEPROM_GetSavedSensitivity());
+	Radio_Trf_Printf("Mode:%s", TCFG_EEPROM_Get_WorkMode_String());
+	Radio_Trf_Printf("Channel:%d", TCFG_EEPROM_GetRfChannel());
+	Radio_Trf_Printf("Range:%d", TCFG_Utility_Get_DistanceRange());
+	Radio_Trf_Printf("Earfcn:%d", TCFG_Utility_Get_Nbiot_RadioEARFCN());
+	Radio_Trf_Printf("Tac:%X", TCFG_Utility_Get_Nbiot_NetworkRegStatusTac());
+	Radio_Trf_Printf("Ci:%X", TCFG_Utility_Get_Nbiot_NetworkRegStatusCellID());
 	Radio_Trf_Printf("Cmdcnt:%d.%d", TCFG_EEPROM_GetRFCmdCnt(), TCFG_EEPROM_GetNBCmdCnt());
 	Radio_Trf_Printf("Nbruntime:%d.%d", TCFG_Utility_GetCoapConnectTime(), TCFG_Utility_GetCoapIdleTime());
 	Radio_Trf_Printf("Coef:%d.%d.%d", TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
@@ -132,8 +146,8 @@ void RadioPrintNetinfo(void)
 	Radio_Trf_Printf("NetInfo:");
 	
 #if NETPROTOCAL == NETCOAP
-	Radio_Trf_Printf("Manufacturer:%s", NbiotClientHandler.Parameter.manufacturer);
-	Radio_Trf_Printf("ManufacturerMode:%s", NbiotClientHandler.Parameter.manufacturermode);
+	Radio_Trf_Printf("Muftur:%s", NbiotClientHandler.Parameter.manufacturer);
+	Radio_Trf_Printf("MufturMd:%s", NbiotClientHandler.Parameter.manufacturermode);
 	Radio_Trf_Printf("MduVer:%s", NbiotClientHandler.Parameter.modelversion);
 	Radio_Trf_Printf("IMEI:%s", NbiotClientHandler.Parameter.imei);
 	Radio_Trf_Printf("ICCID:%s", NbiotClientHandler.Parameter.iccid);
@@ -146,8 +160,8 @@ void RadioPrintNetinfo(void)
 	Radio_Trf_Printf("CDPHost:%s", NbiotClientHandler.Parameter.cdpserver.CDPServerHost);
 	Radio_Trf_Printf("CDPPort:%d", NbiotClientHandler.Parameter.cdpserver.CDPServerPort);
 #elif NETPROTOCAL == NETMQTTSN
-	Radio_Trf_Printf("Manufacturer:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.manufacturer);
-	Radio_Trf_Printf("ManufacturerMode:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.manufacturermode);
+	Radio_Trf_Printf("Muftur:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.manufacturer);
+	Radio_Trf_Printf("MufturMd:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.manufacturermode);
 	Radio_Trf_Printf("MduVer:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.modelversion);
 	Radio_Trf_Printf("IMEI:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.imei);
 	Radio_Trf_Printf("ICCID:%s", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.iccid);
@@ -159,6 +173,18 @@ void RadioPrintNetinfo(void)
 	Radio_Trf_Printf("SNR:%d", MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR);
 	Radio_Trf_Printf("MqttSN :%s", MQTTSN_SERVER_HOST_NAME);
 	Radio_Trf_Printf("MqttSN :%s:%d", MqttSNClientHandler.SocketStack->ServerHost, MqttSNClientHandler.SocketStack->ServerPort);
+#elif NETPROTOCAL == NETONENET
+	Radio_Trf_Printf("Muftur:%s", OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.manufacturer);
+	Radio_Trf_Printf("MufturMd:%s", OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.manufacturermode);
+	Radio_Trf_Printf("MduVer:%s", OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.modelversion);
+	Radio_Trf_Printf("IMEI:%s", OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.imei);
+	Radio_Trf_Printf("ICCID:%s", OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.iccid);
+	Radio_Trf_Printf("IMSI:%s", OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.imsi);
+	Radio_Trf_Printf("CGP:%s", OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.cgpaddr);
+	Radio_Trf_Printf("PDPType:%s", OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.cgdcontPDPType);
+	Radio_Trf_Printf("APN:%s", OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.cgdcontAPN);
+	Radio_Trf_Printf("RSSI:%d", OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.rssi);
+	Radio_Trf_Printf("SNR:%d", OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR);
 #endif
 }
 
@@ -174,9 +200,9 @@ void RadioPrintDeviceinfo(void)
 	
 	Radio_Trf_Printf("Runtime:%d", TCFG_Utility_Get_Run_Time());
 	Radio_Trf_Printf("Batt:%d", TCFG_Utility_Get_Device_Batt_ShortVal());
-	Radio_Trf_Printf("RadarLib:%d", TCFG_Utility_Get_RadarLibNum());
-	Radio_Trf_Printf("RadarCnt:%d", TCFG_GetRadarCount());
-	Radio_Trf_Printf("Temperature:%d", TCFG_Utility_Get_Device_Temperature());
+	Radio_Trf_Printf("RdLib:%d", TCFG_Utility_Get_RadarLibNum());
+	Radio_Trf_Printf("RdCnt:%d", TCFG_GetRadarCount());
+	Radio_Trf_Printf("MCUTemp:%d", TCFG_Utility_Get_Device_Temperature());
 	Radio_Trf_Printf("AlgoLib:%d", TCFG_Utility_Get_AlgoLibNum());
 	Radio_Trf_Printf("QmcReboot:%d", TCFG_Utility_Get_ReInitModuleCount());
 	Radio_Trf_Printf("Nbboot:%d", TCFG_Utility_Get_Nbiot_BootCount());

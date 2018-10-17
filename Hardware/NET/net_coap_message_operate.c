@@ -46,7 +46,8 @@ int NET_COAP_Message_Operate_Creat_Json_Work_Info(char* outBuffer)
 				"\"Channel\":%d,"
 				"\"Range\":%d,"
 				"\"Earfcn\":%d,"
-				"\"Cellid\":%d,"
+				"\"Tac\":%X,"
+				"\"Ci\":%X,"
 				"\"Cmdcnt\":\"%d.%d\","
 				"\"Nbruntime\":\"%d.%d\","
 				"\"Coef\":\"%d.%d.%d\","
@@ -60,7 +61,8 @@ int NET_COAP_Message_Operate_Creat_Json_Work_Info(char* outBuffer)
 		TCFG_EEPROM_GetRfChannel(),
 		TCFG_Utility_Get_DistanceRange(),
 		TCFG_Utility_Get_Nbiot_RadioEARFCN(),
-		TCFG_Utility_Get_Nbiot_RadioCellID(),
+		TCFG_Utility_Get_Nbiot_NetworkRegStatusTac(),
+		TCFG_Utility_Get_Nbiot_NetworkRegStatusCellID(),
 		TCFG_EEPROM_GetRFCmdCnt(), TCFG_EEPROM_GetNBCmdCnt(),
 		TCFG_Utility_GetCoapConnectTime(), TCFG_Utility_GetCoapIdleTime(),
 		TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ,

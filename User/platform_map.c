@@ -2060,7 +2060,7 @@ char* TCFG_Utility_Get_Nbiot_Iccid_String(void)
  @Function			char* TCFG_Utility_Get_Nbiot_Imei_String(void)
  @Description			TCFG_Utility_Get_Nbiot_Imei_String				: 读取Nbiot Imei字符串
  @Input				void
- @Return				Nbiot_Iccid
+ @Return				Nbiot_Imei
 **********************************************************************************************************/
 char* TCFG_Utility_Get_Nbiot_Imei_String(void)
 {
@@ -2070,6 +2070,40 @@ char* TCFG_Utility_Get_Nbiot_Imei_String(void)
 	return (char*)MqttSNClientHandler.SocketStack->NBIotStack->Parameter.imei;
 #elif NETPROTOCAL == NETONENET
 	return (char*)OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.imei;
+#endif
+}
+
+/**********************************************************************************************************
+ @Function			char* TCFG_Utility_Get_Nbiot_Imeisv_String(void)
+ @Description			TCFG_Utility_Get_Nbiot_Imeisv_String			: 读取Nbiot Imeisv字符串
+ @Input				void
+ @Return				Nbiot_Imeisv
+**********************************************************************************************************/
+char* TCFG_Utility_Get_Nbiot_Imeisv_String(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return (char*)NbiotClientHandler.Parameter.imeisv;
+#elif NETPROTOCAL == NETMQTTSN
+	return (char*)MqttSNClientHandler.SocketStack->NBIotStack->Parameter.imeisv;
+#elif NETPROTOCAL == NETONENET
+	return (char*)OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.imeisv;
+#endif
+}
+
+/**********************************************************************************************************
+ @Function			char* TCFG_Utility_Get_Nbiot_Imsi_String(void)
+ @Description			TCFG_Utility_Get_Nbiot_Imsi_String				: 读取Nbiot Imesi字符串
+ @Input				void
+ @Return				Nbiot_Imsi
+**********************************************************************************************************/
+char* TCFG_Utility_Get_Nbiot_Imsi_String(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return (char*)NbiotClientHandler.Parameter.imsi;
+#elif NETPROTOCAL == NETMQTTSN
+	return (char*)MqttSNClientHandler.SocketStack->NBIotStack->Parameter.imsi;
+#elif NETPROTOCAL == NETONENET
+	return (char*)OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.imsi;
 #endif
 }
 
@@ -2159,6 +2193,40 @@ unsigned char TCFG_Utility_Get_Nbiot_NetStateIdentification(void)
 }
 
 /**********************************************************************************************************
+ @Function			unsigned int TCFG_Utility_Get_Nbiot_NetworkRegStatusTac(void)
+ @Description			TCFG_Utility_Get_Nbiot_NetworkRegStatusTac		: 读取Nbiot NetworkRegStatusTac值
+ @Input				void
+ @Return				NetworkRegStatusTac
+**********************************************************************************************************/
+unsigned int TCFG_Utility_Get_Nbiot_NetworkRegStatusTac(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return NbiotClientHandler.Parameter.networkRegStatus.tac;
+#elif NETPROTOCAL == NETMQTTSN
+	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.networkRegStatus.tac;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.networkRegStatus.tac;
+#endif
+}
+
+/**********************************************************************************************************
+ @Function			unsigned int TCFG_Utility_Get_Nbiot_NetworkRegStatusCellID(void)
+ @Description			TCFG_Utility_Get_Nbiot_NetworkRegStatusCellID	: 读取Nbiot NetworkRegStatusCellID值
+ @Input				void
+ @Return				NetworkRegStatusCellID
+**********************************************************************************************************/
+unsigned int TCFG_Utility_Get_Nbiot_NetworkRegStatusCellID(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return NbiotClientHandler.Parameter.networkRegStatus.cellID;
+#elif NETPROTOCAL == NETMQTTSN
+	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.networkRegStatus.cellID;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.networkRegStatus.cellID;
+#endif
+}
+
+/**********************************************************************************************************
  @Function			int TCFG_Utility_Get_Nbiot_RadioSignalpower(void)
  @Description			TCFG_Utility_Get_Nbiot_RadioSignalpower			: 读取Nbiot RadioSignalpower值
  @Input				void
@@ -2228,7 +2296,7 @@ unsigned int TCFG_Utility_Get_Nbiot_RadioTXtime(void)
 
 /**********************************************************************************************************
  @Function			unsigned int TCFG_Utility_Get_Nbiot_RadioRXtime(void)
- @Description			TCFG_Utility_Get_Nbiot_RadioTXtime				: 读取Nbiot RadioRXtime值
+ @Description			TCFG_Utility_Get_Nbiot_RadioRXtime				: 读取Nbiot RadioRXtime值
  @Input				void
  @Return				RadioRXtime
 **********************************************************************************************************/

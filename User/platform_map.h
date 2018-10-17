@@ -427,11 +427,16 @@ void			TCFG_Utility_Sub_Nbiot_IdleLifetime(void);										//NBIot 休眠模式�
 
 char*		TCFG_Utility_Get_Nbiot_Iccid_String(void);										//读取Nbiot Iccid字符串
 char*		TCFG_Utility_Get_Nbiot_Imei_String(void);										//读取Nbiot Imei字符串
+char*		TCFG_Utility_Get_Nbiot_Imeisv_String(void);										//读取Nbiot Imeisv字符串
+char*		TCFG_Utility_Get_Nbiot_Imsi_String(void);										//读取Nbiot Imesi字符串
 int			TCFG_Utility_Get_Nbiot_Rssi_IntVal(void);										//读取Nbiot Rssi值
 unsigned char	TCFG_Utility_Get_Nbiot_Rssi_UnCharVal(void);										//读取Nbiot Rssi值
 unsigned char	TCFG_Utility_Get_Nbiot_WorkMode(void);											//读取Nbiot WorkMode值
 unsigned char	TCFG_Utility_Get_Nbiot_Registered(void);										//读取Nbiot Registered值
 unsigned char	TCFG_Utility_Get_Nbiot_NetStateIdentification(void);								//读取Nbiot NetStateIdentification值
+
+unsigned int	TCFG_Utility_Get_Nbiot_NetworkRegStatusTac(void);									//读取Nbiot NetworkRegStatusTac值
+unsigned int	TCFG_Utility_Get_Nbiot_NetworkRegStatusCellID(void);								//读取Nbiot NetworkRegStatusCellID值
 
 int			TCFG_Utility_Get_Nbiot_RadioSignalpower(void);									//读取Nbiot RadioSignalpower值
 int			TCFG_Utility_Get_Nbiot_RadioTotalpower(void);									//读取Nbiot RadioTotalpower值

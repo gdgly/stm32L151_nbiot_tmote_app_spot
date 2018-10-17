@@ -103,7 +103,7 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_Upgrade_BackupCurrentAPP(MqttSNPCP_ClientsTy
 		if (GD25Q_SPIFLASH_GetWord(APP2_INFO_UPGRADE_SOFTVER_OFFSET) == ((SOFTWAREMAJOR<<16)|(SOFTWARESUB<<0))) {
 			/* 备份区已有当前版本APP */
 			GD25Q_SPIFLASH_PowerDown();
-			Radio_Trf_Printf("APP has been backed up");
+			Radio_Trf_Printf("APP has been backed");
 			PCPResultCodeStatus = MQTTSN_PCP_LatestVersion;
 			goto exit;
 		}

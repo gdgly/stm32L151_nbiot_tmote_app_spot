@@ -234,8 +234,13 @@ void MainRollingEnteredUpWork(void)
 {
 	Radio_Trf_Printf("Entered Up Work");
 	BEEP_CtrlRepeat_Extend(3, 30, 70);
+#if NETPROTOCAL == NETCOAP
 	NETCoapNeedSendCode.WorkInfoWait = 3;
+#elif NETPROTOCAL == NETMQTTSN
 	NETMqttSNNeedSendCode.InfoWorkWait = 3;
+#elif NETPROTOCAL == NETONENET
+	NETOneNETNeedSendCode.WorkInfoWait = 3;
+#endif
 }
 
 /**********************************************************************************************************
@@ -264,7 +269,7 @@ void MainRollingUpwardsActived(void)
 	/* 日常处理 */
 	MainHandleRoutine();
 	
-	if (!((NETCoapNeedSendCode.WorkInfoWait > 0) && (NETMqttSNNeedSendCode.InfoWorkWait > 0))) {
+	if (!((NETCoapNeedSendCode.WorkInfoWait > 0) || (NETMqttSNNeedSendCode.InfoWorkWait > 0) || (NETOneNETNeedSendCode.WorkInfoWait > 0))) {
 #if PRODUCTTEST_READ_TYPE
 		if (ProductTest_Read()) {
 			/* NBIOT APP Task */
@@ -337,8 +342,13 @@ void MainRollingEnteredDownSleep(void)
 **********************************************************************************************************/
 void MainRollingEnteredDownWork(void)
 {
+#if NETPROTOCAL == NETCOAP
 	NETCoapNeedSendCode.WorkInfoWait = 3;
+#elif NETPROTOCAL == NETMQTTSN
 	NETMqttSNNeedSendCode.InfoWorkWait = 3;
+#elif NETPROTOCAL == NETONENET
+	NETOneNETNeedSendCode.WorkInfoWait = 3;
+#endif
 }
 
 /**********************************************************************************************************
@@ -352,7 +362,7 @@ void MainRollingEnteredDownSleepKeepActived(void)
 	/* 日常处理 */
 	MainHandleRoutine();
 	
-	if (!((NETCoapNeedSendCode.WorkInfoWait > 0) && (NETMqttSNNeedSendCode.InfoWorkWait > 0))) {
+	if (!((NETCoapNeedSendCode.WorkInfoWait > 0) || (NETMqttSNNeedSendCode.InfoWorkWait > 0) || (NETOneNETNeedSendCode.WorkInfoWait > 0))) {
 #if PRODUCTTEST_READ_TYPE
 		if (ProductTest_Read()) {
 			/* NBIOT APP Task */
@@ -425,6 +435,7 @@ void MainHandleRoutine(void)
 	if ((Stm32_GetSecondTick() / 10) != SystemRunningTime.tenseconds) {
 		SystemRunningTime.tenseconds = Stm32_GetSecondTick() / 10;
 		
+#if NETPROTOCAL == NETCOAP
 		if (NETCoapNeedSendCode.WorkInfoWait > 0) {
 			if (NETCoapNeedSendCode.WorkInfoWait > 1) {
 				__NOP();
@@ -436,7 +447,8 @@ void MainHandleRoutine(void)
 			}
 			NETCoapNeedSendCode.WorkInfoWait--;
 		}
-		
+#endif
+#if NETPROTOCAL == NETMQTTSN
 		if (NETMqttSNNeedSendCode.InfoWorkWait > 0) {
 			if (NETMqttSNNeedSendCode.InfoWorkWait > 1) {
 				__NOP();
@@ -448,7 +460,20 @@ void MainHandleRoutine(void)
 			}
 			NETMqttSNNeedSendCode.InfoWorkWait--;
 		}
-		
+#endif
+#if NETPROTOCAL == NETONENET
+		if (NETOneNETNeedSendCode.WorkInfoWait > 0) {
+			if (NETOneNETNeedSendCode.WorkInfoWait > 1) {
+				__NOP();
+			}
+			else if (NETOneNETNeedSendCode.WorkInfoWait > 0) {
+			#if NBONENET_SENDCODE_WORK_INFO
+				NETOneNETNeedSendCode.WorkInfo = 1;
+			#endif
+			}
+			NETOneNETNeedSendCode.WorkInfoWait--;
+		}
+#endif
 		TCFG_Utility_Sub_Nbiot_IdleLifetime();
 	}
 	/* Every Minutes Running */
@@ -513,30 +538,46 @@ void MainHandleRoutine(void)
 	if ((Stm32_GetSecondTick() / (4*3600)) != SystemRunningTime.fourHours) {
 		SystemRunningTime.fourHours = Stm32_GetSecondTick() / (4*3600);
 		
+#if NETPROTOCAL == NETCOAP
 	#if NBCOAP_SENDCODE_QMC_DATA
 		NETCoapNeedSendCode.QmcData = 1;
 	#endif
+#elif NETPROTOCAL == NETMQTTSN
 	#if NBMQTTSN_SENDCODE_QMC_DATA
 		NETMqttSNNeedSendCode.QmcData = 1;
 	#endif
+#elif NETPROTOCAL == NETONENET
+	#if NBONENET_SENDCODE_QMC_DATA
+		NETOneNETNeedSendCode.QmcData = 1;
+	#endif
+#endif
 	}
 	/* Every Day Running */
 	if ((Stm32_GetSecondTick() / (24*3600)) != SystemRunningTime.days) {
 		SystemRunningTime.days = Stm32_GetSecondTick() / (24*3600);
 		
+#if NETPROTOCAL == NETCOAP
 	#if NBCOAP_SENDCODE_WORK_INFO
 		NETCoapNeedSendCode.WorkInfo = 1;
 	#endif
 	#if NBCOAP_SENDCODE_DYNAMIC_INFO
 		NETCoapNeedSendCode.DynamicInfo = 1;
 	#endif
+#elif NETPROTOCAL == NETMQTTSN
 	#if NBMQTTSN_SENDCODE_WORK_INFO
 		NETMqttSNNeedSendCode.InfoWork = 1;
 	#endif
 	#if NBMQTTSN_SENDCODE_DYNAMIC_INFO
 		NETMqttSNNeedSendCode.InfoDynamic = 1;
 	#endif
-		
+#elif NETPROTOCAL == NETONENET
+	#if NBONENET_SENDCODE_WORK_INFO
+		NETOneNETNeedSendCode.WorkInfo = 1;
+	#endif
+	#if NBONENET_SENDCODE_DYNAMIC_INFO
+		NETOneNETNeedSendCode.DynamicInfo = 1;
+	#endif
+#endif
 		TCFG_SystemData.CoapConnectTime = TCFG_Utility_GetCoapConnectTime();
 		TCFG_EEPROM_SetCoapConnectTime(TCFG_SystemData.CoapConnectTime);
 		

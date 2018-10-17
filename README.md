@@ -1,6 +1,9 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2018-10-17 :
+	* OneNET各个数据包创建兼容CoAP方式。
+	* WorkInfo中CellID，采用Tac+Ci 十六进制方式上报。
 * 2018-10-16 :
 	* 选择编译Net Hander，精简SRam。
 	* 增加OneNET数据包写入。
