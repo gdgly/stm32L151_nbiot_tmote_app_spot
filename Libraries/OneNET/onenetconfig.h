@@ -44,7 +44,7 @@
 
 /* ONENET 注册设置 */
 #define ONENET_REGISTER_LIFETIME			12 * 3600											// 生命周期
-#define ONENET_REGISTER_TIMEOUT			60												// 活跃时间
+#define ONENET_REGISTER_TIMEOUT			60												// 注册时间
 
 /* ONENET 资源数据 */
 #define ONENET_DISCOVER_LENGTH			4												// 资源长度

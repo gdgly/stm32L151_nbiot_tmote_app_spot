@@ -1288,10 +1288,10 @@ void NET_ONENET_Event_Register(ONENET_ClientsTypeDef* pClient)
 	ONENET_StatusTypeDef ONStatus = ONStatus;
 	Stm32_CalculagraphTypeDef WaitforRecv_timer_s;
 	
-	ONENET_DictateEvent_SetTime(pClient, 30);
+	ONENET_DictateEvent_SetTime(pClient, ONENET_REGISTER_TIMEOUT);
 	
 	/* Configuration Calculagraph for WaitforRecv Timer */
-	Stm32_Calculagraph_CountdownSec(&WaitforRecv_timer_s, 15);
+	Stm32_Calculagraph_CountdownSec(&WaitforRecv_timer_s, ONENET_REGISTER_TIMEOUT - 20);
 	
 	/* Send Register Request */
 	if ((ONStatus = NBIOT_OneNET_Related_Send_RegisterRequest(pClient, pClient->Parameter.suiteRefer, ONENET_REGISTER_LIFETIME, ONENET_REGISTER_TIMEOUT)) == ONENET_OK) {
