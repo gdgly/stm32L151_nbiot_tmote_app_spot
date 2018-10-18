@@ -20,6 +20,7 @@
 #include "delay.h"
 #include "usart.h"
 #include "string.h"
+#include "radio_rf_app.h"
 
 /**********************************************************************************************************
  @Function			static void NBIOT_OneNET_Related_DictateEvent_SetTime(ONENET_ClientsTypeDef* pClient, unsigned int TimeoutMsec)
@@ -745,6 +746,299 @@ ONENET_StatusTypeDef NBIOT_OneNET_Related_Send_UpdateRequest(ONENET_ClientsTypeD
 	ONStatus = (ONENET_StatusTypeDef)pClient->LWM2MStack->NBIotStack->ATCmdStack->Write(pClient->LWM2MStack->NBIotStack->ATCmdStack);
 #endif
 	
+	return ONStatus;
+}
+
+/**********************************************************************************************************
+ @Function			ONENET_StatusTypeDef ONENET_ReadPacket(ONENET_ClientsTypeDef* pClient, int *relatedType)
+ @Description			ONENET_ReadPacket		: ONENET接收数据包
+ @Input				pClient				: OneNET客户端实例
+					relatedType			: OneNET消息类型
+ @Return				ONENET_StatusTypeDef	: ONENET处理状态
+**********************************************************************************************************/
+ONENET_StatusTypeDef ONENET_ReadPacket(ONENET_ClientsTypeDef* pClient, int *relatedType)
+{
+	ONENET_StatusTypeDef ONStatus = ONENET_unknown_error;
+	
+	if (USART1_RX_STA & 0x8000) {														//接收到期待的应答结果
+		if (strstr((const char*)USART1_RX_BUF, (const char*)ONENET_PROCOTOL_DISCOVER) != NULL) {
+			memcpy(pClient->Recvbuf, USART1_RX_BUF, USART1_RX_STA & 0x1FFF);
+			pClient->Recvlen = USART1_RX_STA & 0x1FFF;
+			*relatedType = ONENET_MIPLDISCOVER;
+			ONStatus = ONENET_OK;
+		}
+		else if (strstr((const char*)USART1_RX_BUF, (const char*)ONENET_PROCOTOL_OBSERVE) != NULL) {
+			memcpy(pClient->Recvbuf, USART1_RX_BUF, USART1_RX_STA & 0x1FFF);
+			pClient->Recvlen = USART1_RX_STA & 0x1FFF;
+			*relatedType = ONENET_MIPLOBSERVE;
+			ONStatus = ONENET_OK;
+		}
+		else if (strstr((const char*)USART1_RX_BUF, (const char*)ONENET_PROCOTOL_READ) != NULL) {
+			memcpy(pClient->Recvbuf, USART1_RX_BUF, USART1_RX_STA & 0x1FFF);
+			pClient->Recvlen = USART1_RX_STA & 0x1FFF;
+			*relatedType = ONENET_MIPLREAD;
+			ONStatus = ONENET_OK;
+		}
+		else if (strstr((const char*)USART1_RX_BUF, (const char*)ONENET_PROCOTOL_WRITE) != NULL) {
+			memcpy(pClient->Recvbuf, USART1_RX_BUF, USART1_RX_STA & 0x1FFF);
+			pClient->Recvlen = USART1_RX_STA & 0x1FFF;
+			*relatedType = ONENET_MIPLWRITE;
+			ONStatus = ONENET_OK;
+		}
+		else if (strstr((const char*)USART1_RX_BUF, (const char*)ONENET_PROCOTOL_EXECUTE) != NULL) {
+			memcpy(pClient->Recvbuf, USART1_RX_BUF, USART1_RX_STA & 0x1FFF);
+			pClient->Recvlen = USART1_RX_STA & 0x1FFF;
+			*relatedType = ONENET_MIPLEXECUTE;
+			ONStatus = ONENET_OK;
+		}
+		else if (strstr((const char*)USART1_RX_BUF, (const char*)ONENET_PROCOTOL_PARAMETER) != NULL) {
+			memcpy(pClient->Recvbuf, USART1_RX_BUF, USART1_RX_STA & 0x1FFF);
+			pClient->Recvlen = USART1_RX_STA & 0x1FFF;
+			*relatedType = ONENET_MIPLPARAMETER;
+			ONStatus = ONENET_OK;
+		}
+		else if (strstr((const char*)USART1_RX_BUF, (const char*)ONENET_PROCOTOL_EVENT) != NULL) {
+			memcpy(pClient->Recvbuf, USART1_RX_BUF, USART1_RX_STA & 0x1FFF);
+			pClient->Recvlen = USART1_RX_STA & 0x1FFF;
+			*relatedType = ONENET_MIPLEVENT;
+			ONStatus = ONENET_OK;
+		}
+		
+		USART1_RX_STA &= 0x2000;														//缓存状态清0可继续接收
+		memset((void *)USART1_RX_BUF, 0x0, sizeof(USART1_RX_BUF));							//清空缓存空间
+	}
+	
+	return ONStatus;
+}
+
+/**********************************************************************************************************
+ @Function			static ONENET_StatusTypeDef ONENET_DiscoverAckEvent(ONENET_ClientsTypeDef* pClient)
+ @Description			ONENET_DiscoverAckEvent
+ @Input				pClient				: OneNET客户端实例
+ @Return				ONENET_StatusTypeDef	: ONENET处理状态
+**********************************************************************************************************/
+static ONENET_StatusTypeDef ONENET_DiscoverAckEvent(ONENET_ClientsTypeDef* pClient)
+{
+	ONENET_StatusTypeDef ONStatus = ONENET_OK;
+	int ref, msgId, objId;
+	
+	if (sscanf((const char*)pClient->Recvbuf, "%*[^MIPLDISCOVER]%*[^:]: %d,%d,%d", &ref, &msgId, &objId) <= 0) {
+		ONStatus = ONENET_ERROR;
+	}
+	else {
+		pClient->Parameter.discoverInfo.ref		= ref;
+		pClient->Parameter.discoverInfo.msgId		= msgId;
+		pClient->Parameter.discoverInfo.objId		= objId;
+		Radio_Trf_Debug_Printf_Level2("MIPLDISCOVER:%d,%d,%d", ref, msgId, objId);
+	}
+	
+	return ONStatus;
+}
+
+/**********************************************************************************************************
+ @Function			static ONENET_StatusTypeDef ONENET_ObserveAckEvent(ONENET_ClientsTypeDef* pClient)
+ @Description			ONENET_ObserveAckEvent
+ @Input				pClient				: OneNET客户端实例
+ @Return				ONENET_StatusTypeDef	: ONENET处理状态
+**********************************************************************************************************/
+static ONENET_StatusTypeDef ONENET_ObserveAckEvent(ONENET_ClientsTypeDef* pClient)
+{
+	ONENET_StatusTypeDef ONStatus = ONENET_OK;
+	int ref, msgId, flag, objId, insId, resId;
+	
+	if (sscanf((const char*)pClient->Recvbuf, "%*[^MIPLOBSERVE]%*[^:]: %d,%d,%d,%d,%d,%d", &ref, &msgId, &flag, &objId, &insId, &resId) <= 0) {
+		ONStatus = ONENET_ERROR;
+	}
+	else {
+		for (int index = 0; index < ONENET_OBJECT_INSCOUNT; index++) {
+			if (insId == index) {
+				pClient->Parameter.observeInfo[index].ref		= ref;
+				pClient->Parameter.observeInfo[index].msgId		= msgId;
+				pClient->Parameter.observeInfo[index].flag		= flag;
+				pClient->Parameter.observeInfo[index].objId		= objId;
+				pClient->Parameter.observeInfo[index].insId		= insId;
+				pClient->Parameter.observeInfo[index].resId		= resId;
+				Radio_Trf_Debug_Printf_Level2("MIPLOBSERVE:%d,%d,%d,%d,%d,%d", ref, msgId, flag, objId, insId, resId);
+			}
+		}
+	}
+	
+	return ONStatus;
+}
+
+/**********************************************************************************************************
+ @Function			static ONENET_StatusTypeDef ONENET_ReadAckEvent(ONENET_ClientsTypeDef* pClient)
+ @Description			ONENET_ReadAckEvent
+ @Input				pClient				: OneNET客户端实例
+ @Return				ONENET_StatusTypeDef	: ONENET处理状态
+**********************************************************************************************************/
+static ONENET_StatusTypeDef ONENET_ReadAckEvent(ONENET_ClientsTypeDef* pClient)
+{
+	ONENET_StatusTypeDef ONStatus = ONENET_OK;
+	//Todo
+	return ONStatus;
+}
+
+/**********************************************************************************************************
+ @Function			static ONENET_StatusTypeDef ONENET_WriteAckEvent(ONENET_ClientsTypeDef* pClient)
+ @Description			ONENET_WriteAckEvent
+ @Input				pClient				: OneNET客户端实例
+ @Return				ONENET_StatusTypeDef	: ONENET处理状态
+**********************************************************************************************************/
+static ONENET_StatusTypeDef ONENET_WriteAckEvent(ONENET_ClientsTypeDef* pClient)
+{
+	ONENET_StatusTypeDef ONStatus = ONENET_OK;
+	//Todo
+	return ONStatus;
+}
+
+/**********************************************************************************************************
+ @Function			static ONENET_StatusTypeDef ONENET_ExecuteAckEvent(ONENET_ClientsTypeDef* pClient)
+ @Description			ONENET_ExecuteAckEvent
+ @Input				pClient				: OneNET客户端实例
+ @Return				ONENET_StatusTypeDef	: ONENET处理状态
+**********************************************************************************************************/
+static ONENET_StatusTypeDef ONENET_ExecuteAckEvent(ONENET_ClientsTypeDef* pClient)
+{
+	ONENET_StatusTypeDef ONStatus = ONENET_OK;
+	//Todo
+	return ONStatus;
+}
+
+/**********************************************************************************************************
+ @Function			static ONENET_StatusTypeDef ONENET_ParameterAckEvent(ONENET_ClientsTypeDef* pClient)
+ @Description			ONENET_ParameterAckEvent
+ @Input				pClient				: OneNET客户端实例
+ @Return				ONENET_StatusTypeDef	: ONENET处理状态
+**********************************************************************************************************/
+static ONENET_StatusTypeDef ONENET_ParameterAckEvent(ONENET_ClientsTypeDef* pClient)
+{
+	ONENET_StatusTypeDef ONStatus = ONENET_OK;
+	//Todo
+	return ONStatus;
+}
+
+/**********************************************************************************************************
+ @Function			static ONENET_StatusTypeDef ONENET_EventAckEvent(ONENET_ClientsTypeDef* pClient)
+ @Description			ONENET_EventAckEvent
+ @Input				pClient				: OneNET客户端实例
+ @Return				ONENET_StatusTypeDef	: ONENET处理状态
+**********************************************************************************************************/
+static ONENET_StatusTypeDef ONENET_EventAckEvent(ONENET_ClientsTypeDef* pClient)
+{
+	ONENET_StatusTypeDef ONStatus = ONENET_OK;
+	int ref, evtid;
+	
+	if (sscanf((const char*)pClient->Recvbuf, "%*[^MIPLEVENT]%*[^:]: %d,%d", &ref, &evtid) <= 0) {
+		ONStatus = ONENET_ERROR;
+	}
+	else {
+		Radio_Trf_Debug_Printf_Level2("MIPLEVENT:%d,%d", ref, evtid);
+	}
+	
+	return ONStatus;
+}
+
+/**********************************************************************************************************
+ @Function			ONENET_StatusTypeDef ONENET_RecvPacketProcess(ONENET_ClientsTypeDef* pClient, int *relatedType)
+ @Description			ONENET_RecvPacketProcess	: ONENET接收数据包处理
+ @Input				pClient				: OneNET客户端实例
+					relatedType			: OneNET消息类型
+ @Return				ONENET_StatusTypeDef	: ONENET处理状态
+**********************************************************************************************************/
+ONENET_StatusTypeDef ONENET_RecvPacketProcess(ONENET_ClientsTypeDef* pClient, int *relatedType)
+{
+	ONENET_StatusTypeDef ONStatus = ONENET_OK;
+	int packetType = -1;
+	
+	ONStatus = ONENET_ReadPacket(pClient, &packetType);									//获取OneNET数据并提取消息类型
+	if (ONStatus != ONENET_OK) {														//没有获取到数据
+		ONStatus = ONENET_unknown_error;
+		goto exit;
+	}
+	
+	switch ((ONENET_RelatedURCsCodeTypeDef)packetType)									//根据消息类型执行不同处理
+	{
+	case ONENET_MIPLDISCOVER:
+		ONENET_DiscoverAckEvent(pClient);
+		break;
+	
+	case ONENET_MIPLOBSERVE:
+		ONENET_ObserveAckEvent(pClient);
+		break;
+	
+	case ONENET_MIPLREAD:
+		ONENET_ReadAckEvent(pClient);
+		break;
+	
+	case ONENET_MIPLWRITE:
+		ONENET_WriteAckEvent(pClient);
+		break;
+	
+	case ONENET_MIPLEXECUTE:
+		ONENET_ExecuteAckEvent(pClient);
+		break;
+	
+	case ONENET_MIPLPARAMETER:
+		ONENET_ParameterAckEvent(pClient);
+		break;
+	
+	case ONENET_MIPLEVENT:
+		ONENET_EventAckEvent(pClient);
+		break;
+	
+	default:
+		ONStatus = ONENET_ERROR;
+		break;
+	}
+	
+	if (ONStatus == ONENET_OK) {
+		*relatedType = packetType;
+	}
+	
+exit:
+	return ONStatus;
+}
+
+/**********************************************************************************************************
+ @Function			ONENET_StatusTypeDef ONENET_WaitforRecvAck(ONENET_ClientsTypeDef* pClient, ONENET_RelatedURCsCodeTypeDef relatedType, Stm32_CalculagraphTypeDef* timerS)
+ @Description			ONENET_WaitforRecvAck	: ONENET等待接收到相应应答消息类型
+ @Input				pClient				: OneNET客户端实例
+					relatedType			: OneNET消息类型
+					timer				: 超时计时器
+ @Return				ONENET_StatusTypeDef	: ONENET处理状态
+**********************************************************************************************************/
+ONENET_StatusTypeDef ONENET_WaitforRecvAck(ONENET_ClientsTypeDef* pClient, ONENET_RelatedURCsCodeTypeDef relatedType, Stm32_CalculagraphTypeDef* timerS)
+{
+	ONENET_StatusTypeDef ONStatus = ONENET_OK;
+	int packetType = -1;
+	
+	Uart1_PortSerialEnable(ENABLE, DISABLE);											//开启接收中断
+	USART1_RX_STA |= 0x2000;															//接收状态复位
+	memset((void *)USART1_RX_BUF, 0x0, sizeof(USART1_RX_BUF));								//清空缓存空间
+	
+	while (packetType != relatedType) {
+		if ((ONStatus = ONENET_RecvPacketProcess(pClient, &packetType)) == ONENET_ERROR) {		//接收数据处理
+			Uart1_PortSerialEnable(DISABLE, DISABLE);
+			goto exit;
+		}
+		if (Stm32_Calculagraph_IsExpiredSec(timerS) == true) {								//到达超时时间
+			break;
+		}
+		
+		OneNET_WaitforCallback(pClient);
+	}
+	
+	Uart1_PortSerialEnable(DISABLE, DISABLE);
+	
+	if (packetType != relatedType) {
+		ONStatus = ONENET_CMD_TIMEOUT;
+	}
+	else {
+		ONStatus = ONENET_OK;
+	}
+	
+exit:
 	return ONStatus;
 }
 

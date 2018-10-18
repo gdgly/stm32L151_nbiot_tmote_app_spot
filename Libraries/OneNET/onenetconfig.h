@@ -12,12 +12,43 @@
 #define ONENET_BUFFER_SIZE				512
 #define ONENET_DATASTACK_SIZE				512
 
+/* ONENET 协议标识 */
+#define ONENET_PROCOTOL_HEAD				"+MIPL"
+#define ONENET_PROCOTOL_DISCOVER			"+MIPLDISCOVER"
+#define ONENET_PROCOTOL_OBSERVE			"+MIPLOBSERVE"
+#define ONENET_PROCOTOL_READ				"+MIPLREAD"
+#define ONENET_PROCOTOL_WRITE				"+MIPLWRITE"
+#define ONENET_PROCOTOL_EXECUTE			"+MIPLEXECUTE"
+#define ONENET_PROCOTOL_PARAMETER			"+MIPLPARAMETER"
+#define ONENET_PROCOTOL_EVENT				"+MIPLEVENT"
+
+/* ONENET LWM2M 服务地址 */
+#define ONENET_LWM2MSERVER_MODE			1
+#define ONENET_LWM2MSERVER_ADDR			"183.230.40.39"
+#define ONENET_LWM2MSERVER_PORT			5683
+
+/* ONENET LWM2M 应答时间 */
+#define ONENET_LWM2MSERVER_ACKTIMEOUT		20
+
+/* ONENET OBServer 自动应答选择 */
+#define ONENET_OBSAUTOACK_DISABLE			0
+#define ONENET_OBSAUTOACK_ENABLE			1
+#define ONENET_OBSAUTOACK_TYPE			ONENET_OBSAUTOACK_ENABLE
+
 /* ONENET 对象设置 */
 #define ONENET_OBJECT_OBJID				6203												// 对象ID
 #define ONENET_OBJECT_INSCOUNT			2												// 实例个数
 #define ONENET_OBJECT_INSBITMAP			"11"												// 实例位使能
 #define ONENET_OBJECT_ATTRCOUNT			1												// 可读写属性个数
 #define ONENET_OBJECT_ACTCOUNT			0												// 可执行属性个数
+
+/* ONENET 注册设置 */
+#define ONENET_REGISTER_LIFETIME			12 * 3600											// 生命周期
+#define ONENET_REGISTER_TIMEOUT			60												// 活跃时间
+
+/* ONENET 资源数据 */
+#define ONENET_DISCOVER_LENGTH			4												// 资源长度
+#define ONENET_DISCOVER_VALSTR			"1000"											// 资源内容
 
 typedef struct ONENET_ParameterTypeDef		ONENET_ParameterTypeDef;
 typedef struct ONENET_LWM2MTransportTypeDef	ONENET_LWM2MTransportTypeDef;
@@ -99,6 +130,18 @@ typedef enum
 	ONENET_NotAcceptable				= 15
 }ONENET_ResultcodeTypeDef;
 
+/* ONENET Related URCs Code */
+typedef enum
+{
+	ONENET_MIPLDISCOVER					= 0x01,
+	ONENET_MIPLOBSERVE					= 0x02,
+	ONENET_MIPLREAD					= 0x03,
+	ONENET_MIPLWRITE					= 0x04,
+	ONENET_MIPLEXECUTE					= 0x05,
+	ONENET_MIPLPARAMETER				= 0x06,
+	ONENET_MIPLEVENT					= 0x07
+}ONENET_RelatedURCsCodeTypeDef;
+
 /* ONENET Is ProcessState */
 typedef enum
 {
@@ -106,7 +149,7 @@ typedef enum
 	ONENET_PROCESSSTATE_SUITE			= 0x01,
 	ONENET_PROCESSSTATE_OBJECT			= 0x02,
 	ONENET_PROCESSSTATE_REGISTER			= 0x03,
-	
+	ONENET_PROCESSSTATE_ACTIVE			= 0x04,
 	
 	
 	ONENET_PROCESSSTATE_LOST				= 0x08
@@ -135,12 +178,32 @@ typedef struct
 	u16								actCount;											/*< The action count >*/
 }ONENET_ObjectParaTypeDef;
 
+/* ONENET Observe Parameter */
+typedef struct
+{
+	int								ref;												/*< Instance ID of OneNET communication suite >*/
+	int								msgId;											/*< The message identifier of packet >*/
+	char								flag;											/*< Indicates whether or not to observe >*/
+	int								objId;											/*< The object identifier >*/
+	int								insId;											/*< The instance identifier >*/
+	int								resId;											/*< The resource identifier >*/
+}ONENET_ObserveParaTypeDef;
+
+typedef struct
+{
+	int								ref;												/*< Instance ID of OneNET communication suite >*/
+	int								msgId;											/*< The message identifier of packet >*/
+	int								objId;											/*< The object identifier >*/
+}ONENET_DiscoverParaTypeDef;
+
 /* ONENET Parameter */
 struct ONENET_ParameterTypeDef
 {
-	char								suiteVersion[20];									//通信套件版本
-	int								suiteRefer;										//通信套件
-	ONENET_ObjectParaTypeDef				objectInfo;										//对象信息
+	char								suiteVersion[20];									// 通信套件版本
+	int								suiteRefer;										// 通信套件
+	ONENET_ObjectParaTypeDef				objectInfo;										// 对象信息
+	ONENET_ObserveParaTypeDef			observeInfo[ONENET_OBJECT_INSCOUNT];					// 实例信息
+	ONENET_DiscoverParaTypeDef			discoverInfo;										// 资源信息
 	
 	
 };
@@ -152,7 +215,6 @@ struct ONENET_ParameterTypeDef
 struct ONENET_LWM2MTransportTypeDef
 {
 	NBIOT_ClientsTypeDef*				NBIotStack;
-	
 	
 	ONENET_StatusTypeDef				(*Write)(ONENET_LWM2MTransportTypeDef*, const char*, u16);
 	ONENET_StatusTypeDef				(*Read)(ONENET_LWM2MTransportTypeDef*, char*, u16*);
@@ -179,7 +241,8 @@ struct ONENET_ClientsTypeDef
 		unsigned char					dictateInitFailureCnt;
 		unsigned char					dictateSuiteFailureCnt;
 		unsigned char					dictateObjectFailureCnt;
-		unsigned char					dictateOpenFailureCnt;
+		unsigned char					dictateRegisterFailureCnt;
+		unsigned char					dictateActiveFailureCnt;
 		
 		
 		unsigned char					dictateLostFailureCnt;
@@ -207,6 +270,7 @@ struct ONENET_ClientsTypeDef
 
 
 /* Application Programming Interface */
+void OneNET_WaitforCallback(ONENET_ClientsTypeDef* pClient);																//ONENET数据等待接收回调函数
 void OneNET_Client_Init(ONENET_ClientsTypeDef* pClient, ONENET_LWM2MTransportTypeDef* NetSock, NET_NBIOT_ClientsTypeDef* NetNbiotStack);	//ONENET客户端初始化
 
 #endif /* __ONENET_CONFIG_H */

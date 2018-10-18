@@ -29,4 +29,8 @@ ONENET_StatusTypeDef NBIOT_OneNET_Related_Notify_ApplicationServer(ONENET_Client
 
 ONENET_StatusTypeDef NBIOT_OneNET_Related_Send_UpdateRequest(ONENET_ClientsTypeDef* pClient, s32 refer, u32 lifetime, u8 withObjectFlag, sc8* raiMode);						//发送更新生命周期
 
+ONENET_StatusTypeDef ONENET_ReadPacket(ONENET_ClientsTypeDef* pClient, int *relatedType);																			//接收数据包
+ONENET_StatusTypeDef ONENET_RecvPacketProcess(ONENET_ClientsTypeDef* pClient, int *relatedType);																	//接收数据包处理
+ONENET_StatusTypeDef ONENET_WaitforRecvAck(ONENET_ClientsTypeDef* pClient, ONENET_RelatedURCsCodeTypeDef relatedType, Stm32_CalculagraphTypeDef* timerS);						//等待接收相应应答消息类型
+
 #endif /* __ONENET_FUNC_H */

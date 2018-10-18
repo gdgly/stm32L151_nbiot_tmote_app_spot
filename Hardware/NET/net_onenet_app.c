@@ -166,6 +166,10 @@ void NET_ONENET_APP_ProcessExecution(ONENET_ClientsTypeDef* pClient)
 		NET_ONENET_Event_Register(pClient);
 		break;
 	
+	case ONENET_PROCESSSTATE_ACTIVE:
+		
+		break;
+	
 	
 	
 	
@@ -303,7 +307,11 @@ static unsigned char* ONENET_GetDictateFailureCnt(ONENET_ClientsTypeDef* pClient
 		break;
 	
 	case ONENET_PROCESSSTATE_REGISTER:
-		dictateFailureCnt = &pClient->DictateRunCtl.dictateOpenFailureCnt;
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateRegisterFailureCnt;
+		break;
+	
+	case ONENET_PROCESSSTATE_ACTIVE:
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateActiveFailureCnt;
 		break;
 	
 	
@@ -1277,11 +1285,81 @@ void NET_ONENET_Event_Object(ONENET_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_ONENET_Event_Register(ONENET_ClientsTypeDef* pClient)
 {
+	ONENET_StatusTypeDef ONStatus = ONStatus;
+	Stm32_CalculagraphTypeDef WaitforRecv_timer_s;
 	
+	ONENET_DictateEvent_SetTime(pClient, 30);
 	
+	/* Configuration Calculagraph for WaitforRecv Timer */
+	Stm32_Calculagraph_CountdownSec(&WaitforRecv_timer_s, 15);
 	
+	/* Send Register Request */
+	if ((ONStatus = NBIOT_OneNET_Related_Send_RegisterRequest(pClient, pClient->Parameter.suiteRefer, ONENET_REGISTER_LIFETIME, ONENET_REGISTER_TIMEOUT)) == ONENET_OK) {
+		/* Dictate execute is Success */
+		ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_REGISTER, ONENET_PROCESSSTATE_REGISTER, false);
+#ifdef ONENET_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("OneNET Register Ok");
+#endif
+	}
+	else {
+		/* Dictate execute is Fail */
+		ONENET_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, ONENET_PROCESSSTATE_INIT, ONENET_PROCESSSTATE_REGISTER);
+#ifdef ONENET_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("OneNET Register Fail ECde %d", ONStatus);
+	#else
+		Radio_Trf_Debug_Printf_Level2("OneNET Register Fail");
+	#endif
+#endif
+		return;
+	}
 	
+	/* This will be a blocking call, wait for the ONENET_MIPLDISCOVER */
+	if ((ONStatus = ONENET_WaitforRecvAck(pClient, ONENET_MIPLDISCOVER, &WaitforRecv_timer_s)) == ONENET_OK) {
+		/* Dictate execute is Success */
+		ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_REGISTER, ONENET_PROCESSSTATE_REGISTER, false);
+#ifdef ONENET_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("OneNET Discover %d Ok", pClient->Parameter.discoverInfo.msgId);
+#endif
+	}
+	else {
+		/* Dictate execute is Fail */
+		ONENET_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, ONENET_PROCESSSTATE_INIT, ONENET_PROCESSSTATE_REGISTER);
+#ifdef ONENET_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("OneNET Discover Fail ECde %d", ONStatus);
+	#else
+		Radio_Trf_Debug_Printf_Level2("OneNET Discover Fail");
+	#endif
+#endif
+		return;
+	}
 	
+	/* Send Discover Request */
+	if ((ONStatus = NBIOT_OneNET_Related_Respond_DiscoverRequest(pClient, pClient->Parameter.suiteRefer, \
+															pClient->Parameter.discoverInfo.msgId, \
+															ONENET_Content, \
+															ONENET_DISCOVER_LENGTH, \
+															(sc8*)ONENET_DISCOVER_VALSTR, \
+															NULL)) == ONENET_OK) {
+		/* Dictate execute is Success */
+		ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_ACTIVE, ONENET_PROCESSSTATE_REGISTER, true);
+#ifdef ONENET_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("OneNET Discover Rsp Ok");
+#endif
+	}
+	else {
+		/* Dictate execute is Fail */
+		ONENET_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, ONENET_PROCESSSTATE_INIT, ONENET_PROCESSSTATE_REGISTER);
+#ifdef ONENET_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("OneNET Discover Rsp Fail ECde %d", ONStatus);
+	#else
+		Radio_Trf_Debug_Printf_Level2("OneNET Discover Rsp Fail");
+	#endif
+#endif
+		return;
+	}
 }
 
 
