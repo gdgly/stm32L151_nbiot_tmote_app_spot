@@ -31,7 +31,7 @@ unsigned char MQTTSN_DataStack[MQTTSN_DATASTACK_SIZE];
 **********************************************************************************************************/
 void MQTTSN_WaitforCallback(MQTTSN_ClientsTypeDef* pClient)
 {
-	MainMajorCycle();
+	MainMajorCycleMqttSN();
 }
 
 /**********************************************************************************************************

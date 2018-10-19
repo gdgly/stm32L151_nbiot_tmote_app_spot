@@ -4,7 +4,8 @@
 #include "stm32l1xx_hal.h"
 #include "stdbool.h"
 
-void MainMajorCycle(void);												//MqttSN等待数据接收中处理程序
+void MainMajorCycleMqttSN(void);											//MqttSN等待数据接收中处理程序
+void MainMajorCycleOneNET(void);											//OneNET等待数据接收中处理程序
 void MainHandleRoutine(void);												//日常处理
 
 void MainRollingEnteredUpWork(void);										//已进入正放工作状态

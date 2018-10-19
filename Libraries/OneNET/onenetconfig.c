@@ -13,6 +13,7 @@
   *********************************************************************************************************
   */
 
+#include "main.h"
 #include "onenetconfig.h"
 #include "onenetfunc.h"
 #include "onenettransport.h"
@@ -32,7 +33,7 @@ unsigned char OneNET_DataStack[ONENET_DATASTACK_SIZE];
 **********************************************************************************************************/
 void OneNET_WaitforCallback(ONENET_ClientsTypeDef* pClient)
 {
-	//Todo
+	MainMajorCycleOneNET();
 }
 
 /**********************************************************************************************************

@@ -178,13 +178,13 @@ int main(void)
 }
 
 /**********************************************************************************************************
- @Function			void MainMajorCycle(void)
- @Description			MainMajorCycle
+ @Function			void MainMajorCycleMqttSN(void)
+ @Description			MainMajorCycleMqttSN
  @Input				void
  @Return				void
  @attention			MqttSN等待数据接收中需处理程序
 **********************************************************************************************************/
-void MainMajorCycle(void)
+void MainMajorCycleMqttSN(void)
 {
 	/* MqttSN等待数据接收 */
 	Radio_Trf_Printf("MqttSN Wait Ack");
@@ -214,6 +214,34 @@ void MainMajorCycle(void)
 #elif LOWPOWERMODE == LOWPOWERDISABLE
 	Delay_MS(1000);
 #endif
+	
+	/* 喂狗 */
+	IWDG_Feed();
+	
+	/* 软重启计数器清0 */
+	SystemSoftResetTime = 0;
+}
+
+/**********************************************************************************************************
+ @Function			void MainMajorCycleOneNET(void)
+ @Description			MainMajorCycleOneNET
+ @Input				void
+ @Return				void
+ @attention			OneNET等待数据接收中需处理程序
+**********************************************************************************************************/
+void MainMajorCycleOneNET(void)
+{
+	/* 小无线处理 */
+	Radio_Trf_App_Task();
+	
+	/* 检测是否需要初始化传感器背景 */
+	RollingOverInitSensorBackground();
+	
+	/* 日常处理 */
+	MainHandleRoutine();
+	
+	/* NBIOT Data Processing */
+	NET_NBIOT_DataProcessing(&NetNbiotClientHandler);
 	
 	/* 喂狗 */
 	IWDG_Feed();

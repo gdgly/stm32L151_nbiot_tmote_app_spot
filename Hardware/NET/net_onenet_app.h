@@ -13,15 +13,6 @@
 
 #define ONENET_DEBUG_LOG_RF_PRINT											//定义开启RF输出DEBUG信息
 
-
-
-
-
-
-
-
-
-
 void NET_ONENET_APP_PollExecution(ONENET_ClientsTypeDef* pClient);				//OneNET逻辑处理
 void NET_ONENET_NBIOT_Event_StopMode(ONENET_ClientsTypeDef* pClient);				//停止模式
 void NET_ONENET_NBIOT_Event_HardwareReboot(ONENET_ClientsTypeDef* pClient);		//硬件重启

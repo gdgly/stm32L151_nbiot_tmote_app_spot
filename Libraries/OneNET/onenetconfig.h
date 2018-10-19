@@ -43,8 +43,8 @@
 #define ONENET_OBJECT_ACTCOUNT			0												// 可执行属性个数
 
 /* ONENET 注册设置 */
-#define ONENET_REGISTER_LIFETIME			12 * 3600											// 生命周期
-#define ONENET_REGISTER_TIMEOUT			60												// 注册时间
+#define ONENET_REGISTER_LIFETIME			10 * 3600											// 生命周期
+#define ONENET_REGISTER_TIMEOUT			40												// 注册时间
 
 /* ONENET 资源数据 */
 #define ONENET_DISCOVER_LENGTH			4												// 资源长度
@@ -53,8 +53,6 @@
 typedef struct ONENET_ParameterTypeDef		ONENET_ParameterTypeDef;
 typedef struct ONENET_LWM2MTransportTypeDef	ONENET_LWM2MTransportTypeDef;
 typedef struct ONENET_ClientsTypeDef		ONENET_ClientsTypeDef;
-
-
 
 /* ONENET Status */
 typedef enum
@@ -257,6 +255,8 @@ struct ONENET_ClientsTypeDef
 	ONENET_ProcessStateTypeDef			ProcessState;
 	ONENET_LWM2MTransportTypeDef*			LWM2MStack;
 	NET_NBIOT_ClientsTypeDef*			NetNbiotStack;
+	
+	Stm32_CalculagraphTypeDef			UpdateTimer;
 };
 
 

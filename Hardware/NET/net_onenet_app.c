@@ -222,6 +222,23 @@ static void ONENET_DictateEvent_SetTime(ONENET_ClientsTypeDef* pClient, unsigned
 	}
 }
 
+/**********************************************************************************************************
+ @Function			static void ONENET_NormalDictateEvent_SetTime(ONENET_ClientsTypeDef* pClient, Stm32_CalculagraphTypeDef* pTimer, unsigned int TimeoutSec)
+ @Description			ONENET_NormalDictateEvent_SetTime		: 事件运行控制器注入时间(内部使用)
+ @Input				pClient							: OneNET客户端实例
+					TimeoutSec						: 注入超时时间
+ @Return				void
+ @attention			事件运行之前判断是否需要注入时间
+**********************************************************************************************************/
+static void ONENET_NormalDictateEvent_SetTime(ONENET_ClientsTypeDef* pClient, Stm32_CalculagraphTypeDef* pTimer, unsigned int TimeoutSec)
+{
+	Stm32_CalculagraphTypeDef dictateRunTime;
+	
+	pClient->DictateRunCtl.dictateTimeoutSec = TimeoutSec;
+	Stm32_Calculagraph_CountdownSec(&dictateRunTime, pClient->DictateRunCtl.dictateTimeoutSec);
+	*pTimer = dictateRunTime;
+}
+
 static unsigned char* ONENET_NBIOT_GetDictateFailureCnt(ONENET_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateNoTimeOut)
 {
 	unsigned char* dictateFailureCnt;
@@ -454,6 +471,56 @@ static void ONENET_DictateEvent_SuccessExecute(ONENET_ClientsTypeDef* pClient, N
 }
 
 /**********************************************************************************************************
+ @Function			static void ONENET_NBIOT_GetConnectTime(ONENET_ClientsTypeDef* pClient, bool startIdleTime)
+ @Description			ONENET_NBIOT_GetConnectTime			: 获取NBConnect状态时间(内部使用)
+ @Input				pClient							: OneNET客户端实例
+					startIdleTime						: 是否开启Idle状态计时器
+ @Return				void
+**********************************************************************************************************/
+static void ONENET_NBIOT_GetConnectTime(ONENET_ClientsTypeDef* pClient, bool startIdleTime)
+{
+	unsigned int uICoapConnectTime = 0;
+	
+	/* Get ConnectTime */
+	uICoapConnectTime = Stm32_EventRunningTime_EndMS(&pClient->LWM2MStack->NBIotStack->ConnectTimeMS) / 1000;
+	/* End ConnectTime */
+	TCFG_SystemData.CoapConnectTime = pClient->LWM2MStack->NBIotStack->CoapConnectTimeSec + uICoapConnectTime;
+	pClient->LWM2MStack->NBIotStack->CoapConnectTimeSec = TCFG_SystemData.CoapConnectTime;
+	/* Start or End IdleTime */
+	if (startIdleTime != false) {
+		Stm32_EventRunningTime_StartMS(&pClient->LWM2MStack->NBIotStack->IdleTimeMS);
+	}
+	else {
+		Stm32_EventRunningTime_EndMS(&pClient->LWM2MStack->NBIotStack->IdleTimeMS);
+	}
+}
+
+/**********************************************************************************************************
+ @Function			static void ONENET_NBIOT_GetIdleTime(ONENET_ClientsTypeDef* pClient, bool startConnectTime)
+ @Description			ONENET_NBIOT_GetIdleTime				: 获取NBIdle状态时间(内部使用)
+ @Input				pClient							: OneNET客户端实例
+					startConnectTime					: 是否开启Connect状态计时器
+ @Return				void
+**********************************************************************************************************/
+static void ONENET_NBIOT_GetIdleTime(ONENET_ClientsTypeDef* pClient, bool startConnectTime)
+{
+	unsigned int uICoapIdleTime = 0;
+	
+	/* Get IdleTime */
+	uICoapIdleTime = Stm32_EventRunningTime_EndMS(&pClient->LWM2MStack->NBIotStack->IdleTimeMS) / 1000;
+	/* End IdleTime */
+	TCFG_SystemData.CoapIdleTime = pClient->LWM2MStack->NBIotStack->CoapIdleTimeSec + uICoapIdleTime;
+	pClient->LWM2MStack->NBIotStack->CoapIdleTimeSec = TCFG_SystemData.CoapIdleTime;
+	/* Start or End ConnectTime */
+	if (startConnectTime != false) {
+		Stm32_EventRunningTime_StartMS(&pClient->LWM2MStack->NBIotStack->ConnectTimeMS);
+	}
+	else {
+		Stm32_EventRunningTime_EndMS(&pClient->LWM2MStack->NBIotStack->ConnectTimeMS);
+	}
+}
+
+/**********************************************************************************************************
  @Function			void NET_ONENET_NBIOT_Event_StopMode(ONENET_ClientsTypeDef* pClient)
  @Description			NET_ONENET_NBIOT_Event_StopMode		: 停止模式
  @Input				pClient							: OneNET客户端实例
@@ -463,6 +530,7 @@ static void ONENET_DictateEvent_SuccessExecute(ONENET_ClientsTypeDef* pClient, N
 void NET_ONENET_NBIOT_Event_StopMode(ONENET_ClientsTypeDef* pClient)
 {
 	Stm32_CalculagraphTypeDef dictateRunTime;
+	static unsigned char OneNETSendMessageIndex;
 	
 	/* It is the first time to execute */
 	if (pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEnable != true) {
@@ -473,9 +541,10 @@ void NET_ONENET_NBIOT_Event_StopMode(ONENET_ClientsTypeDef* pClient)
 		/* NBIOT Module Poweroff */
 		NBIOT_Neul_NBxx_HardwarePoweroff(pClient->LWM2MStack->NBIotStack);
 		/* Init Message Index */
-		
-		
-		
+		OneNETSendMessageIndex = NET_OneNET_Message_SendDataRear();
+		/* Get ConnectTime & IdleTime */
+		ONENET_NBIOT_GetConnectTime(pClient, false);
+		ONENET_NBIOT_GetIdleTime(pClient, false);
 	}
 	
 	if (Stm32_Calculagraph_IsExpiredSec(&pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateRunTime) == true) {
@@ -487,9 +556,18 @@ void NET_ONENET_NBIOT_Event_StopMode(ONENET_ClientsTypeDef* pClient)
 	}
 	else {
 		/* Dictate isn't TimeOut */
-		
-		
-		
+		if (NET_OneNET_Message_SendDataRear() != OneNETSendMessageIndex) {
+			/* Have new coap message need to Send */
+			pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEnable = false;
+			pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+			pClient->ProcessState = ONENET_PROCESSSTATE_INIT;
+			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_ONENET;
+		}
+		else {
+			pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent = STOP_MODE;
+			pClient->ProcessState = ONENET_PROCESSSTATE_INIT;
+			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_ONENET;
+		}
 	}
 }
 
@@ -1288,13 +1366,23 @@ void NET_ONENET_Event_Register(ONENET_ClientsTypeDef* pClient)
 	ONENET_StatusTypeDef ONStatus = ONStatus;
 	Stm32_CalculagraphTypeDef WaitforRecv_timer_s;
 	
-	ONENET_DictateEvent_SetTime(pClient, ONENET_REGISTER_TIMEOUT);
+	ONENET_DictateEvent_SetTime(pClient, ONENET_REGISTER_TIMEOUT + 20);
 	
 	/* Configuration Calculagraph for WaitforRecv Timer */
-	Stm32_Calculagraph_CountdownSec(&WaitforRecv_timer_s, ONENET_REGISTER_TIMEOUT - 20);
+	Stm32_Calculagraph_CountdownSec(&WaitforRecv_timer_s, ONENET_REGISTER_TIMEOUT);
+	
+	/* Clean observeInfo */
+	for (int index = 0; index < ONENET_OBJECT_INSCOUNT; index++) {
+		pClient->Parameter.observeInfo[index].ref		= 0;
+		pClient->Parameter.observeInfo[index].msgId		= 0;
+		pClient->Parameter.observeInfo[index].flag		= 0;
+		pClient->Parameter.observeInfo[index].objId		= 0;
+		pClient->Parameter.observeInfo[index].insId		= 0;
+		pClient->Parameter.observeInfo[index].resId		= 0;
+	}
 	
 	/* Send Register Request */
-	if ((ONStatus = NBIOT_OneNET_Related_Send_RegisterRequest(pClient, pClient->Parameter.suiteRefer, ONENET_REGISTER_LIFETIME, ONENET_REGISTER_TIMEOUT)) == ONENET_OK) {
+	if ((ONStatus = NBIOT_OneNET_Related_Send_RegisterRequest(pClient, pClient->Parameter.suiteRefer, ONENET_REGISTER_LIFETIME + 2 * 3600, ONENET_REGISTER_TIMEOUT + 20)) == ONENET_OK) {
 		/* Dictate execute is Success */
 		ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_REGISTER, ONENET_PROCESSSTATE_REGISTER, false);
 #ifdef ONENET_DEBUG_LOG_RF_PRINT
@@ -1335,6 +1423,15 @@ void NET_ONENET_Event_Register(ONENET_ClientsTypeDef* pClient)
 		return;
 	}
 	
+	/* Check observeInfo */
+	for (int index = 0; index < ONENET_OBJECT_INSCOUNT; index++) {
+		if (pClient->Parameter.observeInfo[index].msgId == 0) {
+			/* Dictate execute is Fail */
+			ONENET_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, ONENET_PROCESSSTATE_INIT, ONENET_PROCESSSTATE_REGISTER);
+			return;
+		}
+	}
+	
 	/* Send Discover Request */
 	if ((ONStatus = NBIOT_OneNET_Related_Respond_DiscoverRequest(pClient, pClient->Parameter.suiteRefer, \
 															pClient->Parameter.discoverInfo.msgId, \
@@ -1360,6 +1457,9 @@ void NET_ONENET_Event_Register(ONENET_ClientsTypeDef* pClient)
 #endif
 		return;
 	}
+	
+	/* Set Update Duration */
+	ONENET_NormalDictateEvent_SetTime(pClient, &pClient->UpdateTimer, ONENET_REGISTER_LIFETIME);
 }
 
 
