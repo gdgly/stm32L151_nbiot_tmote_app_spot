@@ -51,6 +51,9 @@
 /* NBIOT 串口波特率计算中间值 */
 #define BAUDRATE_CAL_MIDDLE_NUM			16
 
+/* NBIOT 频段配置个数 */
+#define NBIOT_NBAND_NUM					3
+
 /* 下行数据协议值偏移地址 */
 #define TCLOD_MSGTYPE_OFFSET				4
 #define TCLOD_MSGVERSION_OFFSET			5
@@ -66,6 +69,7 @@
 #define TCLOD_MAGIC_NUM					9
 
 typedef struct NBIOT_CDPServerTypeDef		NBIOT_CDPServerTypeDef;
+typedef struct NBIOT_NBandTypeDef			NBIOT_NBandTypeDef;
 typedef struct NBIOT_ParameterTypeDef		NBIOT_ParameterTypeDef;
 typedef struct NBIOT_ATCmdTypeDef			NBIOT_ATCmdTypeDef;
 typedef struct NBIOT_ClientsTypeDef		NBIOT_ClientsTypeDef;
@@ -348,6 +352,13 @@ struct NBIOT_CDPServerTypeDef
 	unsigned short						CDPServerPort;
 };
 
+/* NBIOT NBAND */
+struct NBIOT_NBandTypeDef
+{
+	unsigned char						NBandNum;
+	NBIOT_BandTypeDef					NBandVal[NBIOT_NBAND_NUM];
+};
+
 /* NBIOT Parameter */
 struct NBIOT_ParameterTypeDef
 {
@@ -437,7 +448,7 @@ struct NBIOT_ParameterTypeDef
 	NBIOT_FunctionalityTypeDef			functionality;
 	NBIOT_OpenOrCloseFuncTypeDef			nnmistate;
 	NBIOT_OpenOrCloseFuncTypeDef			nsmistate;
-	NBIOT_BandTypeDef					band;
+	NBIOT_NBandTypeDef					band;
 	NBIOT_ReportErrorTypeDef				cmeestate;
 	NBIOT_MessageRegistrationStatusTypeDef	messageregistration;
 	NBIOT_CDPServerTypeDef				cdpserver;

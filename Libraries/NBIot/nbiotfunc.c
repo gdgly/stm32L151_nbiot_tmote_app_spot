@@ -1108,22 +1108,27 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSentMessageIndications(NBIOT_Client
 }
 
 /**********************************************************************************************************
- @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetSupportedBands(NBIOT_ClientsTypeDef* pClient, NBIOT_BandTypeDef bands)
+ @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetSupportedBands(NBIOT_ClientsTypeDef* pClient, NBIOT_NBandTypeDef bands)
  @Description			NBIOT_Neul_NBxx_SetSupportedBands			: 设置Band
  @Input				pClient								: NBIOT客户端实例
-					bands								: ChinaTelecom						= 5
-														  ChinaMobile						= 8
-														  ChinaUnicom						= 20
+					bands								: nband参数
  @Return				NBIOT_StatusTypeDef						: NBIOT处理状态
 **********************************************************************************************************/
-NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetSupportedBands(NBIOT_ClientsTypeDef* pClient, NBIOT_BandTypeDef bands)
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetSupportedBands(NBIOT_ClientsTypeDef* pClient, NBIOT_NBandTypeDef bands)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	u16 datalength = 0;
 	
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
-	sprintf((char *)pClient->DataProcessStack, "AT+NBAND=%d\r", bands);
+	sprintf((char *)pClient->DataProcessStack, "AT+NBAND=%d", bands.NBandVal[0]);
+	for (int index = 1; index < bands.NBandNum; index++) {
+		datalength = strlen((const char*)pClient->DataProcessStack);
+		sprintf((char *)(pClient->DataProcessStack + datalength), ",%d", bands.NBandVal[index]);
+	}
+	datalength = strlen((const char*)pClient->DataProcessStack);
+	sprintf((char *)(pClient->DataProcessStack + datalength), "%c", '\r');
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, pClient->DataProcessStack, strlen((char *)pClient->DataProcessStack), "OK", "ERROR");
 	
@@ -1147,23 +1152,27 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetSupportedBands(NBIOT_ClientsTypeDef* pCli
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSupportedBands(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
-	int bands = 0;
+	int bands[3] = {0};
+	int bandnum = 0;
 	
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+NBAND?\r", strlen("AT+NBAND?\r"), "OK", "ERROR");
 	
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
-		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+NBAND]%*[^:]:%d", &bands) <= 0) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+NBAND]%*[^:]:%d,%d,%d", &bands[0], &bands[1], &bands[2]) <= 0) {
 			NBStatus = NBIOT_ERROR;
 		}
 		else {
-			if ((bands == NBand_2100MHz) || (bands == NBand_1800MHz) || (bands == NBand_850MHz) || (bands == NBand_900MHz) || (bands == NBand_800MHz) || (bands == NBand_700MHz)) {
-				pClient->Parameter.band = (NBIOT_BandTypeDef)bands;
+			for (int index = 0; index < NBIOT_NBAND_NUM; index++) {
+				pClient->Parameter.band.NBandVal[index] = (NBIOT_BandTypeDef)0;
+				if ((bands[index] == NBand_2100MHz) || (bands[index] == NBand_1800MHz) || (bands[index] == NBand_850MHz) || \
+				    (bands[index] == NBand_900MHz)  || (bands[index] == NBand_800MHz)  || (bands[index] == NBand_700MHz)) {
+					pClient->Parameter.band.NBandVal[bandnum] = (NBIOT_BandTypeDef)bands[index];
+					bandnum++;
+				}
 			}
-			else {
-				NBStatus = NBIOT_ERROR;
-			}
+			pClient->Parameter.band.NBandNum = bandnum;
 		}
 	}
 #if NBIOT_PRINT_ERROR_CODE_TYPE

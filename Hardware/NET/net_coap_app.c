@@ -459,7 +459,7 @@ void NET_COAP_NBIOT_Event_ReportError(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, MODULE_CHECK, REPORT_ERROE);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("NB ReportErrorCode Set %d Ok", CMEEnable);
+		Radio_Trf_Debug_Printf_Level2("NB ReportECde Set %d Ok", CMEEnable);
 #endif
 	}
 	else {
@@ -467,7 +467,7 @@ void NET_COAP_NBIOT_Event_ReportError(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, REPORT_ERROE);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("NB ReportErrorCode Set %d Fail", CMEEnable);
+		Radio_Trf_Debug_Printf_Level2("NB ReportECde Set %d Fail", CMEEnable);
 #endif
 	}
 }
@@ -525,7 +525,7 @@ void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, ICCID_CHECK, PARAMETER_CONFIG);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("NB Parameter Config Read Ok");
+		Radio_Trf_Debug_Printf_Level2("NB Para Config Read Ok");
 #endif
 	}
 	else {
@@ -534,9 +534,9 @@ void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		Radio_Trf_Debug_Printf_Level2("NB Parameter Config Read Fail ECde %d", NBStatus);
+		Radio_Trf_Debug_Printf_Level2("NB Para Config Read Fail ECde %d", NBStatus);
 	#else
-		Radio_Trf_Debug_Printf_Level2("NB Parameter Config Read Fail");
+		Radio_Trf_Debug_Printf_Level2("NB Para Config Read Fail");
 	#endif
 #endif
 		return;
@@ -689,9 +689,9 @@ void NET_COAP_NBIOT_Event_SimICCIDCheck(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		Radio_Trf_Debug_Printf_Level2("NB ICCID Check Fail ECde %d", NBStatus);
+		Radio_Trf_Debug_Printf_Level2("NB ICCID Fail ECde %d", NBStatus);
 	#else
-		Radio_Trf_Debug_Printf_Level2("NB ICCID Check Fail");
+		Radio_Trf_Debug_Printf_Level2("NB ICCID Fail");
 	#endif
 #endif
 	}
@@ -723,9 +723,9 @@ void NET_COAP_NBIOT_Event_FullFunctionality(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		Radio_Trf_Debug_Printf_Level2("CoAP FullFunc Check Fail ECde %d", NBStatus);
+		Radio_Trf_Debug_Printf_Level2("CoAP FullFunc Fail ECde %d", NBStatus);
 	#else
-		Radio_Trf_Debug_Printf_Level2("CoAP FullFunc Check Fail");
+		Radio_Trf_Debug_Printf_Level2("CoAP FullFunc Fail");
 	#endif
 #endif
 		return;
@@ -782,9 +782,9 @@ void NET_COAP_NBIOT_Event_MinimumFunctionality(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		Radio_Trf_Debug_Printf_Level2("CoAP MinFunc Check Fail ECde %d", NBStatus);
+		Radio_Trf_Debug_Printf_Level2("CoAP MinFunc Fail ECde %d", NBStatus);
 	#else
-		Radio_Trf_Debug_Printf_Level2("CoAP MinFunc Check Fail");
+		Radio_Trf_Debug_Printf_Level2("CoAP MinFunc Fail");
 	#endif
 #endif
 		return;
@@ -832,7 +832,7 @@ void NET_COAP_NBIOT_Event_CDPServerCheck(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, CDP_SERVER_CHECK, CDP_SERVER_CHECK);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("CoAP CDP Read %s:%d Ok", pClient->Parameter.cdpserver.CDPServerHost, pClient->Parameter.cdpserver.CDPServerPort);
+		Radio_Trf_Debug_Printf_Level2("CoAP CDP %s:%d Ok", pClient->Parameter.cdpserver.CDPServerHost, pClient->Parameter.cdpserver.CDPServerPort);
 #endif
 	}
 	else {
@@ -875,7 +875,7 @@ void NET_COAP_NBIOT_Event_CDPServerConfig(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CONFIG, CDP_SERVER_CONFIG);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("CoAP CDP Read %s:%d Ok", pClient->Parameter.cdpserver.CDPServerHost, pClient->Parameter.cdpserver.CDPServerPort);
+		Radio_Trf_Debug_Printf_Level2("CoAP CDP %s:%d Ok", pClient->Parameter.cdpserver.CDPServerHost, pClient->Parameter.cdpserver.CDPServerPort);
 #endif
 	}
 	else {
@@ -921,6 +921,21 @@ void NET_COAP_NBIOT_Event_CDPServerConfig(NBIOT_ClientsTypeDef* pClient)
 	}
 }
 
+static bool NET_COAP_CheckNband(NBIOT_ClientsTypeDef* pClient, NBIOT_NBandTypeDef nbandsrc, NBIOT_NBandTypeDef nbanddst)
+{
+	if (nbandsrc.NBandNum != nbanddst.NBandNum) {
+		return false;
+	}
+	
+	for (int index = 0; index < nbanddst.NBandNum; index++) {
+		if (nbandsrc.NBandVal[index] != nbanddst.NBandVal[index]) {
+			return false;
+		}
+	}
+	
+	return true;
+}
+
 /**********************************************************************************************************
  @Function			void NET_COAP_NBIOT_Event_NbandModeCheck(NBIOT_ClientsTypeDef* pClient)
  @Description			NET_COAP_NBIOT_Event_NbandModeCheck	: NBAND模式查询
@@ -938,7 +953,10 @@ void NET_COAP_NBIOT_Event_NbandModeCheck(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, NBAND_MODE_CHECK);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("CoAP BAND Read %d Ok", pClient->Parameter.band);
+		Radio_Trf_Debug_Printf_Level2("CoAP BAND Read %d:%d.%d.%d Ok", pClient->Parameter.band.NBandNum, \
+														   pClient->Parameter.band.NBandVal[0], \
+														   pClient->Parameter.band.NBandVal[1], \
+														   pClient->Parameter.band.NBandVal[2]);
 #endif
 	}
 	else {
@@ -954,7 +972,7 @@ void NET_COAP_NBIOT_Event_NbandModeCheck(NBIOT_ClientsTypeDef* pClient)
 #endif
 	}
 	
-	if (pClient->Parameter.band != COAP_NBIOT_BAND_TYPE) {
+	if (NET_COAP_CheckNband(pClient, pClient->Parameter.band, COAP_NBIOT_BAND_TYPE) != true) {
 		/* BAND Mode Mast be Config */
 		pClient->DictateRunCtl.dictateEvent = MINIMUM_FUNCTIONALITY;
 	}
@@ -981,7 +999,7 @@ void NET_COAP_NBIOT_Event_NbandModeConfig(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, NBAND_MODE_CONFIG);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("CoAP BAND Read %d Ok", pClient->Parameter.band);
+		Radio_Trf_Debug_Printf_Level2("CoAP BAND Read Ok");
 #endif
 	}
 	else {
@@ -997,14 +1015,17 @@ void NET_COAP_NBIOT_Event_NbandModeConfig(NBIOT_ClientsTypeDef* pClient)
 #endif
 	}
 	
-	if (pClient->Parameter.band != COAP_NBIOT_BAND_TYPE) {
+	if (NET_COAP_CheckNband(pClient, pClient->Parameter.band, COAP_NBIOT_BAND_TYPE) != true) {
 		/* BAND Mode Mast be Config */
 		if ((NBStatus = NBIOT_Neul_NBxx_SetSupportedBands(pClient, COAP_NBIOT_BAND_TYPE)) == NBIOT_OK) {
 			/* Dictate execute is Success */
 			COAP_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, NBAND_MODE_CONFIG);
 			
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("CoAP BAND Set %d Ok", COAP_NBIOT_BAND_TYPE);
+			Radio_Trf_Debug_Printf_Level2("CoAP BAND Set %d:%d.%d.%d Ok", COAP_NBIOT_BAND_TYPE.NBandNum, \
+															  COAP_NBIOT_BAND_TYPE.NBandVal[0], \
+															  COAP_NBIOT_BAND_TYPE.NBandVal[1], \
+															  COAP_NBIOT_BAND_TYPE.NBandVal[2]);
 #endif
 		}
 		else {
@@ -1013,9 +1034,9 @@ void NET_COAP_NBIOT_Event_NbandModeConfig(NBIOT_ClientsTypeDef* pClient)
 			
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 		#if NBIOT_PRINT_ERROR_CODE_TYPE
-			Radio_Trf_Debug_Printf_Level2("CoAP BAND Set %d Fail ECde %d", COAP_NBIOT_BAND_TYPE, NBStatus);
+			Radio_Trf_Debug_Printf_Level2("CoAP BAND Set Fail ECde %d", NBStatus);
 		#else
-			Radio_Trf_Debug_Printf_Level2("CoAP BAND Set %d Fail", COAP_NBIOT_BAND_TYPE);
+			Radio_Trf_Debug_Printf_Level2("CoAP BAND Set Fail");
 		#endif
 #endif
 			return;
@@ -1045,7 +1066,7 @@ void NET_COAP_NBIOT_Event_MiscEquipConfig(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, ATTACH_CHECK, MISC_EQUIP_CONFIG);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("CoAP MiscEquip Read Ok");
+		Radio_Trf_Debug_Printf_Level2("CoAP Misc Read Ok");
 #endif
 	}
 	else {
@@ -1054,9 +1075,9 @@ void NET_COAP_NBIOT_Event_MiscEquipConfig(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		Radio_Trf_Debug_Printf_Level2("CoAP MiscEquip Read Fail ECde %d", NBStatus);
+		Radio_Trf_Debug_Printf_Level2("CoAP Misc Read Fail ECde %d", NBStatus);
 	#else
-		Radio_Trf_Debug_Printf_Level2("CoAP MiscEquip Read Fail");
+		Radio_Trf_Debug_Printf_Level2("CoAP Misc Read Fail");
 	#endif
 #endif
 		return;
@@ -1258,7 +1279,7 @@ void NET_COAP_NBIOT_Event_ParameterCheckOut(NBIOT_ClientsTypeDef* pClient)
 		pClient->Registered = true;
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("CoAP Parameter Check Ok");
+		Radio_Trf_Debug_Printf_Level2("CoAP Para Check Ok");
 #endif
 	}
 	else {
@@ -1267,9 +1288,9 @@ void NET_COAP_NBIOT_Event_ParameterCheckOut(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		Radio_Trf_Debug_Printf_Level2("CoAP Parameter Check Fail ECde %d", NBStatus);
+		Radio_Trf_Debug_Printf_Level2("CoAP Para Check Fail ECde %d", NBStatus);
 	#else
-		Radio_Trf_Debug_Printf_Level2("CoAP Parameter Check Fail");
+		Radio_Trf_Debug_Printf_Level2("CoAP Para Check Fail");
 	#endif
 #endif
 		return;
@@ -2266,7 +2287,7 @@ void NET_COAP_NBIOT_Listen_Event_EnterParameter(NBIOT_ClientsTypeDef* pClient)
 				pClient->ListenRunCtl.listenEvent = NBCOAP_LISTEN_MODE_ENTER_PARAMETER;
 				pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt = 0;
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-				Radio_Trf_Debug_Printf_Level2("CoAP Patameter Check Ok");
+				Radio_Trf_Debug_Printf_Level2("CoAP Para Check Ok");
 				Radio_Trf_Printf("RSSI:%d", pClient->Parameter.rssi);
 				Radio_Trf_Printf("SNR:%d", pClient->Parameter.statisticsRADIO.SNR);
 #endif
@@ -2290,7 +2311,7 @@ void NET_COAP_NBIOT_Listen_Event_EnterParameter(NBIOT_ClientsTypeDef* pClient)
 					pClient->ListenRunCtl.listenEvent = NBCOAP_LISTEN_MODE_ENTER_PARAMETER;
 				}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-				Radio_Trf_Debug_Printf_Level2("CoAP Patameter Check Fail");
+				Radio_Trf_Debug_Printf_Level2("CoAP Para Check Fail");
 #endif
 				return;
 			}

@@ -84,6 +84,11 @@ ONENET_LWM2MTransportTypeDef		OneNETLWM2MNetHandler;						//ONENET Net Handler
 ONENET_ClientsTypeDef			OneNETClientHandler;						//ONENET Clinet Handler
 #endif
 
+NBIOT_NBandTypeDef				CoAPNBIoTBandType	= {COAP_NBIOT_BAND_NUM,   COAP_NBIOT_BAND_VAL1,   COAP_NBIOT_BAND_VAL2,   COAP_NBIOT_BAND_VAL3};
+NBIOT_NBandTypeDef				OneNETNBIoTBandType	= {ONENET_NBIOT_BAND_NUM, ONENET_NBIOT_BAND_VAL1, ONENET_NBIOT_BAND_VAL2, ONENET_NBIOT_BAND_VAL3};
+NBIOT_NBandTypeDef				MqttSNNBIoTBandType	= {MQTTSN_NBIOT_BAND_NUM, MQTTSN_NBIOT_BAND_VAL1, MQTTSN_NBIOT_BAND_VAL2, MQTTSN_NBIOT_BAND_VAL3};
+NBIOT_NBandTypeDef				DNSNBIoTBandType	= {DNS_NBIOT_BAND_NUM,    DNS_NBIOT_BAND_VAL1,    DNS_NBIOT_BAND_VAL2,    DNS_NBIOT_BAND_VAL3};
+
 /**********************************************************************************************************
  @Function			void RadioPrintWorkinfo(void)
  @Description			RadioPrintWorkinfo

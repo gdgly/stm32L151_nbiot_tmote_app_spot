@@ -1,6 +1,8 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2018-10-20 :
+	* Band模式增加多频段配置。
 * 2018-10-18 :
 	* OneNET实现注册上报资源列表。
 * 2018-10-17 :
