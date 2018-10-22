@@ -34,7 +34,7 @@ void NET_ONENET_Event_Init(ONENET_ClientsTypeDef* pClient);						//INIT
 void NET_ONENET_Event_Suite(ONENET_ClientsTypeDef* pClient);					//SUITE
 void NET_ONENET_Event_Object(ONENET_ClientsTypeDef* pClient);					//OBJECT
 void NET_ONENET_Event_Register(ONENET_ClientsTypeDef* pClient);					//REGISTER
-
+void NET_ONENET_Event_Active(ONENET_ClientsTypeDef* pClient);					//ACTIVE
 
 
 

@@ -10,7 +10,7 @@
 
 /* ONENET 协议栈开辟缓存大小 */
 #define ONENET_BUFFER_SIZE				512
-#define ONENET_DATASTACK_SIZE				512
+#define ONENET_DATASTACK_SIZE				1100
 
 /* ONENET 协议标识 */
 #define ONENET_PROCOTOL_HEAD				"+MIPL"
@@ -49,6 +49,7 @@
 /* ONENET 资源数据 */
 #define ONENET_DISCOVER_LENGTH			4												// 资源长度
 #define ONENET_DISCOVER_VALSTR			"1000"											// 资源内容
+#define ONENET_DISCOVER_VALUE				 1000											// 资源内容
 
 typedef struct ONENET_ParameterTypeDef		ONENET_ParameterTypeDef;
 typedef struct ONENET_LWM2MTransportTypeDef	ONENET_LWM2MTransportTypeDef;
@@ -128,6 +129,16 @@ typedef enum
 	ONENET_NotAcceptable				= 15
 }ONENET_ResultcodeTypeDef;
 
+/* ONENET ValueType Code */
+typedef enum
+{
+	ONENET_String						= 1,
+	ONENET_Opaque						= 2,
+	ONENET_Integer						= 3,
+	ONENET_Float						= 4,
+	ONENET_Boolean						= 5
+}ONENET_ValueTypecodeTypeDef;
+
 /* ONENET Related URCs Code */
 typedef enum
 {
@@ -187,12 +198,21 @@ typedef struct
 	int								resId;											/*< The resource identifier >*/
 }ONENET_ObserveParaTypeDef;
 
+/* ONENET Discover Parameter */
 typedef struct
 {
 	int								ref;												/*< Instance ID of OneNET communication suite >*/
 	int								msgId;											/*< The message identifier of packet >*/
 	int								objId;											/*< The object identifier >*/
 }ONENET_DiscoverParaTypeDef;
+
+/* ONENET Event Parameter */
+typedef struct
+{
+	int								ref;												/*< Instance ID of OneNET communication suite >*/
+	int								evtid;											/*< Event identifier >*/
+	u16								ackid;											/*< Acknowledgement identifier >*/
+}ONENET_EventParaTypeDef;
 
 /* ONENET Parameter */
 struct ONENET_ParameterTypeDef
@@ -202,7 +222,7 @@ struct ONENET_ParameterTypeDef
 	ONENET_ObjectParaTypeDef				objectInfo;										// 对象信息
 	ONENET_ObserveParaTypeDef			observeInfo[ONENET_OBJECT_INSCOUNT];					// 实例信息
 	ONENET_DiscoverParaTypeDef			discoverInfo;										// 资源信息
-	
+	ONENET_EventParaTypeDef				eventInfo;										// 事件信息
 	
 };
 
@@ -214,8 +234,8 @@ struct ONENET_LWM2MTransportTypeDef
 {
 	NBIOT_ClientsTypeDef*				NBIotStack;
 	
-	ONENET_StatusTypeDef				(*Write)(ONENET_LWM2MTransportTypeDef*, const char*, u16);
-	ONENET_StatusTypeDef				(*Read)(ONENET_LWM2MTransportTypeDef*, char*, u16*);
+	ONENET_StatusTypeDef				(*Write)(ONENET_ClientsTypeDef*, ONENET_ObserveParaTypeDef, const char*, u16, u16);
+//	ONENET_StatusTypeDef				(*Read)(ONENET_LWM2MTransportTypeDef*, char*, u16*);
 };
 
 /* ONENET Clients */

@@ -826,9 +826,9 @@ static ONENET_StatusTypeDef ONENET_DiscoverAckEvent(ONENET_ClientsTypeDef* pClie
 		ONStatus = ONENET_ERROR;
 	}
 	else {
-		pClient->Parameter.discoverInfo.ref		= ref;
-		pClient->Parameter.discoverInfo.msgId		= msgId;
-		pClient->Parameter.discoverInfo.objId		= objId;
+		pClient->Parameter.discoverInfo.ref					= ref;
+		pClient->Parameter.discoverInfo.msgId					= msgId;
+		pClient->Parameter.discoverInfo.objId					= objId;
 		Radio_Trf_Debug_Printf_Level2("MIPLDISCOVER:%d,%d,%d", ref, msgId, objId);
 	}
 	
@@ -927,12 +927,15 @@ static ONENET_StatusTypeDef ONENET_ParameterAckEvent(ONENET_ClientsTypeDef* pCli
 static ONENET_StatusTypeDef ONENET_EventAckEvent(ONENET_ClientsTypeDef* pClient)
 {
 	ONENET_StatusTypeDef ONStatus = ONENET_OK;
-	int ref, evtid;
+	int ref, evtid, ackid;
 	
-	if (sscanf((const char*)pClient->Recvbuf, "%*[^MIPLEVENT]%*[^:]: %d,%d", &ref, &evtid) <= 0) {
+	if (sscanf((const char*)pClient->Recvbuf, "%*[^MIPLEVENT]%*[^:]: %d,%d,%d", &ref, &evtid, &ackid) <= 0) {
 		ONStatus = ONENET_ERROR;
 	}
 	else {
+		pClient->Parameter.eventInfo.ref						= ref;
+		pClient->Parameter.eventInfo.evtid						= evtid;
+		pClient->Parameter.eventInfo.ackid						= ackid;
 		Radio_Trf_Debug_Printf_Level2("MIPLEVENT:%d,%d", ref, evtid);
 	}
 	

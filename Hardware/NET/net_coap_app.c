@@ -1089,7 +1089,7 @@ void NET_COAP_NBIOT_Event_MiscEquipConfig(NBIOT_ClientsTypeDef* pClient)
 			COAP_NBIOT_DictateEvent_SuccessExecute(pClient, ATTACH_CHECK, MISC_EQUIP_CONFIG);
 			
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("CoAP NNMI Set %d Ok", CloseFunc);
+			Radio_Trf_Debug_Printf_Level2("CoAP NNMI %d Ok", CloseFunc);
 #endif
 		}
 		else {
@@ -1113,7 +1113,7 @@ void NET_COAP_NBIOT_Event_MiscEquipConfig(NBIOT_ClientsTypeDef* pClient)
 			COAP_NBIOT_DictateEvent_SuccessExecute(pClient, ATTACH_CHECK, MISC_EQUIP_CONFIG);
 			
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("CoAP NSMI Set %d Ok", CloseFunc);
+			Radio_Trf_Debug_Printf_Level2("CoAP NSMI %d Ok", CloseFunc);
 #endif
 		}
 		else {

@@ -167,7 +167,7 @@ void NET_ONENET_APP_ProcessExecution(ONENET_ClientsTypeDef* pClient)
 		break;
 	
 	case ONENET_PROCESSSTATE_ACTIVE:
-		
+		NET_ONENET_Event_Active(pClient);
 		break;
 	
 	
@@ -1483,7 +1483,19 @@ void NET_ONENET_Event_Register(ONENET_ClientsTypeDef* pClient)
 	ONENET_NormalDictateEvent_SetTime(pClient, &pClient->UpdateTimer, ONENET_REGISTER_LIFETIME);
 }
 
-
+/**********************************************************************************************************
+ @Function			void NET_ONENET_Event_Active(ONENET_ClientsTypeDef* pClient)
+ @Description			NET_ONENET_Event_Active				: ACTIVE
+ @Input				pClient							: OneNET客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_ONENET_Event_Active(ONENET_ClientsTypeDef* pClient)
+{
+	
+	
+	
+	
+}
 
 
 
