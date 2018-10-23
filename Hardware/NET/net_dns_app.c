@@ -1187,7 +1187,7 @@ void NET_DNS_Event_CreatUDPSocket(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_GetIdleTime(pClient, true);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("DNS Creat UDP Ok");
+		Radio_Trf_Debug_Printf_Level2("DNS Ct UDP Ok");
 #endif
 	}
 	else {
@@ -1210,7 +1210,7 @@ void NET_DNS_Event_CreatUDPSocket(DNS_ClientsTypeDef* pClient)
 			pClient->ProcessState = DNS_PROCESS_CREAT_UDP_SOCKET;
 		}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("DNS Creat UDP Fail");
+		Radio_Trf_Debug_Printf_Level2("DNS Ct UDP Fail");
 #endif
 		return;
 	}
@@ -1362,7 +1362,7 @@ void NET_DNS_Event_RecvDnsStructData(DNS_ClientsTypeDef* pClient)
 						pClient->ProcessState = DNS_PROCESS_CREAT_UDP_SOCKET;
 					}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-					Radio_Trf_Debug_Printf_Level2("DNS Analysis %s Fail", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
+					Radio_Trf_Debug_Printf_Level2("DNS Analy %s Fail", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
 #endif
 					return;
 				}
@@ -1373,7 +1373,7 @@ void NET_DNS_Event_RecvDnsStructData(DNS_ClientsTypeDef* pClient)
 					pClient->ProcessState = DNS_PROCESS_SEND_DNS_STRUCT_DATA;
 					pClient->DictateRunCtl.dictateRecvDnsStructDataFailureCnt = 0;
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-					Radio_Trf_Debug_Printf_Level2("DNS Analysis %s OK", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
+					Radio_Trf_Debug_Printf_Level2("DNS Analy %s OK", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
 					Radio_Trf_Debug_Printf_Level2("%s : %s", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr, pClient->AnalysisData[pClient->AnalysisTick].hostIP);
 #endif
 					pClient->AnalysisTick += 1;
@@ -1412,7 +1412,7 @@ void NET_DNS_Event_CloseUDPSocket(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_GetConnectTime(pClient, true);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("DNS Close UDP Ok");
+		Radio_Trf_Debug_Printf_Level2("DNS Cs UDP Ok");
 #endif
 	}
 	else {
@@ -1429,7 +1429,7 @@ void NET_DNS_Event_CloseUDPSocket(DNS_ClientsTypeDef* pClient)
 			pClient->ProcessState = DNS_PROCESS_CLOSE_UDP_SOCKET;
 		}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("DNS Close UDP Fail");
+		Radio_Trf_Debug_Printf_Level2("DNS Cs UDP Fail");
 #endif
 		return;
 	}

@@ -1353,7 +1353,7 @@ void NET_MQTTSN_Event_Disconnect(MQTTSN_ClientsTypeDef* pClient)
 		/* Dictate execute is Fail */
 		MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_DISCONNECT);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("MqttSN Connect Fail");
+		Radio_Trf_Debug_Printf_Level2("MqttSN Cont Fail");
 #endif
 	}
 	else {
@@ -1362,7 +1362,7 @@ void NET_MQTTSN_Event_Disconnect(MQTTSN_ClientsTypeDef* pClient)
 		/* Set Active Duration */
 		MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("MqttSN Connect Ok");
+		Radio_Trf_Debug_Printf_Level2("MqttSN Cont Ok");
 #endif
 	}
 }
@@ -1383,7 +1383,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			/* Dictate execute is Fail */
 			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Subscrib %s Fail", MQTTSN_SUBSCRIBE_ID);
+			Radio_Trf_Debug_Printf_Level2("MqttSN Sub %s Fail", MQTTSN_SUBSCRIBE_ID);
 #endif
 			return;
 		}
@@ -1392,7 +1392,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, false);
 			pClient->DictateRunCtl.dictateSubscribeStatus = true;
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Subscrib %s Ok", MQTTSN_SUBSCRIBE_ID);
+			Radio_Trf_Debug_Printf_Level2("MqttSN Sub %s Ok", MQTTSN_SUBSCRIBE_ID);
 #endif
 		}
 	}
@@ -1670,14 +1670,14 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			/* Dictate execute is Fail */
 			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN DisConnect Fail");
+			Radio_Trf_Debug_Printf_Level2("MqttSN DisCont Fail");
 #endif
 		}
 		else {
 			/* Dictate execute is Success */
 			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_AWAKE, MQTTSN_SUBSTATE_ACTIVE, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN DisConnect Ok");
+			Radio_Trf_Debug_Printf_Level2("MqttSN DisCont Ok");
 #endif
 		}
 	}
@@ -1747,7 +1747,7 @@ void NET_MQTTSN_Event_Sleep(MQTTSN_ClientsTypeDef* pClient)
 			/* Dictate execute is Fail */
 			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_SLEEP);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Connect Fail");
+			Radio_Trf_Debug_Printf_Level2("MqttSN Cont Fail");
 #endif
 			return;
 		}
@@ -1757,7 +1757,7 @@ void NET_MQTTSN_Event_Sleep(MQTTSN_ClientsTypeDef* pClient)
 			/* Set Active Duration */
 			MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Connect Ok");
+			Radio_Trf_Debug_Printf_Level2("MqttSN Cont Ok");
 #endif
 			return;
 		}
@@ -1790,7 +1790,7 @@ void NET_MQTTSN_Event_Aweak(MQTTSN_ClientsTypeDef* pClient)
 		/* Dictate execute is Fail */
 		MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_AWAKE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("MqttSN Pingreq Fail");
+		Radio_Trf_Debug_Printf_Level2("MqttSN Ping Fail");
 #endif
 		return;
 	}
@@ -1798,7 +1798,7 @@ void NET_MQTTSN_Event_Aweak(MQTTSN_ClientsTypeDef* pClient)
 		/* Dictate execute is Success */
 		MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_SLEEP, MQTTSN_SUBSTATE_AWAKE, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("MqttSN Pingreq Ok");
+		Radio_Trf_Debug_Printf_Level2("MqttSN Ping Ok");
 #endif
 	}
 	
@@ -1834,8 +1834,8 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 	u8 ret = NETIP_OK;
 	
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-	Radio_Trf_Debug_Printf_Level2("MqttSN Recv Filter:%s, topicid:%d", pClient->messageHandlers[0].topicFilter, pClient->messageHandlers[0].topicid);
-	Radio_Trf_Debug_Printf_Level2("MqttSN Recv Len:%d", messageHandler->message->payloadlen);
+	Radio_Trf_Debug_Printf_Level2("MqttSN Rv Filter:%s, topicid:%d", pClient->messageHandlers[0].topicFilter, pClient->messageHandlers[0].topicid);
+	Radio_Trf_Debug_Printf_Level2("MqttSN Rv Len:%d", messageHandler->message->payloadlen);
 #endif
 	
 	messageHandler->message->payload[messageHandler->message->payloadlen] = '\0';

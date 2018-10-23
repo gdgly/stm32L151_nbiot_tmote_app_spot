@@ -525,7 +525,7 @@ void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, ICCID_CHECK, PARAMETER_CONFIG);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("NB Para Config Read Ok");
+		Radio_Trf_Debug_Printf_Level2("NB Parameter Config Read Ok");
 #endif
 	}
 	else {
@@ -534,9 +534,9 @@ void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		Radio_Trf_Debug_Printf_Level2("NB Para Config Read Fail ECde %d", NBStatus);
+		Radio_Trf_Debug_Printf_Level2("NB Parameter Config Read Fail ECde %d", NBStatus);
 	#else
-		Radio_Trf_Debug_Printf_Level2("NB Para Config Read Fail");
+		Radio_Trf_Debug_Printf_Level2("NB Parameter Config Read Fail");
 	#endif
 #endif
 		return;
@@ -1279,7 +1279,7 @@ void NET_COAP_NBIOT_Event_ParameterCheckOut(NBIOT_ClientsTypeDef* pClient)
 		pClient->Registered = true;
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("CoAP Para Check Ok");
+		Radio_Trf_Debug_Printf_Level2("CoAP Parameter Check Ok");
 #endif
 	}
 	else {
@@ -1288,9 +1288,9 @@ void NET_COAP_NBIOT_Event_ParameterCheckOut(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		Radio_Trf_Debug_Printf_Level2("CoAP Para Check Fail ECde %d", NBStatus);
+		Radio_Trf_Debug_Printf_Level2("CoAP Parameter Check Fail ECde %d", NBStatus);
 	#else
-		Radio_Trf_Debug_Printf_Level2("CoAP Para Check Fail");
+		Radio_Trf_Debug_Printf_Level2("CoAP Parameter Check Fail");
 	#endif
 #endif
 		return;
@@ -2287,7 +2287,7 @@ void NET_COAP_NBIOT_Listen_Event_EnterParameter(NBIOT_ClientsTypeDef* pClient)
 				pClient->ListenRunCtl.listenEvent = NBCOAP_LISTEN_MODE_ENTER_PARAMETER;
 				pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt = 0;
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-				Radio_Trf_Debug_Printf_Level2("CoAP Para Check Ok");
+				Radio_Trf_Debug_Printf_Level2("CoAP Parameter Check Ok");
 				Radio_Trf_Printf("RSSI:%d", pClient->Parameter.rssi);
 				Radio_Trf_Printf("SNR:%d", pClient->Parameter.statisticsRADIO.SNR);
 #endif
@@ -2311,7 +2311,7 @@ void NET_COAP_NBIOT_Listen_Event_EnterParameter(NBIOT_ClientsTypeDef* pClient)
 					pClient->ListenRunCtl.listenEvent = NBCOAP_LISTEN_MODE_ENTER_PARAMETER;
 				}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-				Radio_Trf_Debug_Printf_Level2("CoAP Para Check Fail");
+				Radio_Trf_Debug_Printf_Level2("CoAP Parameter Check Fail");
 #endif
 				return;
 			}
