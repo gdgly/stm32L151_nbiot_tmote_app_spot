@@ -129,6 +129,40 @@ typedef enum
 	ONENET_NotAcceptable				= 15
 }ONENET_ResultcodeTypeDef;
 
+/* ONENET Eventid Code */
+typedef enum
+{
+	EVENT_BOOTSTRAP_START				= 1,
+	EVENT_BOOTSTRAP_SUCCESS				= 2,
+	EVENT_BOOTSTRAP_FAILED				= 3,
+	EVENT_CONNECT_SUCCESS				= 4,
+	EVENT_CONNECT_FAILED				= 5,
+	EVENT_REG_SUCCESS					= 6,
+	EVENT_REG_FAILED					= 7,
+	EVENT_REG_TIMEOUT					= 8,
+	EVENT_LIFETIME_TIMEOUT				= 9,
+	EVENT_STATUS_HALT					= 10,
+	EVENT_UPDATE_SUCCESS				= 11,
+	EVENT_UPDATE_FAILED					= 12,
+	EVENT_UPDATE_TIMEOUT				= 13,
+	EVENT_UPDATE_NEED					= 14,
+	EVENT_DEREG_DONE					= 15,
+	EVENT_RESPONSE_FAILED				= 20,
+	EVENT_RESPONSE_SUCCESS				= 21,
+	EVENT_NOTIFY_FAILED					= 25,
+	EVENT_NOTIFY_SUCCESS				= 26,
+	EVENT_FIRMWARE_DOWNLOADING			= 40,
+	EVENT_FIRMWARE_DOWNLOAD_FAILED		= 41,
+	EVENT_FIRMWARE_DOWNLOADED			= 42,
+	EVENT_FIRMWARE_UPDATING				= 43,
+	EVENT_FIRMWARE_UPDATE_SUCCESS			= 44,
+	EVENT_FIRMWARE_UPDATE_FAILED			= 45,
+	EVENT_FIRMWARE_UPDATE_OVER			= 46,
+	EVENT_FIRMWARE_DOWNLOAD_DISCONNECT		= 47,
+	EVENT_FIRMWARE_ERASE_SUCCESS			= 48,
+	EVENT_FIRMWARE_ERASE_FAIL			= 49
+}ONENET_EventidcodeTypeDef;
+
 /* ONENET ValueType Code */
 typedef enum
 {
@@ -159,9 +193,9 @@ typedef enum
 	ONENET_PROCESSSTATE_OBJECT			= 0x02,
 	ONENET_PROCESSSTATE_REGISTER			= 0x03,
 	ONENET_PROCESSSTATE_ACTIVE			= 0x04,
-	
-	
-	ONENET_PROCESSSTATE_LOST				= 0x08
+	ONENET_PROCESSSTATE_SLEEP			= 0x05,
+	ONENET_PROCESSSTATE_AWEAK			= 0x06,
+	ONENET_PROCESSSTATE_LOST				= 0x07
 }ONENET_ProcessStateTypeDef;
 
 /* ONENET Message Parameter */
@@ -261,15 +295,11 @@ struct ONENET_ClientsTypeDef
 		unsigned char					dictateObjectFailureCnt;
 		unsigned char					dictateRegisterFailureCnt;
 		unsigned char					dictateActiveFailureCnt;
-		
-		
+		unsigned char					dictateSleepFailureCnt;
+		unsigned char					dictateAweakFailureCnt;
 		unsigned char					dictateLostFailureCnt;
 		Stm32_CalculagraphTypeDef		dictateRunTime;
 	}DictateRunCtl;
-	
-	
-	
-	
 	
 	ONENET_ParameterTypeDef				Parameter;
 	ONENET_ProcessStateTypeDef			ProcessState;
@@ -277,17 +307,8 @@ struct ONENET_ClientsTypeDef
 	NET_NBIOT_ClientsTypeDef*			NetNbiotStack;
 	
 	Stm32_CalculagraphTypeDef			UpdateTimer;
+	Stm32_CalculagraphTypeDef			ActiveTimer;
 };
-
-
-
-
-
-
-
-
-
-
 
 /* Application Programming Interface */
 void OneNET_WaitforCallback(ONENET_ClientsTypeDef* pClient);																//ONENET数据等待接收回调函数

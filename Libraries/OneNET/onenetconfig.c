@@ -65,11 +65,9 @@ void OneNET_Client_Init(ONENET_ClientsTypeDef* pClient, ONENET_LWM2MTransportTyp
 	pClient->DictateRunCtl.dictateObjectFailureCnt			= 0;
 	pClient->DictateRunCtl.dictateRegisterFailureCnt			= 0;
 	pClient->DictateRunCtl.dictateActiveFailureCnt			= 0;
-	
+	pClient->DictateRunCtl.dictateSleepFailureCnt			= 0;
+	pClient->DictateRunCtl.dictateAweakFailureCnt			= 0;
 	pClient->DictateRunCtl.dictateLostFailureCnt				= 0;
-	
-	
-	
 	
 	pClient->Parameter.objectInfo.objId					= ONENET_OBJECT_OBJID;
 	pClient->Parameter.objectInfo.insCount					= ONENET_OBJECT_INSCOUNT;

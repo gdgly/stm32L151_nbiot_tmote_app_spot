@@ -124,6 +124,10 @@ int NET_ONENET_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer);
 int NET_ONENET_Message_Operate_Creat_Json_Response_Info(char* outBuffer, u16 errcode);
 int NET_ONENET_Message_Operate_Creat_Qmc5883L_Data(unsigned char* outBuffer);
 
+bool NET_OneNET_Message_SendDataisFull(void);
+bool NET_OneNET_Message_RecvDataisFull(void);
+bool NET_OneNET_Message_SendDataisEmpty(void);
+bool NET_OneNET_Message_RecvDataisEmpty(void);
 void NET_OneNET_Message_SendDataEnqueue(unsigned char* dataBuf, unsigned short dataLength);						//发送数据写入队列
 void NET_OneNET_Message_RecvDataEnqueue(unsigned char* dataBuf, unsigned short dataLength);						//接收数据写入队列
 bool NET_OneNET_Message_SendDataDequeue(unsigned char* dataBuf, unsigned short* dataLength);						//发送数据读出队列

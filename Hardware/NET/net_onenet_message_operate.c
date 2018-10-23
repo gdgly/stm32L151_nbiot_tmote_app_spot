@@ -228,13 +228,13 @@ int NET_ONENET_Message_Operate_Creat_Qmc5883L_Data(unsigned char* outBuffer)
 }
 
 /**********************************************************************************************************
- @Function			static bool NET_OneNET_Message_SendDataisFull(void)
+ @Function			bool NET_OneNET_Message_SendDataisFull(void)
  @Description			NET_OneNET_Message_SendDataisFull	: 检查发送队列是否已满
  @Input				void
  @Return				true							: 已满
 					false						: 未满
 **********************************************************************************************************/
-static bool NET_OneNET_Message_SendDataisFull(void)
+bool NET_OneNET_Message_SendDataisFull(void)
 {
 	bool MessageState;
 	
@@ -249,13 +249,13 @@ static bool NET_OneNET_Message_SendDataisFull(void)
 }
 
 /**********************************************************************************************************
- @Function			static bool NET_OneNET_Message_RecvDataisFull(void)
+ @Function			bool NET_OneNET_Message_RecvDataisFull(void)
  @Description			NET_OneNET_Message_RecvDataisFull	: 检查接收队列是否已满
  @Input				void
  @Return				true							: 已满
 					false						: 未满
 **********************************************************************************************************/
-static bool NET_OneNET_Message_RecvDataisFull(void)
+bool NET_OneNET_Message_RecvDataisFull(void)
 {
 	bool MessageState;
 	
@@ -270,13 +270,13 @@ static bool NET_OneNET_Message_RecvDataisFull(void)
 }
 
 /**********************************************************************************************************
- @Function			static bool NET_OneNET_Message_SendDataisEmpty(void)
+ @Function			bool NET_OneNET_Message_SendDataisEmpty(void)
  @Description			NET_OneNET_Message_SendDataisEmpty	: 检查发送队列是否已空
  @Input				void
  @Return				true							: 已空
 					false						: 未空
 **********************************************************************************************************/
-static bool NET_OneNET_Message_SendDataisEmpty(void)
+bool NET_OneNET_Message_SendDataisEmpty(void)
 {
 	bool MessageState;
 	
@@ -291,13 +291,13 @@ static bool NET_OneNET_Message_SendDataisEmpty(void)
 }
 
 /**********************************************************************************************************
- @Function			static bool NET_OneNET_Message_RecvDataisEmpty(void)
+ @Function			bool NET_OneNET_Message_RecvDataisEmpty(void)
  @Description			NET_OneNET_Message_RecvDataisEmpty	: 检查接收队列是否已空
  @Input				void
  @Return				true							: 已空
 					false						: 未空
 **********************************************************************************************************/
-static bool NET_OneNET_Message_RecvDataisEmpty(void)
+bool NET_OneNET_Message_RecvDataisEmpty(void)
 {
 	bool MessageState;
 	

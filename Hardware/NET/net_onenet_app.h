@@ -35,11 +35,8 @@ void NET_ONENET_Event_Suite(ONENET_ClientsTypeDef* pClient);					//SUITE
 void NET_ONENET_Event_Object(ONENET_ClientsTypeDef* pClient);					//OBJECT
 void NET_ONENET_Event_Register(ONENET_ClientsTypeDef* pClient);					//REGISTER
 void NET_ONENET_Event_Active(ONENET_ClientsTypeDef* pClient);					//ACTIVE
-
-
-
-
-
-
+void NET_ONENET_Event_Sleep(ONENET_ClientsTypeDef* pClient);					//SLEEP
+void NET_ONENET_Event_Aweak(ONENET_ClientsTypeDef* pClient);					//AWEAK
+void NET_ONENET_Event_Lost(ONENET_ClientsTypeDef* pClient);						//LOST
 
 #endif /* __NET_ONENET_APP_H */

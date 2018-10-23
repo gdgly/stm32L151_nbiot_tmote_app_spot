@@ -170,12 +170,16 @@ void NET_ONENET_APP_ProcessExecution(ONENET_ClientsTypeDef* pClient)
 		NET_ONENET_Event_Active(pClient);
 		break;
 	
+	case ONENET_PROCESSSTATE_SLEEP:
+		NET_ONENET_Event_Sleep(pClient);
+		break;
 	
-	
-	
+	case ONENET_PROCESSSTATE_AWEAK:
+		NET_ONENET_Event_Aweak(pClient);
+		break;
 	
 	case ONENET_PROCESSSTATE_LOST:
-		
+		NET_ONENET_Event_Lost(pClient);
 		break;
 	}
 }
@@ -331,9 +335,13 @@ static unsigned char* ONENET_GetDictateFailureCnt(ONENET_ClientsTypeDef* pClient
 		dictateFailureCnt = &pClient->DictateRunCtl.dictateActiveFailureCnt;
 		break;
 	
+	case ONENET_PROCESSSTATE_SLEEP:
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateSleepFailureCnt;
+		break;
 	
-	
-	
+	case ONENET_PROCESSSTATE_AWEAK:
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateAweakFailureCnt;
+		break;
 	
 	case ONENET_PROCESSSTATE_LOST:
 		dictateFailureCnt = &pClient->DictateRunCtl.dictateLostFailureCnt;
@@ -1481,6 +1489,8 @@ void NET_ONENET_Event_Register(ONENET_ClientsTypeDef* pClient)
 	
 	/* Set Update Duration */
 	ONENET_NormalDictateEvent_SetTime(pClient, &pClient->UpdateTimer, ONENET_REGISTER_LIFETIME);
+	/* Set Active Duration */
+	ONENET_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, 40);
 }
 
 /**********************************************************************************************************
@@ -1491,53 +1501,172 @@ void NET_ONENET_Event_Register(ONENET_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_ONENET_Event_Active(ONENET_ClientsTypeDef* pClient)
 {
+	ONENET_StatusTypeDef ONStatus = ONStatus;
+	ONENET_PacketPrivateTypeDef* pMsg = (ONENET_PacketPrivateTypeDef*)pClient->Sendbuf;
+	ONENET_ObserveParaTypeDef observeInfo;
+	Stm32_CalculagraphTypeDef WaitforRecv_timer_s;
 	
+	ONENET_DictateEvent_SetTime(pClient, 60);
 	
+	/* Configuration Calculagraph for WaitforRecv Timer */
+	Stm32_Calculagraph_CountdownSec(&WaitforRecv_timer_s, 20);
 	
+	/* Data packets need to be sent*/
+	if (NET_OneNET_Message_SendDataDequeue(pClient->Sendbuf, (unsigned short *)&pClient->Sendlen) == true) {
+		/* 判断数据包类型 */
+		if ((pMsg->MsgPacket.Type == ONENET_MSGTYPE_TYPE_SHORT_STATUS) || (pMsg->MsgPacket.Type == ONENET_MSGTYPE_TYPE_LONG_STATUS)) {
+			observeInfo = pClient->Parameter.observeInfo[0];
+		}
+		else {
+			observeInfo = pClient->Parameter.observeInfo[1];
+		}
+		
+		/* 发送负载数据 */
+		if ((ONStatus = pClient->LWM2MStack->Write(pClient, observeInfo, (const char *)pClient->Sendbuf, pClient->Sendlen, 255)) == ONENET_OK) {
+			/* Dictate execute is Success */
+			ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_ACTIVE, ONENET_PROCESSSTATE_ACTIVE, false);
+#ifdef ONENET_DEBUG_LOG_RF_PRINT
+			Radio_Trf_Debug_Printf_Level2("OneNET Send Payload Ok");
+#endif
+		}
+		else {
+			/* Dictate execute is Fail */
+			ONENET_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, ONENET_PROCESSSTATE_INIT, ONENET_PROCESSSTATE_ACTIVE);
+#ifdef ONENET_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+			Radio_Trf_Debug_Printf_Level2("OneNET Send Payload Fail ECde %d", ONStatus);
+	#else
+			Radio_Trf_Debug_Printf_Level2("OneNET Send Payload Fail");
+	#endif
+#endif
+			return;
+		}
+		
+		/* This will be a blocking call, wait for the ONENET_MIPLEVENT */
+		if ((ONStatus = ONENET_WaitforRecvAck(pClient, ONENET_MIPLEVENT, &WaitforRecv_timer_s)) == ONENET_OK) {
+			/* Dictate execute is Success */
+			if ((pClient->Parameter.eventInfo.ackid == 255) && (pClient->Parameter.eventInfo.evtid == EVENT_NOTIFY_SUCCESS)) {
+				ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_ACTIVE, ONENET_PROCESSSTATE_ACTIVE, true);
+				NET_OneNET_Message_SendDataOffSet();
+				/* Set Active Duration */
+				ONENET_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, 40);
+#ifdef ONENET_DEBUG_LOG_RF_PRINT
+				Radio_Trf_Debug_Printf_Level2("OneNET Ackid %d Ok", pClient->Parameter.eventInfo.ackid);
+#endif
+			}
+			else {
+				ONENET_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, ONENET_PROCESSSTATE_INIT, ONENET_PROCESSSTATE_ACTIVE);
+#ifdef ONENET_DEBUG_LOG_RF_PRINT
+				Radio_Trf_Debug_Printf_Level2("OneNET Ackid %d Fail", pClient->Parameter.eventInfo.ackid);
+#endif
+				return;
+			}
+		}
+		else {
+			/* Dictate execute is Fail */
+			ONENET_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, ONENET_PROCESSSTATE_INIT, ONENET_PROCESSSTATE_ACTIVE);
+#ifdef ONENET_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+			Radio_Trf_Debug_Printf_Level2("OneNET Ackid Fail ECde %d", ONStatus);
+	#else
+			Radio_Trf_Debug_Printf_Level2("OneNET Ackid Fail");
+	#endif
+#endif
+			return;
+		}
+		
+		/* Set Update Duration */
+		ONENET_NormalDictateEvent_SetTime(pClient, &pClient->UpdateTimer, ONENET_REGISTER_LIFETIME);
+		
+		return;
+	}
 	
+	/* Keep active for Active seconds before to Sleep, so we can send messsage contiguously */
+	if (Stm32_Calculagraph_IsExpiredSec(&pClient->ActiveTimer) == true) {
+		/* Arrival time for Sleep */
+		ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_SLEEP, ONENET_PROCESSSTATE_ACTIVE, true);
+	}
+	else {
+		/* Keep Active */
+		//Todo
+		ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_ACTIVE, ONENET_PROCESSSTATE_ACTIVE, false);
+	}
 }
 
+/**********************************************************************************************************
+ @Function			void NET_ONENET_Event_Sleep(ONENET_ClientsTypeDef* pClient)
+ @Description			NET_ONENET_Event_Sleep				: SLEEP
+ @Input				pClient							: OneNET客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_ONENET_Event_Sleep(ONENET_ClientsTypeDef* pClient)
+{
+	ONENET_StatusTypeDef ONStatus = ONStatus;
+	
+	if (NET_OneNET_Message_SendDataisEmpty() != true) {
+		/* Set Active Duration */
+		ONENET_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, 40);
+		ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_ACTIVE, ONENET_PROCESSSTATE_SLEEP, true);
+		return;
+	}
+	
+	/* If time to Aweak, then send a pingreq */
+	if (Stm32_Calculagraph_IsExpiredSec(&pClient->UpdateTimer) == true) {
+		ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_AWEAK, ONENET_PROCESSSTATE_SLEEP, true);
+	}
+	else {
+		ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_SLEEP, ONENET_PROCESSSTATE_SLEEP, true);
+	}
+}
 
+/**********************************************************************************************************
+ @Function			void NET_ONENET_Event_Aweak(ONENET_ClientsTypeDef* pClient)
+ @Description			NET_ONENET_Event_Aweak				: AWEAK
+ @Input				pClient							: OneNET客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_ONENET_Event_Aweak(ONENET_ClientsTypeDef* pClient)
+{
+	ONENET_StatusTypeDef ONStatus = ONStatus;
+	
+	ONENET_DictateEvent_SetTime(pClient, 30);
+	
+	/* Send Update Request */
+	if ((ONStatus = NBIOT_OneNET_Related_Send_UpdateRequest(pClient, pClient->Parameter.suiteRefer, ONENET_REGISTER_LIFETIME + 2 * 3600, 0, NULL)) == ONENET_OK) {
+		/* Dictate execute is Success */
+		ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_AWEAK, ONENET_PROCESSSTATE_AWEAK, false);
+#ifdef ONENET_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("OneNET Update Request Ok");
+#endif
+	}
+	else {
+		/* Dictate execute is Fail */
+		ONENET_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, ONENET_PROCESSSTATE_INIT, ONENET_PROCESSSTATE_AWEAK);
+#ifdef ONENET_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		Radio_Trf_Debug_Printf_Level2("OneNET Update Request Fail ECde %d", ONStatus);
+	#else
+		Radio_Trf_Debug_Printf_Level2("OneNET Update Request Fail");
+	#endif
+#endif
+		return;
+	}
+	
+	/* Set Update Duration */
+	ONENET_NormalDictateEvent_SetTime(pClient, &pClient->UpdateTimer, ONENET_REGISTER_LIFETIME);
+	
+	ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_SLEEP, ONENET_PROCESSSTATE_AWEAK, true);
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/**********************************************************************************************************
+ @Function			void NET_ONENET_Event_Lost(ONENET_ClientsTypeDef* pClient)
+ @Description			NET_ONENET_Event_Lost				: LOST
+ @Input				pClient							: OneNET客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_ONENET_Event_Lost(ONENET_ClientsTypeDef* pClient)
+{
+	ONENET_DictateEvent_SuccessExecute(pClient, STOP_MODE, ONENET_PROCESSSTATE_INIT, ONENET_PROCESSSTATE_LOST, true);
+}
 
 /********************************************** END OF FLEE **********************************************/

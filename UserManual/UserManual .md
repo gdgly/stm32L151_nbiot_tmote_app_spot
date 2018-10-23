@@ -81,6 +81,7 @@
     - [三、NBIoT指令下发](#三nbiot指令下发)
         - [1.指令下发平台:](#1指令下发平台)
         - [2.操作步骤:](#2操作步骤)
+        - [3.指令详情:](#3指令详情)
     - [四、NBIoT远程PCP升级](#四nbiot远程pcp升级)
         - [1.PCP远程升级平台:](#1pcp远程升级平台)
         - [2.操作步骤:](#2操作步骤-1)
@@ -428,6 +429,115 @@
 		* FALL ： 下发失败。
 		* 102 : 命令错误。
 		* PENDING :  正在等待下发。
+
+### 3.指令详情:
+* 3.1 Workmode:
+	* TCLD110S{(Workmode):{(val):%hu,(Magic):%hu}}
+		* 工作模式配置
+		* val : 
+			* 0 ---> NORMAL_WORK
+			* 1 ---> DEBUG_WORK
+		* Magic : 9
+
+* 3.2 Sense:
+	* TCLD110S{(Sense):{(val):%hu,(Magic):%hu}}
+		* 传感器灵敏度配置
+		* val :
+			* 1 ---> SENSE_HIGHEST
+			* 2 ---> SENSE_HIGH
+			* 3 ---> SENSE_MIDDLE
+			* 4 ---> SENSE_LOW
+			* 5 ---> SENSE_LOWEST
+		* Magic : 9
+
+* 3.3 RFHeart:
+	* TCLD110S{(RFHeart):{(val):%hu,(Magic):%hu}}
+		* 无线心跳间隔时间配置
+		* val :
+			* 1 ~ 120 (秒)
+		* Magic : 9
+
+* 3.4 Background:
+	* TCLD110S{(Background):{(val):%hu,(Magic):%hu}}
+		* 初始化传感器指令
+		* val :
+			* 背景值
+		* Magic : 9
+
+* 3.5 Reboot
+	* TCLD110S{(Reboot):{}}
+		* 重启设备
+
+* 3.6 Newsn
+	* TCLD110S{(Newsn):{(val):%08x,(Magic):%hu}}
+		* 设置新SN
+
+* 3.7 Server
+	* TCLD110S{(Server):{(IP):(%hu.%hu.%hu.%hu),(Port):%hu,(Magic):%hu}}
+		* 设置核心网地址
+
+* 3.8 Active
+	* TCLD110S{(Active):{(val):%hu,(Magic):%hu}}
+		* 设置设备工作状态
+		* val :
+			0 ---> 休眠
+			1 ---> 激活
+		* Magic : 9
+
+* 3.9 MagMod
+	* TCLD110S{(MagMod):{(val):%hu,(Magic):%hu}}
+		* 设置地磁模式
+	
+* 3.10 NbHeart
+	* TCLD110S{(NbHeart):{(val):%hu,(Magic):%hu}}
+		* 状态心跳包间隔时间
+
+* 3.12 InitRadar
+	* TCLD110S{(InitRadar):{(v23456):%u,(v7890a):%u,(vbcdef):%u,(vg):%u,(Magic):%hu}}
+		* 初始化雷达
+
+* 3.13 InitMag
+	* TCLD110S{(InitMag):{(x):%hd,(y):%hd,(z):%hd,(Magic):%hu}}
+		* 初始化地磁
+
+* 3.14 DisRange
+	* TCLD110S{(DisRange):{(val):%hu,(Magic):%hu}}
+
+* 3.15 InDelay
+	* TCLD110S{(InDelay):{(val):%hu,(Magic):%hu}}
+		* 间隔时间发送检测有车数据
+
+* 3.16 RATime
+	* TCLD110S{(RATime):{(val):%hu,(Magic):%hu}}
+		* 间隔时间发送普通数据包用于接收下行数据
+
+* 3.17 MagCoef
+	* TCLD110S{(MagCoef):{(x):%hd,(y):%hd,(z):%hd,(Magic):%hu}}
+		* 地磁温飘设置
+
+* 3.18 SetQmcCoef
+	* TCLD110S{(SetQmcCoef):{}}
+		* 自动设置地磁温飘
+
+* 3.19 BeepOff
+	* TCLD110S{(BeepOff):{(val):%hu,(Magic):%hu}}
+		* 蜂鸣器控制
+
+* 3.20 UpLimit
+	* TCLD110S{(UpLimit):{%hd,%hd,(Magic):%hu}}
+		* 升级限制 rssi,snr
+
+* 3.21 Workinfo
+	* TCLD110G{(Workinfo):{}}
+		* 获取Workinfo
+
+* 3.22 BasicInfo
+	* TCLD110G{(BasicInfo):{}}
+		* 获取BasicInfo
+	
+* 3.33 DynamicInfo
+	* TCLD110G{(DynamicInfo):{}}
+		* 获取DynamicInfo
 
 ## 四、NBIoT远程PCP升级
 > * NBIoT远程PCP升级操作，需使用向上申请。
