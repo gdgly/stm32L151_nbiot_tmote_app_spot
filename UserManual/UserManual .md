@@ -546,8 +546,6 @@
 ### 1.PCP远程升级平台:
 * 电信 : https://180.101.146.80:8843/main.html#/login
 * ![image](IMG/电信平台登陆.png)
-	* 账号 : mubokeji
-	* 密码 : 135246Acbd#
 
 * 移动 : http://47.106.208.19:3000/#/task/upgrade
 * ![image](IMG/移动设备升级.png)
