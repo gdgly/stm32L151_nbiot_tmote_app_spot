@@ -57,7 +57,7 @@ NBIOT_StatusTypeDef NBIOT_Transport_SendATCmd(NBIOT_ATCmdTypeDef* ATCmd)
 	USART1_RX_CACHE_STA = 0;																			//接收状态复位
 	memset((void *)USART1_RX_CACHE_BUF, 0x0, sizeof(USART1_RX_CACHE_BUF));									//清空缓存空间
 	
-	if (HAL_OK != HAL_UART_Transmit(&UART1_Handler, ATCmd->ATSendbuf, ATCmd->ATSendlen, 0xFFFF)) {					//发送命令
+	if (HAL_OK != HAL_UART_Transmit(&UART1_Handler, ATCmd->ATSendbuf, ATCmd->ATSendlen, 0x07FF)) {					//发送命令
 		NBStatus = NBIOT_ERROR;
 		Uart1_PortSerialEnable(DISABLE, DISABLE);
 		goto exit;

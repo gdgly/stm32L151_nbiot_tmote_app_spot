@@ -1,6 +1,12 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2018-11-01 :
+	* 版本号修改为131。
+	* MqttSN 最大订阅消息主题由5减为2。
+	* HAL_UART_Transmit 超时时间由0xFFFF减为0x07FF。
+	* 栈大小由0x600增加到0x800。
+	* 去除MqttSN协议等待应答信息，小无线答应。
 * 2018-10-23 :
 	* 发布V130版本固件。
 * 2018-10-23 :

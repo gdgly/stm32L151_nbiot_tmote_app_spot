@@ -1390,7 +1390,7 @@ bool NET_MqttSN_Message_SendDataisEmpty(void)
 **********************************************************************************************************/
 void NET_MqttSN_Message_SendDataEnqueue(unsigned char* dataBuf, unsigned short dataLength)
 {
-	if ((dataBuf == NULL) || (dataLength > COAP_SEND_BUFFER_SIZE)) {
+	if ((dataBuf == NULL) || (dataLength > MQTTSN_SEND_BUFFER_SIZE)) {
 		return;
 	}
 	

@@ -1939,7 +1939,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_ReadUDPPayload(NBIOT_ClientsTypeDef* pClient
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
-		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\x0D\x0A%d,%[^,],%hu,%hd,%[^,],%d\r", &rdsocket, addr, port, &pClient->Recvlen, pClient->DataProcessStack, rleft) <= 0) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\n%d,%[^,],%hu,%hd,%[^,],%d\r", &rdsocket, addr, port, &pClient->Recvlen, pClient->DataProcessStack, rleft) <= 0) {
 			NBStatus = NBIOT_ERROR;
 			goto exit;
 		}

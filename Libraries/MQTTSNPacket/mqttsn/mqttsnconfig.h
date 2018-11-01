@@ -7,7 +7,7 @@
 #include "net_nbiot_app.h"
 
 #define MAX_MSG_ID						65535											/* according to the MQTT specification - do not change! */
-#define MAX_MESSAGE_HANDLERS				5												/* redefinable - how many subscriptions do you want? */
+#define MAX_MESSAGE_HANDLERS				2												/* redefinable - how many subscriptions do you want? */
 
 #define MQTTSN_COMMAND_TIMEOUT_SEC			30
 #define MQTTSN_COMMAND_FAILURE_CNT			3
