@@ -180,6 +180,9 @@
 #define TCFG_SOFTWARE_MAJOR_LENGTH			1												//SoftwareMajor		软件版本号
 #define TCFG_SOFTWARE_SUB_OFFSET			TCFG_SOFTWARE_MAJOR_OFFSET + TCFG_SOFTWARE_MAJOR_LENGTH	//0x08080E25
 #define TCFG_SOFTWARE_SUB_LENGTH			1												//SoftwareSub			软件版本号
+
+#define TCFG_DEVICE_RBTMODE_OFFSET			TCFG_SOFTWARE_SUB_OFFSET + TCFG_SOFTWARE_SUB_LENGTH		//0x08080E26
+#define TCFG_DEVICE_RBTMODE_LENGTH			1												//DeviceRebootMode		设备重启方式
 /************************************************************** End **************************************************************/
 
 enum TCFG_SENSITIVITY																	//传感器灵敏度
@@ -189,6 +192,19 @@ enum TCFG_SENSITIVITY																	//传感器灵敏度
 	SENSE_MIDDLE						= 0x03,
 	SENSE_LOW							= 0x04,
 	SENSE_LOWEST						= 0x05
+};
+
+enum TCFG_DEVICERBTRBTMODE																//设备重启方式
+{
+	RBTMODE_MODE_NONE					= 0x00,
+	RBTMODE_SYSTEM_OVERTIME				= 0x01,
+	RBTMODE_RADIO_COMMAND				= 0x02,
+	RBTMODE_COAP_COMMAND				= 0x03,
+	RBTMODE_MQTT_COMMAND				= 0x04,
+	RBTMODE_RADIO_UPGRADE				= 0x05,
+	RRTMODE_COAP_UPGRADE				= 0x06,
+	RBTMODE_MQTT_UPGRADE				= 0x07,
+	RBTMODE_NBHDRBTERR_OVER				= 0x08
 };
 
 typedef struct
@@ -236,6 +252,7 @@ typedef struct
 	short							UpgradeLimitSnr;									//信号质量限制下限
 	unsigned short						NBIdleLifetime;									//NBIot休眠模式保活时间(10S)
 	unsigned char						BeepCtrlOff;										//蜂鸣器控制
+	unsigned char						DeviceRbtMode;										//设备重启方式
 	unsigned char						NBCoapCDPServerIP[16];								//NB核心网IP地址
 	unsigned char						NBCoapCDPServerPort[6];								//NB核心网IP端口
 	NBIOT_ServerAddr					NBCoapCDPServer;									//NB核心网地址
@@ -403,6 +420,9 @@ short		TCFG_EEPROM_GetUpgradeLimitSnr(void);											//读取UpgradeLimitSnr
 
 void			TCFG_EEPROM_SetBeepOff(uint8_t val);											//保存BeepOff
 unsigned char	TCFG_EEPROM_GetBeepOff(void);													//读取BeepOff
+
+void			TCFG_EEPROM_SetDeviceRbtMode(uint8_t val);										//保存DeviceRbtMode
+unsigned char	TCFG_EEPROM_GetDeviceRbtMode(void);											//读取DeviceRbtMode
 
 void			TCFG_Utility_Add_Device_BootCount(void);										//Device重启次数累加
 unsigned short TCFG_Utility_Get_Device_BootCount(void);										//Device重启次数获取

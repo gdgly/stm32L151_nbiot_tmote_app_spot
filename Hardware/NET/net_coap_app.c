@@ -689,9 +689,9 @@ void NET_COAP_NBIOT_Event_SimICCIDCheck(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		Radio_Trf_Debug_Printf_Level2("NB ICCID Fail ECde %d", NBStatus);
+		Radio_Trf_Debug_Printf_Level2("NB ICCID Check Fail ECde %d", NBStatus);
 	#else
-		Radio_Trf_Debug_Printf_Level2("NB ICCID Fail");
+		Radio_Trf_Debug_Printf_Level2("NB ICCID Check Fail");
 	#endif
 #endif
 	}
@@ -1322,6 +1322,7 @@ void NET_COAP_NBIOT_Event_SendData(NBIOT_ClientsTypeDef* pClient)
 		/* Get IdleTime */
 		COAP_NBIOT_GetIdleTime(pClient, true);
 		
+#if NBCOAP_SEND_BEFORE_ATTACH_TYPE
 		/* Connect Check */
 		if ((NBStatus = NBIOT_Neul_NBxx_CheckReadAttachOrDetach(pClient)) == NBIOT_OK) {
 			/* Dictate execute is Success */
@@ -1348,6 +1349,7 @@ void NET_COAP_NBIOT_Event_SendData(NBIOT_ClientsTypeDef* pClient)
 			COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, SEND_DATA);
 			return;
 		}
+#endif
 		
 #if NBCOAP_SENDDATA_NQMGSCHECK_TYPE
 		if (((NBStatus = NBIOT_Neul_NBxx_QuerySendMessageCOAPPayload(pClient)) == NBIOT_OK) && 
@@ -1562,6 +1564,7 @@ void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
 		/* Get IdleTime */
 		COAP_NBIOT_GetIdleTime(pClient, true);
 		
+#if NBCOAP_SEND_BEFORE_ATTACH_TYPE
 		/* Connect Check */
 		if ((NBStatus = NBIOT_Neul_NBxx_CheckReadAttachOrDetach(pClient)) == NBIOT_OK) {
 			/* Dictate execute is Success */
@@ -1588,6 +1591,7 @@ void NET_COAP_NBIOT_Event_SendDataRANormal(NBIOT_ClientsTypeDef* pClient)
 			COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, SEND_DATA_RA_NORMAL);
 			return;
 		}
+#endif
 		
 #if NBCOAP_SENDDATA_NQMGSCHECK_TYPE
 		if (((NBStatus = NBIOT_Neul_NBxx_QuerySendMessageCOAPPayload(pClient)) == NBIOT_OK) && 
@@ -1913,7 +1917,7 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Reboot") != NULL) {
 				#if NBCOAP_DOWNLOAD_CMD_REBOOT
 						BEEP_CtrlRepeat_Extend(2, 500, 250);
-						Stm32_System_Software_Reboot();
+						Stm32_System_Software_Reboot(RBTMODE_COAP_COMMAND);
 				#endif
 					}
 					/* NewSn */

@@ -118,13 +118,16 @@ void Stm32_MSIClock_Init(u32 MsiClockRange)
 }
 
 /**********************************************************************************************************
- @Function			void Stm32_System_Software_Reboot(void)
- @Description			Stm32_System_Software_Reboot : 软重启
- @Input				void
+ @Function			void Stm32_System_Software_Reboot(u8 deviceRbtMode)
+ @Description			Stm32_System_Software_Reboot	: 软重启
+ @Input				deviceRbtMode				: 重启方式
  @Return				void
 **********************************************************************************************************/
-void Stm32_System_Software_Reboot(void)
+void Stm32_System_Software_Reboot(u8 deviceRbtMode)
 {
+	TCFG_SystemData.DeviceRbtMode = deviceRbtMode;
+	TCFG_EEPROM_SetDeviceRbtMode(TCFG_SystemData.DeviceRbtMode);
+	
 	TCFG_SystemData.MagBackgroundX = Qmc5883lData.X_Back;
 	TCFG_SystemData.MagBackgroundY = Qmc5883lData.Y_Back;
 	TCFG_SystemData.MagBackgroundZ = Qmc5883lData.Z_Back;

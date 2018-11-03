@@ -1448,7 +1448,7 @@ void NET_DNS_Event_OverDnsAnalysis(DNS_ClientsTypeDef* pClient)
 #endif
 	pClient->AnalysisTick = 0;
 	pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
-	pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ATTACH_CHECK;
+	pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
 	pClient->ProcessState = DNS_PROCESS_CREAT_UDP_SOCKET;
 }
 

@@ -17,6 +17,8 @@
 #define EEPROM_ENTER_CRITICAL_SECTION()		EEPROM_EnterCriticalSection();
 #define EEPROM_EXIT_CRITICAL_SECTION()		EEPROM_ExitCriticalSection();
 
+#define EEPROM_DUPLICATION_WRITE_COUNT		5
+
 unsigned char  FLASH_EEPROM_ReadByte(unsigned int Address);
 unsigned short FLASH_EEPROM_ReadHalfWord(unsigned int Address);
 unsigned int   FLASH_EEPROM_ReadWord(unsigned int Address);

@@ -38,67 +38,99 @@ void NET_MQTTSN_APP_PollExecution(MQTTSN_ClientsTypeDef* pClient)
 		break;
 		
 	case HARDWARE_REBOOT:
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
 		NET_MQTTSN_NBIOT_Event_HardwareReboot(pClient);
+#endif
 		break;
 	
 	case REPORT_ERROE:
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
 		NET_MQTTSN_NBIOT_Event_ReportError(pClient);
+#endif
 		break;
 	
 	case MODULE_CHECK:
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
 		NET_MQTTSN_NBIOT_Event_ModuleCheck(pClient);
+#endif
 		break;
 	
 	case PARAMETER_CONFIG:
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
 		NET_MQTTSN_NBIOT_Event_ParameterConfig(pClient);
+#endif
 		break;
 	
 	case ICCID_CHECK:
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
 		NET_MQTTSN_NBIOT_Event_SimICCIDCheck(pClient);
+#endif
 		break;
 	
 	case MISC_EQUIP_CONFIG:
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+#endif
 		break;
 	
 	case ATTACH_CHECK:
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
 		NET_MQTTSN_NBIOT_Event_AttachCheck(pClient);
+#endif
 		break;
 	
 	case ATTACH_EXECUTE:
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
 		NET_MQTTSN_NBIOT_Event_AttachExecute(pClient);
+#endif
 		break;
 	
 	case ATTACH_INQUIRE:
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
 		NET_MQTTSN_NBIOT_Event_AttachInquire(pClient);
+#endif
 		break;
 	
 	case PARAMETER_CHECKOUT:
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
 		NET_MQTTSN_NBIOT_Event_ParameterCheckOut(pClient);
+#endif
 		break;
 	
 	case MINIMUM_FUNCTIONALITY:
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
 		NET_MQTTSN_NBIOT_Event_MinimumFunctionality(pClient);
+#endif
 		break;
 	
 	case FULL_FUNCTIONALITY:
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
 		NET_MQTTSN_NBIOT_Event_FullFunctionality(pClient);
+#endif
 		break;
 	
 	case CDP_SERVER_CHECK:
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+#endif
 		break;
 	
 	case CDP_SERVER_CONFIG:
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+#endif
 		break;
 	
 	case NBAND_MODE_CHECK:
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
 		NET_MQTTSN_NBIOT_Event_NbandModeCheck(pClient);
+#endif
 		break;
 	
 	case NBAND_MODE_CONFIG:
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
 		NET_MQTTSN_NBIOT_Event_NbandModeConfig(pClient);
+#endif
 		break;
 	
 	case SEND_DATA:
@@ -418,7 +450,12 @@ static void MQTTSN_DictateEvent_FailExecute(MQTTSN_ClientsTypeDef* pClient, NBIO
 		pClient->DictateRunCtl.dictateEnable = false;
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = dictateTimeOut;
 		pClient->SubState = dictateSubTimeOut;
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
+		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
+#endif
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_ENABLE
 		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_DNS;
+#endif
 		*dictateFailureCnt += 1;
 		if (*dictateFailureCnt > 3) {
 			*dictateFailureCnt = 0;
@@ -567,7 +604,12 @@ void NET_MQTTSN_NBIOT_Event_StopMode(MQTTSN_ClientsTypeDef* pClient)
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
 		pClient->SubState = MQTTSN_SUBSTATE_INIT;
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
+		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
+#endif
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_ENABLE
 		pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_DNS;
+#endif
 	}
 	else {
 		/* Dictate isn't TimeOut */
@@ -585,7 +627,12 @@ void NET_MQTTSN_NBIOT_Event_StopMode(MQTTSN_ClientsTypeDef* pClient)
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
 			pClient->SubState = MQTTSN_SUBSTATE_INIT;
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
+			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
+#endif
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_ENABLE
 			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_DNS;
+#endif
 		}
 		else {
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = STOP_MODE;
@@ -1101,7 +1148,7 @@ void NET_MQTTSN_NBIOT_Event_NbandModeConfig(MQTTSN_ClientsTypeDef* pClient)
 			MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, NBAND_MODE_CONFIG);
 			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-			Radio_Trf_Debug_Printf_Level2("NB BAND Set %d:%d.%d.%d Ok", MQTTSN_NBIOT_BAND_TYPE.NBandNum \
+			Radio_Trf_Debug_Printf_Level2("NB BAND Set %d:%d.%d.%d Ok", MQTTSN_NBIOT_BAND_TYPE.NBandNum, \
 															MQTTSN_NBIOT_BAND_TYPE.NBandVal[0], \
 															MQTTSN_NBIOT_BAND_TYPE.NBandVal[1], \
 															MQTTSN_NBIOT_BAND_TYPE.NBandVal[2]);
@@ -1947,7 +1994,7 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "Reboot") != NULL) {
 			#if MQTTSN_DOWNLOAD_CMD_REBOOT
 					BEEP_CtrlRepeat_Extend(2, 500, 250);
-					Stm32_System_Software_Reboot();
+					Stm32_System_Software_Reboot(RBTMODE_MQTT_COMMAND);
 			#endif
 				}
 				/* NewSn */
@@ -2469,7 +2516,12 @@ void NET_MQTTSN_NBIOT_Listen_Event_EnterParameter(MQTTSN_ClientsTypeDef* pClient
 					pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
 					pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
 					pClient->SubState = MQTTSN_SUBSTATE_INIT;
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
+					pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
+#endif
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_ENABLE
 					pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_DNS;
+#endif
 					pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt++;
 					if (pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt > 3) {
 						pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt = 0;

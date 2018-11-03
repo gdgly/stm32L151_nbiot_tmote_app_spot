@@ -68,8 +68,8 @@ bool RollingOverCheckToActive(void)
 		rollingover_time[3] = rollingover_time[4];
 		rollingover_time[4] = Stm32_GetSecondTick();
 #ifdef ROLLINGOVER_LOG_RF_PRINT
-		Radio_Trf_Printf("rolup:%d,%d,%d,%d,%d", rollingover_time[0], rollingover_time[1], rollingover_time[2], rollingover_time[3], rollingover_time[4]);
-		Radio_Trf_Printf("rolup:[4]-[0]=%d", (rollingover_time[4] - rollingover_time[0]));
+		Radio_Trf_Debug_Printf_Level0("rolup:%d,%d,%d,%d,%d", rollingover_time[0], rollingover_time[1], rollingover_time[2], rollingover_time[3], rollingover_time[4]);
+		Radio_Trf_Debug_Printf_Level0("rolup:[4]-[0]=%d", (rollingover_time[4] - rollingover_time[0]));
 #endif
 		if (((rollingover_time[4] - rollingover_time[0]) < 24) && ((rollingover_time[4] - rollingover_time[0]) > 8)) {
 			InitSensorBackgroundCntdown = 3;
@@ -79,7 +79,7 @@ bool RollingOverCheckToActive(void)
 			rollingover_time[3] = 0;
 			rollingover_time[4] = 0;
 #ifdef ROLLINGOVER_LOG_RF_PRINT
-			Radio_Trf_Printf("Up Rolling OK Cntdown:%d", InitSensorBackgroundCntdown);
+			Radio_Trf_Debug_Printf_Level0("Up Rolling OK Cntdown:%d", InitSensorBackgroundCntdown);
 #endif
 		}
 	}
@@ -90,8 +90,8 @@ bool RollingOverCheckToActive(void)
 		rollingover_time[3] = rollingover_time[4];
 		rollingover_time[4] = Stm32_GetSecondTick();
 #ifdef ROLLINGOVER_LOG_RF_PRINT
-		Radio_Trf_Printf("roldw:%d,%d,%d,%d,%d", rollingover_time[0], rollingover_time[1], rollingover_time[2], rollingover_time[3], rollingover_time[4]);
-		Radio_Trf_Printf("rolup:[4]-[0]=%d", (rollingover_time[4] - rollingover_time[0]));
+		Radio_Trf_Debug_Printf_Level0("roldw:%d,%d,%d,%d,%d", rollingover_time[0], rollingover_time[1], rollingover_time[2], rollingover_time[3], rollingover_time[4]);
+		Radio_Trf_Debug_Printf_Level0("rolup:[4]-[0]=%d", (rollingover_time[4] - rollingover_time[0]));
 #endif
 		if (((rollingover_time[4] - rollingover_time[0]) < 12) && ((rollingover_time[4] - rollingover_time[0]) >= 8)) {
 			do {
@@ -106,7 +106,7 @@ bool RollingOverCheckToActive(void)
 			rollingover_time[3] = 0;
 			rollingover_time[4] = 0;
 #ifdef ROLLINGOVER_LOG_RF_PRINT
-			Radio_Trf_Printf("Down Rolling OK EEPROM:%d", TCFG_EEPROM_GetActiveDevice());
+			Radio_Trf_Debug_Printf_Level0("Down Rolling OK EEPROM:%d", TCFG_EEPROM_GetActiveDevice());
 #endif
 		}
 		else {
@@ -184,21 +184,21 @@ void RollingOverMercuryClose(void)
 			TCFG_EEPROM_SetActiveDevice(0);
 			MainRollingEnteredDownSleep();												//已进入倒放休眠状态
 #ifdef ROLLINGOVER_LOG_RF_PRINT
-			//Radio_Trf_Printf("Sleep Begin TBI:%d, SYS:%d, EEPROM:%d", TimeBeforeIdle, Stm32_GetSecondTick(), TCFG_EEPROM_GetActiveDevice());
+			//Radio_Trf_Debug_Printf_Level0("Sleep Begin TBI:%d, SYS:%d, EEPROM:%d", TimeBeforeIdle, Stm32_GetSecondTick(), TCFG_EEPROM_GetActiveDevice());
 #endif
 		}
 		/* 45Sec 内处理 */
 		else if ((TimeBeforeIdle + ROLLINGOVER_WAIT_SLEEP_TIME) > Stm32_GetSecondTick()) {
 			MainRollingEnteredDownSleepKeepActived();										//将进入倒放休眠状态前保持工作
 #ifdef ROLLINGOVER_LOG_RF_PRINT
-			//Radio_Trf_Printf("Sleep Before TBI:%d, SYS:%d, EEPROM:%d", TimeBeforeIdle, Stm32_GetSecondTick(), TCFG_EEPROM_GetActiveDevice());
+			//Radio_Trf_Debug_Printf_Level0("Sleep Before TBI:%d, SYS:%d, EEPROM:%d", TimeBeforeIdle, Stm32_GetSecondTick(), TCFG_EEPROM_GetActiveDevice());
 #endif
 		}
 		/* 15Sec ~ 15Min */
 		else {
 			MainRollingEnteringDownSleep();												//将进入倒放休眠
 #ifdef ROLLINGOVER_LOG_RF_PRINT
-			//Radio_Trf_Printf("Sleep Right TBI:%d, SYS:%d, EEPROM:%d", TimeBeforeIdle, Stm32_GetSecondTick(), TCFG_EEPROM_GetActiveDevice());
+			//Radio_Trf_Debug_Printf_Level0("Sleep Right TBI:%d, SYS:%d, EEPROM:%d", TimeBeforeIdle, Stm32_GetSecondTick(), TCFG_EEPROM_GetActiveDevice());
 #endif
 		}
 	}

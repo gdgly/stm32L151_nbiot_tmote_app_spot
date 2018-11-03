@@ -183,6 +183,10 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_SystemData.BeepCtrlOff = 0;
 	TCFG_EEPROM_SetBeepOff(TCFG_SystemData.BeepCtrlOff);
 	
+	/* 设备重启方式 */
+	TCFG_SystemData.DeviceRbtMode = RBTMODE_MODE_NONE;
+	TCFG_EEPROM_SetDeviceRbtMode(TCFG_SystemData.DeviceRbtMode);
+	
 	/* NB核心网地址 */
 	sscanf(COAPCDPADDR, "%d.%d.%d.%d", &serverip[3], &serverip[2], &serverip[1], &serverip[0]);
 	TCFG_SystemData.NBCoapCDPServer.ip.ip8[3] = serverip[3];
@@ -1804,6 +1808,28 @@ void TCFG_EEPROM_SetBeepOff(uint8_t val)
 unsigned char TCFG_EEPROM_GetBeepOff(void)
 {
 	return FLASH_EEPROM_ReadByte(TCFG_BEEP_OFF_OFFSET);
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetDeviceRbtMode(uint8_t val)
+ @Description			TCFG_EEPROM_SetDeviceRbtMode					: 保存DeviceRbtMode
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetDeviceRbtMode(uint8_t val)
+{
+	FLASH_EEPROM_WriteByte(TCFG_DEVICE_RBTMODE_OFFSET, val);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned char TCFG_EEPROM_GetDeviceRbtMode(void)
+ @Description			TCFG_EEPROM_GetDeviceRbtMode					: 读取DeviceRbtMode
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned char TCFG_EEPROM_GetDeviceRbtMode(void)
+{
+	return FLASH_EEPROM_ReadByte(TCFG_DEVICE_RBTMODE_OFFSET);
 }
 
 /**********************************************************************************************************

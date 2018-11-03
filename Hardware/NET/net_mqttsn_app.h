@@ -13,7 +13,9 @@
 #include "platform_map.h"
 
 #define MQTTSN_DEBUG_LOG_RF_PRINT											//定义开启RF输出DEBUG信息
-//#define MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE									//定义开启RF输出DEBUG信息
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
+#define MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE									//定义开启RF输出DEBUG信息
+#endif
 
 #define MQTTSN_CLIENT_ID					TCFG_EEPROM_Get_MAC_SN_String()
 #define MQTTSN_SUBSCRIBE_ID				TCFG_EEPROM_Get_MAC_SN_String()

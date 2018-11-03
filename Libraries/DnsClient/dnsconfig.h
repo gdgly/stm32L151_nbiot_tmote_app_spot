@@ -12,7 +12,7 @@
 #define DNS_BUFFER_SIZE					256
 #define DNS_DATASTACK_SIZE				256
 #define DNS_HOSTNAME_SIZE				30
-#define DNS_HOSTIP_SIZE					17
+#define DNS_HOSTIP_SIZE					20
 #define DNS_ANALYSIS_NUM					2
 
 #define DNS_ANALYSIS_DISABLE				0

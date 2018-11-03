@@ -81,7 +81,7 @@ struct MQTTSN_SocketNetTypeDef
 	int								SocketHandler;
 	unsigned short						LocalPort;
 	unsigned short						ServerPort;
-	unsigned char						ServerHost[16];
+	unsigned char						ServerHost[20];
 	NBIOT_ClientsTypeDef*				NBIotStack;
 	MQTTSN_StatusTypeDef				(*Open)(MQTTSN_SocketNetTypeDef*);
 	MQTTSN_StatusTypeDef				(*Close)(MQTTSN_SocketNetTypeDef*);

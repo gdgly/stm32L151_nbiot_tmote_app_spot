@@ -146,8 +146,10 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_HardwareReboot(NBIOT_ClientsTypeDef* pClient
 		/* Dictate execute is Fail */
 		RebootErrornCount += 1;
 		if (RebootErrornCount > NBIOT_MODULE_REBOOT_ERROR_COUNT) {
-			RebootErrornCount = 0;
-			Stm32_System_Software_Reboot();
+			Stm32_System_Software_Reboot(RBTMODE_NBHDRBTERR_OVER);
+		}
+		else if (RebootErrornCount > NBIOT_MODULE_REBOOT_ERROR_INIT) {
+			Uart1_Init(9700);
 		}
 	}
 	NBIOTBaudRate.EnBaudRateState = false;

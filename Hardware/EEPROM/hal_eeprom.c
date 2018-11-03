@@ -62,7 +62,14 @@ void FLASH_EEPROM_WriteByte(unsigned int Address, unsigned char Data)
 	HAL_FLASHEx_DATAEEPROM_Unlock();
 	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
 	
-	FLASH_EEPROM_WriteByte_Private(Address, Data);
+	for (u8 nCount = 0; nCount < EEPROM_DUPLICATION_WRITE_COUNT; nCount++) {
+		if (FLASH_EEPROM_ReadByte(Address) != Data) {
+			FLASH_EEPROM_WriteByte_Private(Address, Data);
+		}
+		else {
+			break;
+		}
+	}
 	
 	HAL_FLASHEx_DATAEEPROM_Lock();
 	EEPROM_EXIT_CRITICAL_SECTION();
@@ -97,8 +104,15 @@ void FLASH_EEPROM_WriteHalfWord(unsigned int Address, unsigned short Data)
 	HAL_FLASHEx_DATAEEPROM_Unlock();
 	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
 	
-	FLASH_EEPROM_WriteByte_Private(Address, *((unsigned char*)(&Data)));
-	FLASH_EEPROM_WriteByte_Private(Address + 1, *((unsigned char*)(&Data) + 1));
+	for (u8 nCount = 0; nCount < EEPROM_DUPLICATION_WRITE_COUNT; nCount++) {
+		if (FLASH_EEPROM_ReadHalfWord(Address) != Data) {
+			FLASH_EEPROM_WriteByte_Private(Address, *((unsigned char*)(&Data)));
+			FLASH_EEPROM_WriteByte_Private(Address + 1, *((unsigned char*)(&Data) + 1));
+		}
+		else {
+			break;
+		}
+	}
 	
 	HAL_FLASHEx_DATAEEPROM_Lock();
 	EEPROM_EXIT_CRITICAL_SECTION();
@@ -135,10 +149,17 @@ void FLASH_EEPROM_WriteWord(unsigned int Address, unsigned int Data)
 	HAL_FLASHEx_DATAEEPROM_Unlock();
 	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
 	
-	FLASH_EEPROM_WriteByte_Private(Address + 0, *((unsigned char*)(&Data) + 0));
-	FLASH_EEPROM_WriteByte_Private(Address + 1, *((unsigned char*)(&Data) + 1));
-	FLASH_EEPROM_WriteByte_Private(Address + 2, *((unsigned char*)(&Data) + 2));
-	FLASH_EEPROM_WriteByte_Private(Address + 3, *((unsigned char*)(&Data) + 3));
+	for (u8 nCount = 0; nCount < EEPROM_DUPLICATION_WRITE_COUNT; nCount++) {
+		if (FLASH_EEPROM_ReadWord(Address) != Data) {
+			FLASH_EEPROM_WriteByte_Private(Address + 0, *((unsigned char*)(&Data) + 0));
+			FLASH_EEPROM_WriteByte_Private(Address + 1, *((unsigned char*)(&Data) + 1));
+			FLASH_EEPROM_WriteByte_Private(Address + 2, *((unsigned char*)(&Data) + 2));
+			FLASH_EEPROM_WriteByte_Private(Address + 3, *((unsigned char*)(&Data) + 3));
+		}
+		else {
+			break;
+		}
+	}
 	
 	HAL_FLASHEx_DATAEEPROM_Lock();
 	EEPROM_EXIT_CRITICAL_SECTION();

@@ -264,7 +264,12 @@ MqttSNPCP_StatusTypeDef NET_MqttSN_PCP_NBIOT_Event_Send(MqttSNPCP_ClientsTypeDef
 				pClient->DictateRunCtl.dictateEvent = MQTTSN_PCP_EVENT_READY;
 				pClient->DictateRunCtl.dictateSendFailureCnt++;
 				pClient->MqttSNStack->MqttSNStack->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
+				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
+#endif
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_ENABLE
 				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_DNS;
+#endif
 				if (pClient->DictateRunCtl.dictateSendFailureCnt > 3) {
 					pClient->DictateRunCtl.dictateSendFailureCnt = 0;
 					pClient->DictateRunCtl.dictateEvent = MQTTSN_PCP_EVENT_STOP;

@@ -344,11 +344,11 @@ u8 Radar_GetData(tradar_targetinfo_s* pTargetinfo[], u8 dataNum)
 			}
 		}
 		if (error == 1) {
-			Radio_Trf_Printf("radar err:no signal");
+			Radio_Trf_Printf("radar:no signal");
 		}
 		else if (error == 2) {
 			fre_mag_average = (pTargetinfo[0]->pMagBG[2]+pTargetinfo[0]->pMagBG[3]+pTargetinfo[0]->pMagBG[4]+pTargetinfo[0]->pMagBG[5]+pTargetinfo[0]->pMagBG[6])/5;
-			Radio_Trf_Printf("radar err %hu:bad backgroud.%02d %02d %02d %02d %02d;",fre_mag_average,pTargetinfo[0]->pMagBG[2],
+			Radio_Trf_Printf("radar warn %hu:bad backgroud.%02d %02d %02d %02d %02d;",fre_mag_average,pTargetinfo[0]->pMagBG[2],
 			pTargetinfo[0]->pMagBG[3],pTargetinfo[0]->pMagBG[4],pTargetinfo[0]->pMagBG[5],
 			pTargetinfo[0]->pMagBG[6]);
 		}

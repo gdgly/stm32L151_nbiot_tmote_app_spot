@@ -71,8 +71,10 @@ PCP_ClientsTypeDef				PCPClientHandler;							//PCP Clinet Handler
 #endif
 
 #if NETPROTOCAL == NETMQTTSN
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_ENABLE
 DNS_SocketNetTypeDef			DNSSocketNetHandler;						//DNS Net Handler
 DNS_ClientsTypeDef				DNSClientHandler;							//DNS Clinet Handler
+#endif
 MQTTSN_SocketNetTypeDef			MqttSNSocketNetHandler;						//MqttSN Net Handler
 MQTTSN_ClientsTypeDef			MqttSNClientHandler;						//MqttSN Clinet Handler
 MqttSNPCP_MqttNetTransportTypeDef	MqttSNPCPMqttNetHandler;						//MqttSN PCP Net Handler

@@ -443,7 +443,7 @@ void HAL_SYSTICK_Callback(void)
 	
 	SystemSoftResetTime++;												//软重启计数器累加
 	if (SystemSoftResetTime >= 100000) {									//100秒计数器溢出重启
-		Stm32_System_Software_Reboot();
+		Stm32_System_Software_Reboot(RBTMODE_SYSTEM_OVERTIME);
 	}
 }
 

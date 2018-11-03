@@ -57,6 +57,10 @@
 #define	NBCOAP_SENDDATA_NQMGSCHECK_ENABLE	1
 #define	NBCOAP_SENDDATA_NQMGSCHECK_TYPE	NBCOAP_SENDDATA_NQMGSCHECK_DISABLE		//COAP发送数据NQMGS检查
 
+#define	NBCOAP_SEND_BEFORE_ATTACH_DISABLE	0
+#define	NBCOAP_SEND_BEFORE_ATTACH_ENABLE	1
+#define	NBCOAP_SEND_BEFORE_ATTACH_TYPE	NBCOAP_SEND_BEFORE_ATTACH_DISABLE		//COAP发送数据之前检查注网
+
 #define	NBCOAP_RATIME_NORMAL_2HOUR		2
 #define	NBCOAP_RATIME_NORMAL_4HOUR		4
 #define	NBCOAP_RATIME_NORMAL_TYPE		NBCOAP_RATIME_NORMAL_2HOUR			//Coap间隔时间发送普通数据包
@@ -209,6 +213,10 @@
 #define	USART2_ENABLE					1
 #define	USART2_TYPE					USART2_DISABLE						//串口2状态
 
+#define	USART3_DISABLE					0
+#define	USART3_ENABLE					1
+#define	USART3_TYPE					USART3_DISABLE						//串口3状态
+
 #define	IDLE_WORK						4								//休眠
 #define	NOTACTIVE_WORK					3								//不工作
 
@@ -218,13 +226,18 @@
 #define	RADIO_GATWAY_NEARBY_HEART_SEC		5								//无线接收网关数据心跳包间隔时间
 #define	RADIO_GATCMD_NEARBY_HEART_SEC		3								//无线接收网关数据命令包间隔时间
 
+#define	NBIOT_MODULE_REBOOT_ERROR_COUNT	5								//NB重启错误限定次数
+#define	NBIOT_MODULE_REBOOT_ERROR_INIT	2								//NB重启错误串口次数
+
 #define	TIME_TO_MODULE_INIT				3600*24*3							//间隔时间初始化模块
 
 #define	NBIOT_HEART_DATA_HOURS			4								//NB心跳数据包时间
 
-#define	NBIOT_MODULE_REBOOT_ERROR_COUNT	5								//NB重启错误限定次数
-
 #define	UPLOAD_QMCDATA_MAXPACK			16								//QMC一次上传最大包数
+
+#define	MQTTSN_DNS_SERVER_DISABLE		0
+#define	MQTTSN_DNS_SERVER_ENABLE			1
+#define	MQTTSN_DNS_SERVER_TYPE			MQTTSN_DNS_SERVER_ENABLE				//DNS服务状态
 
 #define	DNS_SERVER_HOST_IP				"114.114.114.114"					//DNS服务器默认配置
 #define	DNS_SERVER_LOCAL_PORT			5000
@@ -382,8 +395,10 @@ extern PCP_ClientsTypeDef				PCPClientHandler;					//PCP Clinet Handler
 #endif
 
 #if NETPROTOCAL == NETMQTTSN
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_ENABLE
 extern DNS_SocketNetTypeDef				DNSSocketNetHandler;				//DNS Net Handler
 extern DNS_ClientsTypeDef				DNSClientHandler;					//DNS Clinet Handler
+#endif
 extern MQTTSN_SocketNetTypeDef			MqttSNSocketNetHandler;				//MqttSN Net Handler
 extern MQTTSN_ClientsTypeDef				MqttSNClientHandler;				//MqttSN Clinet Handler
 extern MqttSNPCP_MqttNetTransportTypeDef	MqttSNPCPMqttNetHandler;				//MqttSN PCP Net Handler

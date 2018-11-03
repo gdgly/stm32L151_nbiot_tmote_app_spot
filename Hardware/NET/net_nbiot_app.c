@@ -60,10 +60,12 @@ void NET_NBIOT_Initialization(void)
 	
 #elif (NETPROTOCAL == NETMQTTSN)
 	
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_ENABLE
 	/* DNS数据传输接口初始化 */
 	DNS_Transport_Init(&DNSSocketNetHandler, &NbiotClientHandler, DNS_SERVER_LOCAL_PORT, DNS_SERVER_HOST_IP, DNS_SERVER_TELE_PORT);
 	/* DNS客户端初始化 */
 	DNS_Client_Init(&DNSClientHandler, &DNSSocketNetHandler, &NetNbiotClientHandler);
+#endif
 	
 	/* MqttSN数据传输接口初始化 */
 	MQTTSN_Transport_Init(&MqttSNSocketNetHandler, &NbiotClientHandler, MQTTSN_SERVER_LOCAL_PORT, MQTTSN_SERVER_HOST_IP, MQTTSN_SERVER_TELE_PORT);
@@ -103,7 +105,12 @@ void NET_NBIOT_Client_Init(NET_NBIOT_ClientsTypeDef* pClient)
 	
 #elif NETPROTOCAL == NETMQTTSN
 	
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
+	pClient->PollExecution								= NET_POLL_EXECUTION_MQTTSN;
+#endif
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_ENABLE
 	pClient->PollExecution								= NET_POLL_EXECUTION_DNS;
+#endif
 	
 #elif NETPROTOCAL == NETONENET
 	
@@ -930,11 +937,21 @@ void NET_NBIOT_TaskProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 	switch (pClient->PollExecution)
 	{
 	case NET_POLL_EXECUTION_COAP:
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
+		pClient->PollExecution = NET_POLL_EXECUTION_MQTTSN;
+#endif
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_ENABLE
 		pClient->PollExecution = NET_POLL_EXECUTION_DNS;
+#endif
 		break;
 	
 	case NET_POLL_EXECUTION_DNS:
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
+		pClient->PollExecution = NET_POLL_EXECUTION_MQTTSN;
+#endif
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_ENABLE
 		NET_DNS_APP_PollExecution(&DNSClientHandler);
+#endif
 		break;
 	
 	case NET_POLL_EXECUTION_MQTTSN:
@@ -946,7 +963,12 @@ void NET_NBIOT_TaskProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		break;
 	
 	case NET_POLL_EXECUTION_ONENET:
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
+		pClient->PollExecution = NET_POLL_EXECUTION_MQTTSN;
+#endif
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_ENABLE
 		pClient->PollExecution = NET_POLL_EXECUTION_DNS;
+#endif
 		break;
 	}
 	

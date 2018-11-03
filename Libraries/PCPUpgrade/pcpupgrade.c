@@ -87,7 +87,7 @@ PCP_ResultCodeTypeDef PCP_Upgrade_BackupCurrentAPP(PCP_ClientsTypeDef* pClient)
 	u8 SPIFlashCheckCode = 0;
 	int BackupTimes = 3;
 	
-	Radio_Trf_Printf("Backup APP ...");
+	Radio_Trf_Debug_Printf_Level2("Backup APP ...");
 	Radio_Rf_Interrupt_Deinit();
 	GD25Q_SPIFLASH_WakeUp();
 	GD25Q_SPIFLASH_Init();
@@ -103,7 +103,7 @@ PCP_ResultCodeTypeDef PCP_Upgrade_BackupCurrentAPP(PCP_ClientsTypeDef* pClient)
 		if (GD25Q_SPIFLASH_GetWord(APP2_INFO_UPGRADE_SOFTVER_OFFSET) == ((SOFTWAREMAJOR<<16)|(SOFTWARESUB<<0))) {
 			/* 备份区已有当前版本APP */
 			GD25Q_SPIFLASH_PowerDown();
-			Radio_Trf_Printf("APP has been backed");
+			Radio_Trf_Debug_Printf_Level2("APP has been backed");
 			PCPResultCodeStatus = PCP_LatestVersion;
 			goto exit;
 		}
@@ -134,7 +134,7 @@ PCP_ResultCodeTypeDef PCP_Upgrade_BackupCurrentAPP(PCP_ClientsTypeDef* pClient)
 	
 	if (STMFlashCheckCode != SPIFlashCheckCode) {
 		GD25Q_SPIFLASH_PowerDown();
-		Radio_Trf_Printf("APP backed up fail");
+		Radio_Trf_Debug_Printf_Level2("APP backed up fail");
 		goto exit;
 	}
 	
@@ -150,7 +150,7 @@ PCP_ResultCodeTypeDef PCP_Upgrade_BackupCurrentAPP(PCP_ClientsTypeDef* pClient)
 	GD25Q_SPIFLASH_SetWord(APP2_DATA_CHECK_CODE_OFFSET, SPIFlashCheckCode);
 	
 	GD25Q_SPIFLASH_PowerDown();
-	Radio_Trf_Printf("APP backup over code %X", STMFlashCheckCode);
+	Radio_Trf_Debug_Printf_Level2("APP backup over code %X", STMFlashCheckCode);
 	
 exit:
 	return PCPResultCodeStatus;
@@ -169,11 +169,11 @@ PCP_ResultCodeTypeDef PCP_Upgrade_NewVersionNotice(PCP_ClientsTypeDef* pClient)
 	PCP_ResultCodeTypeDef PCPResultCodeStatus = PCP_ExecuteSuccess;
 	u32 MajorVer = 0, SubVer = 0;
 	
-	Radio_Trf_Printf("NewVer APP ...");
+	Radio_Trf_Debug_Printf_Level2("NewVer APP ...");
 	
 	/* 信号质量与信噪比低中断升级 */
 	if ((TCFG_Utility_Get_Nbiot_Rssi_IntVal() < UPGRADE_LOW_LIMIT_RSSI) || (TCFG_Utility_Get_Nbiot_RadioSNR() < UPGRADE_LOW_LIMIT_SNR)) {
-		Radio_Trf_Printf("Signal Quality Difference");
+		Radio_Trf_Debug_Printf_Level2("Signal Quality Difference");
 		PCPResultCodeStatus = PCP_SignalqualityDifference;
 		goto exit;
 	}
@@ -199,7 +199,7 @@ PCP_ResultCodeTypeDef PCP_Upgrade_NewVersionNotice(PCP_ClientsTypeDef* pClient)
 		if (GD25Q_SPIFLASH_GetByte(APP1_INFO_UPGRADE_STATUS_OFFSET) == 0x55) {
 			/* 备份区已有当前升级版本APP */
 			GD25Q_SPIFLASH_PowerDown();
-			Radio_Trf_Printf("APP has been latestVersion");
+			Radio_Trf_Debug_Printf_Level2("APP has been latestVersion");
 			PCPResultCodeStatus = PCP_LatestVersion;
 			goto exit;
 		}
@@ -211,7 +211,7 @@ PCP_ResultCodeTypeDef PCP_Upgrade_NewVersionNotice(PCP_ClientsTypeDef* pClient)
 				pClient->UpgradeExecution.PackSliceIndex = pClient->Parameter.UpgradePackSliceNum - 1;
 			}
 			GD25Q_SPIFLASH_PowerDown();
-			Radio_Trf_Printf("APP Upgradeing");
+			Radio_Trf_Debug_Printf_Level2("APP Upgradeing");
 			PCPResultCodeStatus = PCP_ExecuteSuccess;
 			goto exit;
 		}
@@ -234,7 +234,7 @@ PCP_ResultCodeTypeDef PCP_Upgrade_NewVersionNotice(PCP_ClientsTypeDef* pClient)
 	GD25Q_SPIFLASH_SetWord(APP1_DATA_CHECK_CODE_OFFSET, CalculateStringToHex(pClient->Parameter.UpgradePackCheckCode>>8, pClient->Parameter.UpgradePackCheckCode&0xFF));
 	
 	GD25Q_SPIFLASH_PowerDown();
-	Radio_Trf_Printf("APP will start upgrade");
+	Radio_Trf_Debug_Printf_Level2("APP will start upgrade");
 	
 exit:
 	return PCPResultCodeStatus;
@@ -274,14 +274,14 @@ PCP_ResultCodeTypeDef PCP_Upgrade_DataDownload(PCP_ClientsTypeDef* pClient, u16 
 		/* 该分片数据已写入 */
 		pClient->UpgradeExecution.PackSliceIndex = SliceIndex + 1;
 		GD25Q_SPIFLASH_PowerDown();
-		Radio_Trf_Printf("PackSlice has been write");
+		Radio_Trf_Debug_Printf_Level2("PackSlice has been write");
 		goto exit;
 	}
 	
 	if (UpgradeDataLength > pClient->UpgradeExecution.PackSliceSize) {
 		/* 该分片数据长度异常 */
 		GD25Q_SPIFLASH_PowerDown();
-		Radio_Trf_Printf("PackSlice Size Fail");
+		Radio_Trf_Debug_Printf_Level2("PackSlice Size Fail");
 		goto exit;
 	}
 	
@@ -292,7 +292,7 @@ PCP_ResultCodeTypeDef PCP_Upgrade_DataDownload(PCP_ClientsTypeDef* pClient, u16 
 	
 	pClient->UpgradeExecution.PackSliceIndex = SliceIndex + 1;
 	GD25Q_SPIFLASH_PowerDown();
-	Radio_Trf_Printf("Pack write to flash");
+	Radio_Trf_Debug_Printf_Level2("Pack write to flash");
 	
 exit:
 	return PCPResultCodeStatus;
@@ -326,7 +326,7 @@ PCP_ResultCodeTypeDef PCP_Upgrade_DataAssemble(PCP_ClientsTypeDef* pClient)
 		/* 数据包没有下载完成 */
 		GD25Q_SPIFLASH_EraseSector(APP1_INFORMATION_ADDR);
 		GD25Q_SPIFLASH_PowerDown();
-		Radio_Trf_Printf("Upgrade Check Fail");
+		Radio_Trf_Debug_Printf_Level2("Upgrade Check Fail");
 		PCPResultCodeStatus = PCP_UpgradePacketCheckFail;
 		goto exit;
 	}
@@ -342,13 +342,13 @@ PCP_ResultCodeTypeDef PCP_Upgrade_DataAssemble(PCP_ClientsTypeDef* pClient)
 		/* 校验码错误 */
 		GD25Q_SPIFLASH_EraseSector(APP1_INFORMATION_ADDR);
 		GD25Q_SPIFLASH_PowerDown();
-		Radio_Trf_Printf("Upgrade Check Fail");
+		Radio_Trf_Debug_Printf_Level2("Upgrade Check Fail");
 		PCPResultCodeStatus = PCP_UpgradePacketCheckFail;
 		goto exit;
 	}
 	
 	GD25Q_SPIFLASH_PowerDown();
-	Radio_Trf_Printf("Upgrade Check Ok");
+	Radio_Trf_Debug_Printf_Level2("Upgrade Check Ok");
 	
 exit:
 	return PCPResultCodeStatus;
@@ -366,7 +366,7 @@ PCP_ResultCodeTypeDef PCP_Upgrade_AfterUpdata(PCP_ClientsTypeDef* pClient)
 #ifdef GD25Q_80CSIG
 	PCP_ResultCodeTypeDef PCPResultCodeStatus = PCP_ExecuteSuccess;
 	
-	Radio_Trf_Printf("Start Btup APP ...");
+	Radio_Trf_Debug_Printf_Level2("Start Btup APP ...");
 	Radio_Rf_Interrupt_Deinit();
 	GD25Q_SPIFLASH_WakeUp();
 	GD25Q_SPIFLASH_Init();
@@ -383,7 +383,7 @@ PCP_ResultCodeTypeDef PCP_Upgrade_AfterUpdata(PCP_ClientsTypeDef* pClient)
 	
 	TCFG_EEPROM_SetBootMode(TCFG_ENV_BOOTMODE_SPIFLASH_UPGRADE);										//设置升级模式
 	BEEP_CtrlRepeat_Extend(5, 50, 50);
-	Stm32_System_Software_Reboot();
+	Stm32_System_Software_Reboot(RRTMODE_COAP_UPGRADE);
 	
 exit:
 	return PCPResultCodeStatus;

@@ -76,7 +76,7 @@ extern Stm32_SystemRunningTime	SystemRunningTime;								//系统运行时间(�
 void Stm32_Clock_Init(u32 pllmul, u32 plldiv);									//配置系统时钟HSI
 void Stm32_MSIClock_Init(u32 msiClockRange);										//配置系统时钟MSI
 
-void Stm32_System_Software_Reboot(void);										//软重启
+void Stm32_System_Software_Reboot(u8 deviceRbtMode);								//软重启
 
 void Stm32_IncSecondTick(void);												//运行时间加1秒
 u32  Stm32_GetSecondTick(void);												//获取运行秒数

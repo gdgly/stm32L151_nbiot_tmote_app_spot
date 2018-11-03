@@ -102,8 +102,8 @@ mrfiPacket_t* Radio_Rf_QPop(void)
 }
 
 /**********************************************************************************************************
- @Function			char Radio_Rf_is_Sleep(void)
- @Description			Radio_Rf_is_Sleep			: set the radio to sleep mode
+ @Function			char Radio_Rf_BeforeSleep(void)
+ @Description			Radio_Rf_BeforeSleep		: set the radio to sleep mode
  @Input				void
  @Return				void
 **********************************************************************************************************/
@@ -112,6 +112,7 @@ void Radio_Rf_BeforeSleep(void)
 #ifdef	RADIO_SI4438
 	if (Radio_Rf_is_Sleep() == 0) {
 		Radio_Rf_Sleep();
+		Radio_Rf_Interrupt_Deinit();
 		Radio_Rf_Interface_Deinit();
 	}
 #endif
@@ -228,7 +229,7 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					if (TCFG_ENV_BOOTMODE_TOUPDATE == TCFG_EEPROM_GetBootMode()) {
 						Radio_Trf_Default_Resp(100, TRF_MSG_UPGRADE);
 						BEEP_CtrlRepeat_Extend(5, 25, 25);
-						Stm32_System_Software_Reboot();
+						Stm32_System_Software_Reboot(RBTMODE_RADIO_UPGRADE);
 					}
 				}
 			}
@@ -292,7 +293,7 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("Reboot : OK");
 				#endif
-					Stm32_System_Software_Reboot();
+					Stm32_System_Software_Reboot(RBTMODE_RADIO_COMMAND);
 			#endif
 				}
 				/* NewSn */

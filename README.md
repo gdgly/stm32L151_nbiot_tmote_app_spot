@@ -1,12 +1,25 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2018-11-03 :
+	* 增加软件重启方式的记录。
+	* 并上报到平台Boot:%d.%d.%d。
+	* 休眠之前关闭小无线中断Radio_Rf_Interrupt_Deinit()。
+	* 配置文件移动MqttSN的DNS选择是否开启。
+	* 去掉COAP每次发送数据之前检查注网。
+* 2018-11-02 :
+	* NB硬件重启错误超过限定次数2次,对NB串口初始化。
+	* radar err信息改为warn。
+	* rollingover信息等级修改。
+	* EEPROM写入校验，最大5次。
+	* RADIO_CTS_TIMEOUT 最大时间 10000 改为 2000。
+	* PCP升级调试信息等级降低至LV2。
 * 2018-11-01 :
 	* 版本号修改为131。
 	* MqttSN 最大订阅消息主题由5减为2。
 	* HAL_UART_Transmit 超时时间由0xFFFF减为0x07FF。
 	* 栈大小由0x600增加到0x800。
-	* 去除MqttSN协议等待应答信息，小无线答应。
+	* 去除MqttSN协议等待应答信息，小无线打印。
 * 2018-10-23 :
 	* 发布V130版本固件。
 * 2018-10-23 :

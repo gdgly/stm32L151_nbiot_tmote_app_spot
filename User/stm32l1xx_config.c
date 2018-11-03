@@ -441,6 +441,7 @@ void LowPowerBeforeSleepInit(void)
 #ifdef RADIO_SI4438
 	if (Radio_Rf_is_Sleep() == 0) {
 		Radio_Rf_Sleep();
+		Radio_Rf_Interrupt_Deinit();
 		Radio_Rf_Interface_Deinit();
 	}
 #endif
