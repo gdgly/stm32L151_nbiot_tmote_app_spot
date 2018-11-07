@@ -62,7 +62,7 @@ void DeBugMain(void);
 int main(void)
 {
 	HAL_Init();																		//HAL库初始化
-	QmsWarmupPower(OFF);																//关闭QMC加热
+	QmcWarmupPower(OFF);																//关闭QMC加热
 	
 #ifndef SYSTEMCLOCK
 	#error No Define SYSTEMCLOCK!

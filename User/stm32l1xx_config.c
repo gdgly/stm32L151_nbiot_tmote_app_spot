@@ -269,7 +269,7 @@ void ModulePowerReset_Init(void)
 	NBIOTPower_Init();																//NBIOT电源初始化
 	VbatPower_Init();																//电压检测电源初始化
 	
-	QmsWarmupPower(OFF);															//关闭QMC加热
+	QmcWarmupPower(OFF);															//关闭QMC加热
 	MODELPOWER(OFF);																//关闭模块总电源
 	RADARPOWER(OFF);																//关闭雷达电源
 	NBIOTPOWER(OFF);																//关闭NBIOT电源
@@ -350,7 +350,7 @@ void PowerCtrlIO_Init(void)
 	NBIOTPower_Init();																//NBIOT电源初始化
 	VbatPower_Init();																//电压检测电源初始化
 	
-	QmsWarmupPower(OFF);															//关闭QMC加热
+	QmcWarmupPower(OFF);															//关闭QMC加热
 	MODELPOWER(ON);																//开启模块总电源
 	RADARPOWER(OFF);																//关闭雷达电源
 	NBIOTPOWER(OFF);																//关闭NBIOT电源
@@ -358,13 +358,13 @@ void PowerCtrlIO_Init(void)
 }
 
 /**********************************************************************************************************
- @Function			void QmsWarmupPower(signed char val)
+ @Function			void QmcWarmupPower(signed char val)
  @Description			Qmc加热控制IO设置
  @Input				void
  @Return				val			: ON
 								  OFF
 **********************************************************************************************************/
-void QmsWarmupPower(signed char val)
+void QmcWarmupPower(signed char val)
 {
 	GPIO_InitTypeDef GPIO_Initure;
 	
