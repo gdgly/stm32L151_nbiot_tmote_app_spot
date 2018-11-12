@@ -136,7 +136,7 @@ PCP_ResultCodeTypeDef PCP_UpgradeDataAssemble_Callback(PCP_ClientsTypeDef* pClie
 	PCP_ResultCodeTypeDef PCPResultCodeStatus = PCP_ExecuteSuccess;
 	
 #ifdef PCP_DEBUG_LOG_RF_PRINT
-	Radio_Trf_Debug_Printf_Level2("Download Over!!");
+	Radio_Trf_Debug_Printf_Level2("Download Over!");
 #endif
 	
 	PCPResultCodeStatus = PCP_Upgrade_DataAssemble(pClient);
@@ -155,7 +155,7 @@ PCP_ResultCodeTypeDef PCP_UpgradeDataReportUpgrades_Callback(PCP_ClientsTypeDef*
 	PCP_ResultCodeTypeDef PCPResultCodeStatus = PCP_ExecuteSuccess;
 	
 #ifdef PCP_DEBUG_LOG_RF_PRINT
-	Radio_Trf_Debug_Printf_Level2("Upgrade Over!!");
+	Radio_Trf_Debug_Printf_Level2("Upgrade Over!");
 #endif
 	
 	PCPResultCodeStatus = PCP_Upgrade_AfterUpdata(pClient);

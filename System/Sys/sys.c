@@ -20,7 +20,7 @@
 
 __IO u32 SystemRunningTimesSecond = 0;										//系统运行时间(S)
 __IO u32 SystemSoftResetTime = 0;											//系统运行超时软件复位时间(MS)
-Stm32_SystemRunningTime		SystemRunningTime = {0, 0, 100, 0, 0, 0, 1, 0, 0};	//系统运行时间(结构体)
+Stm32_SystemRunningTime		SystemRunningTime = {0, 0, 100, 0, 0, 0, 1, 0, 0, 0};	//系统运行时间(结构体)
 
 /**********************************************************************************************************
  @Function			void Stm32_Clock_Init(u32 pllmul, u32 plldiv)

@@ -359,12 +359,14 @@ exit:
 PCP_StatusTypeDef NET_PCP_NBIOT_Event_Send(PCP_ClientsTypeDef* pClient)
 {
 	PCP_StatusTypeDef PCPStatus = PCP_OK;
-	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
 	PCP_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	/* Data packets need to be sent*/
 	if (NET_PCP_Message_SendDataDequeue(pClient->Sendbuf, (unsigned short *)&pClient->Sendlen) == true) {
+		
+#if NBCOAP_SEND_BEFORE_ATTACH_TYPE
 		/* Connect Check */
 		if ((NBStatus = NBIOT_Neul_NBxx_CheckReadAttachOrDetach(pClient->CoAPStack->NBIotStack)) == NBIOT_OK) {
 			/* Dictate execute is Success */
@@ -416,6 +418,7 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Send(PCP_ClientsTypeDef* pClient)
 			}
 			goto exit;
 		}
+#endif
 		
 		/* 发送负载数据 */
 		if ((PCPStatus = pClient->CoAPStack->Write(pClient->CoAPStack, (char *)pClient->Sendbuf, pClient->Sendlen)) != PCP_OK) {

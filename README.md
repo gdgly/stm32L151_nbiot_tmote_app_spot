@@ -1,6 +1,10 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2018-11-12 :
+	* 版本号修改为132。
+	* 增加NB间隔一周上报一包BasicInfo。
+	* CoAP PCP升级 去掉每次发送数据之前检查注网。
 * 2018-11-03 :
 	* 增加软件重启方式的记录。
 	* 并上报到平台Boot:%d.%d.%d。

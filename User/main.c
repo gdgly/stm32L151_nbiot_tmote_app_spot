@@ -612,6 +612,24 @@ void MainHandleRoutine(void)
 		NBIOT_COAP_RA_NORMAL_SET_STATE(&NbiotClientHandler, true);
 		TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_MAX_LIFETIME);
 	}
+	/* Every Week Running */
+	if ((Stm32_GetSecondTick() / (24*3600*7)) != SystemRunningTime.weeks) {
+		SystemRunningTime.weeks = Stm32_GetSecondTick() / (24*3600*7);
+		
+#if NETPROTOCAL == NETCOAP
+	#if NBCOAP_SENDCODE_BASIC_INFO
+		NETCoapNeedSendCode.BasicInfo = 1;
+	#endif
+#elif NETPROTOCAL == NETMQTTSN
+	#if NBMQTTSN_SENDCODE_BASIC_INFO
+		NETMqttSNNeedSendCode.InfoBasic = 1;
+	#endif
+#elif NETPROTOCAL == NETONENET
+	#if NBONENET_SENDCODE_BASIC_INFO
+		NETOneNETNeedSendCode.BasicInfo = 1;
+	#endif
+#endif
+	}
 }
 
 
