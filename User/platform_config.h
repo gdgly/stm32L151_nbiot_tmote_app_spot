@@ -66,7 +66,7 @@
 #define	NBCOAP_RATIME_NORMAL_TYPE		NBCOAP_RATIME_NORMAL_2HOUR			//Coap间隔时间发送普通数据包
 
 #define	NBCOAP_PCP_UPGRADE_LIMIT_RSSI		10								//PCP升级限制信号值
-#define	NBCOAP_PCP_UPGRADE_LIMIT_SNR		5								//PCP升级限制信噪比
+#define	NBCOAP_PCP_UPGRADE_LIMIT_SNR		-30								//PCP升级限制信噪比
 
 #define	NBIOT_CONTINUE_LIFETIME			2								//NBIOT休眠正放继续活跃20秒
 #define	NBIOT_MAX_LIFETIME				12								//NBIOT休眠正放最大活跃120秒
