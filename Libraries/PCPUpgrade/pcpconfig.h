@@ -155,6 +155,7 @@ struct PCP_ParameterTypeDef
 	unsigned short						UpgradePackSliceNum;								//升级包分片总数
 	unsigned short						UpgradePackCheckCode;								//升级包校验码
 	unsigned short						UpgradePackSliceIndex;								//升级包分片序号
+	unsigned short						UpgradeStartTimes;									//升级任务启动次数
 };
 
 /* PCP CoAP Transport */

@@ -484,6 +484,15 @@ unsigned int	TCFG_Utility_Get_Nbiot_NetworkRegistStatusCellID(void);							//读
 unsigned int	TCFG_Utility_GetCoapConnectTime(void);											//读取Nbiot CoapConnectTime值
 unsigned int	TCFG_Utility_GetCoapIdleTime(void);											//读取Nbiot CoapIdleTime值
 
+char*		TCFG_Utility_Get_Nbiot_PCPPlatformSoftVersion(void);								//读取Nbiot PCPPlatformSoftVersion值
+unsigned char	TCFG_Utility_Get_Nbiot_PCPPlatformSoftVersionMajor(void);							//读取Nbiot PCPPlatformSoftVersionMajor值
+unsigned char	TCFG_Utility_Get_Nbiot_PCPPlatformSoftVersionSub(void);							//读取Nbiot PCPPlatformSoftVersionSub值
+unsigned short	TCFG_Utility_Get_Nbiot_PCPUpgradePackSliceSize(void);								//读取Nbiot PCPUpgradePackSliceSize值
+unsigned short	TCFG_Utility_Get_Nbiot_PCPUpgradePackSliceNum(void);								//读取Nbiot PCPUpgradePackSliceNum值
+unsigned short	TCFG_Utility_Get_Nbiot_PCPUpgradePackSliceIndex(void);								//读取Nbiot PCPUpgradePackSliceIndex值
+unsigned short	TCFG_Utility_Get_Nbiot_PCPUpgradePackCheckCode(void);								//读取Nbiot PCPUpgradePackCheckCode值
+unsigned short	TCFG_Utility_Get_Nbiot_PCPUpgradeStartTimes(void);								//读取Nbiot PCPUpgradeStartTimes值
+
 char*		TCFG_Utility_Get_Nbiot_Manufacturer(void);										//读取Nbiot Manufacturer值
 char*		TCFG_Utility_Get_Nbiot_Manufacturermode(void);									//读取Nbiot Manufacturermode值
 char*		TCFG_Utility_Get_Nbiot_ModelVersion(void);										//读取Nbiot ModelVersion值

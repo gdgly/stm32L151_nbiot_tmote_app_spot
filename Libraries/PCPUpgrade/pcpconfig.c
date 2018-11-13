@@ -98,6 +98,12 @@ PCP_ResultCodeTypeDef PCP_UpgradeDataNewVersionNotice_Callback(PCP_ClientsTypeDe
 	Radio_Trf_Debug_Printf_Level2("CheckCode: %X", CalculateStringToHex(pClient->Parameter.UpgradePackCheckCode>>8, pClient->Parameter.UpgradePackCheckCode&0xFF));
 #endif
 	
+#if NBCOAP_SENDCODE_WORK_INFO
+	NETCoapNeedSendCode.WorkInfo = 1;
+#endif
+	
+	pClient->Parameter.UpgradeStartTimes++;
+	
 	PCPResultCodeStatus = PCP_Upgrade_NewVersionNotice(pClient);
 	
 	return PCPResultCodeStatus;

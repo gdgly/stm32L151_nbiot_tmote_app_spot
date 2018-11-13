@@ -98,6 +98,12 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_UpgradeDataNewVersionNotice_Callback(MqttSNP
 	Radio_Trf_Debug_Printf_Level2("CheckCode: %X", MqttSNCalculateStringToHex(pClient->Parameter.UpgradePackCheckCode>>8, pClient->Parameter.UpgradePackCheckCode&0xFF));
 #endif
 	
+#if NBMQTTSN_SENDCODE_WORK_INFO
+	NETMqttSNNeedSendCode.InfoWork = 1;
+#endif
+	
+	pClient->Parameter.UpgradeStartTimes++;
+	
 	PCPResultCodeStatus = MqttPCP_Upgrade_NewVersionNotice(pClient);
 	
 	return PCPResultCodeStatus;

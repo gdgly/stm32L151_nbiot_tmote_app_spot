@@ -2629,6 +2629,136 @@ unsigned int TCFG_Utility_GetCoapIdleTime(void)
 }
 
 /**********************************************************************************************************
+ @Function			char* TCFG_Utility_Get_Nbiot_PCPPlatformSoftVersion(void)
+ @Description			TCFG_Utility_Get_Nbiot_PCPPlatformSoftVersion	: 读取Nbiot PCPPlatformSoftVersion值
+ @Input				void
+ @Return				Nbiot_PCPPlatformSoftVersion
+**********************************************************************************************************/
+char* TCFG_Utility_Get_Nbiot_PCPPlatformSoftVersion(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return (char*)PCPClientHandler.Parameter.PlatformSoftVersion;
+#elif NETPROTOCAL == NETMQTTSN
+	return (char*)MqttSNPCPClientHandler.Parameter.PlatformSoftVersion;
+#endif
+}
+
+/**********************************************************************************************************
+ @Function			unsigned char TCFG_Utility_Get_Nbiot_PCPPlatformSoftVersionMajor(void)
+ @Description			TCFG_Utility_Get_Nbiot_PCPPlatformSoftVersionMajor	: 读取Nbiot PCPPlatformSoftVersionMajor值
+ @Input				void
+ @Return				Nbiot_PCPPlatformSoftVersionMajor
+**********************************************************************************************************/
+unsigned char TCFG_Utility_Get_Nbiot_PCPPlatformSoftVersionMajor(void)
+{
+	unsigned int softMajor = 0;
+	unsigned int softSub = 0;
+	
+#if NETPROTOCAL == NETCOAP
+	sscanf((const char*)PCPClientHandler.Parameter.PlatformSoftVersion, "V%d.%d", &softMajor, &softSub);
+#elif NETPROTOCAL == NETMQTTSN
+	sscanf((const char*)MqttSNPCPClientHandler.Parameter.PlatformSoftVersion, "V%d.%d", &softMajor, &softSub);
+#endif
+	
+	return softMajor;
+}
+
+/**********************************************************************************************************
+ @Function			unsigned char TCFG_Utility_Get_Nbiot_PCPPlatformSoftVersionSub(void)
+ @Description			TCFG_Utility_Get_Nbiot_PCPPlatformSoftVersionSub		: 读取Nbiot PCPPlatformSoftVersionSub值
+ @Input				void
+ @Return				Nbiot_PCPPlatformSoftVersionSub
+**********************************************************************************************************/
+unsigned char TCFG_Utility_Get_Nbiot_PCPPlatformSoftVersionSub(void)
+{
+	unsigned int softMajor = 0;
+	unsigned int softSub = 0;
+	
+#if NETPROTOCAL == NETCOAP
+	sscanf((const char*)PCPClientHandler.Parameter.PlatformSoftVersion, "V%d.%d", &softMajor, &softSub);
+#elif NETPROTOCAL == NETMQTTSN
+	sscanf((const char*)MqttSNPCPClientHandler.Parameter.PlatformSoftVersion, "V%d.%d", &softMajor, &softSub);
+#endif
+	
+	return softSub;
+}
+
+/**********************************************************************************************************
+ @Function			unsigned short TCFG_Utility_Get_Nbiot_PCPUpgradePackSliceSize(void)
+ @Description			TCFG_Utility_Get_Nbiot_PCPUpgradePackSliceSize	: 读取Nbiot PCPUpgradePackSliceSize值
+ @Input				void
+ @Return				Nbiot_PCPUpgradePackSliceSize
+**********************************************************************************************************/
+unsigned short TCFG_Utility_Get_Nbiot_PCPUpgradePackSliceSize(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return PCPClientHandler.Parameter.UpgradePackSliceSize;
+#elif NETPROTOCAL == NETMQTTSN
+	return MqttSNPCPClientHandler.Parameter.UpgradePackSliceSize;
+#endif
+}
+
+/**********************************************************************************************************
+ @Function			unsigned short TCFG_Utility_Get_Nbiot_PCPUpgradePackSliceNum(void)
+ @Description			TCFG_Utility_Get_Nbiot_PCPUpgradePackSliceNum	: 读取Nbiot PCPUpgradePackSliceNum值
+ @Input				void
+ @Return				Nbiot_PCPUpgradePackSliceNum
+**********************************************************************************************************/
+unsigned short TCFG_Utility_Get_Nbiot_PCPUpgradePackSliceNum(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return PCPClientHandler.Parameter.UpgradePackSliceNum;
+#elif NETPROTOCAL == NETMQTTSN
+	return MqttSNPCPClientHandler.Parameter.UpgradePackSliceNum;
+#endif
+}
+
+/**********************************************************************************************************
+ @Function			unsigned short TCFG_Utility_Get_Nbiot_PCPUpgradePackSliceIndex(void)
+ @Description			TCFG_Utility_Get_Nbiot_PCPUpgradePackSliceIndex	: 读取Nbiot PCPUpgradePackSliceIndex值
+ @Input				void
+ @Return				Nbiot_UpgradePackSliceIndex
+**********************************************************************************************************/
+unsigned short TCFG_Utility_Get_Nbiot_PCPUpgradePackSliceIndex(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return PCPClientHandler.Parameter.UpgradePackSliceIndex;
+#elif NETPROTOCAL == NETMQTTSN
+	return MqttSNPCPClientHandler.Parameter.UpgradePackSliceIndex;
+#endif
+}
+
+/**********************************************************************************************************
+ @Function			unsigned short TCFG_Utility_Get_Nbiot_PCPUpgradePackCheckCode(void)
+ @Description			TCFG_Utility_Get_Nbiot_PCPUpgradePackCheckCode	: 读取Nbiot PCPUpgradePackCheckCode值
+ @Input				void
+ @Return				Nbiot_PCPUpgradePackCheckCode
+**********************************************************************************************************/
+unsigned short TCFG_Utility_Get_Nbiot_PCPUpgradePackCheckCode(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return PCPClientHandler.Parameter.UpgradePackCheckCode;
+#elif NETPROTOCAL == NETMQTTSN
+	return MqttSNPCPClientHandler.Parameter.UpgradePackCheckCode;
+#endif
+}
+
+/**********************************************************************************************************
+ @Function			unsigned short TCFG_Utility_Get_Nbiot_PCPUpgradeStartTimes(void)
+ @Description			TCFG_Utility_Get_Nbiot_PCPUpgradeStartTimes		: 读取Nbiot PCPUpgradeStartTimes值
+ @Input				void
+ @Return				Nbiot_PCPUpgradeStartTimes
+**********************************************************************************************************/
+unsigned short TCFG_Utility_Get_Nbiot_PCPUpgradeStartTimes(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return PCPClientHandler.Parameter.UpgradeStartTimes;
+#elif NETPROTOCAL == NETMQTTSN
+	return MqttSNPCPClientHandler.Parameter.UpgradeStartTimes;
+#endif
+}
+
+/**********************************************************************************************************
  @Function			char* TCFG_Utility_Get_Nbiot_Manufacturer(void)
  @Description			TCFG_Utility_Get_Nbiot_Manufacturer			: 读取Nbiot Manufacturer值
  @Input				void
