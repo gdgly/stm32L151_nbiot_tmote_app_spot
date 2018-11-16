@@ -1,6 +1,11 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2018-11-16 :
+	* MqttSN发送DisConnect指令控制优化。
+* 2018-11-15 :
+	* NB硬件重启断电时间由2秒增加到3秒。
+	* NB串口通信的接收中断控制去除。
 * 2018-11-13 :
 	* PCP升级任务启动时上报WorkInfo。
 	* 统计PCP升级任务启动次数。

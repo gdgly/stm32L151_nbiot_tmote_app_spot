@@ -1422,7 +1422,7 @@ void NET_MQTTSN_Event_Disconnect(MQTTSN_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 {
-	MQTTSN_DictateEvent_SetTime(pClient, 60);
+	MQTTSN_DictateEvent_SetTime(pClient, 90);
 	
 	/* Subscribing Topic */
 	if (pClient->DictateRunCtl.dictateSubscribeStatus != true) {
@@ -1464,7 +1464,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 		}
 		else {
 			/* Dictate execute is Success */
-			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, false);
+			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, true);
 			pClient->MessageSendCtl.messageStatusBasic = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_StatusBasicOffSet();
@@ -1502,7 +1502,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 		}
 		else {
 			/* Dictate execute is Success */
-			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, false);
+			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, true);
 			pClient->MessageSendCtl.messageStatusExtend = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_StatusExtendOffSet();
@@ -1540,7 +1540,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 		}
 		else {
 			/* Dictate execute is Success */
-			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, false);
+			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, true);
 			pClient->MessageSendCtl.messageInfoWork = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoWorkOffSet();
@@ -1578,7 +1578,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 		}
 		else {
 			/* Dictate execute is Success */
-			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, false);
+			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, true);
 			pClient->MessageSendCtl.messageInfoBasic = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoBasicOffSet();
@@ -1616,7 +1616,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 		}
 		else {
 			/* Dictate execute is Success */
-			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, false);
+			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, true);
 			pClient->MessageSendCtl.messageInfoDynamic = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoDynamicOffSet();
@@ -1653,7 +1653,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 		}
 		else {
 			/* Dictate execute is Success */
-			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, false);
+			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, true);
 			pClient->MessageSendCtl.messageInfoResponse = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_InfoResponseOffSet();
@@ -1690,7 +1690,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 		}
 		else {
 			/* Dictate execute is Success */
-			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, false);
+			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, true);
 			pClient->MessageSendCtl.messageByteStream = false;
 			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
 			NET_MqttSN_Message_SendDataOffSet();

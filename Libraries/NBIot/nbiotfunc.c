@@ -118,7 +118,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_HardwareReboot(NBIOT_ClientsTypeDef* pClient
 	NBIOTBaudRate.EnBaudRateState = true;
 	
 	NBIOTPOWER(OFF);
-	Delay_MS(2000);
+	Delay_MS(3000);
 	NBIOTPOWER(ON);
 	Delay_MS(300);
 	

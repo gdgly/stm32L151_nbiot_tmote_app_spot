@@ -134,7 +134,7 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_Upgrade_BackupCurrentAPP(MqttSNPCP_ClientsTy
 	
 	if (STMFlashCheckCode != SPIFlashCheckCode) {
 		GD25Q_SPIFLASH_PowerDown();
-		Radio_Trf_Debug_Printf_Level2("APP backed up fail");
+		Radio_Trf_Debug_Printf_Level2("APP backup up fail");
 		goto exit;
 	}
 	
@@ -173,7 +173,7 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_Upgrade_NewVersionNotice(MqttSNPCP_ClientsTy
 	
 	/* 信号质量与信噪比低中断升级 */
 	if ((TCFG_Utility_Get_Nbiot_Rssi_IntVal() < UPGRADE_LOW_LIMIT_RSSI) || (TCFG_Utility_Get_Nbiot_RadioSNR() < UPGRADE_LOW_LIMIT_SNR)) {
-		Radio_Trf_Debug_Printf_Level2("Signal Quality Difference");
+		Radio_Trf_Debug_Printf_Level2("Signal Difference");
 		PCPResultCodeStatus = MQTTSN_PCP_SignalqualityDifference;
 		goto exit;
 	}
@@ -199,7 +199,7 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_Upgrade_NewVersionNotice(MqttSNPCP_ClientsTy
 		if (GD25Q_SPIFLASH_GetByte(APP1_INFO_UPGRADE_STATUS_OFFSET) == 0x55) {
 			/* 备份区已有当前升级版本APP */
 			GD25Q_SPIFLASH_PowerDown();
-			Radio_Trf_Debug_Printf_Level2("APP has been latestVersion");
+			Radio_Trf_Debug_Printf_Level2("APP has been latestVer");
 			PCPResultCodeStatus = MQTTSN_PCP_LatestVersion;
 			goto exit;
 		}
@@ -274,14 +274,14 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_Upgrade_DataDownload(MqttSNPCP_ClientsTypeDe
 		/* 该分片数据已写入 */
 		pClient->UpgradeExecution.PackSliceIndex = SliceIndex + 1;
 		GD25Q_SPIFLASH_PowerDown();
-		Radio_Trf_Debug_Printf_Level2("PackSlice has been write");
+		Radio_Trf_Debug_Printf_Level2("Slice has been write");
 		goto exit;
 	}
 	
 	if (UpgradeDataLength > pClient->UpgradeExecution.PackSliceSize) {
 		/* 该分片数据长度异常 */
 		GD25Q_SPIFLASH_PowerDown();
-		Radio_Trf_Debug_Printf_Level2("PackSlice Size Fail");
+		Radio_Trf_Debug_Printf_Level2("Slice Size Fail");
 		goto exit;
 	}
 	
@@ -292,7 +292,7 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_Upgrade_DataDownload(MqttSNPCP_ClientsTypeDe
 	
 	pClient->UpgradeExecution.PackSliceIndex = SliceIndex + 1;
 	GD25Q_SPIFLASH_PowerDown();
-	Radio_Trf_Debug_Printf_Level2("Pack write to flash");
+	Radio_Trf_Debug_Printf_Level2("Slice write to flash");
 	
 exit:
 	return PCPResultCodeStatus;

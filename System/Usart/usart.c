@@ -13,6 +13,8 @@
   *********************************************************************************************************
   */
 
+#include "platform_config.h"
+#include "platform_map.h"
 #include "usart.h"
 
 u8 USART1_RX_BUF[USART1_REC_LEN];    										//USART1接收缓冲,最大USART1_REC_LEN个字节
@@ -92,6 +94,7 @@ void Uart2_Init(u32 bound)
 **********************************************************************************************************/
 void Uart1_PortSerialEnable(u8 xRxEnable, u8 xTxEnable)
 {
+#if USART_IRQ_CTRL_TYPE
 	ENTER_CRITICAL_SECTION();
 	
 	if (xRxEnable) {													//使能串口接收中断
@@ -109,6 +112,7 @@ void Uart1_PortSerialEnable(u8 xRxEnable, u8 xTxEnable)
 	}
 	
 	EXIT_CRITICAL_SECTION();
+#endif
 }
 
 /**********************************************************************************************************
@@ -122,6 +126,7 @@ void Uart1_PortSerialEnable(u8 xRxEnable, u8 xTxEnable)
 **********************************************************************************************************/
 void Uart2_PortSerialEnable(u8 xRxEnable, u8 xTxEnable)
 {
+#if USART_IRQ_CTRL_TYPE
 	ENTER_CRITICAL_SECTION();
 	
 	if (xRxEnable) {													//使能串口接收中断
@@ -139,6 +144,7 @@ void Uart2_PortSerialEnable(u8 xRxEnable, u8 xTxEnable)
 	}
 	
 	EXIT_CRITICAL_SECTION();
+#endif
 }
 
 /**********************************************************************************************************

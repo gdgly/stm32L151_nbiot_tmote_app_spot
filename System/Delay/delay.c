@@ -14,8 +14,8 @@
   */
 
 #include "platform_config.h"
+#include "platform_map.h"
 #include "delay.h"
-#include "sys.h"
 
 #if SYSTEM_SUPPORT_OS													//如果使用OS, 则包括下面的头文件（以ucos为例）即可
 #include "includes.h"													//支持OS时使用

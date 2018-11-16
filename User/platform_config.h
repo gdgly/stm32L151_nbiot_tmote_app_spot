@@ -217,6 +217,10 @@
 #define	USART3_ENABLE					1
 #define	USART3_TYPE					USART3_DISABLE						//串口3状态
 
+#define	USART_IRQ_CTRL_DISABLE			0
+#define	USART_IRQ_CTRL_ENABLE			1
+#define	USART_IRQ_CTRL_TYPE				USART_IRQ_CTRL_DISABLE				//串口控制中断
+
 #define	IDLE_WORK						4								//休眠
 #define	NOTACTIVE_WORK					3								//不工作
 
