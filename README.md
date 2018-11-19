@@ -3,6 +3,7 @@ movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内
 
 * 2018-11-19 :
 	* Radio 发送读取SPI函数count=10改为count=6。
+	* 优化NB各个指令的执行时间。
 * 2018-11-16 :
 	* MqttSN发送DisConnect指令控制优化。
 	* 增加激活命令下发上报WorkInfo。

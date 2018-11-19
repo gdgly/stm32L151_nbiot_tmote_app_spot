@@ -195,7 +195,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_ClearStoredEarfcn(NBIOT_ClientsTypeDef* pCli
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NCSEARFCN_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+NCSEARFCN\r", strlen("AT+NCSEARFCN\r"), "OK", "ERROR");
 	
@@ -220,7 +224,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadManufacturer(NBIOT_ClientsTypeDef* 
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_CGMI_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+CGMI\r", strlen("AT+CGMI\r"), "OK", "ERROR");
 	
@@ -249,7 +257,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadManufacturerModel(NBIOT_ClientsType
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_CGMM_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+CGMM\r", strlen("AT+CGMM\r"), "OK", "ERROR");
 	
@@ -278,7 +290,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadModuleVersion(NBIOT_ClientsTypeDef*
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_CGMR_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+CGMR\r", strlen("AT+CGMR\r"), "OK", "ERROR");
 	
@@ -307,7 +323,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadIMEI(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_CGSN_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+CGSN=1\r", strlen("AT+CGSN=1\r"), "OK", "ERROR");
 	
@@ -336,7 +356,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadIMEISV(NBIOT_ClientsTypeDef* pClien
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_CGSN_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+CGSN=2\r", strlen("AT+CGSN=2\r"), "OK", "ERROR");
 	
@@ -365,7 +389,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadRSSI(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_CSQ_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+CSQ\r", strlen("AT+CSQ\r"), "OK", "ERROR");
 	
@@ -393,7 +421,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadStatisticsRADIO(NBIOT_ClientsTypeDe
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NUESTATS_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+NUESTATS\r", strlen("AT+NUESTATS\r"), "OK", "ERROR");
 	
@@ -433,7 +465,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadStatisticsCELL(NBIOT_ClientsTypeDef
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NUESTATS_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+NUESTATS=CELL\r", strlen("AT+NUESTATS=CELL\r"), "OK", "ERROR");
 	
@@ -469,7 +505,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadAreaCode(NBIOT_ClientsTypeDef* pCli
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_CEREG_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+CEREG=2\r", strlen("AT+CEREG=2\r"), "OK", "ERROR");
 	
@@ -506,7 +546,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadICCID(NBIOT_ClientsTypeDef* pClient
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NCCID_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+NCCID\r", strlen("AT+NCCID\r"), "OK", "ERROR");
 	
@@ -535,7 +579,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadIMSI(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_CIMI_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+CIMI\r", strlen("AT+CIMI\r"), "OK", "ERROR");
 	
@@ -564,7 +612,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCGPADDR(NBIOT_ClientsTypeDef* pClie
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_CGPADDR_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+CGPADDR\r", strlen("AT+CGPADDR\r"), "OK", "ERROR");
 	
@@ -591,7 +643,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCGDCONT(NBIOT_ClientsTypeDef* pClie
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_CGDCONT_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+CGDCONT?\r", strlen("AT+CGDCONT?\r"), "OK", "ERROR");
 	
@@ -621,7 +677,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadDateTime(NBIOT_ClientsTypeDef* pCli
 	struct tm Datetime;
 	int zoneTime;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_CCLK_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+CCLK?\r", strlen("AT+CCLK?\r"), "OK", "ERROR");
 	
@@ -680,7 +740,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadPowerSavingModeStatus(NBIOT_Clients
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	int modeval = 0;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NPSMR_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+NPSMR=1\r", strlen("AT+NPSMR=1\r"), "OK", "ERROR");
 	
@@ -727,7 +791,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSignalConnectionStatus(NBIOT_Client
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	int modeval = 0;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_CSCON_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+CSCON?\r", strlen("AT+CSCON?\r"), "OK", "ERROR");
 	
@@ -763,7 +831,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadMessageRegistrationStatus(NBIOT_Cli
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NMSTATUS_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+NMSTATUS?\r", strlen("AT+NMSTATUS?\r"), "OK", "ERROR");
 	
@@ -856,7 +928,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetAttachOrDetach(NBIOT_ClientsTypeDef* pCli
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_CGATT_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	sprintf((char *)pClient->DataProcessStack, "AT+CGATT=%d\r", attdet);
@@ -885,7 +961,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadAttachOrDetach(NBIOT_ClientsTypeDef
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	int netval = 0;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_CGATT_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+CGATT?\r", strlen("AT+CGATT?\r"), "OK", "ERROR");
 	
@@ -922,7 +1002,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetMinOrFullFunc(NBIOT_ClientsTypeDef* pClie
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_CFUN_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	sprintf((char *)pClient->DataProcessStack, "AT+CFUN=%d\r", minfull);
@@ -951,7 +1035,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadMinOrFullFunc(NBIOT_ClientsTypeDef*
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	int cfunval = 0;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_CFUN_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+CFUN?\r", strlen("AT+CFUN?\r"), "OK", "ERROR");
 	
@@ -988,7 +1076,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetNewMessageIndications(NBIOT_ClientsTypeDe
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NNMI_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	sprintf((char *)pClient->DataProcessStack, "AT+NNMI=%d\r", state);
@@ -1017,7 +1109,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadNewMessageIndications(NBIOT_Clients
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	int nnmival = 0;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NNMI_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+NNMI?\r", strlen("AT+NNMI?\r"), "OK", "ERROR");
 	
@@ -1054,7 +1150,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetSentMessageIndications(NBIOT_ClientsTypeD
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NSMI_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	sprintf((char *)pClient->DataProcessStack, "AT+NSMI=%d\r", state);
@@ -1083,7 +1183,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSentMessageIndications(NBIOT_Client
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	int nsmival = 0;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NSMI_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+NSMI?\r", strlen("AT+NSMI?\r"), "OK", "ERROR");
 	
@@ -1121,7 +1225,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetSupportedBands(NBIOT_ClientsTypeDef* pCli
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	u16 datalength = 0;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NBAND_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	sprintf((char *)pClient->DataProcessStack, "AT+NBAND=%d", bands.NBandVal[0]);
@@ -1157,7 +1265,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSupportedBands(NBIOT_ClientsTypeDef
 	int bands[3] = {0};
 	int bandnum = 0;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NBAND_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+NBAND?\r", strlen("AT+NBAND?\r"), "OK", "ERROR");
 	
@@ -1198,7 +1310,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetReportTerminationError(NBIOT_ClientsTypeD
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_CMEE_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	sprintf((char *)pClient->DataProcessStack, "AT+CMEE=%d\r", enable);
@@ -1221,7 +1337,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadReportTerminationError(NBIOT_Client
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	int cmeeval = 0;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_CMEE_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+CMEE?\r", strlen("AT+CMEE?\r"), "OK", "ERROR");
 	
@@ -1254,7 +1374,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetCDPServer(NBIOT_ClientsTypeDef* pClient, 
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NCDP_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	sprintf((char *)pClient->DataProcessStack, "AT+NCDP=%s,%d\r", host, port);
@@ -1282,7 +1406,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCDPServer(NBIOT_ClientsTypeDef* pCl
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NCDP_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	memset((void *)&pClient->Parameter.cdpserver, 0x0, sizeof(pClient->Parameter.cdpserver));
 	
@@ -1314,7 +1442,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetConfigUE(NBIOT_ClientsTypeDef* pClient, c
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NCONFIG_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	sprintf((char *)pClient->DataProcessStack, "AT+NCONFIG=%s,%s\r", ncmd, (state == NConfigTrue)?"TRUE":"FALSE");
@@ -1342,7 +1474,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadConfigUE(NBIOT_ClientsTypeDef* pCli
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NCONFIG_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+NCONFIG?\r", strlen("AT+NCONFIG?\r"), "OK", "ERROR");
 	
@@ -1433,7 +1569,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_QuerySendMessageCOAPPayload(NBIOT_ClientsTyp
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NQMGS_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+NQMGS\r", strlen("AT+NQMGS\r"), "OK", NULL);
 	
@@ -1463,7 +1603,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_QueryReadMessageCOAPPayload(NBIOT_ClientsTyp
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NQMGR_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+NQMGR\r", strlen("AT+NQMGR\r"), "OK", "ERROR");
 	
@@ -1502,7 +1646,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCOAPPayload(NBIOT_ClientsTypeDef* pClien
 		goto exit;
 	}
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NMGS_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	sprintf((char *)pClient->DataProcessStack, "AT+NMGS=%d,", pClient->Sendlen);
@@ -1538,7 +1686,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_ReadCOAPPayload(NBIOT_ClientsTypeDef* pClien
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	u32 utmp = 0;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NMGR_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	
@@ -1581,7 +1733,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCONDataStatus(NBIOT_ClientsTypeDef*
 	unsigned char* WulDataStatusCmd = WulDataStatusCmdLierda;
 #endif
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_DATASTATUS_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 #if (NBIOT_AUTO_MODEL_TYPE == NBIOT_AUTO_MODEL_ENABLE)
 	if (strcmp(pClient->Parameter.manufacturer, NBIOT_MANUFACTURER_LIERDA) == 0) {
@@ -1682,7 +1838,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCOAPPayloadFlag(NBIOT_ClientsTypeDef* pC
 		goto exit;
 	}
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_DATAEX_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	
@@ -1752,7 +1912,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CreateUDPSocket(NBIOT_ClientsTypeDef* pClien
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NSOCR_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	sprintf((char *)pClient->DataProcessStack, "AT+NSOCR=%s,%d,%d,%d\r", "DGRAM", 17, localport, receivectl);
@@ -1784,7 +1948,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CloseUDPSocket(NBIOT_ClientsTypeDef* pClient
 {
 	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NSOCL_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	sprintf((char *)pClient->DataProcessStack, "AT+NSOCL=%d\r", socket);
@@ -1823,7 +1991,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendUDPPayload(NBIOT_ClientsTypeDef* pClient
 		goto exit;
 	}
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NSOST_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	sprintf((char *)pClient->DataProcessStack, "AT+NSOST=%d,%s,%d,%d,", socket, addr, port, pClient->Sendlen);
@@ -1881,7 +2053,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendUDPPayloadFlag(NBIOT_ClientsTypeDef* pCl
 		goto exit;
 	}
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NSOSTF_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	sprintf((char *)pClient->DataProcessStack, "AT+NSOSTF=%d,%s,%d,%s,%d,", socket, addr, port, flag, pClient->Sendlen);
@@ -1932,7 +2108,11 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_ReadUDPPayload(NBIOT_ClientsTypeDef* pClient
 	u32 utmp = 0;
 	int rdsocket = 0;
 	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NSORF_MSEC);
+#else
 	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
 	
 	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
 	sprintf((char *)pClient->DataProcessStack, "AT+NSORF=%d,%d\r", socket, maxrlen);
