@@ -1974,6 +1974,9 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 							if (activeval) {
 								DeviceActivedMode = true;
 								BEEP_CtrlRepeat_Extend(5,30,70);
+							#if NBCOAP_SENDCODE_WORK_INFO
+								NETCoapNeedSendCode.WorkInfo = 1;
+							#endif
 							}
 							else {
 								DeviceActivedMode = false;

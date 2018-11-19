@@ -1,8 +1,11 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2018-11-19 :
+	* Radio 发送读取SPI函数count=10改为count=6。
 * 2018-11-16 :
 	* MqttSN发送DisConnect指令控制优化。
+	* 增加激活命令下发上报WorkInfo。
 * 2018-11-15 :
 	* NB硬件重启断电时间由2秒增加到3秒。
 	* NB串口通信的接收中断控制去除。

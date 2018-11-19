@@ -2022,6 +2022,9 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 						if (activeval) {
 							DeviceActivedMode = true;
 							BEEP_CtrlRepeat_Extend(5,30,70);
+						#if NBMQTTSN_SENDCODE_WORK_INFO
+							NETMqttSNNeedSendCode.InfoWork = 1;
+						#endif
 						}
 						else {
 							DeviceActivedMode = false;

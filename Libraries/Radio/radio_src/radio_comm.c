@@ -130,7 +130,7 @@ void Radio_Comm_SendCmd(unsigned char byteCount, unsigned char* pData)
 **********************************************************************************************************/
 void Radio_Comm_ReadData(uint8_t cmd, uint8_t pollCts, uint8_t byteCount, uint8_t* pData)
 {
-	char count = 10;
+	char count = 6;
 	
 	if (pollCts) {
 		while (!ctsWentHigh) {
@@ -159,7 +159,7 @@ void Radio_Comm_ReadData(uint8_t cmd, uint8_t pollCts, uint8_t byteCount, uint8_
 **********************************************************************************************************/
 void Radio_Comm_WriteData(uint8_t cmd, uint8_t pollCts, uint8_t byteCount, uint8_t* pData)
 {
-	char count = 10;
+	char count = 6;
 	
 	if (pollCts) {
 		while (!ctsWentHigh) {

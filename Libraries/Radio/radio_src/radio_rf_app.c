@@ -337,6 +337,19 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					if (uval16) {
 						DeviceActivedMode = true;
 						BEEP_CtrlRepeat_Extend(5, 30, 70);
+				#if NETPROTOCAL == NETCOAP
+					#if NBCOAP_SENDCODE_WORK_INFO
+						NETCoapNeedSendCode.WorkInfo = 1;
+					#endif
+				#elif NETPROTOCAL == NETMQTTSN
+					#if NBMQTTSN_SENDCODE_WORK_INFO
+						NETMqttSNNeedSendCode.InfoWork = 1;
+					#endif
+				#elif NETPROTOCAL == NETONENET
+					#if NBONENET_SENDCODE_WORK_INFO
+						NETOneNETNeedSendCode.WorkInfo = 1;
+					#endif
+				#endif
 					}
 					else {
 						DeviceActivedMode = false;
