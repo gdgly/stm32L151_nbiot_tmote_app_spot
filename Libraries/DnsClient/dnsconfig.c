@@ -71,9 +71,34 @@ void DNS_Client_Init(DNS_ClientsTypeDef* pClient, DNS_SocketNetTypeDef* NetSock,
 	pClient->DictateRunCtl.dictateCloseUDPSocketFailureCnt		= 0;
 	pClient->DictateRunCtl.dictateOverDnsAnalysis			= 0;
 	
+	pClient->dnsAnalysisState							= true;
+	
 	pClient->ProcessState								= DNS_PROCESS_CREAT_UDP_SOCKET;
 	pClient->SocketStack								= NetSock;
 	pClient->NetNbiotStack								= NetNbiotStack;
+}
+
+/**********************************************************************************************************
+ @Function			void DNS_Analysis_Set_CtrlState(DNS_ClientsTypeDef* pClient, bool state)
+ @Description			DNS_Analysis_Set_CtrlState				: 设置DNS解析控制状态
+ @Input				pClient								: DNS客户端实例
+					state								: 使能状态
+ @Return				void
+**********************************************************************************************************/
+void DNS_Analysis_Set_CtrlState(DNS_ClientsTypeDef* pClient, bool state)
+{
+	pClient->dnsAnalysisState							= state;
+}
+
+/**********************************************************************************************************
+ @Function			bool DNS_Analysis_Get_CtrlState(DNS_ClientsTypeDef* pClient)
+ @Description			DNS_Analysis_Get_CtrlState				: 获取DNS解析控制状态
+ @Input				pClient								: DNS客户端实例
+ @Return				state								: 使能状态
+**********************************************************************************************************/
+bool DNS_Analysis_Get_CtrlState(DNS_ClientsTypeDef* pClient)
+{
+	return pClient->dnsAnalysisState;
 }
 
 /********************************************** END OF FLEE **********************************************/

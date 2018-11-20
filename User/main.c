@@ -611,6 +611,12 @@ void MainHandleRoutine(void)
 		
 		NBIOT_COAP_RA_NORMAL_SET_STATE(&NbiotClientHandler, true);
 		TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_MAX_LIFETIME);
+		
+#if NETPROTOCAL == NETMQTTSN
+	#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_ENABLE
+		DNS_Analysis_Set_CtrlState(&DNSClientHandler, true);
+	#endif
+#endif
 	}
 	/* Every Week Running */
 	if ((Stm32_GetSecondTick() / (24*3600*7)) != SystemRunningTime.weeks) {

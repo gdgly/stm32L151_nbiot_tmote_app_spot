@@ -1,6 +1,12 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2018-11-20 :
+	* DNS处理优化各项执行的成功失败代码，合并同代码精简Flash。
+	* 增加Other运营商模式，并配置为BAND3, BAND5, BAND20。
+	* RADIO_CTS_TIMEOUT宏由2000改为200。
+	* Radio_Comm_SendCmd函数中count有6改为3。
+	* 优化DNS解析方式，采用上电解析+间隔1天解析+设备激活解析。
 * 2018-11-19 :
 	* Radio 发送读取SPI函数count=10改为count=6。
 	* 优化NB各个指令的执行时间。

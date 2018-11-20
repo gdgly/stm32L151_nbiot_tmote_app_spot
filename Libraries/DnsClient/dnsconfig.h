@@ -156,6 +156,8 @@ struct DNS_ClientsTypeDef
 		Stm32_CalculagraphTypeDef		dictateRunTime;
 	}DictateRunCtl;
 	
+	bool								dnsAnalysisState;
+	
 	DNS_ProcessStateTypeDef				ProcessState;
 	DNS_SocketNetTypeDef*				SocketStack;
 	NET_NBIOT_ClientsTypeDef*			NetNbiotStack;
@@ -163,5 +165,7 @@ struct DNS_ClientsTypeDef
 
 /* Application Programming Interface */
 void DNS_Client_Init(DNS_ClientsTypeDef* pClient, DNS_SocketNetTypeDef* NetSock, NET_NBIOT_ClientsTypeDef* NetNbiotStack);		//DNS客户端初始化
+void DNS_Analysis_Set_CtrlState(DNS_ClientsTypeDef* pClient, bool state);												//设置DNS解析状态
+bool DNS_Analysis_Get_CtrlState(DNS_ClientsTypeDef* pClient);														//获取DNS解析状态
 
 #endif

@@ -278,6 +278,36 @@ static unsigned char* DNS_NBIOT_GetDictateFailureCnt(DNS_ClientsTypeDef* pClient
 	return dictateFailureCnt;
 }
 
+static unsigned char* DNS_GetDictateFailureCnt(DNS_ClientsTypeDef* pClient, DNS_ProcessStateTypeDef dictateNoTimeOut)
+{
+	unsigned char* dictateFailureCnt;
+	
+	switch (dictateNoTimeOut)
+	{
+	case DNS_PROCESS_CREAT_UDP_SOCKET:
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateCreatUDPSocketFailureCnt;
+		break;
+	
+	case DNS_PROCESS_SEND_DNS_STRUCT_DATA:
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateSendDnsStructDataFailureCnt;
+		break;
+	
+	case DNS_PROCESS_RECV_DNS_STRUCT_DATA:
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateRecvDnsStructDataFailureCnt;
+		break;
+	
+	case DNS_PROCESS_CLOSE_UDP_SOCKET:
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateCloseUDPSocketFailureCnt;
+		break;
+	
+	case DNS_PROCESS_OVER_DNS_ANALYSIS:
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateOverDnsAnalysis;
+		break;
+	}
+	
+	return dictateFailureCnt;
+}
+
 /**********************************************************************************************************
  @Function			static void DNS_NBIOT_DictateEvent_FailExecute(DNS_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateTimeOut, \
 																				 NBIOT_DictateEventTypeDef dictateFail, \
@@ -332,6 +362,73 @@ static void DNS_NBIOT_DictateEvent_SuccessExecute(DNS_ClientsTypeDef* pClient, N
 	pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
 	pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = dictateSuccess;
 	*dictateFailureCnt = 0;
+}
+
+/**********************************************************************************************************
+ @Function			static void DNS_DictateEvent_FailExecute(DNS_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateTimeOut, \
+																			DNS_ProcessStateTypeDef dictateSubTimeOut, \
+																			DNS_ProcessStateTypeDef dictateSubNoTimeOut)
+ @Description			DNS_DictateEvent_FailExecute			: 事件运行控制器出错执行(内部使用)
+ @Input				pClient							: DNS客户端实例
+					dictateTimeOut						: 事件处理错误超时
+					dictateSubTimeOut					: 事件处理错误次数溢出
+					dictateNoTimeOut					: 事件处理错误未超时
+ @Return				void
+**********************************************************************************************************/
+static void DNS_DictateEvent_FailExecute(DNS_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateTimeOut, \
+														DNS_ProcessStateTypeDef dictateSubTimeOut, \
+														DNS_ProcessStateTypeDef dictateSubNoTimeOut)
+{
+	unsigned char* dictateFailureCnt;
+	
+	dictateFailureCnt = DNS_GetDictateFailureCnt(pClient, dictateSubNoTimeOut);
+	
+	if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
+		/* Dictate TimeOut */
+		pClient->DictateRunCtl.dictateEnable = false;
+		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = dictateTimeOut;
+		pClient->ProcessState = dictateSubTimeOut;
+		*dictateFailureCnt += 1;
+		if (*dictateFailureCnt > 3) {
+			*dictateFailureCnt = 0;
+			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = STOP_MODE;
+			pClient->ProcessState = DNS_PROCESS_CREAT_UDP_SOCKET;
+		}
+	}
+	else {
+		/* Dictate isn't TimeOut */
+		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = DNS_PROCESS_STACK;
+		pClient->ProcessState = dictateSubNoTimeOut;
+	}
+}
+
+/**********************************************************************************************************
+ @Function			static void DNS_DictateEvent_SuccessExecute(DNS_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateSuccess, \
+																			   DNS_ProcessStateTypeDef dictateSubSuccess, \
+																			   DNS_ProcessStateTypeDef dictateSubNoTimeOut, \
+																			   bool dictateFailureCntState)
+ @Description			DNS_DictateEvent_SuccessExecute		: 事件运行控制器正确执行(内部使用)
+ @Input				pClient							: DNS客户端实例
+					dictateSuccess						: 事件处理正确
+					dictateSubSuccess					: 事件处理正确
+					dictateNoTimeOut					: 事件处理错误未超时
+ @Return				void
+**********************************************************************************************************/
+static void DNS_DictateEvent_SuccessExecute(DNS_ClientsTypeDef* pClient, NBIOT_DictateEventTypeDef dictateSuccess, \
+														   DNS_ProcessStateTypeDef dictateSubSuccess, \
+														   DNS_ProcessStateTypeDef dictateSubNoTimeOut, \
+														   bool dictateFailureCntState)
+{
+	unsigned char* dictateFailureCnt;
+	
+	if (dictateFailureCntState) {
+		dictateFailureCnt = DNS_GetDictateFailureCnt(pClient, dictateSubNoTimeOut);
+		pClient->DictateRunCtl.dictateEnable = false;
+		*dictateFailureCnt = 0;
+	}
+	
+	pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = dictateSuccess;
+	pClient->ProcessState = dictateSubSuccess;
 }
 
 /**********************************************************************************************************
@@ -1175,13 +1272,21 @@ void NET_DNS_Event_CreatUDPSocket(DNS_ClientsTypeDef* pClient)
 {
 	DNS_DictateEvent_SetTime(pClient, 30);
 	
+	/* DNS State Ctrl Analysis */
+	if (DNS_Analysis_Get_CtrlState(pClient) != true) {
+		DNS_DictateEvent_SuccessExecute(pClient, DNS_PROCESS_STACK, DNS_PROCESS_OVER_DNS_ANALYSIS, DNS_PROCESS_CREAT_UDP_SOCKET, true);
+		
+#ifdef DNS_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Debug_Printf_Level2("DNS has been latestAnalysis");
+		Radio_Trf_Debug_Printf_Level2("%s : %s", MQTTSN_SERVER_HOST_NAME, DNS_GetHostIP(pClient, (unsigned char*)MQTTSN_SERVER_HOST_NAME));
+#endif
+		return;
+	}
+	
 	/* Creat UDP Socket */
 	if (pClient->SocketStack->Open(pClient->SocketStack) == DNS_OK) {
 		/* Dictate execute is Success */
-		pClient->DictateRunCtl.dictateEnable = false;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = DNS_PROCESS_STACK;
-		pClient->ProcessState = DNS_PROCESS_SEND_DNS_STRUCT_DATA;
-		pClient->DictateRunCtl.dictateCreatUDPSocketFailureCnt = 0;
+		DNS_DictateEvent_SuccessExecute(pClient, DNS_PROCESS_STACK, DNS_PROCESS_SEND_DNS_STRUCT_DATA, DNS_PROCESS_CREAT_UDP_SOCKET, true);
 		
 		/* Get IdleTime */
 		DNS_NBIOT_GetIdleTime(pClient, true);
@@ -1192,23 +1297,8 @@ void NET_DNS_Event_CreatUDPSocket(DNS_ClientsTypeDef* pClient)
 	}
 	else {
 		/* Dictate execute is Fail */
-		if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-			/* Dictate TimeOut */
-			pClient->DictateRunCtl.dictateEnable = false;
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-			pClient->ProcessState = DNS_PROCESS_CREAT_UDP_SOCKET;
-			pClient->DictateRunCtl.dictateCreatUDPSocketFailureCnt++;
-			if (pClient->DictateRunCtl.dictateCreatUDPSocketFailureCnt > 3) {
-				pClient->DictateRunCtl.dictateCreatUDPSocketFailureCnt = 0;
-				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = STOP_MODE;
-				pClient->ProcessState = DNS_PROCESS_CREAT_UDP_SOCKET;
-			}
-		}
-		else {
-			/* Dictate isn't TimeOut */
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = DNS_PROCESS_STACK;
-			pClient->ProcessState = DNS_PROCESS_CREAT_UDP_SOCKET;
-		}
+		DNS_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, DNS_PROCESS_CREAT_UDP_SOCKET, DNS_PROCESS_CREAT_UDP_SOCKET);
+		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 		Radio_Trf_Debug_Printf_Level2("DNS Ct UDP Fail");
 #endif
@@ -1239,23 +1329,8 @@ void NET_DNS_Event_SendDnsStructData(DNS_ClientsTypeDef* pClient)
 		/* Send dnsDataStructure Command Buffer to DNS Server */
 		if (pClient->SocketStack->Write(pClient->SocketStack, (char *)pClient->Sendbuf, pClient->Sendlen) != DNS_OK) {
 			/* Dictate execute is Fail */
-			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-				/* Dictate TimeOut */
-				pClient->DictateRunCtl.dictateEnable = false;
-				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-				pClient->ProcessState = DNS_PROCESS_CREAT_UDP_SOCKET;
-				pClient->DictateRunCtl.dictateSendDnsStructDataFailureCnt++;
-				if (pClient->DictateRunCtl.dictateSendDnsStructDataFailureCnt > 3) {
-					pClient->DictateRunCtl.dictateSendDnsStructDataFailureCnt = 0;
-					pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = STOP_MODE;
-					pClient->ProcessState = DNS_PROCESS_CREAT_UDP_SOCKET;
-				}
-			}
-			else {
-				/* Dictate isn't TimeOut */
-				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = DNS_PROCESS_STACK;
-				pClient->ProcessState = DNS_PROCESS_SEND_DNS_STRUCT_DATA;
-			}
+			DNS_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, DNS_PROCESS_CREAT_UDP_SOCKET, DNS_PROCESS_SEND_DNS_STRUCT_DATA);
+			
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("DNS Send %s Fail", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
 #endif
@@ -1263,10 +1338,8 @@ void NET_DNS_Event_SendDnsStructData(DNS_ClientsTypeDef* pClient)
 		}
 		else {
 			/* Dictate execute is Success */
-			pClient->DictateRunCtl.dictateEnable = false;
-			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = DNS_PROCESS_STACK;
-			pClient->ProcessState = DNS_PROCESS_RECV_DNS_STRUCT_DATA;
-			pClient->DictateRunCtl.dictateSendDnsStructDataFailureCnt = 0;
+			DNS_DictateEvent_SuccessExecute(pClient, DNS_PROCESS_STACK, DNS_PROCESS_RECV_DNS_STRUCT_DATA, DNS_PROCESS_SEND_DNS_STRUCT_DATA, true);
+			
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("DNS Send %s Ok", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
 #endif
@@ -1274,10 +1347,7 @@ void NET_DNS_Event_SendDnsStructData(DNS_ClientsTypeDef* pClient)
 	}
 	else {
 		/* None Domain name need to resolution */
-		pClient->DictateRunCtl.dictateEnable = false;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = DNS_PROCESS_STACK;
-		pClient->ProcessState = DNS_PROCESS_CLOSE_UDP_SOCKET;
-		pClient->DictateRunCtl.dictateSendDnsStructDataFailureCnt = 0;
+		DNS_DictateEvent_SuccessExecute(pClient, DNS_PROCESS_STACK, DNS_PROCESS_CLOSE_UDP_SOCKET, DNS_PROCESS_SEND_DNS_STRUCT_DATA, true);
 	}
 }
 
@@ -1300,23 +1370,8 @@ void NET_DNS_Event_RecvDnsStructData(DNS_ClientsTypeDef* pClient)
 		/* Recv dnsDataStructure Command Buffer to DNS Server */
 		if (pClient->SocketStack->Read(pClient->SocketStack, (char *)pClient->Recvbuf, pClient->Recvbuf_size, &Rlength, &Rleftlength) != DNS_OK) {
 			/* Dictate execute is Fail */
-			if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-				/* Dictate TimeOut */
-				pClient->DictateRunCtl.dictateEnable = false;
-				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-				pClient->ProcessState = DNS_PROCESS_CREAT_UDP_SOCKET;
-				pClient->DictateRunCtl.dictateRecvDnsStructDataFailureCnt++;
-				if (pClient->DictateRunCtl.dictateRecvDnsStructDataFailureCnt > 3) {
-					pClient->DictateRunCtl.dictateRecvDnsStructDataFailureCnt = 0;
-					pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = STOP_MODE;
-					pClient->ProcessState = DNS_PROCESS_CREAT_UDP_SOCKET;
-				}
-			}
-			else {
-				/* Dictate isn't TimeOut */
-				pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = DNS_PROCESS_STACK;
-				pClient->ProcessState = DNS_PROCESS_RECV_DNS_STRUCT_DATA;
-			}
+			DNS_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, DNS_PROCESS_CREAT_UDP_SOCKET, DNS_PROCESS_RECV_DNS_STRUCT_DATA);
+			
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 			Radio_Trf_Debug_Printf_Level2("DNS Wait Recv %s", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
 #endif
@@ -1326,23 +1381,7 @@ void NET_DNS_Event_RecvDnsStructData(DNS_ClientsTypeDef* pClient)
 			/* Dictate execute is Success */
 			if (Rlength == 0) {
 				/* No Recv Data */
-				if (Stm32_Calculagraph_IsExpiredSec(&pClient->DictateRunCtl.dictateRunTime) == true) {
-					/* Dictate TimeOut */
-					pClient->DictateRunCtl.dictateEnable = false;
-					pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
-					pClient->ProcessState = DNS_PROCESS_CREAT_UDP_SOCKET;
-					pClient->DictateRunCtl.dictateRecvDnsStructDataFailureCnt++;
-					if (pClient->DictateRunCtl.dictateRecvDnsStructDataFailureCnt > 3) {
-						pClient->DictateRunCtl.dictateRecvDnsStructDataFailureCnt = 0;
-						pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = STOP_MODE;
-						pClient->ProcessState = DNS_PROCESS_CREAT_UDP_SOCKET;
-					}
-				}
-				else {
-					/* Dictate isn't TimeOut */
-					pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = DNS_PROCESS_STACK;
-					pClient->ProcessState = DNS_PROCESS_RECV_DNS_STRUCT_DATA;
-				}
+				DNS_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, DNS_PROCESS_CREAT_UDP_SOCKET, DNS_PROCESS_RECV_DNS_STRUCT_DATA);
 				return;
 			}
 			else {
@@ -1368,10 +1407,7 @@ void NET_DNS_Event_RecvDnsStructData(DNS_ClientsTypeDef* pClient)
 				}
 				else {
 					/* Deserialize into IP OK */
-					pClient->DictateRunCtl.dictateEnable = false;
-					pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = DNS_PROCESS_STACK;
-					pClient->ProcessState = DNS_PROCESS_SEND_DNS_STRUCT_DATA;
-					pClient->DictateRunCtl.dictateRecvDnsStructDataFailureCnt = 0;
+					DNS_DictateEvent_SuccessExecute(pClient, DNS_PROCESS_STACK, DNS_PROCESS_SEND_DNS_STRUCT_DATA, DNS_PROCESS_RECV_DNS_STRUCT_DATA, true);
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 					Radio_Trf_Debug_Printf_Level2("DNS Analy %s OK", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
 					Radio_Trf_Debug_Printf_Level2("%s : %s", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr, pClient->AnalysisData[pClient->AnalysisTick].hostIP);
@@ -1383,10 +1419,7 @@ void NET_DNS_Event_RecvDnsStructData(DNS_ClientsTypeDef* pClient)
 	}
 	else {
 		/* None Domain name need to resolution */
-		pClient->DictateRunCtl.dictateEnable = false;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = DNS_PROCESS_STACK;
-		pClient->ProcessState = DNS_PROCESS_CLOSE_UDP_SOCKET;
-		pClient->DictateRunCtl.dictateRecvDnsStructDataFailureCnt = 0;
+		DNS_DictateEvent_SuccessExecute(pClient, DNS_PROCESS_STACK, DNS_PROCESS_CLOSE_UDP_SOCKET, DNS_PROCESS_RECV_DNS_STRUCT_DATA, true);
 	}
 }
 
@@ -1403,10 +1436,7 @@ void NET_DNS_Event_CloseUDPSocket(DNS_ClientsTypeDef* pClient)
 	/* Close UDP Socket */
 	if (pClient->SocketStack->Close(pClient->SocketStack) == DNS_OK) {
 		/* Dictate execute is Success */
-		pClient->DictateRunCtl.dictateEnable = false;
-		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = DNS_PROCESS_STACK;
-		pClient->ProcessState = DNS_PROCESS_OVER_DNS_ANALYSIS;
-		pClient->DictateRunCtl.dictateCloseUDPSocketFailureCnt = 0;
+		DNS_DictateEvent_SuccessExecute(pClient, DNS_PROCESS_STACK, DNS_PROCESS_OVER_DNS_ANALYSIS, DNS_PROCESS_CLOSE_UDP_SOCKET, true);
 		
 		/* Get ConnectTime */
 		DNS_NBIOT_GetConnectTime(pClient, true);
@@ -1450,6 +1480,8 @@ void NET_DNS_Event_OverDnsAnalysis(DNS_ClientsTypeDef* pClient)
 	pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
 	pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;
 	pClient->ProcessState = DNS_PROCESS_CREAT_UDP_SOCKET;
+	
+	DNS_Analysis_Set_CtrlState(pClient, false);
 }
 
 /********************************************** END OF FLEE **********************************************/

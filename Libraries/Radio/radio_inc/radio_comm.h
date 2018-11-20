@@ -3,7 +3,7 @@
 
 #include "sys.h"
 
-#define RADIO_CTS_TIMEOUT				2000
+#define RADIO_CTS_TIMEOUT				200
 
 unsigned char Radio_Comm_GetResp(unsigned char byteCount, unsigned char* pData);				//Gets a command response from the radio chip
 void Radio_Comm_SendCmd(unsigned char byteCount, unsigned char* pData);						//Sends a command to the radio chip
