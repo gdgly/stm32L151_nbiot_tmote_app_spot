@@ -2140,7 +2140,7 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 				#if NBCOAP_DOWNLOAD_CMD_UPLIMIT
 						short limitRssi, limitSnr;
 						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
-							"{(UpLimit):{%hd,%hd,(Magic):%hu}}", &limitRssi, &limitSnr, &recvMagicNum);
+							"{(UpLimit):{(rssi):%hd,(snr):%hd,(Magic):%hu}}", &limitRssi, &limitSnr, &recvMagicNum);
 						if (recvMagicNum == TCLOD_MAGIC_NUM) {
 							TCFG_SystemData.UpgradeLimitRssi = limitRssi;
 							TCFG_SystemData.UpgradeLimitSnr = limitSnr;

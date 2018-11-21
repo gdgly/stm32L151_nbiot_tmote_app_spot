@@ -2173,7 +2173,7 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 			#if MQTTSN_DOWNLOAD_CMD_UPLIMIT
 					short limitRssi, limitSnr;
 					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
-						"{(UpLimit):{%hd,%hd,(Magic):%hu}}", &limitRssi, &limitSnr, &recvMagicNum);
+						"{(UpLimit):{(rssi):%hd,(snr):%hd,(Magic):%hu}}", &limitRssi, &limitSnr, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
 						TCFG_SystemData.UpgradeLimitRssi = limitRssi;
 						TCFG_SystemData.UpgradeLimitSnr = limitSnr;

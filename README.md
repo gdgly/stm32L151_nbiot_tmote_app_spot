@@ -1,6 +1,8 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2018-11-21 :
+	* 远程命令"{(UpLimit):{%hd,%hd,(Magic):%hu}}" 改为 "{(UpLimit):{(rssi):%hd,(snr):%hd,(Magic):%hu}}"。
 * 2018-11-20 :
 	* DNS处理优化各项执行的成功失败代码，合并同代码精简Flash。
 	* 增加Other运营商模式，并配置为BAND3, BAND5, BAND20。
