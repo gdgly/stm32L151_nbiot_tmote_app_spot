@@ -50,7 +50,7 @@
 #define QMC_SOFT_REST			(1<<7)									//软件复位
 
 #define QMC_REG_MAG				6										//地磁数据寄存器
-#define QMC_DEVIATION_MAX		100										//最大跳变值
+#define QMC_DEVIATION_MAX		200										//最大跳变值
 #define QMC_SAMPLE_TIMES			5										//采样次数
 
 void	QMC5883L_Init(void);												//QMC5883L初始化
