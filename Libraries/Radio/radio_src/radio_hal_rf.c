@@ -301,7 +301,9 @@ void Radio_Rf_TxOverISR(void)
 	g_Rest_num = 0;
 	g_Datasending = SEND_OVER;
 	si446x_set_property(0x12, 0x02, 0x11, 0x00, 255);
+#if 0
 	Radio_StartRX(RF_CHANNEL1, 0);
+#endif
 }
 
 check_t xm_CheckSum(uint8_t *recv_data)

@@ -7,6 +7,7 @@
 	主版本号 :	2 --->中国电信                    0 ---> CoAP
 		3 --->中国移动                    1 ---> MqttSN
 		4 --->中国联通                    2 ---> OneNET
+		5 --->其他
 	
 	次版本号 :	0~255
 
@@ -17,6 +18,7 @@
 	运营商   :	China_Telecom ---> 中国电信
 		China_Mobile   ---> 中国移动
 		China_Unicom  ---> 中国联通
+		Other               ---> 其他
 
 	NB模组 :	Lierda	利尔达
 		Quectel	移远

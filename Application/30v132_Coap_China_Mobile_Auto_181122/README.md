@@ -2,8 +2,6 @@
 movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
 * 2018-11-22 :
-	* 发布V132版本固件。
-* 2018-11-22 :
 	* 去掉Radio_Rf_TxOverISR函数中Radio_StartRX(RF_CHANNEL1, 0)。
 * 2018-11-21 :
 	* 远程命令"{(UpLimit):{%hd,%hd,(Magic):%hu}}" 改为 "{(UpLimit):{(rssi):%hd,(snr):%hd,(Magic):%hu}}"。
