@@ -183,6 +183,9 @@
 
 #define TCFG_DEVICE_RBTMODE_OFFSET			TCFG_SOFTWARE_SUB_OFFSET + TCFG_SOFTWARE_SUB_LENGTH		//0x08080E26
 #define TCFG_DEVICE_RBTMODE_LENGTH			1												//DeviceRebootMode		设备重启方式
+
+#define TCFG_MQTTSN_SERVER_OFFSET			TCFG_DEVICE_RBTMODE_OFFSET + TCFG_DEVICE_RBTMODE_LENGTH	//0x08080E27
+#define TCFG_MQTTSN_SERVER_LENGTH			6												//Server MqttSN		MqttSN服务器地址
 /************************************************************** End **************************************************************/
 
 enum TCFG_SENSITIVITY																	//传感器灵敏度
@@ -256,6 +259,9 @@ typedef struct
 	unsigned char						NBCoapCDPServerIP[16];								//NB核心网IP地址
 	unsigned char						NBCoapCDPServerPort[6];								//NB核心网IP端口
 	NBIOT_ServerAddr					NBCoapCDPServer;									//NB核心网地址
+	unsigned char						NBMqttSNServerIP[16];								//MqttSN服务器IP地址
+	unsigned char						NBMqttSNServerPort[6];								//MqttSN服务器IP端口
+	NBIOT_ServerAddr					NBMqttSNServer;									//MqttSN服务器地址
 }TCFG_SystemDataTypeDef;
 
 extern TCFG_SystemDataTypeDef				TCFG_SystemData;
@@ -423,6 +429,14 @@ unsigned char	TCFG_EEPROM_GetBeepOff(void);													//读取BeepOff
 
 void			TCFG_EEPROM_SetDeviceRbtMode(uint8_t val);										//保存DeviceRbtMode
 unsigned char	TCFG_EEPROM_GetDeviceRbtMode(void);											//读取DeviceRbtMode
+
+void			TCFG_EEPROM_SetMqttSNIP(unsigned int val);										//保存MqttSNIP
+unsigned int	TCFG_EEPROM_GetMqttSNIP(void);												//读取MqttSNIP
+void			TCFG_EEPROM_SetMqttSNPort(unsigned short val);									//保存MqttSNPort
+unsigned short	TCFG_EEPROM_GetMqttSNPort(void);												//读取MqttSNPort
+
+char*		TCFG_EEPROM_Get_MqttSNIP_String(void);											//读取MqttSNIP字符串
+char*		TCFG_EEPROM_Get_MqttSNPort_String(void);										//读取MqttSNPort字符串
 
 void			TCFG_Utility_Add_Device_BootCount(void);										//Device重启次数累加
 unsigned short TCFG_Utility_Get_Device_BootCount(void);										//Device重启次数获取

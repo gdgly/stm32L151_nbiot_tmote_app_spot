@@ -335,6 +335,7 @@ static void DNS_NBIOT_DictateEvent_FailExecute(DNS_ClientsTypeDef* pClient, NBIO
 		if (*dictateFailureCnt > 3) {
 			*dictateFailureCnt = 0;
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = dictateFail;
+			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
 		}
 	}
 	else {
@@ -481,6 +482,40 @@ static void DNS_NBIOT_GetIdleTime(DNS_ClientsTypeDef* pClient, bool startConnect
 	}
 }
 
+#if MQTTSN_DNS_USE_EEPROM_TYPE
+/**********************************************************************************************************
+ @Function			void NET_DNS_NBIOT_Event_StopMode(DNS_ClientsTypeDef* pClient)
+ @Description			NET_DNS_NBIOT_Event_StopMode			: 停止模式
+ @Input				pClient							: DNS客户端实例
+ @Return				void
+ @attention			使用EEPROM中MqttSN服务器地址
+**********************************************************************************************************/
+void NET_DNS_NBIOT_Event_StopMode(DNS_ClientsTypeDef* pClient)
+{
+	/* Get ConnectTime & IdleTime */
+	DNS_NBIOT_GetConnectTime(pClient, false);
+	DNS_NBIOT_GetIdleTime(pClient, false);
+	
+	/* Get EEPROM MqttSN Server */
+	TCFG_SystemData.NBMqttSNServer.ip.ip32 = TCFG_EEPROM_GetMqttSNIP();
+	TCFG_SystemData.NBMqttSNServer.port = TCFG_EEPROM_GetMqttSNPort();
+	memset((void*)pClient->AnalysisData[0].hostIP, 0, sizeof(pClient->AnalysisData[0].hostIP));
+	sprintf((char *)pClient->AnalysisData[0].hostIP, "%d.%d.%d.%d", 
+	TCFG_SystemData.NBMqttSNServer.ip.ip8[3], TCFG_SystemData.NBMqttSNServer.ip.ip8[2], 
+	TCFG_SystemData.NBMqttSNServer.ip.ip8[1], TCFG_SystemData.NBMqttSNServer.ip.ip8[0]);
+	
+	/* Go To Over Dns Analysis */
+	pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
+	pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+	pClient->ProcessState = DNS_PROCESS_OVER_DNS_ANALYSIS;
+	pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_DNS;
+	
+#ifdef DNS_DEBUG_LOG_RF_PRINT
+	Radio_Trf_Debug_Printf_Level2("DNS use lastAnalysis");
+	Radio_Trf_Debug_Printf_Level2("%s : %s", MQTTSN_SERVER_HOST_NAME, DNS_GetHostIP(pClient, (unsigned char*)MQTTSN_SERVER_HOST_NAME));
+#endif
+}
+#else
 /**********************************************************************************************************
  @Function			void NET_DNS_NBIOT_Event_StopMode(DNS_ClientsTypeDef* pClient)
  @Description			NET_DNS_NBIOT_Event_StopMode			: 停止模式
@@ -560,6 +595,7 @@ void NET_DNS_NBIOT_Event_StopMode(DNS_ClientsTypeDef* pClient)
 		}
 	}
 }
+#endif
 
 /**********************************************************************************************************
  @Function			void NET_DNS_NBIOT_Event_HardwareReboot(DNS_ClientsTypeDef* pClient)
@@ -1473,6 +1509,20 @@ void NET_DNS_Event_CloseUDPSocket(DNS_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_DNS_Event_OverDnsAnalysis(DNS_ClientsTypeDef* pClient)
 {
+#if MQTTSN_DNS_USE_EEPROM_TYPE
+	int serverip[4];
+	NBIOT_ServerAddr serveraddr;
+	
+	sscanf((char *)DNS_GetHostIP(pClient, (unsigned char*)MQTTSN_SERVER_HOST_NAME), "%d.%d.%d.%d", &serverip[3], &serverip[2], &serverip[1], &serverip[0]);
+	serveraddr.ip.ip8[3] = serverip[3];
+	serveraddr.ip.ip8[2] = serverip[2];
+	serveraddr.ip.ip8[1] = serverip[1];
+	serveraddr.ip.ip8[0] = serverip[0];
+	if (serveraddr.ip.ip32 != TCFG_EEPROM_GetMqttSNIP()) {
+		TCFG_EEPROM_SetMqttSNIP(serveraddr.ip.ip32);
+	}
+#endif
+	
 #if NETPROTOCAL == NETMQTTSN
 	MQTTSN_Transport_Init(&MqttSNSocketNetHandler, &NbiotClientHandler, MQTTSN_SERVER_LOCAL_PORT, (char*)DNS_GetHostIP(pClient, (unsigned char*)MQTTSN_SERVER_HOST_NAME), MQTTSN_SERVER_TELE_PORT);
 #endif

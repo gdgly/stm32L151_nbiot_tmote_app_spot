@@ -104,7 +104,7 @@
 #define	BEEP_OFF_US					230								//无源蜂鸣器关时间
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					132								//从固件版本
+#define	SOFTWARESUB					133								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 
@@ -243,6 +243,10 @@
 #define	MQTTSN_DNS_SERVER_DISABLE		0
 #define	MQTTSN_DNS_SERVER_ENABLE			1
 #define	MQTTSN_DNS_SERVER_TYPE			MQTTSN_DNS_SERVER_ENABLE				//DNS服务状态
+
+#define	MQTTSN_DNS_USE_EEPROM_DISABLE		0
+#define	MQTTSN_DNS_USE_EEPROM_ENABLE		1
+#define	MQTTSN_DNS_USE_EEPROM_TYPE		MQTTSN_DNS_USE_EEPROM_ENABLE			//DNS服务器使用EERPOM存储MqttSN地址
 
 #define	DNS_SERVER_HOST_IP				"114.114.114.114"					//DNS服务器默认配置
 #define	DNS_SERVER_LOCAL_PORT			5000

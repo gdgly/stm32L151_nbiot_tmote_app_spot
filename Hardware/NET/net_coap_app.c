@@ -689,9 +689,9 @@ void NET_COAP_NBIOT_Event_SimICCIDCheck(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		Radio_Trf_Debug_Printf_Level2("NB ICCID Fail ECde %d", NBStatus);
+		Radio_Trf_Debug_Printf_Level2("NB ICCID Check Fail ECde %d", NBStatus);
 	#else
-		Radio_Trf_Debug_Printf_Level2("NB ICCID Fail");
+		Radio_Trf_Debug_Printf_Level2("NB ICCID Check Fail");
 	#endif
 #endif
 	}
@@ -1075,9 +1075,9 @@ void NET_COAP_NBIOT_Event_MiscEquipConfig(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		Radio_Trf_Debug_Printf_Level2("CoAP Misc Fail ECde %d", NBStatus);
+		Radio_Trf_Debug_Printf_Level2("CoAP Misc Read Fail ECde %d", NBStatus);
 	#else
-		Radio_Trf_Debug_Printf_Level2("CoAP Misc Fail");
+		Radio_Trf_Debug_Printf_Level2("CoAP Misc Read Fail");
 	#endif
 #endif
 		return;

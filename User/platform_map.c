@@ -26,6 +26,50 @@
 
 TCFG_SystemDataTypeDef			TCFG_SystemData;
 
+#if NETPROTOCAL == NETCOAP
+/**********************************************************************************************************
+ @Function			static void TCFG_EEPROM_Write_CoAPCDPAddr(void)
+ @Description			TCFG_EEPROM_Write_CoAPCDPAddr					: 写入CoAP CDP Addr
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+static void TCFG_EEPROM_Write_CoAPCDPAddr(void)
+{
+	int serverip[4];
+	
+	sscanf(COAPCDPADDR, "%d.%d.%d.%d", &serverip[3], &serverip[2], &serverip[1], &serverip[0]);
+	TCFG_SystemData.NBCoapCDPServer.ip.ip8[3] = serverip[3];
+	TCFG_SystemData.NBCoapCDPServer.ip.ip8[2] = serverip[2];
+	TCFG_SystemData.NBCoapCDPServer.ip.ip8[1] = serverip[1];
+	TCFG_SystemData.NBCoapCDPServer.ip.ip8[0] = serverip[0];
+	TCFG_SystemData.NBCoapCDPServer.port = COAPCDPPORT;
+	TCFG_EEPROM_SetServerIP(TCFG_SystemData.NBCoapCDPServer.ip.ip32);
+	TCFG_EEPROM_SetServerPort(TCFG_SystemData.NBCoapCDPServer.port);
+}
+#endif
+
+#if NETPROTOCAL == NETMQTTSN
+/**********************************************************************************************************
+ @Function			static void TCFG_EEPROM_Write_MqttSNServerAddr(void)
+ @Description			TCFG_EEPROM_Write_MqttSNServerAddr				: 写入MqttSN Server Addr
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+static void TCFG_EEPROM_Write_MqttSNServerAddr(void)
+{
+	int serverip[4];
+	
+	sscanf(MQTTSN_SERVER_HOST_IP, "%d.%d.%d.%d", &serverip[3], &serverip[2], &serverip[1], &serverip[0]);
+	TCFG_SystemData.NBMqttSNServer.ip.ip8[3] = serverip[3];
+	TCFG_SystemData.NBMqttSNServer.ip.ip8[2] = serverip[2];
+	TCFG_SystemData.NBMqttSNServer.ip.ip8[1] = serverip[1];
+	TCFG_SystemData.NBMqttSNServer.ip.ip8[0] = serverip[0];
+	TCFG_SystemData.NBMqttSNServer.port = MQTTSN_SERVER_TELE_PORT;
+	TCFG_EEPROM_SetMqttSNIP(TCFG_SystemData.NBMqttSNServer.ip.ip32);
+	TCFG_EEPROM_SetMqttSNPort(TCFG_SystemData.NBMqttSNServer.port);
+}
+#endif
+
 /**********************************************************************************************************
  @Function			void TCFG_EEPROM_SystemInfo_Init(void)
  @Description			TCFG_EEPROM_SystemInfo_Init					: 系统信息初始化
@@ -48,7 +92,6 @@ void TCFG_EEPROM_WriteConfigData(void)
 {
 	char vender[4];
 	unsigned int Brand = 0;
-	int serverip[4];
 	
 	/* 生产商与设备号 */
 	TCFG_EEPROM_SetSNfromBrandKey(TCFG_EEPROM_Get_MAC_SN());
@@ -188,14 +231,14 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_EEPROM_SetDeviceRbtMode(TCFG_SystemData.DeviceRbtMode);
 	
 	/* NB核心网地址 */
-	sscanf(COAPCDPADDR, "%d.%d.%d.%d", &serverip[3], &serverip[2], &serverip[1], &serverip[0]);
-	TCFG_SystemData.NBCoapCDPServer.ip.ip8[3] = serverip[3];
-	TCFG_SystemData.NBCoapCDPServer.ip.ip8[2] = serverip[2];
-	TCFG_SystemData.NBCoapCDPServer.ip.ip8[1] = serverip[1];
-	TCFG_SystemData.NBCoapCDPServer.ip.ip8[0] = serverip[0];
-	TCFG_SystemData.NBCoapCDPServer.port = COAPCDPPORT;
-	TCFG_EEPROM_SetServerIP(TCFG_SystemData.NBCoapCDPServer.ip.ip32);
-	TCFG_EEPROM_SetServerPort(TCFG_SystemData.NBCoapCDPServer.port);
+#if NETPROTOCAL == NETCOAP
+	TCFG_EEPROM_Write_CoAPCDPAddr();
+#endif
+	
+	/* MqttSN服务器地址 */
+#if NETPROTOCAL == NETMQTTSN
+	TCFG_EEPROM_Write_MqttSNServerAddr();
+#endif
 }
 
 /**********************************************************************************************************
@@ -206,8 +249,6 @@ void TCFG_EEPROM_WriteConfigData(void)
 **********************************************************************************************************/
 void TCFG_EEPROM_ReadConfigData(void)
 {
-	int serverip[4];
-	
 	/* 获取SubSN */
 	TCFG_SystemData.SubSn = TCFG_EEPROM_Get_MAC_SN();
 	TCFG_EEPROM_Get_MAC_SN_String();
@@ -332,18 +373,22 @@ void TCFG_EEPROM_ReadConfigData(void)
 	NbiotClientHandler.CoapIdleTimeSec = TCFG_SystemData.CoapIdleTime;
 	
 	/* NB核心网地址 */
+#if NETPROTOCAL == NETCOAP
 	TCFG_SystemData.NBCoapCDPServer.ip.ip32 = TCFG_EEPROM_GetServerIP();
 	TCFG_SystemData.NBCoapCDPServer.port = TCFG_EEPROM_GetServerPort();
 	if ((TCFG_SystemData.NBCoapCDPServer.ip.ip32 == 0) && (TCFG_SystemData.NBCoapCDPServer.port == 0)) {
-		sscanf(COAPCDPADDR, "%d.%d.%d.%d", &serverip[3], &serverip[2], &serverip[1], &serverip[0]);
-		TCFG_SystemData.NBCoapCDPServer.ip.ip8[3] = serverip[3];
-		TCFG_SystemData.NBCoapCDPServer.ip.ip8[2] = serverip[2];
-		TCFG_SystemData.NBCoapCDPServer.ip.ip8[1] = serverip[1];
-		TCFG_SystemData.NBCoapCDPServer.ip.ip8[0] = serverip[0];
-		TCFG_SystemData.NBCoapCDPServer.port = COAPCDPPORT;
-		TCFG_EEPROM_SetServerIP(TCFG_SystemData.NBCoapCDPServer.ip.ip32);
-		TCFG_EEPROM_SetServerPort(TCFG_SystemData.NBCoapCDPServer.port);
+		TCFG_EEPROM_Write_CoAPCDPAddr();
 	}
+#endif
+	
+	/* MqttSN服务器地址 */
+#if NETPROTOCAL == NETMQTTSN
+	TCFG_SystemData.NBMqttSNServer.ip.ip32 = TCFG_EEPROM_GetMqttSNIP();
+	TCFG_SystemData.NBMqttSNServer.port = TCFG_EEPROM_GetMqttSNPort();
+	if ((TCFG_SystemData.NBMqttSNServer.ip.ip32 == 0) && (TCFG_SystemData.NBMqttSNServer.port == 0)) {
+		TCFG_EEPROM_Write_MqttSNServerAddr();
+	}
+#endif
 }
 
 /**********************************************************************************************************
@@ -354,8 +399,6 @@ void TCFG_EEPROM_ReadConfigData(void)
 **********************************************************************************************************/
 void TCFG_EEPROM_WriteParameterData(void)
 {
-	int serverip[4];
-	
 	TCFG_EEPROM_SetSoftwareMajor(TCFG_Utility_Get_Major_Softnumber());
 	TCFG_EEPROM_SetSoftwareSub(TCFG_Utility_Get_Sub_Softnumber());
 	
@@ -368,14 +411,14 @@ void TCFG_EEPROM_WriteParameterData(void)
 	TCFG_EEPROM_SetUpgradeLimitSnr(TCFG_SystemData.UpgradeLimitSnr);
 	
 	/* NB核心网地址 */
-	sscanf(COAPCDPADDR, "%d.%d.%d.%d", &serverip[3], &serverip[2], &serverip[1], &serverip[0]);
-	TCFG_SystemData.NBCoapCDPServer.ip.ip8[3] = serverip[3];
-	TCFG_SystemData.NBCoapCDPServer.ip.ip8[2] = serverip[2];
-	TCFG_SystemData.NBCoapCDPServer.ip.ip8[1] = serverip[1];
-	TCFG_SystemData.NBCoapCDPServer.ip.ip8[0] = serverip[0];
-	TCFG_SystemData.NBCoapCDPServer.port = COAPCDPPORT;
-	TCFG_EEPROM_SetServerIP(TCFG_SystemData.NBCoapCDPServer.ip.ip32);
-	TCFG_EEPROM_SetServerPort(TCFG_SystemData.NBCoapCDPServer.port);
+#if NETPROTOCAL == NETCOAP
+	TCFG_EEPROM_Write_CoAPCDPAddr();
+#endif
+	
+	/* MqttSN服务器地址 */
+#if NETPROTOCAL == NETMQTTSN
+	TCFG_EEPROM_Write_MqttSNServerAddr();
+#endif
 }
 
 /**********************************************************************************************************
@@ -1830,6 +1873,84 @@ void TCFG_EEPROM_SetDeviceRbtMode(uint8_t val)
 unsigned char TCFG_EEPROM_GetDeviceRbtMode(void)
 {
 	return FLASH_EEPROM_ReadByte(TCFG_DEVICE_RBTMODE_OFFSET);
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetMqttSNIP(unsigned int val)
+ @Description			TCFG_EEPROM_SetMqttSNIP						: 保存MqttSNIP
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetMqttSNIP(unsigned int val)
+{
+	FLASH_EEPROM_WriteWord(TCFG_MQTTSN_SERVER_OFFSET, val);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned int TCFG_EEPROM_GetMqttSNIP(void)
+ @Description			TCFG_EEPROM_GetMqttSNIP						: 读取MqttSNIP
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned int TCFG_EEPROM_GetMqttSNIP(void)
+{
+	return FLASH_EEPROM_ReadWord(TCFG_MQTTSN_SERVER_OFFSET);
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetMqttSNPort(unsigned short val)
+ @Description			TCFG_EEPROM_SetMqttSNPort					: 保存MqttSNPort
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetMqttSNPort(unsigned short val)
+{
+	FLASH_EEPROM_WriteHalfWord(TCFG_MQTTSN_SERVER_OFFSET + 4, val);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned short TCFG_EEPROM_GetMqttSNPort(void)
+ @Description			TCFG_EEPROM_GetMqttSNPort					: 读取MqttSNPort
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned short TCFG_EEPROM_GetMqttSNPort(void)
+{
+	return FLASH_EEPROM_ReadHalfWord(TCFG_MQTTSN_SERVER_OFFSET + 4);
+}
+
+/**********************************************************************************************************
+ @Function			char* TCFG_EEPROM_Get_MqttSNIP_String(void)
+ @Description			TCFG_EEPROM_Get_MqttSNIP_String				: 读取MqttSNIP字符串
+ @Input				void
+ @Return				MqttSNIP_string
+**********************************************************************************************************/
+char* TCFG_EEPROM_Get_MqttSNIP_String(void)
+{
+	TCFG_SystemData.NBMqttSNServer.ip.ip32 = TCFG_EEPROM_GetMqttSNIP();
+	
+	memset((void*)&TCFG_SystemData.NBMqttSNServerIP, 0, sizeof(TCFG_SystemData.NBMqttSNServerIP));
+	sprintf((char *)TCFG_SystemData.NBMqttSNServerIP, "%d.%d.%d.%d", 
+	TCFG_SystemData.NBMqttSNServer.ip.ip8[3], TCFG_SystemData.NBMqttSNServer.ip.ip8[2], 
+	TCFG_SystemData.NBMqttSNServer.ip.ip8[1], TCFG_SystemData.NBMqttSNServer.ip.ip8[0]);
+	
+	return (char *)TCFG_SystemData.NBMqttSNServerIP;
+}
+
+/**********************************************************************************************************
+ @Function			char* TCFG_EEPROM_Get_MqttSNPort_String(void)
+ @Description			TCFG_EEPROM_Get_MqttSNPort_String				: 读取MqttSNPort字符串
+ @Input				void
+ @Return				MqttSNPort_string
+**********************************************************************************************************/
+char* TCFG_EEPROM_Get_MqttSNPort_String(void)
+{
+	TCFG_SystemData.NBMqttSNServer.port = TCFG_EEPROM_GetMqttSNPort();
+	
+	memset((void*)&TCFG_SystemData.NBMqttSNServerPort, 0, sizeof(TCFG_SystemData.NBMqttSNServerPort));
+	sprintf((char *)TCFG_SystemData.NBMqttSNServerPort, "%d", TCFG_SystemData.NBMqttSNServer.port);
+	
+	return (char *)TCFG_SystemData.NBMqttSNServerPort;
 }
 
 /**********************************************************************************************************

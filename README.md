@@ -1,6 +1,11 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2018-11-23 :
+	* 版本号修改为133。
+	* 首次烧写版本升级将默认MqttSN服务器地址写入EEPROM。
+	* DNS解析异常，使用EEPROM中保存的MqttSN地址。
+	* DNS解析成功，比较EEPROM中保存的MqttSN地址值，不同写入EEPROM。
 * 2018-11-22 :
 	* 发布V132版本固件。
 * 2018-11-22 :
