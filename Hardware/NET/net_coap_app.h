@@ -10,6 +10,7 @@
 #include "platform_map.h"
 
 #define COAP_DEBUG_LOG_RF_PRINT											//定义开启RF输出DEBUG信息
+#define COAP_DEBUG_LOG_PRINTF				Radio_Trf_Debug_Printf_Level2			//定义开启RF输出DEBUG信息函数
 
 void NET_COAP_APP_PollExecution(NBIOT_ClientsTypeDef* pClient);					//COAP逻辑处理
 void NET_COAP_NBIOT_Event_StopMode(NBIOT_ClientsTypeDef* pClient);				//停止模式

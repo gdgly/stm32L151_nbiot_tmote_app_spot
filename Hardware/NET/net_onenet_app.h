@@ -12,6 +12,7 @@
 #include "platform_map.h"
 
 #define ONENET_DEBUG_LOG_RF_PRINT											//定义开启RF输出DEBUG信息
+#define ONENET_DEBUG_LOG_PRINTF			Radio_Trf_Debug_Printf_Level2			//定义开启RF输出DEBUG信息函数
 
 void NET_ONENET_APP_PollExecution(ONENET_ClientsTypeDef* pClient);				//OneNET逻辑处理
 void NET_ONENET_NBIOT_Event_StopMode(ONENET_ClientsTypeDef* pClient);				//停止模式

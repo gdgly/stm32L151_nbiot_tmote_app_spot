@@ -663,7 +663,7 @@ void NET_MQTTSN_NBIOT_Event_HardwareReboot(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_GetIdleTime(pClient, true);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-		Radio_Trf_Debug_Printf_Level2("NB HDRBT Ok, Baud:%d", NBIOTBaudRate.Baud);
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB HDRBT Ok, Baud:%d", NBIOTBaudRate.Baud);
 #endif
 	}
 	else {
@@ -671,7 +671,7 @@ void NET_MQTTSN_NBIOT_Event_HardwareReboot(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, HARDWARE_REBOOT);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-		Radio_Trf_Debug_Printf_Level2("NB HDRBT Fail");
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB HDRBT Fail");
 #endif
 	}
 }
@@ -691,7 +691,7 @@ void NET_MQTTSN_NBIOT_Event_ReportError(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, MODULE_CHECK, REPORT_ERROE);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-		Radio_Trf_Debug_Printf_Level2("NB ReportECde Set %d Ok", CMEEnable);
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB ReportECde Set %d Ok", CMEEnable);
 #endif
 	}
 	else {
@@ -699,7 +699,7 @@ void NET_MQTTSN_NBIOT_Event_ReportError(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, REPORT_ERROE);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-		Radio_Trf_Debug_Printf_Level2("NB ReportECde Set %d Fail", CMEEnable);
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB ReportECde Set %d Fail", CMEEnable);
 #endif
 	}
 }
@@ -723,7 +723,7 @@ void NET_MQTTSN_NBIOT_Event_ModuleCheck(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, PARAMETER_CONFIG, MODULE_CHECK);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-		Radio_Trf_Debug_Printf_Level2("NB Module Check Ok");
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB Module Check Ok");
 #endif
 	}
 	else {
@@ -732,9 +732,9 @@ void NET_MQTTSN_NBIOT_Event_ModuleCheck(MQTTSN_ClientsTypeDef* pClient)
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		Radio_Trf_Debug_Printf_Level2("NB Module Check Fail ECde %d", NBStatus);
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB Module Check Fail ECde %d", NBStatus);
 	#else
-		Radio_Trf_Debug_Printf_Level2("NB Module Check Fail");
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB Module Check Fail");
 	#endif
 #endif
 	}
@@ -757,7 +757,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, ICCID_CHECK, PARAMETER_CONFIG);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-		Radio_Trf_Debug_Printf_Level2("NB Para Config Read Ok");
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB Para Config Read Ok");
 #endif
 	}
 	else {
@@ -766,9 +766,9 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		Radio_Trf_Debug_Printf_Level2("NB Para Config Read Fail ECde %d", NBStatus);
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB Para Config Read Fail ECde %d", NBStatus);
 	#else
-		Radio_Trf_Debug_Printf_Level2("NB Para Config Read Fail");
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB Para Config Read Fail");
 	#endif
 #endif
 		return;
@@ -780,7 +780,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 			MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, ICCID_CHECK, PARAMETER_CONFIG);
 			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-			Radio_Trf_Debug_Printf_Level2("NB %s %d Ok", AutoConnect, AutoConnectVal);
+			MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB %s %d Ok", AutoConnect, AutoConnectVal);
 #endif
 		}
 		else {
@@ -788,7 +788,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 			MQTTSN_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, PARAMETER_CONFIG);
 			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-			Radio_Trf_Debug_Printf_Level2("NB %s %d Fail", AutoConnect, AutoConnectVal);
+			MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB %s %d Fail", AutoConnect, AutoConnectVal);
 #endif
 			return;
 		}
@@ -800,7 +800,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 			MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, ICCID_CHECK, PARAMETER_CONFIG);
 			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-			Radio_Trf_Debug_Printf_Level2("NB %s %d Ok", CrScrambling, CrScramblingVal);
+			MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB %s %d Ok", CrScrambling, CrScramblingVal);
 #endif
 		}
 		else {
@@ -808,7 +808,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 			MQTTSN_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, PARAMETER_CONFIG);
 			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-			Radio_Trf_Debug_Printf_Level2("NB %s %d Fail", CrScrambling, CrScramblingVal);
+			MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB %s %d Fail", CrScrambling, CrScramblingVal);
 #endif
 			return;
 		}
@@ -820,7 +820,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 			MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, ICCID_CHECK, PARAMETER_CONFIG);
 			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-			Radio_Trf_Debug_Printf_Level2("NB %s %d Ok", CrSiAvoid, CrSiAvoidVal);
+			MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB %s %d Ok", CrSiAvoid, CrSiAvoidVal);
 #endif
 		}
 		else {
@@ -828,7 +828,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 			MQTTSN_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, PARAMETER_CONFIG);
 			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-			Radio_Trf_Debug_Printf_Level2("NB %s %d Fail", CrSiAvoid, CrSiAvoidVal);
+			MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB %s %d Fail", CrSiAvoid, CrSiAvoidVal);
 #endif
 			return;
 		}
@@ -840,7 +840,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 			MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, ICCID_CHECK, PARAMETER_CONFIG);
 			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-			Radio_Trf_Debug_Printf_Level2("NB %s %d Ok", CombineAttach, CombineAttachVal);
+			MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB %s %d Ok", CombineAttach, CombineAttachVal);
 #endif
 		}
 		else {
@@ -848,7 +848,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 			MQTTSN_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, PARAMETER_CONFIG);
 			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-			Radio_Trf_Debug_Printf_Level2("NB %s %d Fail", CombineAttach, CombineAttachVal);
+			MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB %s %d Fail", CombineAttach, CombineAttachVal);
 #endif
 			return;
 		}
@@ -860,7 +860,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 			MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, ICCID_CHECK, PARAMETER_CONFIG);
 			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-			Radio_Trf_Debug_Printf_Level2("NB %s %d Ok", CellReselection, CellReselectionVal);
+			MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB %s %d Ok", CellReselection, CellReselectionVal);
 #endif
 		}
 		else {
@@ -868,7 +868,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 			MQTTSN_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, PARAMETER_CONFIG);
 			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-			Radio_Trf_Debug_Printf_Level2("NB %s %d Fail", CellReselection, CellReselectionVal);
+			MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB %s %d Fail", CellReselection, CellReselectionVal);
 #endif
 			return;
 		}
@@ -880,7 +880,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 			MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, ICCID_CHECK, PARAMETER_CONFIG);
 			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-			Radio_Trf_Debug_Printf_Level2("NB %s %d Ok", EnableBip, EnableBipVal);
+			MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB %s %d Ok", EnableBip, EnableBipVal);
 #endif
 		}
 		else {
@@ -888,7 +888,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 			MQTTSN_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, PARAMETER_CONFIG);
 			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-			Radio_Trf_Debug_Printf_Level2("NB %s %d Fail", EnableBip, EnableBipVal);
+			MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB %s %d Fail", EnableBip, EnableBipVal);
 #endif
 			return;
 		}
@@ -912,7 +912,7 @@ void NET_MQTTSN_NBIOT_Event_SimICCIDCheck(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, ICCID_CHECK);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-		Radio_Trf_Debug_Printf_Level2("NB ICCID Check Ok");
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB ICCID Check Ok");
 #endif
 	}
 	else {
@@ -921,9 +921,9 @@ void NET_MQTTSN_NBIOT_Event_SimICCIDCheck(MQTTSN_ClientsTypeDef* pClient)
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		Radio_Trf_Debug_Printf_Level2("NB ICCID Fail ECde %d", NBStatus);
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB ICCID Fail ECde %d", NBStatus);
 	#else
-		Radio_Trf_Debug_Printf_Level2("NB ICCID Fail");
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB ICCID Fail");
 	#endif
 #endif
 	}
@@ -946,7 +946,7 @@ void NET_MQTTSN_NBIOT_Event_FullFunctionality(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, FULL_FUNCTIONALITY);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-		Radio_Trf_Debug_Printf_Level2("NB FullFunc Check Ok");
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB FullFunc Check Ok");
 #endif
 	}
 	else {
@@ -955,9 +955,9 @@ void NET_MQTTSN_NBIOT_Event_FullFunctionality(MQTTSN_ClientsTypeDef* pClient)
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		Radio_Trf_Debug_Printf_Level2("NB FullFunc Check Fail ECde %d", NBStatus);
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB FullFunc Check Fail ECde %d", NBStatus);
 	#else
-		Radio_Trf_Debug_Printf_Level2("NB FullFunc Check Fail");
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB FullFunc Check Fail");
 	#endif
 #endif
 		return;
@@ -969,7 +969,7 @@ void NET_MQTTSN_NBIOT_Event_FullFunctionality(MQTTSN_ClientsTypeDef* pClient)
 			MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, FULL_FUNCTIONALITY);
 			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-			Radio_Trf_Debug_Printf_Level2("NB FullFunc Set Ok");
+			MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB FullFunc Set Ok");
 #endif
 		}
 		else {
@@ -978,9 +978,9 @@ void NET_MQTTSN_NBIOT_Event_FullFunctionality(MQTTSN_ClientsTypeDef* pClient)
 			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 		#if NBIOT_PRINT_ERROR_CODE_TYPE
-			Radio_Trf_Debug_Printf_Level2("NB FullFunc Set Fail ECde %d", NBStatus);
+			MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB FullFunc Set Fail ECde %d", NBStatus);
 		#else
-			Radio_Trf_Debug_Printf_Level2("NB FullFunc Set Fail");
+			MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB FullFunc Set Fail");
 		#endif
 #endif
 			return;
@@ -1005,7 +1005,7 @@ void NET_MQTTSN_NBIOT_Event_MinimumFunctionality(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CONFIG, MINIMUM_FUNCTIONALITY);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-		Radio_Trf_Debug_Printf_Level2("NB MinFunc Check Ok");
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB MinFunc Check Ok");
 #endif
 	}
 	else {
@@ -1014,9 +1014,9 @@ void NET_MQTTSN_NBIOT_Event_MinimumFunctionality(MQTTSN_ClientsTypeDef* pClient)
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		Radio_Trf_Debug_Printf_Level2("NB MinFunc Check Fail ECde %d", NBStatus);
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB MinFunc Check Fail ECde %d", NBStatus);
 	#else
-		Radio_Trf_Debug_Printf_Level2("NB MinFunc Check Fail");
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB MinFunc Check Fail");
 	#endif
 #endif
 		return;
@@ -1028,7 +1028,7 @@ void NET_MQTTSN_NBIOT_Event_MinimumFunctionality(MQTTSN_ClientsTypeDef* pClient)
 			MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CONFIG, MINIMUM_FUNCTIONALITY);
 			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-			Radio_Trf_Debug_Printf_Level2("NB MinFunc Set Ok");
+			MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB MinFunc Set Ok");
 #endif
 		}
 		else {
@@ -1037,9 +1037,9 @@ void NET_MQTTSN_NBIOT_Event_MinimumFunctionality(MQTTSN_ClientsTypeDef* pClient)
 			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 		#if NBIOT_PRINT_ERROR_CODE_TYPE
-			Radio_Trf_Debug_Printf_Level2("NB MinFunc Set Fail ECde %d", NBStatus);
+			MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB MinFunc Set Fail ECde %d", NBStatus);
 		#else
-			Radio_Trf_Debug_Printf_Level2("NB MinFunc Set Fail");
+			MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB MinFunc Set Fail");
 		#endif
 #endif
 			return;
@@ -1079,7 +1079,7 @@ void NET_MQTTSN_NBIOT_Event_NbandModeCheck(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, NBAND_MODE_CHECK);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-		Radio_Trf_Debug_Printf_Level2("NB BAND Read %d:%d.%d.%d Ok", pClient->SocketStack->NBIotStack->Parameter.band.NBandNum, \
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB BAND Read %d:%d.%d.%d Ok", pClient->SocketStack->NBIotStack->Parameter.band.NBandNum, \
 														 pClient->SocketStack->NBIotStack->Parameter.band.NBandVal[0], \
 														 pClient->SocketStack->NBIotStack->Parameter.band.NBandVal[1], \
 														 pClient->SocketStack->NBIotStack->Parameter.band.NBandVal[2]);
@@ -1091,9 +1091,9 @@ void NET_MQTTSN_NBIOT_Event_NbandModeCheck(MQTTSN_ClientsTypeDef* pClient)
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		Radio_Trf_Debug_Printf_Level2("NB BAND Read Fail ECde %d", NBStatus);
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB BAND Read Fail ECde %d", NBStatus);
 	#else
-		Radio_Trf_Debug_Printf_Level2("NB BAND Read Fail");
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB BAND Read Fail");
 	#endif
 #endif
 	}
@@ -1125,7 +1125,7 @@ void NET_MQTTSN_NBIOT_Event_NbandModeConfig(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, NBAND_MODE_CONFIG);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-		Radio_Trf_Debug_Printf_Level2("NB BAND Read Ok");
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB BAND Read Ok");
 #endif
 	}
 	else {
@@ -1134,9 +1134,9 @@ void NET_MQTTSN_NBIOT_Event_NbandModeConfig(MQTTSN_ClientsTypeDef* pClient)
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		Radio_Trf_Debug_Printf_Level2("NB BAND Read Fail ECde %d", NBStatus);
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB BAND Read Fail ECde %d", NBStatus);
 	#else
-		Radio_Trf_Debug_Printf_Level2("NB BAND Read Fail");
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB BAND Read Fail");
 	#endif
 #endif
 	}
@@ -1148,7 +1148,7 @@ void NET_MQTTSN_NBIOT_Event_NbandModeConfig(MQTTSN_ClientsTypeDef* pClient)
 			MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, NBAND_MODE_CONFIG);
 			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-			Radio_Trf_Debug_Printf_Level2("NB BAND Set %d:%d.%d.%d Ok", MQTTSN_NBIOT_BAND_TYPE.NBandNum, \
+			MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB BAND Set %d:%d.%d.%d Ok", MQTTSN_NBIOT_BAND_TYPE.NBandNum, \
 															MQTTSN_NBIOT_BAND_TYPE.NBandVal[0], \
 															MQTTSN_NBIOT_BAND_TYPE.NBandVal[1], \
 															MQTTSN_NBIOT_BAND_TYPE.NBandVal[2]);
@@ -1160,9 +1160,9 @@ void NET_MQTTSN_NBIOT_Event_NbandModeConfig(MQTTSN_ClientsTypeDef* pClient)
 			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 		#if NBIOT_PRINT_ERROR_CODE_TYPE
-			Radio_Trf_Debug_Printf_Level2("NB BAND Set Fail ECde %d", NBStatus);
+			MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB BAND Set Fail ECde %d", NBStatus);
 		#else
-			Radio_Trf_Debug_Printf_Level2("NB BAND Set Fail");
+			MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB BAND Set Fail");
 		#endif
 #endif
 			return;
@@ -1191,7 +1191,7 @@ void NET_MQTTSN_NBIOT_Event_AttachCheck(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, ATTACH_CHECK, ATTACH_CHECK);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("NB CGATT %d Ok", pClient->SocketStack->NBIotStack->Parameter.netstate);
+		MQTTSN_DEBUG_LOG_PRINTF("NB CGATT %d Ok", pClient->SocketStack->NBIotStack->Parameter.netstate);
 #endif
 	}
 	else {
@@ -1200,9 +1200,9 @@ void NET_MQTTSN_NBIOT_Event_AttachCheck(MQTTSN_ClientsTypeDef* pClient)
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		Radio_Trf_Debug_Printf_Level2("NB CGATT %d Fail ECde %d", pClient->SocketStack->NBIotStack->Parameter.netstate, NBStatus);
+		MQTTSN_DEBUG_LOG_PRINTF("NB CGATT %d Fail ECde %d", pClient->SocketStack->NBIotStack->Parameter.netstate, NBStatus);
 	#else
-		Radio_Trf_Debug_Printf_Level2("NB CGATT %d Fail", pClient->SocketStack->NBIotStack->Parameter.netstate);
+		MQTTSN_DEBUG_LOG_PRINTF("NB CGATT %d Fail", pClient->SocketStack->NBIotStack->Parameter.netstate);
 	#endif
 #endif
 		return;
@@ -1233,7 +1233,7 @@ void NET_MQTTSN_NBIOT_Event_AttachExecute(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, ATTACH_INQUIRE, ATTACH_EXECUTE);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("NB Set CGATT %d Ok", Attach);
+		MQTTSN_DEBUG_LOG_PRINTF("NB Set CGATT %d Ok", Attach);
 #endif
 	}
 	else {
@@ -1242,9 +1242,9 @@ void NET_MQTTSN_NBIOT_Event_AttachExecute(MQTTSN_ClientsTypeDef* pClient)
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		Radio_Trf_Debug_Printf_Level2("NB Set CGATT %d Fail ECde %d", Attach, NBStatus);
+		MQTTSN_DEBUG_LOG_PRINTF("NB Set CGATT %d Fail ECde %d", Attach, NBStatus);
 	#else
-		Radio_Trf_Debug_Printf_Level2("NB Set CGATT %d Fail", Attach);
+		MQTTSN_DEBUG_LOG_PRINTF("NB Set CGATT %d Fail", Attach);
 	#endif
 #endif
 	}
@@ -1266,7 +1266,7 @@ void NET_MQTTSN_NBIOT_Event_AttachInquire(MQTTSN_ClientsTypeDef* pClient)
 		/* Dictate execute is Success */
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = ATTACH_INQUIRE;
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("NB CGATT %d Ok", pClient->SocketStack->NBIotStack->Parameter.netstate);
+		MQTTSN_DEBUG_LOG_PRINTF("NB CGATT %d Ok", pClient->SocketStack->NBIotStack->Parameter.netstate);
 #endif
 	}
 	else {
@@ -1275,9 +1275,9 @@ void NET_MQTTSN_NBIOT_Event_AttachInquire(MQTTSN_ClientsTypeDef* pClient)
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		Radio_Trf_Debug_Printf_Level2("NB CGATT %d Fail ECde %d", pClient->SocketStack->NBIotStack->Parameter.netstate, NBStatus);
+		MQTTSN_DEBUG_LOG_PRINTF("NB CGATT %d Fail ECde %d", pClient->SocketStack->NBIotStack->Parameter.netstate, NBStatus);
 	#else
-		Radio_Trf_Debug_Printf_Level2("NB CGATT %d Fail", pClient->SocketStack->NBIotStack->Parameter.netstate);
+		MQTTSN_DEBUG_LOG_PRINTF("NB CGATT %d Fail", pClient->SocketStack->NBIotStack->Parameter.netstate);
 	#endif
 #endif
 		return;
@@ -1321,7 +1321,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterCheckOut(MQTTSN_ClientsTypeDef* pClient)
 		pClient->SocketStack->NBIotStack->Registered = true;
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("NB Para Check Ok");
+		MQTTSN_DEBUG_LOG_PRINTF("NB Para Check Ok");
 #endif
 	}
 	else {
@@ -1330,9 +1330,9 @@ void NET_MQTTSN_NBIOT_Event_ParameterCheckOut(MQTTSN_ClientsTypeDef* pClient)
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		Radio_Trf_Debug_Printf_Level2("NB Para Check Fail ECde %d", NBStatus);
+		MQTTSN_DEBUG_LOG_PRINTF("NB Para Check Fail ECde %d", NBStatus);
 	#else
-		Radio_Trf_Debug_Printf_Level2("NB Para Check Fail");
+		MQTTSN_DEBUG_LOG_PRINTF("NB Para Check Fail");
 	#endif
 #endif
 		return;
@@ -1360,14 +1360,14 @@ void NET_MQTTSN_Event_Init(MQTTSN_ClientsTypeDef* pClient)
 		/* Dictate execute is Success */
 		MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_DISCONNECT, MQTTSN_SUBSTATE_INIT, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("MqttSN Creat UDP Ok");
+		MQTTSN_DEBUG_LOG_PRINTF("MqttSN Creat UDP Ok");
 #endif
 	}
 	else {
 		/* Dictate execute is Fail */
 		MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_INIT);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("MqttSN Creat UDP Fail");
+		MQTTSN_DEBUG_LOG_PRINTF("MqttSN Creat UDP Fail");
 #endif
 		return;
 	}
@@ -1400,7 +1400,7 @@ void NET_MQTTSN_Event_Disconnect(MQTTSN_ClientsTypeDef* pClient)
 		/* Dictate execute is Fail */
 		MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_DISCONNECT);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("MqttSN Cont Fail");
+		MQTTSN_DEBUG_LOG_PRINTF("MqttSN Cont Fail");
 #endif
 	}
 	else {
@@ -1409,7 +1409,7 @@ void NET_MQTTSN_Event_Disconnect(MQTTSN_ClientsTypeDef* pClient)
 		/* Set Active Duration */
 		MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("MqttSN Cont Ok");
+		MQTTSN_DEBUG_LOG_PRINTF("MqttSN Cont Ok");
 #endif
 	}
 }
@@ -1430,7 +1430,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			/* Dictate execute is Fail */
 			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Sub %s Fail", MQTTSN_SUBSCRIBE_ID);
+			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Sub %s Fail", MQTTSN_SUBSCRIBE_ID);
 #endif
 			return;
 		}
@@ -1439,7 +1439,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, false);
 			pClient->DictateRunCtl.dictateSubscribeStatus = true;
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Sub %s Ok", MQTTSN_SUBSCRIBE_ID);
+			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Sub %s Ok", MQTTSN_SUBSCRIBE_ID);
 #endif
 		}
 	}
@@ -1458,7 +1458,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			/* Dictate execute is Fail */
 			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Send StatusBasic Fail");
+			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send StatusBasic Fail");
 #endif
 			return;
 		}
@@ -1478,7 +1478,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			/* Get ConnectTime */
 			MQTTSN_NBIOT_GetConnectTime(pClient, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Send StatusBasic Ok");
+			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send StatusBasic Ok");
 #endif
 		}
 	}
@@ -1496,7 +1496,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			/* Dictate execute is Fail */
 			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Send StatusExtend Fail");
+			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send StatusExtend Fail");
 #endif
 			return;
 		}
@@ -1516,7 +1516,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			/* Get ConnectTime */
 			MQTTSN_NBIOT_GetConnectTime(pClient, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Send StatusExtend Ok");
+			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send StatusExtend Ok");
 #endif
 		}
 	}
@@ -1534,7 +1534,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			/* Dictate execute is Fail */
 			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoWork Fail");
+			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send InfoWork Fail");
 #endif
 			return;
 		}
@@ -1554,7 +1554,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			/* Get ConnectTime */
 			MQTTSN_NBIOT_GetConnectTime(pClient, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoWork Ok");
+			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send InfoWork Ok");
 #endif
 		}
 	}
@@ -1572,7 +1572,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			/* Dictate execute is Fail */
 			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoBasic Fail");
+			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send InfoBasic Fail");
 #endif
 			return;
 		}
@@ -1592,7 +1592,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			/* Get ConnectTime */
 			MQTTSN_NBIOT_GetConnectTime(pClient, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoBasic Ok");
+			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send InfoBasic Ok");
 #endif
 		}
 	}
@@ -1610,7 +1610,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			/* Dictate execute is Fail */
 			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoDynamic Fail");
+			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send InfoDynamic Fail");
 #endif
 			return;
 		}
@@ -1630,7 +1630,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			/* Get ConnectTime */
 			MQTTSN_NBIOT_GetConnectTime(pClient, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoDynamic Ok");
+			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send InfoDynamic Ok");
 #endif
 		}
 	}
@@ -1647,7 +1647,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			/* Dictate execute is Fail */
 			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoResponse Fail");
+			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send InfoResponse Fail");
 #endif
 			return;
 		}
@@ -1667,7 +1667,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			/* Get ConnectTime */
 			MQTTSN_NBIOT_GetConnectTime(pClient, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Send InfoResponse Ok");
+			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send InfoResponse Ok");
 #endif
 		}
 	}
@@ -1685,7 +1685,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			/* Dictate execute is Fail */
 			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Send Payload Fail");
+			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send Payload Fail");
 #endif
 		}
 		else {
@@ -1704,7 +1704,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			/* Get ConnectTime */
 			MQTTSN_NBIOT_GetConnectTime(pClient, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Send Payload Ok");
+			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send Payload Ok");
 #endif
 		}
 	}
@@ -1717,14 +1717,14 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			/* Dictate execute is Fail */
 			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN DisCont Fail");
+			MQTTSN_DEBUG_LOG_PRINTF("MqttSN DisCont Fail");
 #endif
 		}
 		else {
 			/* Dictate execute is Success */
 			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_AWAKE, MQTTSN_SUBSTATE_ACTIVE, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN DisCont Ok");
+			MQTTSN_DEBUG_LOG_PRINTF("MqttSN DisCont Ok");
 #endif
 		}
 	}
@@ -1794,7 +1794,7 @@ void NET_MQTTSN_Event_Sleep(MQTTSN_ClientsTypeDef* pClient)
 			/* Dictate execute is Fail */
 			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_SLEEP);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Cont Fail");
+			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Cont Fail");
 #endif
 			return;
 		}
@@ -1804,7 +1804,7 @@ void NET_MQTTSN_Event_Sleep(MQTTSN_ClientsTypeDef* pClient)
 			/* Set Active Duration */
 			MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("MqttSN Cont Ok");
+			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Cont Ok");
 #endif
 			return;
 		}
@@ -1837,7 +1837,7 @@ void NET_MQTTSN_Event_Aweak(MQTTSN_ClientsTypeDef* pClient)
 		/* Dictate execute is Fail */
 		MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_AWAKE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("MqttSN Ping Fail");
+		MQTTSN_DEBUG_LOG_PRINTF("MqttSN Ping Fail");
 #endif
 		return;
 	}
@@ -1845,7 +1845,7 @@ void NET_MQTTSN_Event_Aweak(MQTTSN_ClientsTypeDef* pClient)
 		/* Dictate execute is Success */
 		MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_SLEEP, MQTTSN_SUBSTATE_AWAKE, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("MqttSN Ping Ok");
+		MQTTSN_DEBUG_LOG_PRINTF("MqttSN Ping Ok");
 #endif
 	}
 	
@@ -2505,7 +2505,7 @@ void NET_MQTTSN_NBIOT_Listen_Event_EnterParameter(MQTTSN_ClientsTypeDef* pClient
 				pClient->ListenRunCtl.listenEvent = NBMQTTSN_LISTEN_MODE_ENTER_PARAMETER;
 				pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt = 0;
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-				Radio_Trf_Debug_Printf_Level2("MqttSN Para Check Ok");
+				MQTTSN_DEBUG_LOG_PRINTF("MqttSN Para Check Ok");
 				Radio_Trf_Printf("RSSI:%d", pClient->SocketStack->NBIotStack->Parameter.rssi);
 				Radio_Trf_Printf("SNR:%d", pClient->SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR);
 #endif
@@ -2537,8 +2537,8 @@ void NET_MQTTSN_NBIOT_Listen_Event_EnterParameter(MQTTSN_ClientsTypeDef* pClient
 					/* Dictate isn't TimeOut */
 					pClient->ListenRunCtl.listenEvent = NBMQTTSN_LISTEN_MODE_ENTER_PARAMETER;
 				}
-#ifdef COAP_DEBUG_LOG_RF_PRINT
-				Radio_Trf_Debug_Printf_Level2("MqttSN Para Check Fail");
+#ifdef MQTTSN_DEBUG_LOG_RF_PRINT
+				MQTTSN_DEBUG_LOG_PRINTF("MqttSN Para Check Fail");
 #endif
 				return;
 			}

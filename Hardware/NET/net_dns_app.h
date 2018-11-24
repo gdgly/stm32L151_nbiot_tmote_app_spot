@@ -17,6 +17,7 @@
 #include "platform_config.h"
 
 #define DNS_DEBUG_LOG_RF_PRINT											//定义开启RF输出DEBUG信息
+#define DNS_DEBUG_LOG_PRINTF				Radio_Trf_Debug_Printf_Level2			//定义开启RF输出DEBUG信息函数
 
 void NET_DNS_APP_PollExecution(DNS_ClientsTypeDef* pClient);					//DNS逻辑处理
 void NET_DNS_NBIOT_Event_StopMode(DNS_ClientsTypeDef* pClient);					//停止模式
