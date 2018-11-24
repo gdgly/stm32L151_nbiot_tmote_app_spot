@@ -105,7 +105,7 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_StopMode(PCP_ClientsTypeDef* pClient)
 		/* Recv Message Index */
 		PcpRecvMessageIndex = NET_PCP_Message_RecvDataRear();
 #ifdef PCP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("PCP Enter Stop");
+		PCP_DEBUG_LOG_PRINTF("PCP Enter Stop");
 #endif
 	}
 	
@@ -303,7 +303,7 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Recv(PCP_ClientsTypeDef* pClient)
 				
 				NET_PCP_Message_RecvDataEnqueue(pClient->Recvbuf, pClient->Recvlen);
 #ifdef PCP_DEBUG_LOG_RF_PRINT
-				Radio_Trf_Debug_Printf_Level2("PCP Recv Data Ok");
+				PCP_DEBUG_LOG_PRINTF("PCP Recv Data Ok");
 #endif
 			}
 		}
@@ -319,7 +319,7 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Recv(PCP_ClientsTypeDef* pClient)
 	#endif
 		
 #ifdef PCP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("PCP Send Ok");
+		PCP_DEBUG_LOG_PRINTF("PCP Send Ok");
 #endif
 	}
 	else {
@@ -341,7 +341,7 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Recv(PCP_ClientsTypeDef* pClient)
 			pClient->DictateRunCtl.dictateEvent = PCP_EVENT_FRAME_RECV;
 			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
 #ifdef PCP_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("PCP Wait Send Ok");
+			PCP_DEBUG_LOG_PRINTF("PCP Wait Send Ok");
 #endif
 		}
 	}
@@ -372,7 +372,7 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Send(PCP_ClientsTypeDef* pClient)
 			/* Dictate execute is Success */
 			pClient->DictateRunCtl.dictateEvent = PCP_EVENT_FRAME_SEND;
 #ifdef PCP_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("PCP CGATT %d", pClient->CoAPStack->NBIotStack->Parameter.netstate);
+			PCP_DEBUG_LOG_PRINTF("PCP CGATT %d", pClient->CoAPStack->NBIotStack->Parameter.netstate);
 #endif
 		}
 		else {
@@ -395,7 +395,7 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Send(PCP_ClientsTypeDef* pClient)
 				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
 			}
 #ifdef PCP_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("PCP CGATT %d Fail ECde %d", pClient->CoAPStack->NBIotStack->Parameter.netstate, NBStatus);
+			PCP_DEBUG_LOG_PRINTF("PCP CGATT %d Fail ECde %d", pClient->CoAPStack->NBIotStack->Parameter.netstate, NBStatus);
 #endif
 			goto exit;
 		}
@@ -441,7 +441,7 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Send(PCP_ClientsTypeDef* pClient)
 				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
 			}
 #ifdef PCP_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("PCP Send Payload Fail ECde %d", PCPStatus);
+			PCP_DEBUG_LOG_PRINTF("PCP Send Payload Fail ECde %d", PCPStatus);
 #endif
 			goto exit;
 		}
@@ -452,7 +452,7 @@ PCP_StatusTypeDef NET_PCP_NBIOT_Event_Send(PCP_ClientsTypeDef* pClient)
 			pClient->DictateRunCtl.dictateSendFailureCnt = 0;
 			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
 #ifdef PCP_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("PCP Send Payload Ok");
+			PCP_DEBUG_LOG_PRINTF("PCP Send Payload Ok");
 #endif
 		}
 	}

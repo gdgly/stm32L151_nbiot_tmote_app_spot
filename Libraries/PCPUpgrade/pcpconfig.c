@@ -92,10 +92,10 @@ PCP_ResultCodeTypeDef PCP_UpgradeDataNewVersionNotice_Callback(PCP_ClientsTypeDe
 	PCP_ResultCodeTypeDef PCPResultCodeStatus = PCP_ExecuteSuccess;
 	
 #ifdef PCP_DEBUG_LOG_RF_PRINT
-	Radio_Trf_Debug_Printf_Level2("SoftVer: %s", pClient->Parameter.PlatformSoftVersion);
-	Radio_Trf_Debug_Printf_Level2("SliceSize: %d", pClient->Parameter.UpgradePackSliceSize);
-	Radio_Trf_Debug_Printf_Level2("SliceNum: %d", pClient->Parameter.UpgradePackSliceNum);
-	Radio_Trf_Debug_Printf_Level2("CheckCode: %X", CalculateStringToHex(pClient->Parameter.UpgradePackCheckCode>>8, pClient->Parameter.UpgradePackCheckCode&0xFF));
+	PCP_DEBUG_LOG_PRINTF("SoftVer: %s", pClient->Parameter.PlatformSoftVersion);
+	PCP_DEBUG_LOG_PRINTF("SliceSize: %d", pClient->Parameter.UpgradePackSliceSize);
+	PCP_DEBUG_LOG_PRINTF("SliceNum: %d", pClient->Parameter.UpgradePackSliceNum);
+	PCP_DEBUG_LOG_PRINTF("CheckCode: %X", CalculateStringToHex(pClient->Parameter.UpgradePackCheckCode>>8, pClient->Parameter.UpgradePackCheckCode&0xFF));
 #endif
 	
 #if NBCOAP_SENDCODE_WORK_INFO
@@ -123,7 +123,7 @@ PCP_ResultCodeTypeDef PCP_UpgradeDataDownload_Callback(PCP_ClientsTypeDef* pClie
 	PCP_ResultCodeTypeDef PCPResultCodeStatus = PCP_ExecuteSuccess;
 	
 #ifdef PCP_DEBUG_LOG_RF_PRINT
-	Radio_Trf_Debug_Printf_Level2("Down%d.%d: OK", SliceIndex, UpgradeDataLength);
+	PCP_DEBUG_LOG_PRINTF("Down%d.%d: OK", SliceIndex, UpgradeDataLength);
 #endif
 	
 	PCPResultCodeStatus = PCP_Upgrade_DataDownload(pClient, SliceIndex, UpgradeData, UpgradeDataLength);
@@ -142,7 +142,7 @@ PCP_ResultCodeTypeDef PCP_UpgradeDataAssemble_Callback(PCP_ClientsTypeDef* pClie
 	PCP_ResultCodeTypeDef PCPResultCodeStatus = PCP_ExecuteSuccess;
 	
 #ifdef PCP_DEBUG_LOG_RF_PRINT
-	Radio_Trf_Debug_Printf_Level2("Download Over!");
+	PCP_DEBUG_LOG_PRINTF("Download Over!");
 #endif
 	
 	PCPResultCodeStatus = PCP_Upgrade_DataAssemble(pClient);
@@ -161,7 +161,7 @@ PCP_ResultCodeTypeDef PCP_UpgradeDataReportUpgrades_Callback(PCP_ClientsTypeDef*
 	PCP_ResultCodeTypeDef PCPResultCodeStatus = PCP_ExecuteSuccess;
 	
 #ifdef PCP_DEBUG_LOG_RF_PRINT
-	Radio_Trf_Debug_Printf_Level2("Upgrade Over!");
+	PCP_DEBUG_LOG_PRINTF("Upgrade Over!");
 #endif
 	
 	PCPResultCodeStatus = PCP_Upgrade_AfterUpdata(pClient);

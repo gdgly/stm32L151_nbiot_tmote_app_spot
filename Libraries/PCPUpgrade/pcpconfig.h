@@ -5,6 +5,7 @@
 #include "nbiotconfig.h"
 
 #define PCP_DEBUG_LOG_RF_PRINT															//定义开启RF输出DEBUG信息
+#define PCP_DEBUG_LOG_PRINTF				Radio_Trf_Printf									//定义开启RF输出DEBUG信息函数
 
 #define PCP_COMMAND_TIMEOUT_SEC			30
 #define PCP_COMMAND_FAILURE_CNT			3

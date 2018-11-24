@@ -1881,8 +1881,8 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 	u8 ret = NETIP_OK;
 	
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-	Radio_Trf_Debug_Printf_Level2("MqttSN Rv Filter:%s, topicid:%d", pClient->messageHandlers[0].topicFilter, pClient->messageHandlers[0].topicid);
-	Radio_Trf_Debug_Printf_Level2("MqttSN Rv Len:%d", messageHandler->message->payloadlen);
+	Radio_Trf_Printf("MqttSN Rv Filter:%s, topicid:%d", pClient->messageHandlers[0].topicFilter, pClient->messageHandlers[0].topicid);
+	Radio_Trf_Printf("MqttSN Rv Len:%d", messageHandler->message->payloadlen);
 #endif
 	
 	messageHandler->message->payload[messageHandler->message->payloadlen] = '\0';

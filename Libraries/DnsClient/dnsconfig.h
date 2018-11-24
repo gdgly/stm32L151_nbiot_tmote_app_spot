@@ -11,7 +11,7 @@
 /* DNS 协议栈开辟缓存大小 */
 #define DNS_BUFFER_SIZE					256
 #define DNS_DATASTACK_SIZE				256
-#define DNS_HOSTNAME_SIZE				30
+#define DNS_HOSTNAME_SIZE				35
 #define DNS_HOSTIP_SIZE					20
 #define DNS_ANALYSIS_NUM					2
 

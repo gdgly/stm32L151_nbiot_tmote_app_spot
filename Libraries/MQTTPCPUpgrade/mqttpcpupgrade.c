@@ -87,7 +87,7 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_Upgrade_BackupCurrentAPP(MqttSNPCP_ClientsTy
 	u8 SPIFlashCheckCode = 0;
 	int BackupTimes = 3;
 	
-	Radio_Trf_Debug_Printf_Level2("Backup APP ...");
+	MQTTSN_PCP_DEBUG_LOG_PRINTF("Backup APP ...");
 	Radio_Rf_Interrupt_Deinit();
 	GD25Q_SPIFLASH_WakeUp();
 	GD25Q_SPIFLASH_Init();
@@ -103,7 +103,7 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_Upgrade_BackupCurrentAPP(MqttSNPCP_ClientsTy
 		if (GD25Q_SPIFLASH_GetWord(APP2_INFO_UPGRADE_SOFTVER_OFFSET) == ((SOFTWAREMAJOR<<16)|(SOFTWARESUB<<0))) {
 			/* 备份区已有当前版本APP */
 			GD25Q_SPIFLASH_PowerDown();
-			Radio_Trf_Debug_Printf_Level2("APP has been backed");
+			MQTTSN_PCP_DEBUG_LOG_PRINTF("APP has been backed");
 			PCPResultCodeStatus = MQTTSN_PCP_LatestVersion;
 			goto exit;
 		}
@@ -134,7 +134,7 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_Upgrade_BackupCurrentAPP(MqttSNPCP_ClientsTy
 	
 	if (STMFlashCheckCode != SPIFlashCheckCode) {
 		GD25Q_SPIFLASH_PowerDown();
-		Radio_Trf_Debug_Printf_Level2("APP backup up fail");
+		MQTTSN_PCP_DEBUG_LOG_PRINTF("APP backup up fail");
 		goto exit;
 	}
 	
@@ -150,7 +150,7 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_Upgrade_BackupCurrentAPP(MqttSNPCP_ClientsTy
 	GD25Q_SPIFLASH_SetWord(APP2_DATA_CHECK_CODE_OFFSET, SPIFlashCheckCode);
 	
 	GD25Q_SPIFLASH_PowerDown();
-	Radio_Trf_Debug_Printf_Level2("APP backup over code %X", STMFlashCheckCode);
+	MQTTSN_PCP_DEBUG_LOG_PRINTF("APP backup over code %X", STMFlashCheckCode);
 	
 exit:
 	return PCPResultCodeStatus;
@@ -169,11 +169,11 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_Upgrade_NewVersionNotice(MqttSNPCP_ClientsTy
 	MqttSNPCP_ResultCodeTypeDef PCPResultCodeStatus = MQTTSN_PCP_ExecuteSuccess;
 	u32 MajorVer = 0, SubVer = 0;
 	
-	Radio_Trf_Debug_Printf_Level2("NewVer APP ...");
+	MQTTSN_PCP_DEBUG_LOG_PRINTF("NewVer APP ...");
 	
 	/* 信号质量与信噪比低中断升级 */
 	if ((TCFG_Utility_Get_Nbiot_Rssi_IntVal() < UPGRADE_LOW_LIMIT_RSSI) || (TCFG_Utility_Get_Nbiot_RadioSNR() < UPGRADE_LOW_LIMIT_SNR)) {
-		Radio_Trf_Debug_Printf_Level2("Signal Difference");
+		MQTTSN_PCP_DEBUG_LOG_PRINTF("Signal Difference");
 		PCPResultCodeStatus = MQTTSN_PCP_SignalqualityDifference;
 		goto exit;
 	}
@@ -199,7 +199,7 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_Upgrade_NewVersionNotice(MqttSNPCP_ClientsTy
 		if (GD25Q_SPIFLASH_GetByte(APP1_INFO_UPGRADE_STATUS_OFFSET) == 0x55) {
 			/* 备份区已有当前升级版本APP */
 			GD25Q_SPIFLASH_PowerDown();
-			Radio_Trf_Debug_Printf_Level2("APP has been latestVer");
+			MQTTSN_PCP_DEBUG_LOG_PRINTF("APP has been latestVer");
 			PCPResultCodeStatus = MQTTSN_PCP_LatestVersion;
 			goto exit;
 		}
@@ -211,7 +211,7 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_Upgrade_NewVersionNotice(MqttSNPCP_ClientsTy
 				pClient->UpgradeExecution.PackSliceIndex = pClient->Parameter.UpgradePackSliceNum - 1;
 			}
 			GD25Q_SPIFLASH_PowerDown();
-			Radio_Trf_Debug_Printf_Level2("APP Upgradeing");
+			MQTTSN_PCP_DEBUG_LOG_PRINTF("APP Upgradeing");
 			PCPResultCodeStatus = MQTTSN_PCP_ExecuteSuccess;
 			goto exit;
 		}
@@ -234,7 +234,7 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_Upgrade_NewVersionNotice(MqttSNPCP_ClientsTy
 	GD25Q_SPIFLASH_SetWord(APP1_DATA_CHECK_CODE_OFFSET, CalculateStringToHex(pClient->Parameter.UpgradePackCheckCode>>8, pClient->Parameter.UpgradePackCheckCode&0xFF));
 	
 	GD25Q_SPIFLASH_PowerDown();
-	Radio_Trf_Debug_Printf_Level2("APP will start upgrade");
+	MQTTSN_PCP_DEBUG_LOG_PRINTF("APP will start upgrade");
 	
 exit:
 	return PCPResultCodeStatus;
@@ -274,14 +274,14 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_Upgrade_DataDownload(MqttSNPCP_ClientsTypeDe
 		/* 该分片数据已写入 */
 		pClient->UpgradeExecution.PackSliceIndex = SliceIndex + 1;
 		GD25Q_SPIFLASH_PowerDown();
-		Radio_Trf_Debug_Printf_Level2("Slice has been write");
+		MQTTSN_PCP_DEBUG_LOG_PRINTF("Slice has been write");
 		goto exit;
 	}
 	
 	if (UpgradeDataLength > pClient->UpgradeExecution.PackSliceSize) {
 		/* 该分片数据长度异常 */
 		GD25Q_SPIFLASH_PowerDown();
-		Radio_Trf_Debug_Printf_Level2("Slice Size Fail");
+		MQTTSN_PCP_DEBUG_LOG_PRINTF("Slice Size Fail");
 		goto exit;
 	}
 	
@@ -292,7 +292,7 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_Upgrade_DataDownload(MqttSNPCP_ClientsTypeDe
 	
 	pClient->UpgradeExecution.PackSliceIndex = SliceIndex + 1;
 	GD25Q_SPIFLASH_PowerDown();
-	Radio_Trf_Debug_Printf_Level2("Slice write to flash");
+	MQTTSN_PCP_DEBUG_LOG_PRINTF("Slice write to flash");
 	
 exit:
 	return PCPResultCodeStatus;
@@ -326,7 +326,7 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_Upgrade_DataAssemble(MqttSNPCP_ClientsTypeDe
 		/* 数据包没有下载完成 */
 		GD25Q_SPIFLASH_EraseSector(APP1_INFORMATION_ADDR);
 		GD25Q_SPIFLASH_PowerDown();
-		Radio_Trf_Debug_Printf_Level2("Upgrade Check Fail");
+		MQTTSN_PCP_DEBUG_LOG_PRINTF("Upgrade Check Fail");
 		PCPResultCodeStatus = MQTTSN_PCP_UpgradePacketCheckFail;
 		goto exit;
 	}
@@ -342,13 +342,13 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_Upgrade_DataAssemble(MqttSNPCP_ClientsTypeDe
 		/* 校验码错误 */
 		GD25Q_SPIFLASH_EraseSector(APP1_INFORMATION_ADDR);
 		GD25Q_SPIFLASH_PowerDown();
-		Radio_Trf_Debug_Printf_Level2("Upgrade Check Fail");
+		MQTTSN_PCP_DEBUG_LOG_PRINTF("Upgrade Check Fail");
 		PCPResultCodeStatus = MQTTSN_PCP_UpgradePacketCheckFail;
 		goto exit;
 	}
 	
 	GD25Q_SPIFLASH_PowerDown();
-	Radio_Trf_Debug_Printf_Level2("Upgrade Check Ok");
+	MQTTSN_PCP_DEBUG_LOG_PRINTF("Upgrade Check Ok");
 	
 exit:
 	return PCPResultCodeStatus;
@@ -366,7 +366,7 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_Upgrade_AfterUpdata(MqttSNPCP_ClientsTypeDef
 #ifdef GD25Q_80CSIG
 	MqttSNPCP_ResultCodeTypeDef PCPResultCodeStatus = MQTTSN_PCP_ExecuteSuccess;
 	
-	Radio_Trf_Debug_Printf_Level2("Start Btup APP ...");
+	MQTTSN_PCP_DEBUG_LOG_PRINTF("Start Btup APP ...");
 	Radio_Rf_Interrupt_Deinit();
 	GD25Q_SPIFLASH_WakeUp();
 	GD25Q_SPIFLASH_Init();

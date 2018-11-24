@@ -122,7 +122,7 @@ MqttSNPCP_StatusTypeDef NET_MqttSN_PCP_NBIOT_Event_StopMode(MqttSNPCP_ClientsTyp
 		/* Recv Message Index */
 		MqttSNPcpRecvMessageIndex = NET_MqttSN_PCP_Message_RecvDataRear();
 #ifdef MQTTSN_PCP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("PCP Enter Stop");
+		MQTTSN_PCP_DEBUG_LOG_PRINTF("PCP Enter Stop");
 #endif
 	}
 	
@@ -281,7 +281,7 @@ MqttSNPCP_StatusTypeDef NET_MqttSN_PCP_NBIOT_Event_Send(MqttSNPCP_ClientsTypeDef
 				pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
 			}
 #ifdef MQTTSN_PCP_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("PCP Send Payload Fail ECde %d", PCPStatus);
+			MQTTSN_PCP_DEBUG_LOG_PRINTF("PCP Send Payload Fail ECde %d", PCPStatus);
 #endif
 			goto exit;
 		}
@@ -294,7 +294,7 @@ MqttSNPCP_StatusTypeDef NET_MqttSN_PCP_NBIOT_Event_Send(MqttSNPCP_ClientsTypeDef
 			pClient->DictateRunCtl.dictateSendFailureCnt = 0;
 			pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_PCP;
 #ifdef MQTTSN_PCP_DEBUG_LOG_RF_PRINT
-			Radio_Trf_Debug_Printf_Level2("PCP Send Payload Ok");
+			MQTTSN_PCP_DEBUG_LOG_PRINTF("PCP Send Payload Ok");
 #endif
 		}
 	}

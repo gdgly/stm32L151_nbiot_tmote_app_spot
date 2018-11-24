@@ -1,6 +1,9 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2018-11-24 :
+	* DNS解析成功先设置MqttSN服务器再进行EEPROM比较。
+	* PCP升级调试信息在Normal模式下也输出信息。
 * 2018-11-23 :
 	* 版本号修改为133。
 	* 首次烧写版本升级将默认MqttSN服务器地址写入EEPROM。

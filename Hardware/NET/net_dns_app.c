@@ -1512,7 +1512,13 @@ void NET_DNS_Event_OverDnsAnalysis(DNS_ClientsTypeDef* pClient)
 #if MQTTSN_DNS_USE_EEPROM_TYPE
 	int serverip[4];
 	NBIOT_ServerAddr serveraddr;
+#endif
 	
+#if NETPROTOCAL == NETMQTTSN
+	MQTTSN_Transport_Init(&MqttSNSocketNetHandler, &NbiotClientHandler, MQTTSN_SERVER_LOCAL_PORT, (char*)DNS_GetHostIP(pClient, (unsigned char*)MQTTSN_SERVER_HOST_NAME), MQTTSN_SERVER_TELE_PORT);
+#endif
+	
+#if MQTTSN_DNS_USE_EEPROM_TYPE
 	sscanf((char *)DNS_GetHostIP(pClient, (unsigned char*)MQTTSN_SERVER_HOST_NAME), "%d.%d.%d.%d", &serverip[3], &serverip[2], &serverip[1], &serverip[0]);
 	serveraddr.ip.ip8[3] = serverip[3];
 	serveraddr.ip.ip8[2] = serverip[2];
@@ -1523,9 +1529,6 @@ void NET_DNS_Event_OverDnsAnalysis(DNS_ClientsTypeDef* pClient)
 	}
 #endif
 	
-#if NETPROTOCAL == NETMQTTSN
-	MQTTSN_Transport_Init(&MqttSNSocketNetHandler, &NbiotClientHandler, MQTTSN_SERVER_LOCAL_PORT, (char*)DNS_GetHostIP(pClient, (unsigned char*)MQTTSN_SERVER_HOST_NAME), MQTTSN_SERVER_TELE_PORT);
-#endif
 	pClient->AnalysisTick = 0;
 	pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_MQTTSN;
 	pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = MQTTSN_PROCESS_STACK;

@@ -92,10 +92,10 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_UpgradeDataNewVersionNotice_Callback(MqttSNP
 	MqttSNPCP_ResultCodeTypeDef PCPResultCodeStatus = MQTTSN_PCP_ExecuteSuccess;
 	
 #ifdef MQTTSN_PCP_DEBUG_LOG_RF_PRINT
-	Radio_Trf_Debug_Printf_Level2("SoftVer: %s", pClient->Parameter.PlatformSoftVersion);
-	Radio_Trf_Debug_Printf_Level2("SliceSize: %d", pClient->Parameter.UpgradePackSliceSize);
-	Radio_Trf_Debug_Printf_Level2("SliceNum: %d", pClient->Parameter.UpgradePackSliceNum);
-	Radio_Trf_Debug_Printf_Level2("CheckCode: %X", MqttSNCalculateStringToHex(pClient->Parameter.UpgradePackCheckCode>>8, pClient->Parameter.UpgradePackCheckCode&0xFF));
+	MQTTSN_PCP_DEBUG_LOG_PRINTF("SoftVer: %s", pClient->Parameter.PlatformSoftVersion);
+	MQTTSN_PCP_DEBUG_LOG_PRINTF("SliceSize: %d", pClient->Parameter.UpgradePackSliceSize);
+	MQTTSN_PCP_DEBUG_LOG_PRINTF("SliceNum: %d", pClient->Parameter.UpgradePackSliceNum);
+	MQTTSN_PCP_DEBUG_LOG_PRINTF("CheckCode: %X", MqttSNCalculateStringToHex(pClient->Parameter.UpgradePackCheckCode>>8, pClient->Parameter.UpgradePackCheckCode&0xFF));
 #endif
 	
 #if NBMQTTSN_SENDCODE_WORK_INFO
@@ -123,7 +123,7 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_UpgradeDataDownload_Callback(MqttSNPCP_Clien
 	MqttSNPCP_ResultCodeTypeDef PCPResultCodeStatus = MQTTSN_PCP_ExecuteSuccess;
 	
 #ifdef MQTTSN_PCP_DEBUG_LOG_RF_PRINT
-	Radio_Trf_Debug_Printf_Level2("Down%d.%d: OK", SliceIndex, UpgradeDataLength);
+	MQTTSN_PCP_DEBUG_LOG_PRINTF("Down%d.%d: OK", SliceIndex, UpgradeDataLength);
 #endif
 	
 	PCPResultCodeStatus = MqttPCP_Upgrade_DataDownload(pClient, SliceIndex, UpgradeData, UpgradeDataLength);
@@ -142,7 +142,7 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_UpgradeDataAssemble_Callback(MqttSNPCP_Clien
 	MqttSNPCP_ResultCodeTypeDef PCPResultCodeStatus = MQTTSN_PCP_ExecuteSuccess;
 	
 #ifdef MQTTSN_PCP_DEBUG_LOG_RF_PRINT
-	Radio_Trf_Debug_Printf_Level2("Download Over!!");
+	MQTTSN_PCP_DEBUG_LOG_PRINTF("Download Over!");
 #endif
 	
 	PCPResultCodeStatus = MqttPCP_Upgrade_DataAssemble(pClient);
@@ -161,7 +161,7 @@ MqttSNPCP_ResultCodeTypeDef MqttPCP_UpgradeDataReportUpgrades_Callback(MqttSNPCP
 	MqttSNPCP_ResultCodeTypeDef PCPResultCodeStatus = MQTTSN_PCP_ExecuteSuccess;
 	
 #ifdef MQTTSN_PCP_DEBUG_LOG_RF_PRINT
-	Radio_Trf_Debug_Printf_Level2("Upgrade Over!!");
+	MQTTSN_PCP_DEBUG_LOG_PRINTF("Upgrade Over!");
 #endif
 	
 	PCPResultCodeStatus = MqttPCP_Upgrade_AfterUpdata(pClient);

@@ -75,7 +75,7 @@ MqttSNPCP_StatusTypeDef MqttPCP_Func_SelectMessageExecuteCmd(MqttSNPCP_ClientsTy
 	if (pClient->Parameter.MessageType == MQTTSN_PCP_QueryDeviceVersion) {
 		PCPStatus = MqttPCP_Func_AckQueryDeviceVersion(pClient);
 #ifdef MQTTSN_PCP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("PCP RvQyDevVer %s", pClient->UpgradeExecution.DeviceSoftVersion);
+		MQTTSN_PCP_DEBUG_LOG_PRINTF("PCP RvQyDevVer %s", pClient->UpgradeExecution.DeviceSoftVersion);
 #endif
 		goto exit;
 	}
@@ -84,7 +84,7 @@ MqttSNPCP_StatusTypeDef MqttPCP_Func_SelectMessageExecuteCmd(MqttSNPCP_ClientsTy
 	if (pClient->Parameter.MessageType == MQTTSN_PCP_NewVersionNotice) {
 		PCPStatus = MqttPCP_Func_AckNewVersionNotice(pClient);
 #ifdef MQTTSN_PCP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("PCP RvNewVerNot %s", pClient->Parameter.PlatformSoftVersion);
+		MQTTSN_PCP_DEBUG_LOG_PRINTF("PCP RvNewVerNot %s", pClient->Parameter.PlatformSoftVersion);
 #endif
 		goto exit;
 	}
@@ -93,7 +93,7 @@ MqttSNPCP_StatusTypeDef MqttPCP_Func_SelectMessageExecuteCmd(MqttSNPCP_ClientsTy
 	if (pClient->Parameter.MessageType == MQTTSN_PCP_RequestUpgradePackage) {
 		PCPStatus = MqttPCP_Func_AckRequestUpgradePackage(pClient);
 #ifdef MQTTSN_PCP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("PCP RvRqUpAck %d", pClient->Parameter.UpgradePackSliceIndex);
+		MQTTSN_PCP_DEBUG_LOG_PRINTF("PCP RvRqUpAck %d", pClient->Parameter.UpgradePackSliceIndex);
 #endif
 		goto exit;
 	}
@@ -102,7 +102,7 @@ MqttSNPCP_StatusTypeDef MqttPCP_Func_SelectMessageExecuteCmd(MqttSNPCP_ClientsTy
 	if (pClient->Parameter.MessageType == MQTTSN_PCP_ReportDownloadStatus) {
 		PCPStatus = MqttPCP_Func_AckReportDownloadStatus(pClient);
 #ifdef MQTTSN_PCP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("PCP RvRpDwStaAck %d", PCPStatus);
+		MQTTSN_PCP_DEBUG_LOG_PRINTF("PCP RvRpDwStaAck %d", PCPStatus);
 #endif
 		goto exit;
 	}
@@ -111,7 +111,7 @@ MqttSNPCP_StatusTypeDef MqttPCP_Func_SelectMessageExecuteCmd(MqttSNPCP_ClientsTy
 	if (pClient->Parameter.MessageType == MQTTSN_PCP_PerformUpgrade) {
 		PCPStatus = MqttPCP_Func_AckPerformUpgrade(pClient);
 #ifdef MQTTSN_PCP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("PCP RvPfUpgrade %d", PCPStatus);
+		MQTTSN_PCP_DEBUG_LOG_PRINTF("PCP RvPfUpgrade %d", PCPStatus);
 #endif
 		goto exit;
 	}
@@ -120,7 +120,7 @@ MqttSNPCP_StatusTypeDef MqttPCP_Func_SelectMessageExecuteCmd(MqttSNPCP_ClientsTy
 	if (pClient->Parameter.MessageType == MQTTSN_PCP_ReportUpgrades) {
 		PCPStatus = MqttPCP_Func_AckReportUpgrades(pClient);
 #ifdef MQTTSN_PCP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("PCP RvRpUpAck %d", PCPStatus);
+		MQTTSN_PCP_DEBUG_LOG_PRINTF("PCP RvRpUpAck %d", PCPStatus);
 #endif
 		goto exit;
 	}
@@ -366,7 +366,7 @@ MqttSNPCP_StatusTypeDef MqttPCP_Func_SelectUpgradeStatusExecuteCmd(MqttSNPCP_Cli
 	if (pClient->UpgradeExecution.upgradeStatus == MQTTSN_PCP_UPGRADE_QUERYVERSION) {
 		PCPStatus = MqttPCP_Func_QueryDeviceVersion(pClient);
 #ifdef MQTTSN_PCP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("PCP SdQyDevVer %s", pClient->UpgradeExecution.DeviceSoftVersion);
+		MQTTSN_PCP_DEBUG_LOG_PRINTF("PCP SdQyDevVer %s", pClient->UpgradeExecution.DeviceSoftVersion);
 #endif
 		goto exit;
 	}
@@ -375,7 +375,7 @@ MqttSNPCP_StatusTypeDef MqttPCP_Func_SelectUpgradeStatusExecuteCmd(MqttSNPCP_Cli
 	if (pClient->UpgradeExecution.upgradeStatus == MQTTSN_PCP_UPGRADE_DOWNLOAD) {
 		PCPStatus = MqttPCP_Func_RequestUpgradePackage(pClient);
 #ifdef MQTTSN_PCP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("PCP SdRqUpPack %d", pClient->UpgradeExecution.PackSliceIndex);
+		MQTTSN_PCP_DEBUG_LOG_PRINTF("PCP SdRqUpPack %d", pClient->UpgradeExecution.PackSliceIndex);
 #endif
 		goto exit;
 	}
@@ -384,7 +384,7 @@ MqttSNPCP_StatusTypeDef MqttPCP_Func_SelectUpgradeStatusExecuteCmd(MqttSNPCP_Cli
 	if (pClient->UpgradeExecution.upgradeStatus == MQTTSN_PCP_UPGRADE_ASSEMBLE) {
 		PCPStatus = MqttPCP_Func_ReportDownloadStatus(pClient);
 #ifdef MQTTSN_PCP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("PCP SdRpDwSta");
+		MQTTSN_PCP_DEBUG_LOG_PRINTF("PCP SdRpDwSta");
 #endif
 		goto exit;
 	}
@@ -393,7 +393,7 @@ MqttSNPCP_StatusTypeDef MqttPCP_Func_SelectUpgradeStatusExecuteCmd(MqttSNPCP_Cli
 	if (pClient->UpgradeExecution.upgradeStatus == MQTTSN_PCP_UPGRADE_INSTALL) {
 		PCPStatus = MqttPCP_Func_ReportUpgrades(pClient);
 #ifdef MQTTSN_PCP_DEBUG_LOG_RF_PRINT
-		Radio_Trf_Debug_Printf_Level2("PCP SdRpUpSta");
+		MQTTSN_PCP_DEBUG_LOG_PRINTF("PCP SdRpUpSta");
 #endif
 		goto exit;
 	}
