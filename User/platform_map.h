@@ -186,6 +186,9 @@
 
 #define TCFG_MQTTSN_SERVER_OFFSET			TCFG_DEVICE_RBTMODE_OFFSET + TCFG_DEVICE_RBTMODE_LENGTH	//0x08080E27
 #define TCFG_MQTTSN_SERVER_LENGTH			6												//Server MqttSN		MqttSN服务器地址
+
+#define TCFG_RADAR_COVER_GAIN_OFFSET		TCFG_MQTTSN_SERVER_OFFSET + TCFG_MQTTSN_SERVER_LENGTH		//0x08080E2D
+#define TCFG_RADAR_COVER_GAIN_LENGTH		1												//Gain in Cover		Radar覆水增益
 /************************************************************** End **************************************************************/
 
 enum TCFG_SENSITIVITY																	//传感器灵敏度
@@ -235,6 +238,7 @@ typedef struct
 	unsigned char						MagMode;											//地磁模式
 	unsigned int						RadarCount;										//雷达次数
 	unsigned char						RadarRange;										//雷达检测范围
+	unsigned char						CoverGain;										//雷达覆水增益
 	unsigned char						CarInDelay;										//车辆进入延时上报时间
 	unsigned int						SpotStatusCount;									//车位检测车辆次数
 	unsigned char						NBIotHeart;										//NBIot心跳间隔
@@ -400,6 +404,9 @@ unsigned char	TCFG_EEPROM_GetNbiotHeart(void);												//读取NbiotHeart
 void			TCFG_EEPROM_SetRadarRange(uint8_t val);											//保存RadarRange
 unsigned char	TCFG_EEPROM_GetRadarRange(void);												//读取RadarRange
 
+void			TCFG_EEPROM_SetCoverGain(unsigned char val);										//保存 radar gain in cover
+unsigned char	TCFG_EEPROM_GetCoverGain(void);												//读取 radar gain in cover
+
 void			TCFG_EEPROM_SetCarInDelay(uint8_t val);											//保存CarInDelay
 unsigned char	TCFG_EEPROM_GetCarInDelay(void);												//读取CarInDelay
 
@@ -524,6 +531,7 @@ unsigned char	TCFG_Utility_Get_AlgoLibNum(void);												//读取检测算法
 unsigned char	TCFG_Utility_Get_SoftResetFlag(void);											//读取设备重启标识符
 unsigned short TCFG_Utility_Get_ReInitModuleCount(void);										//读取模块异常初始化次数
 unsigned short TCFG_Utility_Get_DistanceRange(void);											//读取雷达检测范围
+unsigned char	TCFG_Utility_Get_GainCover(void);												//读取雷达覆水增益
 unsigned char	TCFG_Utility_Get_Major_Softnumber(void);										//读取Major_Softnumber
 unsigned char	TCFG_Utility_Get_Sub_Softnumber(void);											//读取Sub_Softnumber
 unsigned char	TCFG_Utility_Get_Major_Hardnumber(void);										//读取Major_Hardnumber

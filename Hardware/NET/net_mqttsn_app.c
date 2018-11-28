@@ -2185,6 +2185,24 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					}
 			#endif
 				}
+				/* CoverGain */
+				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "CoverGain") != NULL) {
+			#if MQTTSN_DOWNLOAD_CMD_COVERGAIN
+					uint16_t CoverGain;
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
+						"{(CoverGain):{(val):%hu,(Magic):%hu}", &CoverGain, &recvMagicNum);
+					if (recvMagicNum == TCLOD_MAGIC_NUM) {
+						TCFG_SystemData.CoverGain = CoverGain;
+						if ((TCFG_SystemData.CoverGain > RADAR_COVERGAIN_LOW) || (TCFG_SystemData.CoverGain < RADAR_COVERGAIN_HIGH)) {
+							TCFG_SystemData.CoverGain = RADAR_COVERGAIN_MIDDLE;						
+						}
+						TCFG_EEPROM_SetCoverGain(TCFG_SystemData.CoverGain);
+					}
+					else {
+						ret = NETIP_UNKNOWNERROR;
+					}
+			#endif
+				}
 				/* ...... */
 			}
 			else if (messageHandler->message->payload[recvBufOffset + TCLOD_MSGID_OFFSET] == TCLOD_CONFIG_GET) {

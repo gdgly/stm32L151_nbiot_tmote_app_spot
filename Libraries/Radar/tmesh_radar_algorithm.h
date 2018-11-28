@@ -29,6 +29,7 @@
   *		    版本40,当总dif值>12,峰值频点的dif值>5的话也计算出距离
   *		    版本41,当覆盖是距离由1改为2
   *	181020 : 版本42,由于峰值频率可能会摇摆,所以对距离进行校准,取两个峰值距离的中间值.
+  *	181128 : 版本43,增加覆水增益的设置,建议针对旧外壳用高增益,新外壳用中增益
   *********************************************************************************************************
   */
 
@@ -120,6 +121,13 @@ enum TRADAR_SENSITIVITY
 	RADAR_MIDDLE						= 0x03,
 	RADAR_LOW							= 0x04,
 	RADAR_LOWEST						= 0x05
+};
+
+enum TRADAR_COVER_GAIN
+{
+	RADAR_COVERGAIN_HIGH				= 0x01,
+	RADAR_COVERGAIN_MIDDLE				= 0x02,
+	RADAR_COVERGAIN_LOW					= 0x03
 };
 
 extern short tradar_fre_mag_buff[TRADAR_BACKGROUND_NUM];
@@ -243,5 +251,21 @@ void tradar_set_distance_range(unsigned char val);
  @Return				TRADAR_RANGE_0M5 ~ TRADAR_RANGE_1M6
 **********************************************************************************************************/
 unsigned char tradar_get_distance_range(void);
+
+/**********************************************************************************************************
+ @Function			tradar_set_gain_in_cover
+ @Purpose				set the gain in cover
+ @Input				val:RADAR_COVERGAIN_HIGH = 1,	RADAR_COVERGAIN_MIDDLE,	RADAR_COVERGAIN_LOW,
+ @Return				void
+**********************************************************************************************************/
+void tradar_set_gain_in_cover(char val);
+
+/**********************************************************************************************************
+ @Function			tradar_get_gain_in_cover
+ @Purpose				get the gain in cover
+ @Input				void
+ @Return				RADAR_COVERGAIN_HIGH = 1,	RADAR_COVERGAIN_MIDDLE,	RADAR_COVERGAIN_LOW,
+**********************************************************************************************************/
+char tradar_get_gain_in_cover(void);
 
 #endif

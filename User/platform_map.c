@@ -106,6 +106,10 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_SystemData.Sensitivity = SENSE_MIDDLE;
 	TCFG_EEPROM_SetSavedSensitivity(TCFG_SystemData.Sensitivity);
 	
+	/* 雷达覆水增益 */
+	TCFG_SystemData.CoverGain = RADAR_COVERGAIN_MIDDLE;
+	TCFG_EEPROM_SetCoverGain(TCFG_SystemData.CoverGain);
+	
 	/* 地磁背景值 */
 	TCFG_SystemData.MagBackgroundX = 0x7FFF;
 	TCFG_SystemData.MagBackgroundY = 0x7FFF;
@@ -258,6 +262,13 @@ void TCFG_EEPROM_ReadConfigData(void)
 	if ((TCFG_SystemData.Sensitivity > SENSE_LOWEST) || (TCFG_SystemData.Sensitivity < SENSE_HIGHEST)) {
 		TCFG_SystemData.Sensitivity = SENSE_MIDDLE;
 		TCFG_EEPROM_SetSavedSensitivity(TCFG_SystemData.Sensitivity);
+	}
+	
+	/* 获取雷达覆盖时的增益值 */
+	TCFG_SystemData.CoverGain = TCFG_EEPROM_GetCoverGain();
+	if ((TCFG_SystemData.CoverGain > RADAR_COVERGAIN_LOW) || (TCFG_SystemData.CoverGain < RADAR_COVERGAIN_HIGH)) {
+		TCFG_SystemData.CoverGain = RADAR_COVERGAIN_MIDDLE;
+		TCFG_EEPROM_SetCoverGain(TCFG_SystemData.CoverGain);
 	}
 	
 	/* 获取BOOT版本号 */
@@ -1640,6 +1651,28 @@ void TCFG_EEPROM_SetRadarRange(uint8_t val)
 unsigned char TCFG_EEPROM_GetRadarRange(void)
 {
 	return FLASH_EEPROM_ReadByte(TCFG_RADAR_RANGE_OFFSET);
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetCoverGain(unsigned char val)
+ @Description			TCFG_EEPROM_SetCoverGain						: 保存 radar gain in cover
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetCoverGain(unsigned char val)
+{
+	FLASH_EEPROM_WriteByte(TCFG_RADAR_COVER_GAIN_OFFSET, val);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned char TCFG_EEPROM_GetCoverGain(void)
+ @Description			TCFG_EEPROM_GetCoverGain						: 读取 radar gain in cover
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned char TCFG_EEPROM_GetCoverGain(void)
+{
+	return FLASH_EEPROM_ReadByte(TCFG_RADAR_COVER_GAIN_OFFSET); 
 }
 
 /**********************************************************************************************************
@@ -3167,6 +3200,17 @@ unsigned short TCFG_Utility_Get_ReInitModuleCount(void)
 unsigned short TCFG_Utility_Get_DistanceRange(void)
 {
 	return tradar_get_distance_range() - 4;
+}
+
+/**********************************************************************************************************
+ @Function			unsigned char TCFG_Utility_Get_GainCover(void)
+ @Description			TCFG_Utility_Get_GainCover					: 读取雷达覆水增益
+ @Input				void
+ @Return				GainCover
+**********************************************************************************************************/
+unsigned char TCFG_Utility_Get_GainCover(void)
+{
+	return tradar_get_gain_in_cover();
 }
 
 /**********************************************************************************************************

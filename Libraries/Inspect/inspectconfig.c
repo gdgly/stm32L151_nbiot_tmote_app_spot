@@ -103,6 +103,7 @@ void Inspect_Spot_ExistenceDetect(void)
 	static uint8_t prepare2send_radar = 0;
 	
 	talgo_set_sensitivity(TCFG_SystemData.Sensitivity - 1);
+	tradar_set_gain_in_cover(TCFG_SystemData.CoverGain);
 	
 	SpotStatus = (TALGO_SPOTSTATUS)talgro_vechile_judge(&SpotStatusData);
 	

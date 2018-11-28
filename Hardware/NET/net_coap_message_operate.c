@@ -149,7 +149,8 @@ int NET_COAP_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer)
 				"\"Nbsent\":%d,"
 				"\"Nbrecv\":%d,"
 				"\"Indelay\":%d,"
-				"\"Nbheart\":%d"
+				"\"Nbheart\":%d,"
+				"\"Cgain\":%d"
 			"}"
 		"}",
 		
@@ -167,7 +168,8 @@ int NET_COAP_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer)
 		TCFG_Utility_Get_Nbiot_SentCount(),
 		TCFG_Utility_Get_Nbiot_RecvCount(),
 		TCFG_EEPROM_GetCarInDelay(),
-		TCFG_EEPROM_GetNbiotHeart()
+		TCFG_EEPROM_GetNbiotHeart(),
+		TCFG_Utility_Get_GainCover()
 	);
 	
 	return strlen(outBuffer);

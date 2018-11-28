@@ -102,19 +102,27 @@ void NET_COAP_APP_PollExecution(NBIOT_ClientsTypeDef* pClient)
 		break;
 	
 	case SEND_DATA:
+#if NBCOAP_SENDMODE_CONFIG_TYPE == NBCOAP_SENDMODE_NORMAL_MODE
 		NET_COAP_NBIOT_Event_SendData(pClient);
+#endif
 		break;
 	
 	case RECV_DATA:
+#if NBCOAP_SENDMODE_CONFIG_TYPE == NBCOAP_SENDMODE_NORMAL_MODE
 		NET_COAP_NBIOT_Event_RecvData(pClient);
+#endif
 		break;
 	
 	case SEND_DATA_RA_NORMAL:
+#if NBCOAP_SENDMODE_CONFIG_TYPE == NBCOAP_SENDMODE_RAIDLE_MODE
 		NET_COAP_NBIOT_Event_SendDataRANormal(pClient);
+#endif
 		break;
 	
 	case RECV_DATA_RA_NORMAL:
+#if NBCOAP_SENDMODE_CONFIG_TYPE == NBCOAP_SENDMODE_RAIDLE_MODE
 		NET_COAP_NBIOT_Event_RecvDataRANormal(pClient);
+#endif
 		break;
 	
 	case EXECUT_DOWNLINK_DATA:
@@ -234,6 +242,7 @@ static unsigned char* COAP_NBIOT_GetDictateFailureCnt(NBIOT_ClientsTypeDef* pCli
 		dictateFailureCnt = &pClient->DictateRunCtl.dictatePatameterCheckOutFailureCnt;
 		break;
 	
+#if NBCOAP_SENDMODE_CONFIG_TYPE == NBCOAP_SENDMODE_NORMAL_MODE
 	case SEND_DATA:
 		dictateFailureCnt = &pClient->DictateRunCtl.dictateSendDataFailureCnt;
 		break;
@@ -241,7 +250,9 @@ static unsigned char* COAP_NBIOT_GetDictateFailureCnt(NBIOT_ClientsTypeDef* pCli
 	case RECV_DATA:
 		dictateFailureCnt = &pClient->DictateRunCtl.dictateRecvDataFailureCnt;
 		break;
+#endif
 	
+#if NBCOAP_SENDMODE_CONFIG_TYPE == NBCOAP_SENDMODE_RAIDLE_MODE
 	case SEND_DATA_RA_NORMAL:
 		dictateFailureCnt = &pClient->DictateRunCtl.dictateSendDataRANormalFailureCnt;
 		break;
@@ -249,6 +260,7 @@ static unsigned char* COAP_NBIOT_GetDictateFailureCnt(NBIOT_ClientsTypeDef* pCli
 	case RECV_DATA_RA_NORMAL:
 		dictateFailureCnt = &pClient->DictateRunCtl.dictateRecvDataRANormalFailureCnt;
 		break;
+#endif
 	
 	default :
 		dictateFailureCnt = &pClient->DictateRunCtl.dictateRebootFailureCnt;
@@ -500,9 +512,9 @@ void NET_COAP_NBIOT_Event_ModuleCheck(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		COAP_DEBUG_LOG_PRINTF("NB Module Check Fail ECde %d", NBStatus);
+		COAP_DEBUG_LOG_PRINTF("NB Module Fail ECde %d", NBStatus);
 	#else
-		COAP_DEBUG_LOG_PRINTF("NB Module Check Fail");
+		COAP_DEBUG_LOG_PRINTF("NB Module Fail");
 	#endif
 #endif
 	}
@@ -525,7 +537,7 @@ void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, ICCID_CHECK, PARAMETER_CONFIG);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		COAP_DEBUG_LOG_PRINTF("NB Parameter Config Read Ok");
+		COAP_DEBUG_LOG_PRINTF("NB Para Config Read Ok");
 #endif
 	}
 	else {
@@ -534,9 +546,9 @@ void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		COAP_DEBUG_LOG_PRINTF("NB Parameter Config Read Fail ECde %d", NBStatus);
+		COAP_DEBUG_LOG_PRINTF("NB Para Config Read Fail ECde %d", NBStatus);
 	#else
-		COAP_DEBUG_LOG_PRINTF("NB Parameter Config Read Fail");
+		COAP_DEBUG_LOG_PRINTF("NB Para Config Read Fail");
 	#endif
 #endif
 		return;
@@ -689,9 +701,9 @@ void NET_COAP_NBIOT_Event_SimICCIDCheck(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		COAP_DEBUG_LOG_PRINTF("NB ICCID Check Fail ECde %d", NBStatus);
+		COAP_DEBUG_LOG_PRINTF("NB ICCID Fail ECde %d", NBStatus);
 	#else
-		COAP_DEBUG_LOG_PRINTF("NB ICCID Check Fail");
+		COAP_DEBUG_LOG_PRINTF("NB ICCID Fail");
 	#endif
 #endif
 	}
@@ -954,9 +966,9 @@ void NET_COAP_NBIOT_Event_NbandModeCheck(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 		COAP_DEBUG_LOG_PRINTF("CoAP BAND Read %d:%d.%d.%d Ok", pClient->Parameter.band.NBandNum, \
-														   pClient->Parameter.band.NBandVal[0], \
-														   pClient->Parameter.band.NBandVal[1], \
-														   pClient->Parameter.band.NBandVal[2]);
+													pClient->Parameter.band.NBandVal[0], \
+													pClient->Parameter.band.NBandVal[1], \
+													pClient->Parameter.band.NBandVal[2]);
 #endif
 	}
 	else {
@@ -1023,9 +1035,9 @@ void NET_COAP_NBIOT_Event_NbandModeConfig(NBIOT_ClientsTypeDef* pClient)
 			
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 			COAP_DEBUG_LOG_PRINTF("CoAP BAND Set %d:%d.%d.%d Ok", COAP_NBIOT_BAND_TYPE.NBandNum, \
-															  COAP_NBIOT_BAND_TYPE.NBandVal[0], \
-															  COAP_NBIOT_BAND_TYPE.NBandVal[1], \
-															  COAP_NBIOT_BAND_TYPE.NBandVal[2]);
+													    COAP_NBIOT_BAND_TYPE.NBandVal[0], \
+													    COAP_NBIOT_BAND_TYPE.NBandVal[1], \
+													    COAP_NBIOT_BAND_TYPE.NBandVal[2]);
 #endif
 		}
 		else {
@@ -1075,9 +1087,9 @@ void NET_COAP_NBIOT_Event_MiscEquipConfig(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		COAP_DEBUG_LOG_PRINTF("CoAP Misc Read Fail ECde %d", NBStatus);
+		COAP_DEBUG_LOG_PRINTF("CoAP Misc Fail ECde %d", NBStatus);
 	#else
-		COAP_DEBUG_LOG_PRINTF("CoAP Misc Read Fail");
+		COAP_DEBUG_LOG_PRINTF("CoAP Misc Fail");
 	#endif
 #endif
 		return;
@@ -2146,6 +2158,24 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 							TCFG_SystemData.UpgradeLimitSnr = limitSnr;
 							TCFG_EEPROM_SetUpgradeLimitRssi(TCFG_SystemData.UpgradeLimitRssi);
 							TCFG_EEPROM_SetUpgradeLimitSnr(TCFG_SystemData.UpgradeLimitSnr);
+						}
+						else {
+							ret = NETIP_UNKNOWNERROR;
+						}
+				#endif
+					}
+					/* CoverGain */
+					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "CoverGain") != NULL) {
+				#if NBCOAP_DOWNLOAD_CMD_COVERGAIN
+						uint16_t CoverGain;
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
+							"{(CoverGain):{(val):%hu,(Magic):%hu}", &CoverGain, &recvMagicNum);
+						if (recvMagicNum == TCLOD_MAGIC_NUM) {
+							TCFG_SystemData.CoverGain = CoverGain;
+							if ((TCFG_SystemData.CoverGain > RADAR_COVERGAIN_LOW) || (TCFG_SystemData.CoverGain < RADAR_COVERGAIN_HIGH)) {
+								TCFG_SystemData.CoverGain = RADAR_COVERGAIN_MIDDLE;						
+							}
+							TCFG_EEPROM_SetCoverGain(TCFG_SystemData.CoverGain);
 						}
 						else {
 							ret = NETIP_UNKNOWNERROR;

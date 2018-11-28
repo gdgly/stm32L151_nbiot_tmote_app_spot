@@ -50,6 +50,10 @@
 #define	NBCOAP_SENDMODE_RAIDLE			SEND_DATA_RA_NORMAL
 #define	NBCOAP_SENDMODE_TYPE			NBCOAP_SENDMODE_RAIDLE				//COAP发送模式
 
+#define	NBCOAP_SENDMODE_NORMAL_MODE		0
+#define	NBCOAP_SENDMODE_RAIDLE_MODE		1
+#define	NBCOAP_SENDMODE_CONFIG_TYPE		NBCOAP_SENDMODE_RAIDLE_MODE			//COAP发送模式
+
 #define	NBCOAP_RASENDMODE_NORMAL			0
 #define	NBCOAP_RASENDMODE_IDLE			1
 #define	NBCOAP_RASENDMODE_TYPE			NBCOAP_RASENDMODE_IDLE				//COAP发送RA模式
@@ -104,14 +108,28 @@
 #define	BEEP_OFF_US					230								//无源蜂鸣器关时间
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					133								//从固件版本
+#define	SOFTWARESUB					134								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 
+#if NETPROTOCAL == NETCOAP
 #define	RADIO_PRINT_WORKINFO			1								//无线输出Workinfo
 #define	RADIO_PRINT_NETINFO				1								//无线输出NetInfo
 #define	RADIO_PRINT_DEVINFO				1								//无线输出DeviceInfo
 #define	RADIO_PRINT_UPGRADEINFO			1								//无线输出UpgradeInfo
+#endif
+#if NETPROTOCAL == NETMQTTSN
+#define	RADIO_PRINT_WORKINFO			1								//无线输出Workinfo
+#define	RADIO_PRINT_NETINFO				1								//无线输出NetInfo
+#define	RADIO_PRINT_DEVINFO				0								//无线输出DeviceInfo
+#define	RADIO_PRINT_UPGRADEINFO			0								//无线输出UpgradeInfo
+#endif
+#if NETPROTOCAL == NETONENET
+#define	RADIO_PRINT_WORKINFO			1								//无线输出Workinfo
+#define	RADIO_PRINT_NETINFO				1								//无线输出NetInfo
+#define	RADIO_PRINT_DEVINFO				1								//无线输出DeviceInfo
+#define	RADIO_PRINT_UPGRADEINFO			1								//无线输出UpgradeInfo
+#endif
 
 #define	RADIO_CMD_UPLOAD_WORKINFO		1								//无线命令主动上报WorkInfo
 #define	RADIO_CMD_UPLOAD_NETINFO			1								//无线命令主动上报NetInfo
@@ -154,6 +172,7 @@
 #define	RADIO_DOWNLOAD_CMD_SETQMCCOEF		1								//RADIO下行指令SetQmcCoef
 #define	RADIO_DOWNLOAD_CMD_BEEPOFF		1								//RADIO下行指令BeepOff
 #define	RADIO_DOWNLOAD_CMD_UPLIMIT		1								//RADIO下行指令UpLimit
+#define	RADIO_DOWNLOAD_CMD_COVERGAIN		1								//RADIO下行指令CoverGain
 #define	RADIO_DOWNLOAD_CMD_RFDPRINTLV		1								//RADIO下行指令RFDprintLv
 #define	RADIO_DOWNLOAD_CMD_RESTORE		1								//RADIO下行指令Restore
 
@@ -176,6 +195,7 @@
 #define	NBCOAP_DOWNLOAD_CMD_SETQMCCOEF	1								//NBCOAP下行指令SetQmcCoef
 #define	NBCOAP_DOWNLOAD_CMD_BEEPOFF		1								//NBCOAP下行指令BeepOff
 #define	NBCOAP_DOWNLOAD_CMD_UPLIMIT		1								//NBCOAP下行指令UpLimit
+#define	NBCOAP_DOWNLOAD_CMD_COVERGAIN		1								//NBCOAP下行指令CoverGain
 
 #define	MQTTSN_DOWNLOAD_CMD_WORKMODE		1								//MQTTSN下行指令Workmode
 #define	MQTTSN_DOWNLOAD_CMD_SENSE		1								//MQTTSN下行指令Sense
@@ -194,6 +214,7 @@
 #define	MQTTSN_DOWNLOAD_CMD_SETQMCCOEF	1								//MQTTSN下行指令SetQmcCoef
 #define	MQTTSN_DOWNLOAD_CMD_BEEPOFF		1								//MQTTSN下行指令BeepOff
 #define	MQTTSN_DOWNLOAD_CMD_UPLIMIT		1								//MQTTSN下行指令UpLimit
+#define	MQTTSN_DOWNLOAD_CMD_COVERGAIN		1								//MQTTSN下行指令CoverGain
 
 #define	RF_DPRINT_LV_0					0								//调试信息不打印
 #define	RF_DPRINT_LV_1					1								//基本信息打印
