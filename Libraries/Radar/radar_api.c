@@ -170,6 +170,70 @@ void Radar_InitBG_Cmd(u32 v23456, u32 v7890a, u32 vbcdef, u32 vg)
 }
 
 /**********************************************************************************************************
+ @Function			void Radar_UpdateBG_Cmd(u8 oldgain, u8 newgain)
+ @Description			Radar_UpdateBG_Cmd
+ @Input				
+ @Return				void
+**********************************************************************************************************/
+void Radar_UpdateBG_Cmd(u8 oldgain, u8 newgain)
+{
+	FLASH_EEPROM_ReadBuffer(EEPROM_BASE_ADDR1, (u8 *)fre_magBG, sizeof(fre_magBG));							//读取EEPROM背景值
+	
+	fre_magBG[2] = (fre_magBG[2]*newgain+oldgain/2)/oldgain;
+	fre_magBG[3] = (fre_magBG[3]*newgain+oldgain/2)/oldgain;
+	fre_magBG[4] = (fre_magBG[4]*newgain+oldgain/2)/oldgain;
+	fre_magBG[5] = (fre_magBG[4]*newgain+oldgain/2)/oldgain;
+	
+#if 0
+	if (oldgain == RADAR_COVERGAIN_HIGH) {
+		if (newgain == RADAR_COVERGAIN_MIDDLE) {
+			fre_magBG[2] = (fre_magBG[2]*4+3)/5;
+			fre_magBG[3] = (fre_magBG[3]*4+3)/5;
+			fre_magBG[4] = (fre_magBG[4]*4+3)/5;
+			fre_magBG[5] = (fre_magBG[4]*4+3)/5;
+		}
+		else if (newgain == RADAR_COVERGAIN_LOW) {
+			fre_magBG[2] = (fre_magBG[2]*16+13)/25;
+			fre_magBG[3] = (fre_magBG[3]*16+13)/25;
+			fre_magBG[4] = (fre_magBG[4]*16+13)/25;
+			fre_magBG[5] = (fre_magBG[5]*16+13)/25;
+		}
+	}
+	else if (oldgain == RADAR_COVERGAIN_MIDDLE) {
+		if (newgain == RADAR_COVERGAIN_HIGH) {
+			fre_magBG[2] = (fre_magBG[2]*5+2)/4;
+			fre_magBG[3] = (fre_magBG[3]*5+2)/4;
+			fre_magBG[4] = (fre_magBG[4]*5+2)/4;
+			fre_magBG[5] = (fre_magBG[5]*5+2)/4;
+		}
+		else if (newgain == RADAR_COVERGAIN_LOW) {
+			fre_magBG[2] = (fre_magBG[2]*4+3)/5;
+			fre_magBG[3] = (fre_magBG[3]*4+3)/5;
+			fre_magBG[4] = (fre_magBG[4]*4+3)/5;
+			fre_magBG[5] = (fre_magBG[5]*4+3)/5;
+		}
+	}
+	else if (oldgain == RADAR_COVERGAIN_LOW) {
+		if (newgain == RADAR_COVERGAIN_HIGH) {
+			fre_magBG[2] = (fre_magBG[2]*25+8)/16;
+			fre_magBG[3] = (fre_magBG[3]*25+8)/16;
+			fre_magBG[4] = (fre_magBG[4]*25+8)/16;
+			fre_magBG[5] = (fre_magBG[5]*25+8)/16;
+		}
+		else if (newgain == RADAR_COVERGAIN_MIDDLE) {
+			fre_magBG[2] = (fre_magBG[2]*5+2)/4;
+			fre_magBG[3] = (fre_magBG[3]*5+2)/4;
+			fre_magBG[4] = (fre_magBG[4]*5+2)/4;
+			fre_magBG[5] = (fre_magBG[5]*5+2)/4;
+		}
+	}
+#endif
+	
+	FLASH_EEPROM_WriteBuffer(EEPROM_BASE_ADDR1, (u8 *)fre_magBG, sizeof(fre_magBG));
+	tradar_background_set(fre_magBG, (sizeof(fre_magBG))/2);
+}
+
+/**********************************************************************************************************
  @Function			u8 Radar_InitBackground(char mode)
  @Description			雷达初始化背景值
  @Input				mode
@@ -460,7 +524,7 @@ void Radar_EnterCriticalSection(void)
 	talgo_get_radartunebase_vptat();
 	/* -<0.1v 那么是国产雷达- */
 	if (val_vptat < 10) {
-		RADER_RANGE = 15;												// 6x304 +650 = 2486
+		RADER_RANGE = TCFG_SystemData.RadarGain;							// 6x304 +650 = 2486
 		RADER_LOW = 100;
 		radar_model = TRADAR_IMSEMI;
 	}

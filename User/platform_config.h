@@ -173,6 +173,7 @@
 #define	RADIO_DOWNLOAD_CMD_BEEPOFF		1								//RADIO下行指令BeepOff
 #define	RADIO_DOWNLOAD_CMD_UPLIMIT		1								//RADIO下行指令UpLimit
 #define	RADIO_DOWNLOAD_CMD_COVERGAIN		1								//RADIO下行指令CoverGain
+#define	RADIO_DOWNLOAD_CMD_RADARGAIN		1								//RADIO下行指令RadarGain
 #define	RADIO_DOWNLOAD_CMD_RFDPRINTLV		1								//RADIO下行指令RFDprintLv
 #define	RADIO_DOWNLOAD_CMD_RESTORE		1								//RADIO下行指令Restore
 
@@ -196,6 +197,7 @@
 #define	NBCOAP_DOWNLOAD_CMD_BEEPOFF		1								//NBCOAP下行指令BeepOff
 #define	NBCOAP_DOWNLOAD_CMD_UPLIMIT		1								//NBCOAP下行指令UpLimit
 #define	NBCOAP_DOWNLOAD_CMD_COVERGAIN		1								//NBCOAP下行指令CoverGain
+#define	NBCOAP_DOWNLOAD_CMD_RADARGAIN		1								//NBCOAP下行指令RadarGain
 
 #define	MQTTSN_DOWNLOAD_CMD_WORKMODE		1								//MQTTSN下行指令Workmode
 #define	MQTTSN_DOWNLOAD_CMD_SENSE		1								//MQTTSN下行指令Sense
@@ -215,6 +217,7 @@
 #define	MQTTSN_DOWNLOAD_CMD_BEEPOFF		1								//MQTTSN下行指令BeepOff
 #define	MQTTSN_DOWNLOAD_CMD_UPLIMIT		1								//MQTTSN下行指令UpLimit
 #define	MQTTSN_DOWNLOAD_CMD_COVERGAIN		1								//MQTTSN下行指令CoverGain
+#define	MQTTSN_DOWNLOAD_CMD_RADARGAIN		1								//MQTTSN下行指令RadarGain
 
 #define	RF_DPRINT_LV_0					0								//调试信息不打印
 #define	RF_DPRINT_LV_1					1								//基本信息打印

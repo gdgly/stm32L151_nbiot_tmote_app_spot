@@ -2192,11 +2192,34 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
 						"{(CoverGain):{(val):%hu,(Magic):%hu}", &CoverGain, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
-						TCFG_SystemData.CoverGain = CoverGain;
-						if ((TCFG_SystemData.CoverGain > RADAR_COVERGAIN_LOW) || (TCFG_SystemData.CoverGain < RADAR_COVERGAIN_HIGH)) {
-							TCFG_SystemData.CoverGain = RADAR_COVERGAIN_MIDDLE;						
+						if ((CoverGain < RADAR_COVERGAIN_LOW) || (CoverGain > RADAR_COVERGAIN_HIGH)) {
+							CoverGain = RADAR_COVERGAIN_DEFAULT;
 						}
-						TCFG_EEPROM_SetCoverGain(TCFG_SystemData.CoverGain);
+						if (TCFG_SystemData.CoverGain != CoverGain) {
+							Radar_UpdateBG_Cmd(TCFG_SystemData.CoverGain, CoverGain);
+							TCFG_SystemData.CoverGain = CoverGain;
+							TCFG_EEPROM_SetCoverGain(TCFG_SystemData.CoverGain);
+						}
+					}
+					else {
+						ret = NETIP_UNKNOWNERROR;
+					}
+			#endif
+				}
+				/* RadarGain */
+				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "RadarGain") != NULL) {
+			#if MQTTSN_DOWNLOAD_CMD_RADARGAIN
+					uint16_t RadarGain;
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
+						"{(RadarGain):{(val):%hu,(Magic):%hu}", &RadarGain, &recvMagicNum);
+					if (recvMagicNum == TCLOD_MAGIC_NUM) {
+						if ((RadarGain < TRADAR_GAIN_LOWEST) || (RadarGain > TRADAR_GAIN_HIGHEST)) {
+							RadarGain = TRADAR_GAIN_DEFAULT;
+						}
+						if (TCFG_SystemData.RadarGain != RadarGain) {
+							TCFG_SystemData.RadarGain = RadarGain;
+							TCFG_EEPROM_SetRadarGain(TCFG_SystemData.RadarGain);
+						}
 					}
 					else {
 						ret = NETIP_UNKNOWNERROR;

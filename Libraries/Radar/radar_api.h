@@ -13,12 +13,17 @@
 #define TO_SAVE_RADAR_BACKGROUND			1
 #define NOT_SAVE_RADAR_BACKGROUND			0
 
+#define TRADAR_GAIN_HIGHEST				15
+#define TRADAR_GAIN_DEFAULT				12
+#define TRADAR_GAIN_LOWEST				12
+
 extern tradar_targetinfo_s radar_targetinfo;
 
 void Radar_Init(void);													//雷达初始化
 u8   Radar_CheckData(u32 datain_t[], u16 in_num);								//雷达数据检查
 void Radar_InitBG_Cmd(u32 v23456, u32 v7890a, u32 vbcdef, u32 vg);				//雷达初始化背景命令
 u8   Radar_InitBackground(char mode);										//雷达初始化背景值
+void Radar_UpdateBG_Cmd(u8 oldgain, u8 newgain);								//雷达背景设置
 u8   Radar_GetData(tradar_targetinfo_s* targetinfo[], u8 dataNum);				//获取雷达数据
 char	Radar_GetModel(void);												//获取雷达类型
 

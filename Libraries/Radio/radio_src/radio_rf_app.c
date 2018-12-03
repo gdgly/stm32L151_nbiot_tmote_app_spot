@@ -488,13 +488,32 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "covergain")) {
 			#if RADIO_DOWNLOAD_CMD_COVERGAIN
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "covergain:%hu", &uval16);
-					TCFG_SystemData.CoverGain = uval16;
-					if ((TCFG_SystemData.CoverGain > RADAR_COVERGAIN_LOW) || (TCFG_SystemData.CoverGain < RADAR_COVERGAIN_HIGH)) {
-						TCFG_SystemData.CoverGain = RADAR_COVERGAIN_MIDDLE;						
+					if ((uval16 < RADAR_COVERGAIN_LOW) || (uval16 > RADAR_COVERGAIN_HIGH)) {
+						uval16 = RADAR_COVERGAIN_DEFAULT;
 					}
-					TCFG_EEPROM_SetCoverGain(TCFG_SystemData.CoverGain);
+					if (TCFG_SystemData.CoverGain != uval16) {
+						Radar_UpdateBG_Cmd(TCFG_SystemData.CoverGain, uval16);
+						TCFG_SystemData.CoverGain = uval16;
+						TCFG_EEPROM_SetCoverGain(TCFG_SystemData.CoverGain);
+					}
 				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("CoverGain:%hd", TCFG_EEPROM_GetCoverGain());
+				#endif
+			#endif
+				}
+				/* RadarGain */
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "radargain")) {
+			#if RADIO_DOWNLOAD_CMD_RADARGAIN
+					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "radargain:%hu", &uval16);
+					if ((uval16 < TRADAR_GAIN_LOWEST) || (uval16 > TRADAR_GAIN_HIGHEST)) {
+						uval16 = TRADAR_GAIN_DEFAULT;
+					}
+					if (TCFG_SystemData.RadarGain != uval16) {
+						TCFG_SystemData.RadarGain = uval16;
+						TCFG_EEPROM_SetRadarGain(TCFG_SystemData.RadarGain);
+					}
+				#if RADIO_CMD_ECHO_TYPE
+					Radio_Trf_Printf("RadarGain:%hd", TCFG_EEPROM_GetRadarGain());
 				#endif
 			#endif
 				}

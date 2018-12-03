@@ -19,6 +19,7 @@
 #include "hal_vbat.h"
 #include "hal_temperature.h"
 #include "hal_spiflash.h"
+#include "radar_api.h"
 #include "radio_hal_rf.h"
 #include "radio_rf_app.h"
 #include "inspectmessageoperate.h"
@@ -106,9 +107,13 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_SystemData.Sensitivity = SENSE_MIDDLE;
 	TCFG_EEPROM_SetSavedSensitivity(TCFG_SystemData.Sensitivity);
 	
-	/* 雷达覆水增益 */
-	TCFG_SystemData.CoverGain = RADAR_COVERGAIN_MIDDLE;
+	/* 覆水低频点增益 */
+	TCFG_SystemData.CoverGain = RADAR_COVERGAIN_DEFAULT;
 	TCFG_EEPROM_SetCoverGain(TCFG_SystemData.CoverGain);
+	
+	/* 雷达整体增益 */
+	TCFG_SystemData.RadarGain = TRADAR_GAIN_DEFAULT;
+	TCFG_EEPROM_SetRadarGain(TCFG_SystemData.RadarGain);
 	
 	/* 地磁背景值 */
 	TCFG_SystemData.MagBackgroundX = 0x7FFF;
@@ -266,9 +271,16 @@ void TCFG_EEPROM_ReadConfigData(void)
 	
 	/* 获取雷达覆盖时的增益值 */
 	TCFG_SystemData.CoverGain = TCFG_EEPROM_GetCoverGain();
-	if ((TCFG_SystemData.CoverGain > RADAR_COVERGAIN_LOW) || (TCFG_SystemData.CoverGain < RADAR_COVERGAIN_HIGH)) {
-		TCFG_SystemData.CoverGain = RADAR_COVERGAIN_MIDDLE;
+	if ((TCFG_SystemData.CoverGain < RADAR_COVERGAIN_LOW) || (TCFG_SystemData.CoverGain > RADAR_COVERGAIN_HIGH)) {
+		TCFG_SystemData.CoverGain = RADAR_COVERGAIN_DEFAULT;
 		TCFG_EEPROM_SetCoverGain(TCFG_SystemData.CoverGain);
+	}
+	
+	/* 获取雷达增益值 */
+	TCFG_SystemData.RadarGain = TCFG_EEPROM_GetRadarGain();
+	if ((TCFG_SystemData.RadarGain > TRADAR_GAIN_HIGHEST) || (TCFG_SystemData.RadarGain < TRADAR_GAIN_LOWEST)) {
+		TCFG_SystemData.RadarGain = TRADAR_GAIN_DEFAULT;
+		TCFG_EEPROM_SetRadarGain(TCFG_SystemData.RadarGain);
 	}
 	
 	/* 获取BOOT版本号 */
@@ -1673,6 +1685,28 @@ void TCFG_EEPROM_SetCoverGain(unsigned char val)
 unsigned char TCFG_EEPROM_GetCoverGain(void)
 {
 	return FLASH_EEPROM_ReadByte(TCFG_RADAR_COVER_GAIN_OFFSET); 
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetRadarGain(unsigned char val)
+ @Description			TCFG_EEPROM_SetRadarGain						: 保存 radar gain
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetRadarGain(unsigned char val)
+{
+	FLASH_EEPROM_WriteByte(TCFG_RADAR_GAIN_OFFSET, val);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned char TCFG_EEPROM_GetRadarGain(void)
+ @Description			TCFG_EEPROM_GetRadarGain						: 读取 radar gain
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned char TCFG_EEPROM_GetRadarGain(void)
+{
+	return FLASH_EEPROM_ReadByte(TCFG_RADAR_GAIN_OFFSET);
 }
 
 /**********************************************************************************************************
