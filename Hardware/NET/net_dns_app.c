@@ -654,7 +654,7 @@ void NET_DNS_NBIOT_Event_ReportError(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, REPORT_ERROE);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		DNS_DEBUG_LOG_PRINTF("NB ReportECde Set %d Fail", CMEEnable);
+		DNS_DEBUG_LOG_PRINTF("NB ReportECde %d Fail", CMEEnable);
 #endif
 	}
 }
@@ -712,7 +712,7 @@ void NET_DNS_NBIOT_Event_ParameterConfig(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, ICCID_CHECK, PARAMETER_CONFIG);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		DNS_DEBUG_LOG_PRINTF("NB Para Config Ok");
+		DNS_DEBUG_LOG_PRINTF("NB Para Cfg Ok");
 #endif
 	}
 	else {
@@ -721,9 +721,9 @@ void NET_DNS_NBIOT_Event_ParameterConfig(DNS_ClientsTypeDef* pClient)
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		DNS_DEBUG_LOG_PRINTF("NB Para Config Fail ECde %d", NBStatus);
+		DNS_DEBUG_LOG_PRINTF("NB Para Cfg Fail ECde %d", NBStatus);
 	#else
-		DNS_DEBUG_LOG_PRINTF("NB Para Config Fail");
+		DNS_DEBUG_LOG_PRINTF("NB Para Cfg Fail");
 	#endif
 #endif
 		return;
