@@ -14,6 +14,8 @@
   */
 
 #include "hal_eeprom.h"
+#include "platform_config.h"
+#include "platform_map.h"
 
 /**********************************************************************************************************
  @Function			static unsigned char FLASH_EEPROM_ReadByte_Private(unsigned int Address)

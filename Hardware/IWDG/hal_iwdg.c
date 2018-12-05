@@ -14,6 +14,8 @@
   */
 
 #include "hal_iwdg.h"
+#include "platform_config.h"
+#include "platform_map.h"
 
 IWDG_HandleTypeDef		IWDG_Handler;										//独立看门狗句柄
 

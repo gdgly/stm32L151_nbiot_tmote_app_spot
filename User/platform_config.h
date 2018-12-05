@@ -23,6 +23,10 @@
 #define	SYSTEMCLOCKHSI					32000000
 #define	SYSTEMCLOCK					SYSTEMCLOCKMSI						//系统时钟
 
+#define	SYSTEMRTCCLOCKLSI				37000
+#define	SYSTEMRTCCLOCKLSE				32768
+#define	SYSTEMRTCCLOCK					SYSTEMRTCCLOCKLSE					//RTC时钟
+
 #define	NETCOAP						0								//COAP
 #define	NETMQTTSN						1								//MQTTSN
 #define	NETONENET						2								//ONENET

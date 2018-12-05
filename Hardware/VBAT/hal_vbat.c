@@ -14,6 +14,8 @@
   */
 
 #include "hal_vbat.h"
+#include "platform_config.h"
+#include "platform_map.h"
 #include "stm32l1xx_config.h"
 #include "delay.h"
 

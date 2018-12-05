@@ -14,6 +14,8 @@
   */
 
 #include "hal_switch.h"
+#include "platform_config.h"
+#include "platform_map.h"
 
 /**********************************************************************************************************
  @Function			u8 Mercury_Read(void)

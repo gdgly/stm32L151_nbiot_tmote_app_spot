@@ -14,6 +14,8 @@
   */
 
 #include "hal_rtc.h"
+#include "platform_config.h"
+#include "platform_map.h"
 #include "string.h"
 
 RTC_HandleTypeDef RTC_Handler;											//RTC句柄
@@ -33,8 +35,14 @@ u8 RTC_Init(void)
 	
 	RTC_Handler.Instance = RTC;
 	RTC_Handler.Init.HourFormat = RTC_HOURFORMAT_24;							//RTC设置为24小时格式
+#if SYSTEMRTCCLOCK == SYSTEMRTCCLOCKLSE
 	RTC_Handler.Init.AsynchPrediv = 0x7F;									//RTC异步分频系数(1~0X7F)
 	RTC_Handler.Init.SynchPrediv = 0xFF;									//RTC同步分频系数(0~7FFF)
+#endif
+#if SYSTEMRTCCLOCK == SYSTEMRTCCLOCKLSI
+	RTC_Handler.Init.AsynchPrediv = 0x7F;									//RTC异步分频系数(1~0X7F)
+	RTC_Handler.Init.SynchPrediv = 0xFF;									//RTC同步分频系数(0~7FFF)
+#endif
 	RTC_Handler.Init.OutPut = RTC_OUTPUT_DISABLE;
 	RTC_Handler.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
 	RTC_Handler.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;

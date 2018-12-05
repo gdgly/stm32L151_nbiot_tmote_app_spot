@@ -14,6 +14,8 @@
   */
 
 #include "hal_temperature.h"
+#include "platform_config.h"
+#include "platform_map.h"
 #include "delay.h"
 
 ADC_HandleTypeDef		TEMPERATURE_ADC_Handler;								//内部温度传感器电压ADC句柄

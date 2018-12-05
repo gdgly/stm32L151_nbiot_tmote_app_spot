@@ -60,8 +60,8 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim)
 {
 	if (htim->Instance == TIM2) {
 		__HAL_RCC_TIM2_CLK_ENABLE();										//使能TIM2时钟
-		HAL_NVIC_SetPriority(TIM2_IRQn, 1, 0);								//设置中断优先级, 强占优先级1, 次优先级0
-		HAL_NVIC_EnableIRQ(TIM2_IRQn);									//开启TIM2中断
+		HAL_NVIC_SetPriority(TIM2_IRQn, 2, 0);								//设置中断优先级, 强占优先级2, 次优先级0
+		HAL_NVIC_EnableIRQ(TIM2_IRQn);									//使能TIM2中断
 	}
 }
 
@@ -272,7 +272,7 @@ void HAL_RTC_MspInit(RTC_HandleTypeDef* hrtc)
 		
 		__HAL_RCC_PWR_CLK_ENABLE();										//使能电源时钟PWR
 		HAL_PWR_EnableBkUpAccess();										//取消备份区域写保护
-		
+#if SYSTEMRTCCLOCK == SYSTEMRTCCLOCKLSE
 		RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSE;				//LSE配置
 		RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;						//DISABLE PLL
 		RCC_OscInitStruct.LSEState = RCC_LSE_ON;							//RTC使用LSE
@@ -281,11 +281,21 @@ void HAL_RTC_MspInit(RTC_HandleTypeDef* hrtc)
 		PeriphCLKInitStruct.PeriphClockSelection = RCC_PERIPHCLK_RTC;			//外设为RTC
 		PeriphCLKInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;			//RTC时钟源为LSE
 		HAL_RCCEx_PeriphCLKConfig(&PeriphCLKInitStruct);
+#endif
+#if SYSTEMRTCCLOCK == SYSTEMRTCCLOCKLSI
+		RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI;				//LSI配置
+		RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;						//DISABLE PLL
+		RCC_OscInitStruct.LSIState = RCC_LSI_ON;							//RTC使用LSI
+		HAL_RCC_OscConfig(&RCC_OscInitStruct);
 		
+		PeriphCLKInitStruct.PeriphClockSelection = RCC_PERIPHCLK_RTC;			//外设为RTC
+		PeriphCLKInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;			//RTC时钟源为LSI
+		HAL_RCCEx_PeriphCLKConfig(&PeriphCLKInitStruct);
+#endif
 		__HAL_RCC_RTC_ENABLE();											//RTC时钟使能
 		
-		HAL_NVIC_SetPriority(RTC_WKUP_IRQn, 2, 0);
-		HAL_NVIC_EnableIRQ(RTC_WKUP_IRQn);
+		HAL_NVIC_SetPriority(RTC_WKUP_IRQn, 3, 0);							//设置中断优先级, 强占优先级3, 次优先级0
+		HAL_NVIC_EnableIRQ(RTC_WKUP_IRQn);									//使能WKUP中断
 	}
 }
 
@@ -334,7 +344,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 		GPIO_Initure.Alternate = GPIO_AF7_USART1;							//复用为串口1
 		HAL_GPIO_Init(GPIOA, &GPIO_Initure);								//初始化PA9|PA10
 		
-		HAL_NVIC_SetPriority(USART1_IRQn, 0, 0);							//抢占优先级0, 子优先级0
+		HAL_NVIC_SetPriority(USART1_IRQn, 1, 0);							//抢占优先级1, 子优先级0
 		HAL_NVIC_EnableIRQ(USART1_IRQn);									//使能USART1中断通道
 	}
 #endif
@@ -352,7 +362,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 		GPIO_Initure.Alternate = GPIO_AF7_USART2;							//复用为串口2
 		HAL_GPIO_Init(GPIOA, &GPIO_Initure);								//初始化PA2|PA3
 		
-		HAL_NVIC_SetPriority(USART2_IRQn, 0, 1);							//抢占优先级0, 子优先级1
+		HAL_NVIC_SetPriority(USART2_IRQn, 1, 1);							//抢占优先级1, 子优先级1
 		HAL_NVIC_EnableIRQ(USART2_IRQn);									//使能USART2中断通道
 	}
 #endif

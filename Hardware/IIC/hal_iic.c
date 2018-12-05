@@ -14,8 +14,9 @@
   */
 
 #include "hal_iic.h"
-#include "delay.h"
 #include "platform_config.h"
+#include "platform_map.h"
+#include "delay.h"
 
 /**********************************************************************************************************
  @Function			void IIC_Init(void)

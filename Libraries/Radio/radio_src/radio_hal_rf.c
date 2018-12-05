@@ -117,7 +117,7 @@ void Radio_Rf_Interface_Init(void)
 	HAL_GPIO_Init(RF_nIRQ_GPIO_PORT, &GPIO_Initure);
 	
 	/* Set EXTI lines 15 to 10 Interrupt to the lowest priority */
-	HAL_NVIC_SetPriority(RF_IRQn, 2, 0);
+	HAL_NVIC_SetPriority(RF_IRQn, 1, 2);
 	HAL_NVIC_DisableIRQ(RF_IRQn);
 }
 
@@ -340,7 +340,7 @@ void Radio_Rf_ISR(void)
 	uint8_t tmp;
 	uint8_t* g_Recvlong = mrfiIncomingPacket.frame;
 	
-	if (rf_inited == 0) {
+	if ((rf_inited == 0) || (Radio_Rf_is_Sleep())) {
 		return;
 	}
 	

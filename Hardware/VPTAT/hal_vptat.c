@@ -14,6 +14,8 @@
   */
 
 #include "hal_vptat.h"
+#include "platform_config.h"
+#include "platform_map.h"
 #include "delay.h"
 
 ADC_HandleTypeDef		VPTAT_ADC_Handler;									//VPTAT电压ADC句柄

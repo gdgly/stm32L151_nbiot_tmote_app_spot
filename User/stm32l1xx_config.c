@@ -402,11 +402,18 @@ void LowPowerEnterStop(void)
 	Radar_ADC_DeInit();
 	Radar_DAC_DeInit();
 	
-	__HAL_RCC_PWR_CLK_ENABLE();
-	SysTick->CTRL &= (~SysTick_CTRL_ENABLE_Msk);
-	
 	HAL_RTCEx_DeactivateWakeUpTimer(&RTC_Handler);
+#if SYSTEMRTCCLOCK == SYSTEMRTCCLOCKLSE
 	HAL_RTCEx_SetWakeUpTimer_IT(&RTC_Handler, 0x800, RTC_WAKEUPCLOCK_RTCCLK_DIV16);
+#endif
+#if SYSTEMRTCCLOCK == SYSTEMRTCCLOCKLSI
+	HAL_RTCEx_SetWakeUpTimer_IT(&RTC_Handler, 0x800, RTC_WAKEUPCLOCK_RTCCLK_DIV16);
+#endif
+	
+	__HAL_RCC_PWR_CLK_ENABLE();
+	
+	__disable_irq();
+	SysTick->CTRL &= (~SysTick_CTRL_ENABLE_Msk);
 	
 	HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);
 	
@@ -414,6 +421,7 @@ void LowPowerEnterStop(void)
 	Stm32_IncSecondTick();
 	
 	SysTick->CTRL |= SysTick_CTRL_ENABLE_Msk;
+	__enable_irq();
 	
 #ifndef SYSTEMCLOCK
 	#error No Define SYSTEMCLOCK!
