@@ -537,7 +537,7 @@ void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, ICCID_CHECK, PARAMETER_CONFIG);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		COAP_DEBUG_LOG_PRINTF("NB Para Config Read Ok");
+		COAP_DEBUG_LOG_PRINTF("NB Para Cfg Ok");
 #endif
 	}
 	else {
@@ -546,9 +546,9 @@ void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		COAP_DEBUG_LOG_PRINTF("NB Para Config Read Fail ECde %d", NBStatus);
+		COAP_DEBUG_LOG_PRINTF("NB Para Cfg Fail ECde %d", NBStatus);
 	#else
-		COAP_DEBUG_LOG_PRINTF("NB Para Config Read Fail");
+		COAP_DEBUG_LOG_PRINTF("NB Para Cfg Fail");
 	#endif
 #endif
 		return;
@@ -692,7 +692,7 @@ void NET_COAP_NBIOT_Event_SimICCIDCheck(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, ICCID_CHECK);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		COAP_DEBUG_LOG_PRINTF("NB ICCID Check Ok");
+		COAP_DEBUG_LOG_PRINTF("NB ICCID Ok");
 #endif
 	}
 	else {
@@ -965,10 +965,10 @@ void NET_COAP_NBIOT_Event_NbandModeCheck(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, NBAND_MODE_CHECK);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		COAP_DEBUG_LOG_PRINTF("CoAP BAND Read %d:%d.%d.%d Ok", pClient->Parameter.band.NBandNum, \
-													pClient->Parameter.band.NBandVal[0], \
-													pClient->Parameter.band.NBandVal[1], \
-													pClient->Parameter.band.NBandVal[2]);
+		COAP_DEBUG_LOG_PRINTF("CoAP BAND %d:%d.%d.%d Ok", pClient->Parameter.band.NBandNum, \
+												pClient->Parameter.band.NBandVal[0], \
+												pClient->Parameter.band.NBandVal[1], \
+												pClient->Parameter.band.NBandVal[2]);
 #endif
 	}
 	else {
@@ -1110,9 +1110,9 @@ void NET_COAP_NBIOT_Event_MiscEquipConfig(NBIOT_ClientsTypeDef* pClient)
 			
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 		#if NBIOT_PRINT_ERROR_CODE_TYPE
-			COAP_DEBUG_LOG_PRINTF("CoAP NNMI Set %d Fail ECde %d", CloseFunc, NBStatus);
+			COAP_DEBUG_LOG_PRINTF("CoAP NNMI %d Fail ECde %d", CloseFunc, NBStatus);
 		#else
-			COAP_DEBUG_LOG_PRINTF("CoAP NNMI Set %d Fail", CloseFunc);
+			COAP_DEBUG_LOG_PRINTF("CoAP NNMI %d Fail", CloseFunc);
 		#endif
 #endif
 			return;
@@ -1134,9 +1134,9 @@ void NET_COAP_NBIOT_Event_MiscEquipConfig(NBIOT_ClientsTypeDef* pClient)
 			
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 		#if NBIOT_PRINT_ERROR_CODE_TYPE
-			COAP_DEBUG_LOG_PRINTF("CoAP NSMI Set %d Fail ECde %d", CloseFunc, NBStatus);
+			COAP_DEBUG_LOG_PRINTF("CoAP NSMI %d Fail ECde %d", CloseFunc, NBStatus);
 		#else
-			COAP_DEBUG_LOG_PRINTF("CoAP NSMI Set %d Fail", CloseFunc);
+			COAP_DEBUG_LOG_PRINTF("CoAP NSMI %d Fail", CloseFunc);
 		#endif
 #endif
 			return;
@@ -1291,7 +1291,7 @@ void NET_COAP_NBIOT_Event_ParameterCheckOut(NBIOT_ClientsTypeDef* pClient)
 		pClient->Registered = true;
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		COAP_DEBUG_LOG_PRINTF("CoAP Parameter Check Ok");
+		COAP_DEBUG_LOG_PRINTF("CoAP Para Check Ok");
 #endif
 	}
 	else {
@@ -1300,9 +1300,9 @@ void NET_COAP_NBIOT_Event_ParameterCheckOut(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		COAP_DEBUG_LOG_PRINTF("CoAP Parameter Check Fail ECde %d", NBStatus);
+		COAP_DEBUG_LOG_PRINTF("CoAP Para Check Fail ECde %d", NBStatus);
 	#else
-		COAP_DEBUG_LOG_PRINTF("CoAP Parameter Check Fail");
+		COAP_DEBUG_LOG_PRINTF("CoAP Para Check Fail");
 	#endif
 #endif
 		return;
@@ -2347,7 +2347,7 @@ void NET_COAP_NBIOT_Listen_Event_EnterParameter(NBIOT_ClientsTypeDef* pClient)
 				pClient->ListenRunCtl.listenEvent = NBCOAP_LISTEN_MODE_ENTER_PARAMETER;
 				pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt = 0;
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-				COAP_DEBUG_LOG_PRINTF("CoAP Parameter Check Ok");
+				COAP_DEBUG_LOG_PRINTF("CoAP Para Check Ok");
 				Radio_Trf_Printf("RSSI:%d", pClient->Parameter.rssi);
 				Radio_Trf_Printf("SNR:%d", pClient->Parameter.statisticsRADIO.SNR);
 #endif
@@ -2371,7 +2371,7 @@ void NET_COAP_NBIOT_Listen_Event_EnterParameter(NBIOT_ClientsTypeDef* pClient)
 					pClient->ListenRunCtl.listenEvent = NBCOAP_LISTEN_MODE_ENTER_PARAMETER;
 				}
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-				COAP_DEBUG_LOG_PRINTF("CoAP Parameter Check Fail");
+				COAP_DEBUG_LOG_PRINTF("CoAP Para Check Fail");
 #endif
 				return;
 			}

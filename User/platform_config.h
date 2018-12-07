@@ -100,6 +100,12 @@
 #define	PRODUCTTEST_READ_ENABLE			1
 #define	PRODUCTTEST_READ_TYPE			PRODUCTTEST_READ_ENABLE				//测试点测试模式
 
+#define	PRODUCTTEST_TIMEOUT_DISABLE		0
+#define	PRODUCTTEST_TIMEOUT_ENABLE		1
+#define	PRODUCTTEST_TIMEOUT_TYPE			PRODUCTTEST_TIMEOUT_ENABLE			//测试点超时退出测试
+
+#define	PRODUCTTEST_OVER_TIME			300								//测试点超时时间
+
 #define	RADAR_MODEL_V1					1
 #define	RADAR_MODEL_V2					2
 #define	RADAR_MODEL_TYPE				RADAR_MODEL_V2						//雷达类型
@@ -112,7 +118,7 @@
 #define	BEEP_OFF_US					230								//无源蜂鸣器关时间
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					134								//从固件版本
+#define	SOFTWARESUB					135								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 

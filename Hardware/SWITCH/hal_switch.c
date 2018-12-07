@@ -51,11 +51,16 @@ u8 Mercury_Read(void)
  @Function			u8 ProductTest_Read(void)
  @Description			产品测试读取状态 PB5
  @Input				void
- @Return				GPIO_PinState
+ @Return				GPIO_PinState						1 : Work
+													0 : Test
 **********************************************************************************************************/
 u8 ProductTest_Read(void)
 {
-	u8 ret = 0;
+	u8 ret = 1;
+#if PRODUCTTEST_TIMEOUT_TYPE
+	static u8 productReadHold = 0;
+	static u32 productHoldTime = 0;
+#endif
 	
 	GPIO_InitTypeDef GPIO_Initure;
 	
@@ -68,6 +73,19 @@ u8 ProductTest_Read(void)
 	HAL_GPIO_Init(PRODUCTTEST_GPIOx, &GPIO_Initure);							//初始化GPIO
 	
 	ret = PRODUCTTEST_READ();
+#if PRODUCTTEST_TIMEOUT_TYPE
+	if (ret) productReadHold = 0;
+	if ((ret == 0) && (productReadHold == 0)) {
+		productReadHold = 1;
+		productHoldTime = Stm32_GetSecondTick() + PRODUCTTEST_OVER_TIME;
+	}
+	else if ((ret == 0) && (productReadHold == 1) && (productHoldTime > Stm32_GetSecondTick())) {
+		ret = 0;
+	}
+	else {
+		ret = 1;
+	}
+#endif
 	
 	GPIO_Initure.Pull = GPIO_NOPULL;
 	HAL_GPIO_Init(PRODUCTTEST_GPIOx, &GPIO_Initure);							//初始化GPIO

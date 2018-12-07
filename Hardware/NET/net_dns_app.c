@@ -512,7 +512,7 @@ void NET_DNS_NBIOT_Event_StopMode(DNS_ClientsTypeDef* pClient)
 	
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 	DNS_DEBUG_LOG_PRINTF("DNS use lastAnalysis");
-	DNS_DEBUG_LOG_PRINTF("%s : %s", MQTTSN_SERVER_HOST_NAME, DNS_GetHostIP(pClient, (unsigned char*)MQTTSN_SERVER_HOST_NAME));
+	DNS_DEBUG_LOG_PRINTF("%s:%s", MQTTSN_SERVER_HOST_NAME, DNS_GetHostIP(pClient, (unsigned char*)MQTTSN_SERVER_HOST_NAME));
 #endif
 }
 #else
@@ -867,7 +867,7 @@ void NET_DNS_NBIOT_Event_SimICCIDCheck(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, ICCID_CHECK);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		DNS_DEBUG_LOG_PRINTF("NB ICCID Check Ok");
+		DNS_DEBUG_LOG_PRINTF("NB ICCID Ok");
 #endif
 	}
 	else {
@@ -1034,10 +1034,10 @@ void NET_DNS_NBIOT_Event_NbandModeCheck(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, NBAND_MODE_CHECK);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		DNS_DEBUG_LOG_PRINTF("NB BAND Read %d:%d.%d.%d Ok", pClient->SocketStack->NBIotStack->Parameter.band.NBandNum, \
-												  pClient->SocketStack->NBIotStack->Parameter.band.NBandVal[0], \
-												  pClient->SocketStack->NBIotStack->Parameter.band.NBandVal[1], \
-												  pClient->SocketStack->NBIotStack->Parameter.band.NBandVal[2]);
+		DNS_DEBUG_LOG_PRINTF("NB BAND %d:%d.%d.%d Ok", pClient->SocketStack->NBIotStack->Parameter.band.NBandNum, \
+											  pClient->SocketStack->NBIotStack->Parameter.band.NBandVal[0], \
+											  pClient->SocketStack->NBIotStack->Parameter.band.NBandVal[1], \
+											  pClient->SocketStack->NBIotStack->Parameter.band.NBandVal[2]);
 #endif
 	}
 	else {
@@ -1314,7 +1314,7 @@ void NET_DNS_Event_CreatUDPSocket(DNS_ClientsTypeDef* pClient)
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 		DNS_DEBUG_LOG_PRINTF("DNS has been latestAnalysis");
-		DNS_DEBUG_LOG_PRINTF("%s : %s", MQTTSN_SERVER_HOST_NAME, DNS_GetHostIP(pClient, (unsigned char*)MQTTSN_SERVER_HOST_NAME));
+		DNS_DEBUG_LOG_PRINTF("%s:%s", MQTTSN_SERVER_HOST_NAME, DNS_GetHostIP(pClient, (unsigned char*)MQTTSN_SERVER_HOST_NAME));
 #endif
 		return;
 	}
@@ -1446,7 +1446,7 @@ void NET_DNS_Event_RecvDnsStructData(DNS_ClientsTypeDef* pClient)
 					DNS_DictateEvent_SuccessExecute(pClient, DNS_PROCESS_STACK, DNS_PROCESS_SEND_DNS_STRUCT_DATA, DNS_PROCESS_RECV_DNS_STRUCT_DATA, true);
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 					DNS_DEBUG_LOG_PRINTF("DNS Analy %s OK", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
-					DNS_DEBUG_LOG_PRINTF("%s : %s", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr, pClient->AnalysisData[pClient->AnalysisTick].hostIP);
+					DNS_DEBUG_LOG_PRINTF("%s:%s", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr, pClient->AnalysisData[pClient->AnalysisTick].hostIP);
 #endif
 					pClient->AnalysisTick += 1;
 				}
