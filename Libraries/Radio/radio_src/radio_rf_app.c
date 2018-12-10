@@ -518,9 +518,9 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 			#endif
 				}
 				/* SenseMode */
-				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "sensemode")) {
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "sormode")) {
 			#if RADIO_DOWNLOAD_CMD_SENSEMODE
-					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "sensemode:%hu", &uval16);
+					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "sormode:%hu", &uval16);
 					if (TCFG_SystemData.SenseMode != uval16) {
 						TCFG_SystemData.SenseMode = uval16;
 						TCFG_EEPROM_SetSenseMode(TCFG_SystemData.SenseMode);

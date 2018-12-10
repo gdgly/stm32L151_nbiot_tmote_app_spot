@@ -2190,7 +2190,7 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 			#if MQTTSN_DOWNLOAD_CMD_COVERGAIN
 					uint16_t CoverGain;
 					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
-						"{(CoverGain):{(val):%hu,(Magic):%hu}", &CoverGain, &recvMagicNum);
+						"{(CoverGain):{(val):%hu,(Magic):%hu}}", &CoverGain, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
 						if ((CoverGain < RADAR_COVERGAIN_LOW) || (CoverGain > RADAR_COVERGAIN_HIGH)) {
 							CoverGain = RADAR_COVERGAIN_DEFAULT;
@@ -2211,7 +2211,7 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 			#if MQTTSN_DOWNLOAD_CMD_RADARGAIN
 					uint16_t RadarGain;
 					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
-						"{(RadarGain):{(val):%hu,(Magic):%hu}", &RadarGain, &recvMagicNum);
+						"{(RadarGain):{(val):%hu,(Magic):%hu}}", &RadarGain, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
 						if ((RadarGain < TRADAR_GAIN_LOWEST) || (RadarGain > TRADAR_GAIN_HIGHEST)) {
 							RadarGain = TRADAR_GAIN_DEFAULT;
@@ -2227,11 +2227,11 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 			#endif
 				}
 				/* SenseMode */
-				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "RadarGain") != NULL) {
+				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "SorMode") != NULL) {
 			#if MQTTSN_DOWNLOAD_CMD_SENSEMODE
 					uint16_t SenseMode;
 					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
-						"{(SenseMode):{(val):%hu,(Magic):%hu}", &SenseMode, &recvMagicNum);
+						"{(SorMode):{(val):%hu,(Magic):%hu}}", &SenseMode, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
 						if (TCFG_SystemData.SenseMode != SenseMode) {
 							TCFG_SystemData.SenseMode = SenseMode;
