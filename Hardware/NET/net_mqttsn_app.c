@@ -2226,6 +2226,23 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					}
 			#endif
 				}
+				/* SenseMode */
+				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "RadarGain") != NULL) {
+			#if MQTTSN_DOWNLOAD_CMD_SENSEMODE
+					uint16_t SenseMode;
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
+						"{(SenseMode):{(val):%hu,(Magic):%hu}", &SenseMode, &recvMagicNum);
+					if (recvMagicNum == TCLOD_MAGIC_NUM) {
+						if (TCFG_SystemData.SenseMode != SenseMode) {
+							TCFG_SystemData.SenseMode = SenseMode;
+							TCFG_EEPROM_SetSenseMode(TCFG_SystemData.SenseMode);
+						}
+					}
+					else {
+						ret = NETIP_UNKNOWNERROR;
+					}
+			#endif
+				}
 				/* ...... */
 			}
 			else if (messageHandler->message->payload[recvBufOffset + TCLOD_MSGID_OFFSET] == TCLOD_CONFIG_GET) {

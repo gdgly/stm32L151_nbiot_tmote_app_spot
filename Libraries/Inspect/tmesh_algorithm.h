@@ -33,6 +33,7 @@
   * 20181023  版本28: 距离12及以下都认为疑似积水.
   *		    版本29: 当magdif值降低到150以下,同时还是积水状态,那么也判定为无车,在雷达和磁场不同时波动时,原先的距离<=16就疑似为覆盖改为<=12.
   *		    版本30: 当magdif值降低到300以下,同时还是积水状态,那么也判定为无车.
+  *		    版本31: 增加检测模式,双传感器模式,纯雷达模式,单地磁模式.实际只生效单地磁模式和双传感器模式.
   *
   *********************************************************************************************************
   */
@@ -47,6 +48,13 @@
 #define TALGO_TRUE						1
 
 extern int errcode;
+
+enum TRADAR_SENSE_MODE
+{
+	TRADAR_SENSE_BOTH					= 0x00,
+	TRADAR_SENSE_MAG					= 0x01,
+	TRADAR_SENSE_RADAR					= 0x02
+};
 
 enum TRADAR_MAGMOD
 {
@@ -442,5 +450,13 @@ void QMC5883L_InitBackgroud_cmd(u16 x, u16 y, u16 z);
  @Return				none
 **********************************************************************************************************/
 void talgo_init(void);
+
+/**********************************************************************************************************
+ @Function			talgo_check_mag_motion_lately
+ @Description			check the variety of magnetic data in last two minute
+ @Input				val 
+ @Return				0=radar+magnetic, 1=magnetic only, 2=radar only.
+**********************************************************************************************************/
+void talgo_set_sense_mode(u8 val);
 
 #endif

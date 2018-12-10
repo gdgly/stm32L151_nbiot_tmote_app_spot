@@ -320,7 +320,8 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Dynamic(char* outBuffer)
 				"\"Indelay\":%d,"
 				"\"Nbheart\":%d,"
 				"\"Cgain\":%d,"
-				"\"Rgain\":%d"
+				"\"Rgain\":%d,"
+				"\"Smode\":%d"
 			"}"
 		"}",
 		
@@ -340,7 +341,8 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Dynamic(char* outBuffer)
 		TCFG_EEPROM_GetCarInDelay(),
 		TCFG_EEPROM_GetNbiotHeart(),
 		TCFG_Utility_Get_GainCover(),
-		TCFG_EEPROM_GetRadarGain()
+		TCFG_EEPROM_GetRadarGain(),
+		TCFG_EEPROM_GetSenseMode()
 	);
 	
 	return strlen(outBuffer);
@@ -508,7 +510,8 @@ int NET_MQTTSN_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer)
 				"\"Indelay\":%d,"
 				"\"Nbheart\":%d,"
 				"\"Cgain\":%d,"
-				"\"Rgain\":%d"
+				"\"Rgain\":%d,"
+				"\"Smode\":%d"
 			"}"
 		"}",
 		
@@ -528,7 +531,8 @@ int NET_MQTTSN_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer)
 		TCFG_EEPROM_GetCarInDelay(),
 		TCFG_EEPROM_GetNbiotHeart(),
 		TCFG_Utility_Get_GainCover(),
-		TCFG_EEPROM_GetRadarGain()
+		TCFG_EEPROM_GetRadarGain(),
+		TCFG_EEPROM_GetSenseMode()
 	);
 	
 	return strlen(outBuffer);

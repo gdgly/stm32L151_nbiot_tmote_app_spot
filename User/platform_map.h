@@ -192,6 +192,9 @@
 
 #define TCFG_RADAR_GAIN_OFFSET			TCFG_RADAR_COVER_GAIN_OFFSET + TCFG_RADAR_COVER_GAIN_LENGTH	//0x08080E2E
 #define TCFG_RADAR_GAIN_LENGTH			1												//Gain in				Radar增益
+
+#define TCFG_SENSE_MODE_OFFSET			TCFG_RADAR_GAIN_OFFSET + TCFG_RADAR_GAIN_LENGTH			//0x08080E2F
+#define TCFG_SENSE_MODE_LENGTH			1												//Sense Mode			传感器模式
 /************************************************************** End **************************************************************/
 
 enum TCFG_SENSITIVITY																	//传感器灵敏度
@@ -239,6 +242,7 @@ typedef struct
 	unsigned char						RFChannel;										//无线通道
 	unsigned char						RFDprintLv;										//无线调试信息输出等级
 	unsigned char						MagMode;											//地磁模式
+	unsigned char						SenseMode;										//传感器模式
 	unsigned int						RadarCount;										//雷达次数
 	unsigned char						RadarRange;										//雷达检测范围
 	unsigned char						CoverGain;										//雷达覆水增益
@@ -401,6 +405,9 @@ char*		TCFG_EEPROM_Get_Vender_String(void);											//读取vender字符串
 
 void			TCFG_EEPROM_SetMagMode(uint8_t val);											//保存MagMode
 unsigned char	TCFG_EEPROM_GetMagMode(void);													//读取MagMode
+
+void			TCFG_EEPROM_SetSenseMode(uint8_t val);											//保存 sense mode
+unsigned char	TCFG_EEPROM_GetSenseMode(void);												//读取 sense mode
 
 void			TCFG_EEPROM_SetNbiotHeart(uint8_t val);											//保存NbiotHeart
 unsigned char	TCFG_EEPROM_GetNbiotHeart(void);												//读取NbiotHeart

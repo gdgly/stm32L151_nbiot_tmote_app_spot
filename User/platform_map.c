@@ -151,6 +151,10 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_SystemData.MagMode = 0;
 	TCFG_EEPROM_SetMagMode(TCFG_SystemData.MagMode);
 	
+	/* 传感器模式 */
+	TCFG_SystemData.SenseMode = TRADAR_SENSE_BOTH;
+	TCFG_EEPROM_SetSenseMode(TCFG_SystemData.SenseMode);
+	
 	/* 雷达次数 */
 	TCFG_SystemData.RadarCount = 0;
 	TCFG_EEPROM_SetRadarCount(TCFG_SystemData.RadarCount);
@@ -334,6 +338,9 @@ void TCFG_EEPROM_ReadConfigData(void)
 	
 	/* 地磁模式 */
 	TCFG_SystemData.MagMode = TCFG_EEPROM_GetMagMode();
+	
+	/* 传感器模式 */
+	TCFG_SystemData.SenseMode = TCFG_EEPROM_GetSenseMode();
 	
 	/* 雷达次数 */
 	TCFG_SystemData.RadarCount = TCFG_EEPROM_GetRadarCount();
@@ -1602,6 +1609,28 @@ void TCFG_EEPROM_SetMagMode(uint8_t val)
 unsigned char TCFG_EEPROM_GetMagMode(void)
 {
 	return FLASH_EEPROM_ReadByte(TCFG_MAG_MODE_OFFSET);
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetSenseMode(uint8_t val)
+ @Description			TCFG_EEPROM_SetSenseMode						: 保存 sense mode
+ @Input				val 0=both sensors,1=magnetic only,2=radar only
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetSenseMode(uint8_t val)
+{
+	FLASH_EEPROM_WriteByte(TCFG_SENSE_MODE_OFFSET, val);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned char TCFG_EEPROM_GetSenseMode(void)
+ @Description			TCFG_EEPROM_GetSenseMode						: 读取 sense mode
+ @Input				void
+ @Return				val 0=both sensors,1=magnetic only,2=radar only
+**********************************************************************************************************/
+unsigned char TCFG_EEPROM_GetSenseMode(void)
+{
+	return FLASH_EEPROM_ReadByte(TCFG_SENSE_MODE_OFFSET);
 }
 
 /**********************************************************************************************************

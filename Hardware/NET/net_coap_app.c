@@ -2205,6 +2205,23 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						}
 				#endif
 					}
+					/* SenseMode */
+					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "SenseMode") != NULL) {
+				#if NBCOAP_DOWNLOAD_CMD_SENSEMODE
+						uint16_t SenseMode;
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
+							"{(SenseMode):{(val):%hu,(Magic):%hu}", &SenseMode, &recvMagicNum);
+						if (recvMagicNum == TCLOD_MAGIC_NUM) {
+							if (TCFG_SystemData.SenseMode != SenseMode) {
+								TCFG_SystemData.SenseMode = SenseMode;
+								TCFG_EEPROM_SetSenseMode(TCFG_SystemData.SenseMode);
+							}
+						}
+						else {
+							ret = NETIP_UNKNOWNERROR;
+						}
+				#endif
+					}
 					/* ...... */
 				}
 				else if (pClient->Recvbuf[recvBufOffset + TCLOD_MSGID_OFFSET] == TCLOD_CONFIG_GET) {

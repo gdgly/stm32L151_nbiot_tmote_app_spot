@@ -517,6 +517,19 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				#endif
 			#endif
 				}
+				/* SenseMode */
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "sensemode")) {
+			#if RADIO_DOWNLOAD_CMD_SENSEMODE
+					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "sensemode:%hu", &uval16);
+					if (TCFG_SystemData.SenseMode != uval16) {
+						TCFG_SystemData.SenseMode = uval16;
+						TCFG_EEPROM_SetSenseMode(TCFG_SystemData.SenseMode);
+					}
+				#if RADIO_CMD_ECHO_TYPE
+					Radio_Trf_Printf("SenseMode:%hd", TCFG_EEPROM_GetSenseMode());
+				#endif
+			#endif
+				}
 				/* Restore */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "restore")) {
 			#if RADIO_DOWNLOAD_CMD_RESTORE
