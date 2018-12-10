@@ -50,6 +50,8 @@ void GD25Q_SPIFLASH_Init(void)
 	GD25Q_SPIFLASH_Handler.Init.BaudRatePrescaler	= SPI_BAUDRATEPRESCALER_2;				//定义波特率与分频值
 #elif (SYSTEMCLOCK == SYSTEMCLOCKHSI)
 	GD25Q_SPIFLASH_Handler.Init.BaudRatePrescaler	= SPI_BAUDRATEPRESCALER_8;				//定义波特率与分频值
+#elif (SYSTEMCLOCK == SYSTEMCLOCKHSE)
+	GD25Q_SPIFLASH_Handler.Init.BaudRatePrescaler	= SPI_BAUDRATEPRESCALER_8;				//定义波特率与分频值
 #else
 	#error SYSTEMCLOCK Define Error
 #endif

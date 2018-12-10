@@ -23,7 +23,7 @@ __IO u32 SystemSoftResetTime = 0;											//系统运行超时软件复位时�
 Stm32_SystemRunningTime		SystemRunningTime = {0, 0, 100, 0, 0, 0, 1, 0, 0, 0};	//系统运行时间(结构体)
 
 /**********************************************************************************************************
- @Function			void Stm32_Clock_Init(u32 pllmul, u32 plldiv)
+ @Function			void Stm32_HSIClock_Init(u32 pllmul, u32 plldiv)
  @Description			时钟设置函数(MAX32MHz)
  @Input				pllmul	: 主PLL倍频系数(PLL倍频),取值范围:0 ~ 48
 					plldiv	: 系统时钟的主PLL分频系数(PLL之后的分频),取值范围:2,3,4.(仅限这3个值!)
@@ -33,7 +33,7 @@ Stm32_SystemRunningTime		SystemRunningTime = {0, 0, 100, 0, 0, 0, 1, 0, 0, 0};	/
 					Fsys : 系统时钟频率
 					Fs	: PLL输入时钟频率,可以是HSI,HSE等
 **********************************************************************************************************/
-void Stm32_Clock_Init(u32 pllmul, u32 plldiv)
+void Stm32_HSIClock_Init(u32 pllmul, u32 plldiv)
 {
 	HAL_StatusTypeDef ret = HAL_OK;
 	RCC_OscInitTypeDef RCC_OscInitStructure;
@@ -55,6 +55,56 @@ void Stm32_Clock_Init(u32 pllmul, u32 plldiv)
 	__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);				//设置调压器输出电压级别, 以便在器件未以最大频率工作
 	while (__HAL_PWR_GET_FLAG(PWR_FLAG_VOS) != RESET) {};
 
+	/* 选中PLL作为系统时钟源并且配置HCLK, PCLK1 和 PCLK2 */
+	RCC_ClkInitStructure.ClockType = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
+	RCC_ClkInitStructure.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;				//设置系统时钟时钟源为PLL
+	RCC_ClkInitStructure.AHBCLKDivider = RCC_SYSCLK_DIV1;						//AHB分频系数为1
+	RCC_ClkInitStructure.APB1CLKDivider = RCC_HCLK_DIV1;						//APB1分频系数为1
+	RCC_ClkInitStructure.APB2CLKDivider = RCC_HCLK_DIV1;						//APB2分频系数为1
+
+	ret = HAL_RCC_ClockConfig(&RCC_ClkInitStructure, FLASH_LATENCY_1);			//同时设置FLASH延时周期为1WS, 也就是2个CPU周期
+	if (ret != HAL_OK) while(1);
+}
+
+/**********************************************************************************************************
+ @Function			void Stm32_HSEClock_Init(u32 pllmul, u32 plldiv)
+ @Description			时钟设置函数(MAX32MHz)
+ @Input				pllmul	: 主PLL倍频系数(PLL倍频),取值范围:0 ~ 48
+					plldiv	: 系统时钟的主PLL分频系数(PLL之后的分频),取值范围:2,3,4.(仅限这3个值!)
+ @Return				void
+ @attention			Fsys = Fs*(pllmul/plldiv);
+
+					Fsys : 系统时钟频率
+					Fs	: PLL输入时钟频率,可以是HSI,HSE等
+**********************************************************************************************************/
+void Stm32_HSEClock_Init(u32 pllmul, u32 plldiv)
+{
+	HAL_StatusTypeDef ret = HAL_OK;
+	RCC_OscInitTypeDef RCC_OscInitStructure;
+	RCC_ClkInitTypeDef RCC_ClkInitStructure;
+	
+	HAL_RCC_DeInit();
+	
+	RCC_OscInitStructure.OscillatorType = RCC_OSCILLATORTYPE_HSE;				//时钟源为HSE
+	RCC_OscInitStructure.HSEState = RCC_HSE_ON;								//打开HSE
+	RCC_OscInitStructure.PLL.PLLState = RCC_PLL_ON;							//打开PLL
+	RCC_OscInitStructure.PLL.PLLSource = RCC_PLLSOURCE_HSE;					//PLL时钟源选择HSE
+	RCC_OscInitStructure.PLL.PLLMUL = pllmul;								//主PLL倍频系数(PLL倍频)
+	RCC_OscInitStructure.PLL.PLLDIV = plldiv;								//系统时钟的主PLL分频系数(PLL之后的分频)
+	ret = HAL_RCC_OscConfig(&RCC_OscInitStructure);							//初始化
+	if (ret != HAL_OK) while(1);
+	
+	RCC_OscInitStructure.OscillatorType = RCC_OSCILLATORTYPE_HSI;				//时钟源为HSI --> ADC
+	RCC_OscInitStructure.HSIState = RCC_HSI_ON;								//打开HSI
+	RCC_OscInitStructure.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;		//HSI默认校准
+	RCC_OscInitStructure.PLL.PLLState = RCC_PLL_OFF;							//关闭PLL
+	ret = HAL_RCC_OscConfig(&RCC_OscInitStructure);							//初始化
+	if (ret != HAL_OK) while(1);
+	
+	__HAL_RCC_PWR_CLK_ENABLE();											//使能PWR时钟
+	__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);				//设置调压器输出电压级别, 以便在器件未以最大频率工作
+	while (__HAL_PWR_GET_FLAG(PWR_FLAG_VOS) != RESET) {};
+	
 	/* 选中PLL作为系统时钟源并且配置HCLK, PCLK1 和 PCLK2 */
 	RCC_ClkInitStructure.ClockType = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
 	RCC_ClkInitStructure.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;				//设置系统时钟时钟源为PLL

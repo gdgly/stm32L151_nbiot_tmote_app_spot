@@ -74,7 +74,8 @@ extern __IO u32 SystemRunningTimesSecond;										//系统运行时间(S)
 extern __IO u32 SystemSoftResetTime;											//系统运行超时软件复位时间(MS)
 extern Stm32_SystemRunningTime	SystemRunningTime;								//系统运行时间(结构体)
 
-void Stm32_Clock_Init(u32 pllmul, u32 plldiv);									//配置系统时钟HSI
+void Stm32_HSIClock_Init(u32 pllmul, u32 plldiv);									//配置系统时钟HSI
+void Stm32_HSEClock_Init(u32 pllmul, u32 plldiv);									//配置系统时钟HSE
 void Stm32_MSIClock_Init(u32 msiClockRange);										//配置系统时钟MSI
 
 void Stm32_System_Software_Reboot(u8 deviceRbtMode);								//软重启

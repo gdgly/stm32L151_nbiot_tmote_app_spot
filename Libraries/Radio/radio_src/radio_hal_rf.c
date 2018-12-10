@@ -81,6 +81,8 @@ void Radio_Rf_Interface_Init(void)
 	SPI_Handler.Init.BaudRatePrescaler		= SPI_BAUDRATEPRESCALER_2;
 #elif (SYSTEMCLOCK == SYSTEMCLOCKHSI)
 	SPI_Handler.Init.BaudRatePrescaler		= SPI_BAUDRATEPRESCALER_8;
+#elif (SYSTEMCLOCK == SYSTEMCLOCKHSE)
+	SPI_Handler.Init.BaudRatePrescaler		= SPI_BAUDRATEPRESCALER_8;
 #else
 	#error SYSTEMCLOCK Define Error
 #endif

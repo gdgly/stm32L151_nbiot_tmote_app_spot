@@ -41,7 +41,7 @@ u8 RTC_Init(void)
 #endif
 #if SYSTEMRTCCLOCK == SYSTEMRTCCLOCKLSI
 	RTC_Handler.Init.AsynchPrediv = 0x7F;									//RTC异步分频系数(1~0X7F)
-	RTC_Handler.Init.SynchPrediv = 0xFF;									//RTC同步分频系数(0~7FFF)
+	RTC_Handler.Init.SynchPrediv = 0x120;									//RTC同步分频系数(0~7FFF)
 #endif
 	RTC_Handler.Init.OutPut = RTC_OUTPUT_DISABLE;
 	RTC_Handler.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;

@@ -407,7 +407,7 @@ void LowPowerEnterStop(void)
 	HAL_RTCEx_SetWakeUpTimer_IT(&RTC_Handler, 0x800, RTC_WAKEUPCLOCK_RTCCLK_DIV16);
 #endif
 #if SYSTEMRTCCLOCK == SYSTEMRTCCLOCKLSI
-	HAL_RTCEx_SetWakeUpTimer_IT(&RTC_Handler, 0x800, RTC_WAKEUPCLOCK_RTCCLK_DIV16);
+	HAL_RTCEx_SetWakeUpTimer_IT(&RTC_Handler, 0x908, RTC_WAKEUPCLOCK_RTCCLK_DIV16);
 #endif
 	
 	__HAL_RCC_PWR_CLK_ENABLE();
@@ -430,7 +430,10 @@ void LowPowerEnterStop(void)
 	Stm32_MSIClock_Init(RCC_MSIRANGE_6);
 	Delay_Init(4194);
 #elif (SYSTEMCLOCK == SYSTEMCLOCKHSI)
-	Stm32_Clock_Init(RCC_PLLMUL_6, RCC_PLLDIV_3);
+	Stm32_HSIClock_Init(RCC_PLLMUL_6, RCC_PLLDIV_3);
+	Delay_Init(32000);
+#elif (SYSTEMCLOCK == SYSTEMCLOCKHSE)
+	Stm32_HSEClock_Init(RCC_PLLMUL_6, RCC_PLLDIV_3);
 	Delay_Init(32000);
 #else
 	#error SYSTEMCLOCK Define Error

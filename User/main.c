@@ -71,7 +71,10 @@ int main(void)
 	Stm32_MSIClock_Init(RCC_MSIRANGE_6);													//设置时钟MSI->4.194MHz
 	Delay_Init(4194);																	//延时初始化4.194MHz系统时钟
 #elif (SYSTEMCLOCK == SYSTEMCLOCKHSI)
-	Stm32_Clock_Init(RCC_PLLMUL_6, RCC_PLLDIV_3);											//设置时钟HSI->32MHz
+	Stm32_HSIClock_Init(RCC_PLLMUL_6, RCC_PLLDIV_3);											//设置时钟HSI->32MHz
+	Delay_Init(32000);																	//延时初始化32MHz系统时钟
+#elif (SYSTEMCLOCK == SYSTEMCLOCKHSE)
+	Stm32_HSEClock_Init(RCC_PLLMUL_6, RCC_PLLDIV_3);											//设置时钟HSE->32MHz
 	Delay_Init(32000);																	//延时初始化32MHz系统时钟
 #else
 	#error SYSTEMCLOCK Define Error

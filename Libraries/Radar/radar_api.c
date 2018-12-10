@@ -496,7 +496,7 @@ void Radar_EnterCriticalSection(void)
 	#error No Define SYSTEMCLOCK!
 #else
 #if (SYSTEMCLOCK == SYSTEMCLOCKMSI)
-	Stm32_Clock_Init(RCC_PLLMUL_6, RCC_PLLDIV_3);
+	Stm32_HSIClock_Init(RCC_PLLMUL_6, RCC_PLLDIV_3);
 	Delay_Init(32000);
 #endif
 #endif
