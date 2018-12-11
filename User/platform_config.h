@@ -131,10 +131,10 @@
 #define	RADIO_PRINT_UPGRADEINFO			1								//无线输出UpgradeInfo
 
 #define	RADIO_PRINT_WORKINFO_SOFT		1								//无线输出Workinfo SOFT
-#define	RADIO_PRINT_WORKINFO_SENSE		1								//无线输出Workinfo SENSE
-#define	RADIO_PRINT_WORKINFO_MODE		1								//无线输出Workinfo MODE
-#define	RADIO_PRINT_WORKINFO_CHANNEL		1								//无线输出Workinfo CHANNEL
-#define	RADIO_PRINT_WORKINFO_RANGE		1								//无线输出Workinfo RANGE
+#define	RADIO_PRINT_WORKINFO_SENSE		0								//无线输出Workinfo SENSE
+#define	RADIO_PRINT_WORKINFO_MODE		0								//无线输出Workinfo MODE
+#define	RADIO_PRINT_WORKINFO_CHANNEL		0								//无线输出Workinfo CHANNEL
+#define	RADIO_PRINT_WORKINFO_RANGE		0								//无线输出Workinfo RANGE
 #define	RADIO_PRINT_WORKINFO_EARFCN		1								//无线输出Workinfo EARFCN
 #define	RADIO_PRINT_WORKINFO_TAC			1								//无线输出Workinfo TAC
 #define	RADIO_PRINT_WORKINFO_CI			1								//无线输出Workinfo CI
@@ -143,11 +143,11 @@
 #define	RADIO_PRINT_WORKINFO_COEF		1								//无线输出Workinfo COEF
 
 #define	RADIO_PRINT_NETINFO_MUFTUR		1								//无线输出NetInfo MUFTUR
-#define	RADIO_PRINT_NETINFO_MUFTURMD		1								//无线输出NetInfo MUFTURMD
+#define	RADIO_PRINT_NETINFO_MUFTURMD		0								//无线输出NetInfo MUFTURMD
 #define	RADIO_PRINT_NETINFO_MDUVER		1								//无线输出NetInfo MDUVER
 #define	RADIO_PRINT_NETINFO_IMEI			1								//无线输出NetInfo IMEI
 #define	RADIO_PRINT_NETINFO_ICCID		1								//无线输出NetInfo ICCID
-#define	RADIO_PRINT_NETINFO_IMSI			1								//无线输出NetInfo IMSI
+#define	RADIO_PRINT_NETINFO_IMSI			0								//无线输出NetInfo IMSI
 #define	RADIO_PRINT_NETINFO_CGP			1								//无线输出NetInfo CGP
 #define	RADIO_PRINT_NETINFO_PDPTYPE		1								//无线输出NetInfo PDPTYPE
 #define	RADIO_PRINT_NETINFO_APN			1								//无线输出NetInfo APN
@@ -157,14 +157,19 @@
 
 #define	RADIO_PRINT_DEVINFO_RUNTIME		1								//无线输出DeviceInfo RUNTIME
 #define	RADIO_PRINT_DEVINFO_BATT			1								//无线输出DeviceInfo BATT
-#define	RADIO_PRINT_DEVINFO_RDLIB		1								//无线输出DeviceInfo RDLIB
-#define	RADIO_PRINT_DEVINFO_RDCNT		1								//无线输出DeviceInfo RDCNT
-#define	RADIO_PRINT_DEVINFO_MCUTEMP		1								//无线输出DeviceInfo MCUTEMP
-#define	RADIO_PRINT_DEVINFO_ALGOLIB		1								//无线输出DeviceInfo ALGOLIB
+#define	RADIO_PRINT_DEVINFO_RDLIB		0								//无线输出DeviceInfo RDLIB
+#define	RADIO_PRINT_DEVINFO_RDCNT		0								//无线输出DeviceInfo RDCNT
+#define	RADIO_PRINT_DEVINFO_MCUTEMP		0								//无线输出DeviceInfo MCUTEMP
+#define	RADIO_PRINT_DEVINFO_ALGOLIB		0								//无线输出DeviceInfo ALGOLIB
 #define	RADIO_PRINT_DEVINFO_QMCREBOOT		1								//无线输出DeviceInfo QMCREBOOT
 #define	RADIO_PRINT_DEVINFO_NBBOOT		1								//无线输出DeviceInfo NBBOOT
-#define	RADIO_PRINT_DEVINFO_NBSENT		1								//无线输出DeviceInfo NBSENT
-#define	RADIO_PRINT_DEVINFO_NBRECV		1								//无线输出DeviceInfo NBRECV
+#define	RADIO_PRINT_DEVINFO_NBSENT		0								//无线输出DeviceInfo NBSENT
+#define	RADIO_PRINT_DEVINFO_NBRECV		0								//无线输出DeviceInfo NBRECV
+#define	RADIO_PRINT_DEVINFO_INDELAY		0								//无线输出DeviceInfo INDELAY
+#define	RADIO_PRINT_DEVINFO_NBHEART		0								//无线输出DeviceInfo NBHEART
+#define	RADIO_PRINT_DEVINFO_CGAIN		1								//无线输出DeviceInfo CGAIN
+#define	RADIO_PRINT_DEVINFO_RGAIN		1								//无线输出DeviceInfo RGAIN
+#define	RADIO_PRINT_DEVINFO_SMODE		1								//无线输出DeviceInfo SMODE
 #endif
 #if NETPROTOCAL == NETMQTTSN
 #define	RADIO_PRINT_WORKINFO			1								//无线输出Workinfo
@@ -173,10 +178,10 @@
 #define	RADIO_PRINT_UPGRADEINFO			0								//无线输出UpgradeInfo
 
 #define	RADIO_PRINT_WORKINFO_SOFT		1								//无线输出Workinfo SOFT
-#define	RADIO_PRINT_WORKINFO_SENSE		1								//无线输出Workinfo SENSE
-#define	RADIO_PRINT_WORKINFO_MODE		1								//无线输出Workinfo MODE
-#define	RADIO_PRINT_WORKINFO_CHANNEL		1								//无线输出Workinfo CHANNEL
-#define	RADIO_PRINT_WORKINFO_RANGE		1								//无线输出Workinfo RANGE
+#define	RADIO_PRINT_WORKINFO_SENSE		0								//无线输出Workinfo SENSE
+#define	RADIO_PRINT_WORKINFO_MODE		0								//无线输出Workinfo MODE
+#define	RADIO_PRINT_WORKINFO_CHANNEL		0								//无线输出Workinfo CHANNEL
+#define	RADIO_PRINT_WORKINFO_RANGE		0								//无线输出Workinfo RANGE
 #define	RADIO_PRINT_WORKINFO_EARFCN		1								//无线输出Workinfo EARFCN
 #define	RADIO_PRINT_WORKINFO_TAC			1								//无线输出Workinfo TAC
 #define	RADIO_PRINT_WORKINFO_CI			1								//无线输出Workinfo CI
@@ -185,11 +190,11 @@
 #define	RADIO_PRINT_WORKINFO_COEF		1								//无线输出Workinfo COEF
 
 #define	RADIO_PRINT_NETINFO_MUFTUR		1								//无线输出NetInfo MUFTUR
-#define	RADIO_PRINT_NETINFO_MUFTURMD		1								//无线输出NetInfo MUFTURMD
+#define	RADIO_PRINT_NETINFO_MUFTURMD		0								//无线输出NetInfo MUFTURMD
 #define	RADIO_PRINT_NETINFO_MDUVER		1								//无线输出NetInfo MDUVER
 #define	RADIO_PRINT_NETINFO_IMEI			1								//无线输出NetInfo IMEI
 #define	RADIO_PRINT_NETINFO_ICCID		1								//无线输出NetInfo ICCID
-#define	RADIO_PRINT_NETINFO_IMSI			1								//无线输出NetInfo IMSI
+#define	RADIO_PRINT_NETINFO_IMSI			0								//无线输出NetInfo IMSI
 #define	RADIO_PRINT_NETINFO_CGP			1								//无线输出NetInfo CGP
 #define	RADIO_PRINT_NETINFO_PDPTYPE		1								//无线输出NetInfo PDPTYPE
 #define	RADIO_PRINT_NETINFO_APN			1								//无线输出NetInfo APN
@@ -199,14 +204,19 @@
 
 #define	RADIO_PRINT_DEVINFO_RUNTIME		1								//无线输出DeviceInfo RUNTIME
 #define	RADIO_PRINT_DEVINFO_BATT			1								//无线输出DeviceInfo BATT
-#define	RADIO_PRINT_DEVINFO_RDLIB		1								//无线输出DeviceInfo RDLIB
-#define	RADIO_PRINT_DEVINFO_RDCNT		1								//无线输出DeviceInfo RDCNT
-#define	RADIO_PRINT_DEVINFO_MCUTEMP		1								//无线输出DeviceInfo MCUTEMP
-#define	RADIO_PRINT_DEVINFO_ALGOLIB		1								//无线输出DeviceInfo ALGOLIB
+#define	RADIO_PRINT_DEVINFO_RDLIB		0								//无线输出DeviceInfo RDLIB
+#define	RADIO_PRINT_DEVINFO_RDCNT		0								//无线输出DeviceInfo RDCNT
+#define	RADIO_PRINT_DEVINFO_MCUTEMP		0								//无线输出DeviceInfo MCUTEMP
+#define	RADIO_PRINT_DEVINFO_ALGOLIB		0								//无线输出DeviceInfo ALGOLIB
 #define	RADIO_PRINT_DEVINFO_QMCREBOOT		1								//无线输出DeviceInfo QMCREBOOT
 #define	RADIO_PRINT_DEVINFO_NBBOOT		1								//无线输出DeviceInfo NBBOOT
-#define	RADIO_PRINT_DEVINFO_NBSENT		1								//无线输出DeviceInfo NBSENT
-#define	RADIO_PRINT_DEVINFO_NBRECV		1								//无线输出DeviceInfo NBRECV
+#define	RADIO_PRINT_DEVINFO_NBSENT		0								//无线输出DeviceInfo NBSENT
+#define	RADIO_PRINT_DEVINFO_NBRECV		0								//无线输出DeviceInfo NBRECV
+#define	RADIO_PRINT_DEVINFO_INDELAY		0								//无线输出DeviceInfo INDELAY
+#define	RADIO_PRINT_DEVINFO_NBHEART		0								//无线输出DeviceInfo NBHEART
+#define	RADIO_PRINT_DEVINFO_CGAIN		1								//无线输出DeviceInfo CGAIN
+#define	RADIO_PRINT_DEVINFO_RGAIN		1								//无线输出DeviceInfo RGAIN
+#define	RADIO_PRINT_DEVINFO_SMODE		1								//无线输出DeviceInfo SMODE
 #endif
 #if NETPROTOCAL == NETONENET
 #define	RADIO_PRINT_WORKINFO			1								//无线输出Workinfo
@@ -215,10 +225,10 @@
 #define	RADIO_PRINT_UPGRADEINFO			1								//无线输出UpgradeInfo
 
 #define	RADIO_PRINT_WORKINFO_SOFT		1								//无线输出Workinfo SOFT
-#define	RADIO_PRINT_WORKINFO_SENSE		1								//无线输出Workinfo SENSE
-#define	RADIO_PRINT_WORKINFO_MODE		1								//无线输出Workinfo MODE
-#define	RADIO_PRINT_WORKINFO_CHANNEL		1								//无线输出Workinfo CHANNEL
-#define	RADIO_PRINT_WORKINFO_RANGE		1								//无线输出Workinfo RANGE
+#define	RADIO_PRINT_WORKINFO_SENSE		0								//无线输出Workinfo SENSE
+#define	RADIO_PRINT_WORKINFO_MODE		0								//无线输出Workinfo MODE
+#define	RADIO_PRINT_WORKINFO_CHANNEL		0								//无线输出Workinfo CHANNEL
+#define	RADIO_PRINT_WORKINFO_RANGE		0								//无线输出Workinfo RANGE
 #define	RADIO_PRINT_WORKINFO_EARFCN		1								//无线输出Workinfo EARFCN
 #define	RADIO_PRINT_WORKINFO_TAC			1								//无线输出Workinfo TAC
 #define	RADIO_PRINT_WORKINFO_CI			1								//无线输出Workinfo CI
@@ -227,11 +237,11 @@
 #define	RADIO_PRINT_WORKINFO_COEF		1								//无线输出Workinfo COEF
 
 #define	RADIO_PRINT_NETINFO_MUFTUR		1								//无线输出NetInfo MUFTUR
-#define	RADIO_PRINT_NETINFO_MUFTURMD		1								//无线输出NetInfo MUFTURMD
+#define	RADIO_PRINT_NETINFO_MUFTURMD		0								//无线输出NetInfo MUFTURMD
 #define	RADIO_PRINT_NETINFO_MDUVER		1								//无线输出NetInfo MDUVER
 #define	RADIO_PRINT_NETINFO_IMEI			1								//无线输出NetInfo IMEI
 #define	RADIO_PRINT_NETINFO_ICCID		1								//无线输出NetInfo ICCID
-#define	RADIO_PRINT_NETINFO_IMSI			1								//无线输出NetInfo IMSI
+#define	RADIO_PRINT_NETINFO_IMSI			0								//无线输出NetInfo IMSI
 #define	RADIO_PRINT_NETINFO_CGP			1								//无线输出NetInfo CGP
 #define	RADIO_PRINT_NETINFO_PDPTYPE		1								//无线输出NetInfo PDPTYPE
 #define	RADIO_PRINT_NETINFO_APN			1								//无线输出NetInfo APN
@@ -241,14 +251,19 @@
 
 #define	RADIO_PRINT_DEVINFO_RUNTIME		1								//无线输出DeviceInfo RUNTIME
 #define	RADIO_PRINT_DEVINFO_BATT			1								//无线输出DeviceInfo BATT
-#define	RADIO_PRINT_DEVINFO_RDLIB		1								//无线输出DeviceInfo RDLIB
-#define	RADIO_PRINT_DEVINFO_RDCNT		1								//无线输出DeviceInfo RDCNT
-#define	RADIO_PRINT_DEVINFO_MCUTEMP		1								//无线输出DeviceInfo MCUTEMP
-#define	RADIO_PRINT_DEVINFO_ALGOLIB		1								//无线输出DeviceInfo ALGOLIB
+#define	RADIO_PRINT_DEVINFO_RDLIB		0								//无线输出DeviceInfo RDLIB
+#define	RADIO_PRINT_DEVINFO_RDCNT		0								//无线输出DeviceInfo RDCNT
+#define	RADIO_PRINT_DEVINFO_MCUTEMP		0								//无线输出DeviceInfo MCUTEMP
+#define	RADIO_PRINT_DEVINFO_ALGOLIB		0								//无线输出DeviceInfo ALGOLIB
 #define	RADIO_PRINT_DEVINFO_QMCREBOOT		1								//无线输出DeviceInfo QMCREBOOT
 #define	RADIO_PRINT_DEVINFO_NBBOOT		1								//无线输出DeviceInfo NBBOOT
-#define	RADIO_PRINT_DEVINFO_NBSENT		1								//无线输出DeviceInfo NBSENT
-#define	RADIO_PRINT_DEVINFO_NBRECV		1								//无线输出DeviceInfo NBRECV
+#define	RADIO_PRINT_DEVINFO_NBSENT		0								//无线输出DeviceInfo NBSENT
+#define	RADIO_PRINT_DEVINFO_NBRECV		0								//无线输出DeviceInfo NBRECV
+#define	RADIO_PRINT_DEVINFO_INDELAY		0								//无线输出DeviceInfo INDELAY
+#define	RADIO_PRINT_DEVINFO_NBHEART		0								//无线输出DeviceInfo NBHEART
+#define	RADIO_PRINT_DEVINFO_CGAIN		1								//无线输出DeviceInfo CGAIN
+#define	RADIO_PRINT_DEVINFO_RGAIN		1								//无线输出DeviceInfo RGAIN
+#define	RADIO_PRINT_DEVINFO_SMODE		1								//无线输出DeviceInfo SMODE
 #endif
 
 #define	RADIO_CMD_UPLOAD_WORKINFO		1								//无线命令主动上报WorkInfo

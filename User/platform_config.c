@@ -351,7 +351,7 @@ void RadioPrintNetinfo(void)
 **********************************************************************************************************/
 void RadioPrintDeviceinfo(void)
 {
-	Radio_Trf_Printf("DeviceInfo:");
+	Radio_Trf_Printf("DevInfo:");
 	
 #if RADIO_PRINT_DEVINFO_RUNTIME
 	Radio_Trf_Printf("Runtime:%d", TCFG_Utility_Get_Run_Time());
@@ -382,6 +382,21 @@ void RadioPrintDeviceinfo(void)
 #endif
 #if RADIO_PRINT_DEVINFO_NBRECV
 	Radio_Trf_Printf("Nbrecv:%d", TCFG_Utility_Get_Nbiot_RecvCount());
+#endif
+#if RADIO_PRINT_DEVINFO_INDELAY
+	Radio_Trf_Printf("Indelay:%d", TCFG_EEPROM_GetCarInDelay());
+#endif
+#if RADIO_PRINT_DEVINFO_NBHEART
+	Radio_Trf_Printf("Nbheart:%d", TCFG_EEPROM_GetNbiotHeart());
+#endif
+#if RADIO_PRINT_DEVINFO_CGAIN
+	Radio_Trf_Printf("Cgain:%d", TCFG_Utility_Get_GainCover());
+#endif
+#if RADIO_PRINT_DEVINFO_RGAIN
+	Radio_Trf_Printf("Rgain:%d", TCFG_EEPROM_GetRadarGain());
+#endif
+#if RADIO_PRINT_DEVINFO_SMODE
+	Radio_Trf_Printf("Smode:%d", TCFG_EEPROM_GetSenseMode());
 #endif
 }
 
