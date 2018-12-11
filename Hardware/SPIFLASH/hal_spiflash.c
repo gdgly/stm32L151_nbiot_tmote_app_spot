@@ -70,7 +70,7 @@ void GD25Q_SPIFLASH_Init(void)
 	GD25Q_SPIFLASH_WakeUp();
 	
 	for (int nCount = 0; nCount < 3; nCount++) {
-		ReadDeviceID = GD25Q_SPIFLASH_ReadDeviceID();
+		ReadDeviceID = GD25Q_SPIFLASH_ReadManufactureID() & 0xFF;
 		if ((ReadDeviceID != GD25Q80CSIGDeviceID) && (ReadDeviceID != GD25Q40BSIGDeviceID)) {
 			GD25QStatus = GD25Q80CSIG_ERROR;
 		}

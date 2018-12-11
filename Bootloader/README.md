@@ -1,6 +1,8 @@
 # stm32L151_nbiot_tmote_app_boot
 movebroad Knagkang
 
+* 2018-12-11
+	* 0.30 修改SPIFLASH读取deviceid方式，兼容XTX型号。
 * 2018-12-5
 	* 0.29 修改SPIFLASH为读取deviceid方式，兼容其他SPIFLASH型号。
 * 2018-9-8
