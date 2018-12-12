@@ -546,6 +546,7 @@ unsigned char	TCFG_Utility_Get_SoftResetFlag(void);											//读取设备重�
 unsigned short TCFG_Utility_Get_ReInitModuleCount(void);										//读取模块异常初始化次数
 unsigned short TCFG_Utility_Get_DistanceRange(void);											//读取雷达检测范围
 unsigned char	TCFG_Utility_Get_GainCover(void);												//读取雷达覆水增益
+unsigned char	TCFG_Utility_Get_RadioGatewayNearby(void);										//读取小无线网关接收值
 unsigned char	TCFG_Utility_Get_Major_Softnumber(void);										//读取Major_Softnumber
 unsigned char	TCFG_Utility_Get_Sub_Softnumber(void);											//读取Sub_Softnumber
 unsigned char	TCFG_Utility_Get_Major_Hardnumber(void);										//读取Major_Hardnumber

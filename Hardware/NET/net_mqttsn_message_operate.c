@@ -209,7 +209,8 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Work(char* outBuffer)
 				"\"Nbruntime\":\"%d.%d\","
 				"\"PCP\":\"%d.%d-%d.%d.V%d.%d\","
 				"\"Coef\":\"%d.%d.%d\","
-				"\"Beepoff\":\"%d\""
+				"\"Beepoff\":\"%d\","
+				"\"RadioRv\":\"%d\""
 			"}"
 		"}",
 		
@@ -226,7 +227,8 @@ int NET_Message_Operate_Creat_Json_MoteInfo_Work(char* outBuffer)
 		TCFG_Utility_Get_Nbiot_PCPUpgradeStartTimes(), TCFG_Utility_Get_Nbiot_PCPUpgradePackSliceIndex(), TCFG_Utility_Get_Nbiot_PCPUpgradePackSliceNum(),
 		TCFG_Utility_Get_Nbiot_PCPUpgradePackSliceSize(), TCFG_Utility_Get_Nbiot_PCPPlatformSoftVersionMajor(), TCFG_Utility_Get_Nbiot_PCPPlatformSoftVersionSub(),
 		TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ,
-		TCFG_EEPROM_GetBeepOff()
+		TCFG_EEPROM_GetBeepOff(),
+		TCFG_Utility_Get_RadioGatewayNearby()
 	);
 	
 	return strlen(outBuffer);
@@ -411,7 +413,8 @@ int NET_MQTTSN_Message_Operate_Creat_Json_Work_Info(char* outBuffer)
 				"\"Nbruntime\":\"%d.%d\","
 				"\"PCP\":\"%d.%d-%d.%d.V%d.%d\","
 				"\"Coef\":\"%d.%d.%d\","
-				"\"Beepoff\":\"%d\""
+				"\"Beepoff\":\"%d\","
+				"\"RadioRv\":\"%d\""
 			"}"
 		"}",
 		
@@ -428,7 +431,8 @@ int NET_MQTTSN_Message_Operate_Creat_Json_Work_Info(char* outBuffer)
 		TCFG_Utility_Get_Nbiot_PCPUpgradeStartTimes(), TCFG_Utility_Get_Nbiot_PCPUpgradePackSliceIndex(), TCFG_Utility_Get_Nbiot_PCPUpgradePackSliceNum(),
 		TCFG_Utility_Get_Nbiot_PCPUpgradePackSliceSize(), TCFG_Utility_Get_Nbiot_PCPPlatformSoftVersionMajor(), TCFG_Utility_Get_Nbiot_PCPPlatformSoftVersionSub(),
 		TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ,
-		TCFG_EEPROM_GetBeepOff()
+		TCFG_EEPROM_GetBeepOff(),
+		TCFG_Utility_Get_RadioGatewayNearby()
 	);
 	
 	return strlen(outBuffer);

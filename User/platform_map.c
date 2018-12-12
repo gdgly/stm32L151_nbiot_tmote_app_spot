@@ -3277,6 +3277,17 @@ unsigned char TCFG_Utility_Get_GainCover(void)
 }
 
 /**********************************************************************************************************
+ @Function			unsigned char TCFG_Utility_Get_RadioGatewayNearby(void)
+ @Description			TCFG_Utility_Get_RadioGatewayNearby			: 读取小无线网关接收值
+ @Input				void
+ @Return				RadioGatewayNearby
+**********************************************************************************************************/
+unsigned char TCFG_Utility_Get_RadioGatewayNearby(void)
+{
+	return (gateway_nearby > 10) ? 1 : 0;
+}
+
+/**********************************************************************************************************
  @Function			unsigned char TCFG_Utility_Get_Major_Softnumber(void)
  @Description			TCFG_Utility_Get_Major_Softnumber				: 读取Major_Softnumber
  @Input				void

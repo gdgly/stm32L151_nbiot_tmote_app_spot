@@ -1,6 +1,8 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2018-12-12 :
+	* Workinfo包中增加RadioRv字段,1:附近有配置器且收到配置器下发数据,0:附近无配置器或没收到配置器下发数据。
 * 2018-12-11 :
 	* 修改SPIFLASH读取deviceid方式，兼容XTX型号。
 * 2018-12-10 :

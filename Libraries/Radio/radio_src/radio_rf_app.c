@@ -630,7 +630,7 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 			}
 			else if (CFG_GET_FROM_FRAME(CFG_P_FRAME_HEAD(inmsg), CFG_HEAD_TYPE_OS) == TMOTE_PLAIN_ACK)
 			{
-				gateway_nearby = 10;
+				gateway_nearby = 15;
 				rc = TRF_IS_ACK;
 				__NOP();
 			}
