@@ -421,8 +421,9 @@ int NET_MQTTSN_Message_Operate_Creat_Json_Work_Info(char* outBuffer)
 				"\"Nbruntime\":\"%d.%d\","
 				"\"PCP\":\"%d.%d-%d.%d.V%d.%d\","
 				"\"Coef\":\"%d.%d.%d\","
-				"\"Beepoff\":\"%d\","
-				"\"RadioRv\":\"%d\""
+				"\"Beepoff\":%d,"
+				"\"Rollinit\":%d,"
+				"\"RadioRv\":%d"
 			"}"
 		"}",
 		
@@ -440,6 +441,7 @@ int NET_MQTTSN_Message_Operate_Creat_Json_Work_Info(char* outBuffer)
 		TCFG_Utility_Get_Nbiot_PCPUpgradePackSliceSize(), TCFG_Utility_Get_Nbiot_PCPPlatformSoftVersionMajor(), TCFG_Utility_Get_Nbiot_PCPPlatformSoftVersionSub(),
 		TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ,
 		TCFG_EEPROM_GetBeepOff(),
+		TCFG_EEPROM_GetRollingOverInitSensor(),
 		TCFG_Utility_Get_RadioGatewayNearby()
 	);
 	

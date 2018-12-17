@@ -2168,6 +2168,21 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					}
 				}
 			#endif
+				/* Rollinit */
+			#if MQTTSN_DOWNLOAD_CMD_ROLLINIT
+				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "RollInit") != NULL) {
+					u16 rollinit;
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
+						"{(RollInit):{(val):%hu,(Magic):%hu}}", &rollinit, &recvMagicNum);
+					if (recvMagicNum == TCLOD_MAGIC_NUM) {
+						TCFG_SystemData.RollingOverInitSensor = rollinit;
+						TCFG_EEPROM_SetRollingOverInitSensor(TCFG_SystemData.RollingOverInitSensor);
+					}
+					else {
+						ret = NETIP_UNKNOWNERROR;
+					}
+				}
+			#endif
 				/* UpLimit */
 			#if MQTTSN_DOWNLOAD_CMD_UPLIMIT
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "UpLimit") != NULL) {
@@ -2605,8 +2620,8 @@ void NET_MQTTSN_NBIOT_Listen_Event_EnterParameter(MQTTSN_ClientsTypeDef* pClient
 				pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt = 0;
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 				MQTTSN_DEBUG_LOG_PRINTF("MqttSN Para Check Ok");
-				Radio_Trf_Printf("RSSI :%d", pClient->SocketStack->NBIotStack->Parameter.rssi);
-				Radio_Trf_Printf("SNR :%d", pClient->SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR);
+				Radio_Trf_Printf("RSSI: %d", pClient->SocketStack->NBIotStack->Parameter.rssi);
+				Radio_Trf_Printf("SNR: %d", pClient->SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR);
 #endif
 			}
 			else {

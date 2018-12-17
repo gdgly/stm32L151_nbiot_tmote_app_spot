@@ -139,6 +139,8 @@
 #define TCFG_MAG_BACK_TEMP_LENGTH			2												//Temperature Compensation BACK
 #define TCFG_BEEP_OFF_OFFSET				TCFG_MAG_BACK_TEMP_OFFSET + TCFG_MAG_BACK_TEMP_LENGTH		//0x080804E2
 #define TCFG_BEEP_OFF_LENGTH				1												//Beep Ctrl OFF		蜂鸣器关闭
+#define TCFG_ROLL_INITSENSOR_OFFSET		TCFG_BEEP_OFF_OFFSET + TCFG_BEEP_OFF_LENGTH				//0x080804E3
+#define TCFG_ROLL_INITSENSOR_LENGTH		1												//Rollingover Init Sensor
 
 /************************************** The environment parameters are used both by extend ***************************************/
 #define EEPROM_CONFIG_PAGE2_ADDRESS		0x08080E00										//配置页2起始地址 EEPROM_BASE_ADD + 0x0E00(3.5K)
@@ -285,6 +287,7 @@ typedef struct
 	short							UpgradeLimitSnr;									//信号质量限制下限
 	unsigned short						NBIdleLifetime;									//NBIot休眠模式保活时间(10S)
 	unsigned char						BeepCtrlOff;										//蜂鸣器控制
+	unsigned char						RollingOverInitSensor;								//翻转初始化控制
 	unsigned char						DeviceRbtMode;										//设备重启方式
 	unsigned char						NBCoapCDPServerIP[16];								//NB核心网IP地址
 	unsigned char						NBCoapCDPServerPort[6];								//NB核心网IP端口
@@ -474,6 +477,9 @@ short		TCFG_EEPROM_GetUpgradeLimitSnr(void);											//读取UpgradeLimitSnr
 
 void			TCFG_EEPROM_SetBeepOff(uint8_t val);											//保存BeepOff
 unsigned char	TCFG_EEPROM_GetBeepOff(void);													//读取BeepOff
+
+void			TCFG_EEPROM_SetRollingOverInitSensor(uint8_t val);								//保存RollingOverInitSensor
+unsigned char	TCFG_EEPROM_GetRollingOverInitSensor(void);										//读取RollingOverInitSensor
 
 void			TCFG_EEPROM_SetDeviceRbtMode(uint8_t val);										//保存DeviceRbtMode
 unsigned char	TCFG_EEPROM_GetDeviceRbtMode(void);											//读取DeviceRbtMode

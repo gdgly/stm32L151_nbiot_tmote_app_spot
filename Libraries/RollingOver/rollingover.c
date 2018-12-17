@@ -75,7 +75,9 @@ bool RollingOverCheckToActive(void)
 	#if ROLLINGOVER_INITSENSOR_TYPE
 			InitSensorBackgroundCntdown = 3;
 	#else
-			// Todo : 命令控制是否开启翻转初始化
+			if (TCFG_EEPROM_GetRollingOverInitSensor() != 0) {
+				InitSensorBackgroundCntdown = 3;
+			}
 	#endif
 			rollingover_time[0] = 0;
 			rollingover_time[1] = 0;

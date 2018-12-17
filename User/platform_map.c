@@ -247,6 +247,10 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_SystemData.BeepCtrlOff = 0;
 	TCFG_EEPROM_SetBeepOff(TCFG_SystemData.BeepCtrlOff);
 	
+	/* 翻转初始化控制 */
+	TCFG_SystemData.RollingOverInitSensor = ROLLINGOVER_INITSENSOR_DEFAULT;
+	TCFG_EEPROM_SetRollingOverInitSensor(TCFG_SystemData.RollingOverInitSensor);
+	
 	/* 设备重启方式 */
 	TCFG_SystemData.DeviceRbtMode = RBTMODE_MODE_NONE;
 	TCFG_EEPROM_SetDeviceRbtMode(TCFG_SystemData.DeviceRbtMode);
@@ -2061,6 +2065,32 @@ void TCFG_EEPROM_SetBeepOff(uint8_t val)
 unsigned char TCFG_EEPROM_GetBeepOff(void)
 {
 	return FLASH_EEPROM_ReadByte(TCFG_BEEP_OFF_OFFSET);
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetRollingOverInitSensor(uint8_t val)
+ @Description			TCFG_EEPROM_SetRollingOverInitSensor			: 保存RollingOverInitSensor
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetRollingOverInitSensor(uint8_t val)
+{
+	FLASH_EEPROM_WriteByte(TCFG_ROLL_INITSENSOR_OFFSET, val);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned char TCFG_EEPROM_GetRollingOverInitSensor(void)
+ @Description			TCFG_EEPROM_GetRollingOverInitSensor			: 读取RollingOverInitSensor
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned char TCFG_EEPROM_GetRollingOverInitSensor(void)
+{
+#if ROLLINGOVER_INITSENSOR_TYPE
+	return ROLLINGOVER_INITSENSOR_TYPE;
+#else
+	return FLASH_EEPROM_ReadByte(TCFG_ROLL_INITSENSOR_OFFSET);
+#endif
 }
 
 /**********************************************************************************************************

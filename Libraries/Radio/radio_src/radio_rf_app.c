@@ -471,6 +471,17 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				#endif
 				}
 			#endif
+				/* Rollinit */
+			#if RADIO_DOWNLOAD_CMD_ROLLINIT
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "rollinit")) {
+					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "rollinit:%hu", &uval16);
+					TCFG_SystemData.RollingOverInitSensor = uval16;
+					TCFG_EEPROM_SetRollingOverInitSensor(TCFG_SystemData.RollingOverInitSensor);
+				#if RADIO_CMD_ECHO_TYPE
+					Radio_Trf_Printf("Rollinit:%hu", TCFG_EEPROM_GetBeepOff());
+				#endif
+				}
+			#endif
 				/* UpLimit */
 			#if RADIO_DOWNLOAD_CMD_UPLIMIT
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "uplimit")) {
