@@ -76,8 +76,8 @@ typedef __packed struct
 {
 	ONENET_PacketHeadTypeDef HeadPacket;
 	ONENET_PacketMsgTypeDef MsgPacket;
-	u8	InfoData[300];
-}ONENET_PacketInfoTypeDef;												//Info包314Byte
+	u8	InfoData[450];
+}ONENET_PacketInfoTypeDef;												//Info包464Byte
 
 typedef __packed struct
 {
@@ -124,10 +124,10 @@ int NET_ONENET_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer);
 int NET_ONENET_Message_Operate_Creat_Json_Response_Info(char* outBuffer, u16 errcode);
 int NET_ONENET_Message_Operate_Creat_Qmc5883L_Data(unsigned char* outBuffer);
 
-bool NET_OneNET_Message_SendDataisFull(void);
-bool NET_OneNET_Message_RecvDataisFull(void);
-bool NET_OneNET_Message_SendDataisEmpty(void);
-bool NET_OneNET_Message_RecvDataisEmpty(void);
+void NET_OneNET_FifoSendMessageInit(void);																//发送数据Fifo初始化
+void NET_OneNET_FifoRecvMessageInit(void);																//接收数据Fifo初始化
+bool NET_OneNET_Message_SendDataisEmpty(void);															//检查发送队列是否已空
+bool NET_OneNET_Message_RecvDataisEmpty(void);															//检查接收队列是否已空
 void NET_OneNET_Message_SendDataEnqueue(unsigned char* dataBuf, unsigned short dataLength);						//发送数据写入队列
 void NET_OneNET_Message_RecvDataEnqueue(unsigned char* dataBuf, unsigned short dataLength);						//接收数据写入队列
 bool NET_OneNET_Message_SendDataDequeue(unsigned char* dataBuf, unsigned short* dataLength);						//发送数据读出队列

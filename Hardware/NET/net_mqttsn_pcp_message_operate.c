@@ -17,11 +17,54 @@
 #include "platform_config.h"
 #include "platform_map.h"
 #include "stm32l1xx_config.h"
+#include "fifomessage.h"
 #include "string.h"
 
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 MqttSNPCP_SwapSendDataTypeDef		NETMqttSNPcpMessageSendPark;
 MqttSNPCP_SwapRecvDataTypeDef		NETMqttSNPcpMessageRecvPark;
+#endif
 
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+#define MESSAGEMQTTSNPCPFIFO_SENDPARKNUM_MAX		NETFIFO_MQTTSNPCPSENDPARKNUM_MAX
+#define MESSAGEMQTTSNPCPFIFO_RECVPARKNUM_MAX		NETFIFO_MQTTSNPCPRECVPARKNUM_MAX
+#define MESSAGEMQTTSNPCPFIFO_SENDPARKSIZE_MAX	NETFIFO_MQTTSNPCPSENDPARKSIZE_MAX
+#define MESSAGEMQTTSNPCPFIFO_RECVPARKSIZE_MAX	NETFIFO_MQTTSNPCPRECVPARKSIZE_MAX
+
+MessageFifoTypeDef			NETMqttSNPcpFifoMessageSendPark;
+MessageFifoTypeDef			NETMqttSNPcpFifoMessageRecvPark;
+
+unsigned char				MqttSNPcpFifoMessageSendBuf[MESSAGEMQTTSNPCPFIFO_SENDPARKSIZE_MAX];
+unsigned char				MqttSNPcpFifoMessageRecvBuf[MESSAGEMQTTSNPCPFIFO_RECVPARKSIZE_MAX];
+#endif
+
+/**********************************************************************************************************
+ @Function			void NET_MqttSN_PCP_FifoSendMessageInit(void)
+ @Description			NET_MqttSN_PCP_FifoSendMessageInit		: 发送数据Fifo初始化
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+void NET_MqttSN_PCP_FifoSendMessageInit(void)
+{
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+	netMessageFifoInit(&NETMqttSNPcpFifoMessageSendPark, MqttSNPcpFifoMessageSendBuf, sizeof(MqttSNPcpFifoMessageSendBuf), MESSAGEMQTTSNPCPFIFO_SENDPARKNUM_MAX);
+#endif
+}
+
+/**********************************************************************************************************
+ @Function			void NET_MqttSN_PCP_FifoRecvMessageInit(void)
+ @Description			NET_MqttSN_PCP_FifoRecvMessageInit		: 接收数据Fifo初始化
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+void NET_MqttSN_PCP_FifoRecvMessageInit(void)
+{
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+	netMessageFifoInit(&NETMqttSNPcpFifoMessageRecvPark, MqttSNPcpFifoMessageRecvBuf, sizeof(MqttSNPcpFifoMessageRecvBuf), MESSAGEMQTTSNPCPFIFO_RECVPARKNUM_MAX);
+#endif
+}
+
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 /**********************************************************************************************************
  @Function			static bool NET_MqttSN_PCP_Message_SendDataisFull(void)
  @Description			NET_MqttSN_PCP_Message_SendDataisFull	: 检查发送队列是否已满
@@ -63,6 +106,7 @@ bool NET_MqttSN_PCP_Message_RecvDataisFull(void)
 	
 	return MessageState;
 }
+#endif
 
 /**********************************************************************************************************
  @Function			static bool NET_MqttSN_PCP_Message_SendDataisEmpty(void)
@@ -73,6 +117,7 @@ bool NET_MqttSN_PCP_Message_RecvDataisFull(void)
 **********************************************************************************************************/
 bool NET_MqttSN_PCP_Message_SendDataisEmpty(void)
 {
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 	bool MessageState;
 	
 	if (NETMqttSNPcpMessageSendPark.Front == NETMqttSNPcpMessageSendPark.Rear) {
@@ -83,6 +128,11 @@ bool NET_MqttSN_PCP_Message_SendDataisEmpty(void)
 	}
 	
 	return MessageState;
+#endif
+	
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+	return netMessageFifoisEmpty(&NETMqttSNPcpFifoMessageSendPark);
+#endif
 }
 
 /**********************************************************************************************************
@@ -94,6 +144,7 @@ bool NET_MqttSN_PCP_Message_SendDataisEmpty(void)
 **********************************************************************************************************/
 bool NET_MqttSN_PCP_Message_RecvDataisEmpty(void)
 {
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 	bool MessageState;
 	
 	if (NETMqttSNPcpMessageRecvPark.Front == NETMqttSNPcpMessageRecvPark.Rear) {
@@ -104,6 +155,11 @@ bool NET_MqttSN_PCP_Message_RecvDataisEmpty(void)
 	}
 	
 	return MessageState;
+#endif
+	
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+	return netMessageFifoisEmpty(&NETMqttSNPcpFifoMessageRecvPark);
+#endif
 }
 
 /**********************************************************************************************************
@@ -115,6 +171,7 @@ bool NET_MqttSN_PCP_Message_RecvDataisEmpty(void)
 **********************************************************************************************************/
 void NET_MqttSN_PCP_Message_SendDataEnqueue(unsigned char* dataBuf, unsigned short dataLength)
 {
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 	if ((dataBuf == NULL) || (dataLength > MQTTSN_PCP_SEND_BUFFER_SIZE)) {
 		return;
 	}
@@ -127,6 +184,11 @@ void NET_MqttSN_PCP_Message_SendDataEnqueue(unsigned char* dataBuf, unsigned sho
 	if (NET_MqttSN_PCP_Message_SendDataisFull() == true) {												//队列已满
 		NETMqttSNPcpMessageSendPark.Front = (NETMqttSNPcpMessageSendPark.Front + 1) % MQTTSN_PCP_SEND_PACK_NUM;	//队头偏移1
 	}
+#endif
+	
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+	netMessageFifoEnqueue(&NETMqttSNPcpFifoMessageSendPark, dataBuf, dataLength);
+#endif
 }
 
 /**********************************************************************************************************
@@ -138,6 +200,7 @@ void NET_MqttSN_PCP_Message_SendDataEnqueue(unsigned char* dataBuf, unsigned sho
 **********************************************************************************************************/
 void NET_MqttSN_PCP_Message_RecvDataEnqueue(unsigned char* dataBuf, unsigned short dataLength)
 {
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 	if ((dataBuf == NULL) || (dataLength > MQTTSN_PCP_RECV_BUFFER_SIZE)) {
 		return;
 	}
@@ -150,6 +213,11 @@ void NET_MqttSN_PCP_Message_RecvDataEnqueue(unsigned char* dataBuf, unsigned sho
 	if (NET_MqttSN_PCP_Message_RecvDataisFull() == true) {												//队列已满
 		NETMqttSNPcpMessageRecvPark.Front = (NETMqttSNPcpMessageRecvPark.Front + 1) % MQTTSN_PCP_RECV_PACK_NUM;	//队头偏移1
 	}
+#endif
+	
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+	netMessageFifoEnqueue(&NETMqttSNPcpFifoMessageRecvPark, dataBuf, dataLength);
+#endif
 }
 
 /**********************************************************************************************************
@@ -162,6 +230,7 @@ void NET_MqttSN_PCP_Message_RecvDataEnqueue(unsigned char* dataBuf, unsigned sho
 **********************************************************************************************************/
 bool NET_MqttSN_PCP_Message_SendDataDequeue(unsigned char* dataBuf, unsigned short* dataLength)
 {
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 	bool MessageState;
 	unsigned char front;
 	
@@ -176,6 +245,11 @@ bool NET_MqttSN_PCP_Message_SendDataDequeue(unsigned char* dataBuf, unsigned sho
 	}
 	
 	return MessageState;
+#endif
+	
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+	return netMessageFifoDequeue(&NETMqttSNPcpFifoMessageSendPark, dataBuf, dataLength);
+#endif
 }
 
 /**********************************************************************************************************
@@ -188,6 +262,7 @@ bool NET_MqttSN_PCP_Message_SendDataDequeue(unsigned char* dataBuf, unsigned sho
 **********************************************************************************************************/
 bool NET_MqttSN_PCP_Message_RecvDataDequeue(unsigned char* dataBuf, unsigned short* dataLength)
 {
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 	bool MessageState;
 	unsigned char front;
 	
@@ -202,6 +277,11 @@ bool NET_MqttSN_PCP_Message_RecvDataDequeue(unsigned char* dataBuf, unsigned sho
 	}
 	
 	return MessageState;
+#endif
+	
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+	return netMessageFifoDequeue(&NETMqttSNPcpFifoMessageRecvPark, dataBuf, dataLength);
+#endif
 }
 
 /**********************************************************************************************************
@@ -213,6 +293,7 @@ bool NET_MqttSN_PCP_Message_RecvDataDequeue(unsigned char* dataBuf, unsigned sho
 **********************************************************************************************************/
 bool NET_MqttSN_PCP_Message_SendDataOffSet(void)
 {
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 	bool MessageState;
 	
 	if (NET_MqttSN_PCP_Message_SendDataisEmpty() == true) {											//队列已空
@@ -224,6 +305,11 @@ bool NET_MqttSN_PCP_Message_SendDataOffSet(void)
 	}
 	
 	return MessageState;
+#endif
+	
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+	return netMessageFifoDiscard(&NETMqttSNPcpFifoMessageSendPark);
+#endif
 }
 
 /**********************************************************************************************************
@@ -235,6 +321,7 @@ bool NET_MqttSN_PCP_Message_SendDataOffSet(void)
 **********************************************************************************************************/
 bool NET_MqttSN_PCP_Message_RecvDataOffSet(void)
 {
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 	bool MessageState;
 	
 	if (NET_MqttSN_PCP_Message_RecvDataisEmpty() == true) {											//队列已空
@@ -246,6 +333,11 @@ bool NET_MqttSN_PCP_Message_RecvDataOffSet(void)
 	}
 	
 	return MessageState;
+#endif
+	
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+	return netMessageFifoDiscard(&NETMqttSNPcpFifoMessageRecvPark);
+#endif
 }
 
 /**********************************************************************************************************
@@ -256,7 +348,13 @@ bool NET_MqttSN_PCP_Message_RecvDataOffSet(void)
 **********************************************************************************************************/
 unsigned char NET_MqttSN_PCP_Message_SendDataRear(void)
 {
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 	return NETMqttSNPcpMessageSendPark.Rear;
+#endif
+	
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+	return netMessageFifoRear(&NETMqttSNPcpFifoMessageSendPark);
+#endif
 }
 
 /**********************************************************************************************************
@@ -267,7 +365,13 @@ unsigned char NET_MqttSN_PCP_Message_SendDataRear(void)
 **********************************************************************************************************/
 unsigned char NET_MqttSN_PCP_Message_RecvDataRear(void)
 {
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 	return NETMqttSNPcpMessageRecvPark.Rear;
+#endif
+	
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+	return netMessageFifoRear(&NETMqttSNPcpFifoMessageRecvPark);
+#endif
 }
 
 /********************************************** END OF FLEE **********************************************/

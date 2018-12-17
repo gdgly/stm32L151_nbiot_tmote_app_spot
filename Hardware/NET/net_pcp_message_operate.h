@@ -35,8 +35,8 @@ typedef struct
 }PCP_SwapRecvDataTypeDef;
 
 
-bool NET_PCP_Message_SendDataisFull(void);																//检查发送队列是否已满
-bool NET_PCP_Message_RecvDataisFull(void);																//检查接收队列是否已满
+void NET_PCP_FifoSendMessageInit(void);																	//发送数据Fifo初始化
+void NET_PCP_FifoRecvMessageInit(void);																	//接收数据Fifo初始化
 bool NET_PCP_Message_SendDataisEmpty(void);																//检查发送队列是否已空
 bool NET_PCP_Message_RecvDataisEmpty(void);																//检查接收队列是否已空
 void NET_PCP_Message_SendDataEnqueue(unsigned char* dataBuf, unsigned short dataLength);							//发送数据写入队列

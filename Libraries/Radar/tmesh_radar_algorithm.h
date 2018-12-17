@@ -34,6 +34,7 @@
   *		    版本46,覆盖增益进一步降低.
   *		    版本47,覆盖增益从10/10  到 1/10可调,默认为10/10.
   *		    版本48,覆盖增益影响方位从2 3 4 5 改为 2 3 4.
+  *		    版本49,增加高通滤波器的选择,800HZ,900Hz,1000Hz,1100Hz,1200Hz 5种可选.因为上城有的设备增益还是不够大,截止频率越小,低频增益越大.
   *
   *********************************************************************************************************
   */
@@ -130,6 +131,15 @@ enum TRADAR_SENSITIVITY
 	RADAR_MIDDLE						= 0x03,
 	RADAR_LOW							= 0x04,
 	RADAR_LOWEST						= 0x05
+};
+
+enum TRADAR_HIGHPASS
+{
+	RADAR_HIGHPASS_800					= 0x01,
+	RADAR_HIGHPASS_900					= 0x02,
+	RADAR_HIGHPASS_1000					= 0x03,
+	RADAR_HIGHPASS_1100					= 0x04,
+	RADAR_HIGHPASS_1200					= 0x05
 };
 
 extern short tradar_fre_mag_buff[TRADAR_BACKGROUND_NUM];
@@ -269,5 +279,13 @@ void tradar_set_gain_in_cover(char val);
  @Return				RADAR_COVERGAIN_HIGH = 1,	RADAR_COVERGAIN_MIDDLE,	RADAR_COVERGAIN_LOW,
 **********************************************************************************************************/
 char tradar_get_gain_in_cover(void);
+
+/**********************************************************************************************************
+ @Function			tradar_set_highpass
+ @Purpose				set the highpass filter
+ @Input				val:1-800hz,2-900hz,3-1000hz,4-1100hz,5-1200hz
+ @Return				void
+**********************************************************************************************************/
+void tradar_set_highpass(char val);
 
 #endif

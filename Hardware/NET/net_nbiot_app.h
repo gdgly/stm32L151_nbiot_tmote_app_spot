@@ -73,6 +73,7 @@ struct NET_NBIOT_ClientsTypeDef
 void NET_NBIOT_Client_Init(NET_NBIOT_ClientsTypeDef* pClient);					//初始化NET NBIOT客户端
 
 void NET_NBIOT_Initialization(void);										//NET初始化
+void NET_NBIOT_FIFOMessage_Initialization(void);								//NET数据缓存初始化
 void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient);				//NET数据处理
 void NET_NBIOT_TaskProcessing(NET_NBIOT_ClientsTypeDef* pClient);				//NET工作处理
 void NET_NBIOT_App_Task(void);											//NET处理

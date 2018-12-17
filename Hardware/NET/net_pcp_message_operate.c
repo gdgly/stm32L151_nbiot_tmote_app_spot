@@ -17,11 +17,54 @@
 #include "platform_config.h"
 #include "platform_map.h"
 #include "stm32l1xx_config.h"
+#include "fifomessage.h"
 #include "string.h"
 
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 PCP_SwapSendDataTypeDef		NETPcpMessageSendPark;
 PCP_SwapRecvDataTypeDef		NETPcpMessageRecvPark;
+#endif
 
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+#define MESSAGEPCPFIFO_SENDPARKNUM_MAX			NETFIFO_COAPPCPSENDPARKNUM_MAX
+#define MESSAGEPCPFIFO_RECVPARKNUM_MAX			NETFIFO_COAPPCPRECVPARKNUM_MAX
+#define MESSAGEPCPFIFO_SENDPARKSIZE_MAX			NETFIFO_COAPPCPSENDPARKSIZE_MAX
+#define MESSAGEPCPFIFO_RECVPARKSIZE_MAX			NETFIFO_COAPPCPRECVPARKSIZE_MAX
+
+MessageFifoTypeDef			NETPcpFifoMessageSendPark;
+MessageFifoTypeDef			NETPcpFifoMessageRecvPark;
+
+unsigned char				PcpFifoMessageSendBuf[MESSAGEPCPFIFO_SENDPARKSIZE_MAX];
+unsigned char				PcpFifoMessageRecvBuf[MESSAGEPCPFIFO_RECVPARKSIZE_MAX];
+#endif
+
+/**********************************************************************************************************
+ @Function			void NET_PCP_FifoSendMessageInit(void)
+ @Description			NET_PCP_FifoSendMessageInit		: 发送数据Fifo初始化
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+void NET_PCP_FifoSendMessageInit(void)
+{
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+	netMessageFifoInit(&NETPcpFifoMessageSendPark, PcpFifoMessageSendBuf, sizeof(PcpFifoMessageSendBuf), MESSAGEPCPFIFO_SENDPARKNUM_MAX);
+#endif
+}
+
+/**********************************************************************************************************
+ @Function			void NET_PCP_FifoRecvMessageInit(void)
+ @Description			NET_PCP_FifoRecvMessageInit		: 接收数据Fifo初始化
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+void NET_PCP_FifoRecvMessageInit(void)
+{
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+	netMessageFifoInit(&NETPcpFifoMessageRecvPark, PcpFifoMessageRecvBuf, sizeof(PcpFifoMessageRecvBuf), MESSAGEPCPFIFO_RECVPARKNUM_MAX);
+#endif
+}
+
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 /**********************************************************************************************************
  @Function			static bool NET_PCP_Message_SendDataisFull(void)
  @Description			NET_PCP_Message_SendDataisFull	: 检查发送队列是否已满
@@ -29,7 +72,7 @@ PCP_SwapRecvDataTypeDef		NETPcpMessageRecvPark;
  @Return				true							: 已满
 					false						: 未满
 **********************************************************************************************************/
-bool NET_PCP_Message_SendDataisFull(void)
+static bool NET_PCP_Message_SendDataisFull(void)
 {
 	bool MessageState;
 	
@@ -50,7 +93,7 @@ bool NET_PCP_Message_SendDataisFull(void)
  @Return				true							: 已满
 					false						: 未满
 **********************************************************************************************************/
-bool NET_PCP_Message_RecvDataisFull(void)
+static bool NET_PCP_Message_RecvDataisFull(void)
 {
 	bool MessageState;
 	
@@ -63,6 +106,7 @@ bool NET_PCP_Message_RecvDataisFull(void)
 	
 	return MessageState;
 }
+#endif
 
 /**********************************************************************************************************
  @Function			static bool NET_PCP_Message_SendDataisEmpty(void)
@@ -73,6 +117,7 @@ bool NET_PCP_Message_RecvDataisFull(void)
 **********************************************************************************************************/
 bool NET_PCP_Message_SendDataisEmpty(void)
 {
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 	bool MessageState;
 	
 	if (NETPcpMessageSendPark.Front == NETPcpMessageSendPark.Rear) {
@@ -83,6 +128,11 @@ bool NET_PCP_Message_SendDataisEmpty(void)
 	}
 	
 	return MessageState;
+#endif
+	
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+	return netMessageFifoisEmpty(&NETPcpFifoMessageSendPark);
+#endif
 }
 
 /**********************************************************************************************************
@@ -94,6 +144,7 @@ bool NET_PCP_Message_SendDataisEmpty(void)
 **********************************************************************************************************/
 bool NET_PCP_Message_RecvDataisEmpty(void)
 {
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 	bool MessageState;
 	
 	if (NETPcpMessageRecvPark.Front == NETPcpMessageRecvPark.Rear) {
@@ -104,6 +155,11 @@ bool NET_PCP_Message_RecvDataisEmpty(void)
 	}
 	
 	return MessageState;
+#endif
+	
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+	return netMessageFifoisEmpty(&NETPcpFifoMessageRecvPark);
+#endif
 }
 
 /**********************************************************************************************************
@@ -115,6 +171,7 @@ bool NET_PCP_Message_RecvDataisEmpty(void)
 **********************************************************************************************************/
 void NET_PCP_Message_SendDataEnqueue(unsigned char* dataBuf, unsigned short dataLength)
 {
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 	if ((dataBuf == NULL) || (dataLength > PCP_SEND_BUFFER_SIZE)) {
 		return;
 	}
@@ -127,6 +184,11 @@ void NET_PCP_Message_SendDataEnqueue(unsigned char* dataBuf, unsigned short data
 	if (NET_PCP_Message_SendDataisFull() == true) {													//队列已满
 		NETPcpMessageSendPark.Front = (NETPcpMessageSendPark.Front + 1) % PCP_SEND_PACK_NUM;					//队头偏移1
 	}
+#endif
+	
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+	netMessageFifoEnqueue(&NETPcpFifoMessageSendPark, dataBuf, dataLength);
+#endif
 }
 
 /**********************************************************************************************************
@@ -138,6 +200,7 @@ void NET_PCP_Message_SendDataEnqueue(unsigned char* dataBuf, unsigned short data
 **********************************************************************************************************/
 void NET_PCP_Message_RecvDataEnqueue(unsigned char* dataBuf, unsigned short dataLength)
 {
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 	if ((dataBuf == NULL) || (dataLength > PCP_RECV_BUFFER_SIZE)) {
 		return;
 	}
@@ -150,6 +213,11 @@ void NET_PCP_Message_RecvDataEnqueue(unsigned char* dataBuf, unsigned short data
 	if (NET_PCP_Message_RecvDataisFull() == true) {													//队列已满
 		NETPcpMessageRecvPark.Front = (NETPcpMessageRecvPark.Front + 1) % PCP_RECV_PACK_NUM;					//队头偏移1
 	}
+#endif
+	
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+	netMessageFifoEnqueue(&NETPcpFifoMessageRecvPark, dataBuf, dataLength);
+#endif
 }
 
 /**********************************************************************************************************
@@ -162,6 +230,7 @@ void NET_PCP_Message_RecvDataEnqueue(unsigned char* dataBuf, unsigned short data
 **********************************************************************************************************/
 bool NET_PCP_Message_SendDataDequeue(unsigned char* dataBuf, unsigned short* dataLength)
 {
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 	bool MessageState;
 	unsigned char front;
 	
@@ -176,6 +245,11 @@ bool NET_PCP_Message_SendDataDequeue(unsigned char* dataBuf, unsigned short* dat
 	}
 	
 	return MessageState;
+#endif
+	
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+	return netMessageFifoDequeue(&NETPcpFifoMessageSendPark, dataBuf, dataLength);
+#endif
 }
 
 /**********************************************************************************************************
@@ -188,6 +262,7 @@ bool NET_PCP_Message_SendDataDequeue(unsigned char* dataBuf, unsigned short* dat
 **********************************************************************************************************/
 bool NET_PCP_Message_RecvDataDequeue(unsigned char* dataBuf, unsigned short* dataLength)
 {
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 	bool MessageState;
 	unsigned char front;
 	
@@ -202,6 +277,11 @@ bool NET_PCP_Message_RecvDataDequeue(unsigned char* dataBuf, unsigned short* dat
 	}
 	
 	return MessageState;
+#endif
+	
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+	return netMessageFifoDequeue(&NETPcpFifoMessageRecvPark, dataBuf, dataLength);
+#endif
 }
 
 /**********************************************************************************************************
@@ -213,6 +293,7 @@ bool NET_PCP_Message_RecvDataDequeue(unsigned char* dataBuf, unsigned short* dat
 **********************************************************************************************************/
 bool NET_PCP_Message_SendDataOffSet(void)
 {
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 	bool MessageState;
 	
 	if (NET_PCP_Message_SendDataisEmpty() == true) {													//队列已空
@@ -224,6 +305,11 @@ bool NET_PCP_Message_SendDataOffSet(void)
 	}
 	
 	return MessageState;
+#endif
+	
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+	return netMessageFifoDiscard(&NETPcpFifoMessageSendPark);
+#endif
 }
 
 /**********************************************************************************************************
@@ -235,6 +321,7 @@ bool NET_PCP_Message_SendDataOffSet(void)
 **********************************************************************************************************/
 bool NET_PCP_Message_RecvDataOffSet(void)
 {
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 	bool MessageState;
 	
 	if (NET_PCP_Message_RecvDataisEmpty() == true) {													//队列已空
@@ -246,6 +333,11 @@ bool NET_PCP_Message_RecvDataOffSet(void)
 	}
 	
 	return MessageState;
+#endif
+	
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+	return netMessageFifoDiscard(&NETPcpFifoMessageRecvPark);
+#endif
 }
 
 /**********************************************************************************************************
@@ -256,7 +348,13 @@ bool NET_PCP_Message_RecvDataOffSet(void)
 **********************************************************************************************************/
 unsigned char NET_PCP_Message_SendDataRear(void)
 {
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 	return NETPcpMessageSendPark.Rear;
+#endif
+	
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+	return netMessageFifoRear(&NETPcpFifoMessageSendPark);
+#endif
 }
 
 /**********************************************************************************************************
@@ -267,7 +365,13 @@ unsigned char NET_PCP_Message_SendDataRear(void)
 **********************************************************************************************************/
 unsigned char NET_PCP_Message_RecvDataRear(void)
 {
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 	return NETPcpMessageRecvPark.Rear;
+#endif
+	
+#if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+	return netMessageFifoRear(&NETPcpFifoMessageRecvPark);
+#endif
 }
 
 /********************************************** END OF FLEE **********************************************/

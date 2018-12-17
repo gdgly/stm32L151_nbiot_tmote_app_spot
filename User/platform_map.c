@@ -121,6 +121,14 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_SystemData.MagBackgroundZ = 0x7FFF;
 	TCFG_EEPROM_SetMagBackgroud(TCFG_SystemData.MagBackgroundX, TCFG_SystemData.MagBackgroundY, TCFG_SystemData.MagBackgroundZ);
 	
+	/* 手动地磁背景值 */
+	for (unsigned char i = 0; i < 5; i++) {
+		TCFG_SystemData.MagBackManualX[i] = 0;
+		TCFG_SystemData.MagBackManualY[i] = 0;
+		TCFG_SystemData.MagBackManualZ[i] = 0;
+		TCFG_EEPROM_SetMagManualBack(i, TCFG_SystemData.MagBackManualX[i], TCFG_SystemData.MagBackManualY[i], TCFG_SystemData.MagBackManualZ[i]);
+	}
+	
 	/* 地磁背景温度补偿值 */
 	TCFG_SystemData.MagBackgroudTemp = 0;
 	TCFG_EEPROM_SetMagBackgroudTemp(TCFG_SystemData.MagBackgroudTemp);
@@ -287,6 +295,13 @@ void TCFG_EEPROM_ReadConfigData(void)
 		TCFG_EEPROM_SetRadarGain(TCFG_SystemData.RadarGain);
 	}
 	
+	/* 获取高通滤波器截止频率 */
+	TCFG_SystemData.RadarHighPass = TCFG_EEPROM_GetHighPass();
+	
+	/* 获取采样间隔,间隔越小越省电,但对实时性要求越高 */
+	TCFG_SystemData.RadarSampleInterval = TCFG_EEPROM_GetSampleInterval();
+	Radar_Set_SampleInterval(TCFG_SystemData.RadarSampleInterval);
+	
 	/* 获取BOOT版本号 */
 	TCFG_SystemData.BootVersion = TCFG_EEPROM_GetBootVersion();
 	
@@ -300,6 +315,15 @@ void TCFG_EEPROM_ReadConfigData(void)
 	Qmc5883lData.X_Back = TCFG_SystemData.MagBackgroundX;
 	Qmc5883lData.Y_Back = TCFG_SystemData.MagBackgroundY;
 	Qmc5883lData.Z_Back = TCFG_SystemData.MagBackgroundZ;
+	
+	/* 手动地磁背景值 */
+	for (unsigned char i = 0; i < 5; i++) {
+		TCFG_SystemData.MagBackManualX[i] = TCFG_EEPROM_GetMagManualBack(i, TCFG_X_AXIS);
+		TCFG_SystemData.MagBackManualY[i] = TCFG_EEPROM_GetMagManualBack(i, TCFG_Y_AXIS);
+		TCFG_SystemData.MagBackManualZ[i] = TCFG_EEPROM_GetMagManualBack(i, TCFG_Z_AXIS);
+		if (TCFG_SystemData.MagBackManualX[i] == 0) break;
+		talgo_set_manual_back(i, TCFG_SystemData.MagBackManualX[i], TCFG_SystemData.MagBackManualY[i], TCFG_SystemData.MagBackManualZ[i]);
+	}
 	
 	/* 地磁背景温度补偿值 */
 	TCFG_SystemData.MagBackgroudTemp = TCFG_EEPROM_GetMagBackgroudTemp();
@@ -711,6 +735,44 @@ unsigned short TCFG_EEPROM_GetMagBackgroud(char axis)
 	}
 	
 	return 0x7FFF;
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetMagManualBack(uint8_t i, int16_t x_axis, int16_t y_axis, int16_t z_axis)
+ @Description			TCFG_EEPROM_SetMagManualBack					: 保存手动地磁背景值
+ @Input				i
+					x_axis
+					y_axis
+					z_axis
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetMagManualBack(uint8_t i, int16_t x_axis, int16_t y_axis, int16_t z_axis)
+{
+	if (i < 5) {
+		FLASH_EEPROM_WriteHalfWord(TCFG_MAG_MANUALBACK_X_OFFSET+i*2, x_axis);
+		FLASH_EEPROM_WriteHalfWord(TCFG_MAG_MANUALBACK_Y_OFFSET+i*2, y_axis);
+		FLASH_EEPROM_WriteHalfWord(TCFG_MAG_MANUALBACK_Z_OFFSET+i*2, z_axis);
+	}
+}
+
+/**********************************************************************************************************
+ @Function			short TCFG_EEPROM_GetMagManualBack(uint8_t i, char axis)
+ @Description			TCFG_EEPROM_GetMagManualBack					: 读取手动地磁背景值
+ @Input				i
+					axis
+ @Return				val
+**********************************************************************************************************/
+short TCFG_EEPROM_GetMagManualBack(uint8_t i, char axis)
+{
+	if (axis == TCFG_X_AXIS) {
+		return FLASH_EEPROM_ReadHalfWord(TCFG_MAG_MANUALBACK_X_OFFSET+i*2);
+	}
+	else if (axis == TCFG_Y_AXIS) {
+		return FLASH_EEPROM_ReadHalfWord(TCFG_MAG_MANUALBACK_Y_OFFSET+i*2);
+	}
+	else {
+		return FLASH_EEPROM_ReadHalfWord(TCFG_MAG_MANUALBACK_Z_OFFSET+i*2);
+	}
 }
 
 /**********************************************************************************************************
@@ -1736,6 +1798,58 @@ void TCFG_EEPROM_SetRadarGain(unsigned char val)
 unsigned char TCFG_EEPROM_GetRadarGain(void)
 {
 	return FLASH_EEPROM_ReadByte(TCFG_RADAR_GAIN_OFFSET);
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetHighPass(unsigned char val)
+ @Description			TCFG_EEPROM_SetHighPass						: 保存 cut-off frequency of high pass
+ @Input				val		RADAR_HIGHPASS_800  = 1,
+							RADAR_HIGHPASS_900  = 2,
+							RADAR_HIGHPASS_1000 = 3,
+							RADAR_HIGHPASS_1100 = 4,
+							RADAR_HIGHPASS_1200 = 5,
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetHighPass(unsigned char val)
+{
+	FLASH_EEPROM_WriteByte(TCFG_RADAR_HIGHPASS_OFFSET, val);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned char TCFG_EEPROM_GetHighPass(void)
+ @Description			TCFG_EEPROM_GetHighPass						: 读取 cut-off frequency of high pass
+ @Input				void
+ @Return				val		RADAR_HIGHPASS_800  = 1,
+							RADAR_HIGHPASS_900  = 2,
+							RADAR_HIGHPASS_1000 = 3,
+							RADAR_HIGHPASS_1100 = 4,
+							RADAR_HIGHPASS_1200 = 5,
+**********************************************************************************************************/
+unsigned char TCFG_EEPROM_GetHighPass(void)
+{
+	return FLASH_EEPROM_ReadByte(TCFG_RADAR_HIGHPASS_OFFSET);
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetSampleInterval(unsigned char val)
+ @Description			TCFG_EEPROM_SetSampleInterval					: 保存 采样间隔
+ @Input				val 	4~13
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetSampleInterval(unsigned char val)
+{
+	FLASH_EEPROM_WriteByte(TCFG_RADAR_SAMPLEINTERVAL_OFFSET, val);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned char TCFG_EEPROM_GetSampleInterval(void)
+ @Description			TCFG_EEPROM_GetSampleInterval					: 读取 采样间隔
+ @Input				void
+ @Return				val 	4~13
+**********************************************************************************************************/
+unsigned char TCFG_EEPROM_GetSampleInterval(void)
+{
+	return FLASH_EEPROM_ReadByte(TCFG_RADAR_SAMPLEINTERVAL_OFFSET);
 }
 
 /**********************************************************************************************************

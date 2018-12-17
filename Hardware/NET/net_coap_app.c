@@ -726,7 +726,7 @@ void NET_COAP_NBIOT_Event_FullFunctionality(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, CDP_SERVER_CHECK, FULL_FUNCTIONALITY);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		COAP_DEBUG_LOG_PRINTF("CoAP FullFunc Check Ok");
+		COAP_DEBUG_LOG_PRINTF("CoAP FullFunc Ok");
 #endif
 	}
 	else {
@@ -785,7 +785,7 @@ void NET_COAP_NBIOT_Event_MinimumFunctionality(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, CDP_SERVER_CONFIG, MINIMUM_FUNCTIONALITY);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		COAP_DEBUG_LOG_PRINTF("CoAP MinFunc Check Ok");
+		COAP_DEBUG_LOG_PRINTF("CoAP MinFunc Ok");
 #endif
 	}
 	else {
@@ -2216,6 +2216,47 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 								TCFG_SystemData.SenseMode = SenseMode;
 								TCFG_EEPROM_SetSenseMode(TCFG_SystemData.SenseMode);
 							}
+						}
+						else {
+							ret = NETIP_UNKNOWNERROR;
+						}
+				#endif
+					}
+					/* SetMag */
+					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "SetMag") != NULL) {
+				#if NBCOAP_DOWNLOAD_CMD_SETMAG
+						short x[5], y[5], z[5];
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
+							"{(SetMag):{(x):[%hd,%hd,%hd,%hd,%hd],(y):[%hd,%hd,%hd,%hd,%hd],(z):[%hd,%hd,%hd,%hd,%hd],(Magic):%hu}}", \
+							&x[0],&x[1],&x[2],&x[3],&x[4],&y[0],&y[1],&y[2],&y[3],&y[4],&z[0],&z[1],&z[2],&z[3],&z[4], &recvMagicNum);
+						if (recvMagicNum == TCLOD_MAGIC_NUM) {
+							for (unsigned char i = 0; i < 5; i++) {
+								TCFG_SystemData.MagBackManualX[i] = x[i];
+								TCFG_SystemData.MagBackManualY[i] = y[i];
+								TCFG_SystemData.MagBackManualZ[i] = z[i];
+								TCFG_EEPROM_SetMagManualBack(i, x[i], y[i], z[i]);
+								if (x[i] != 0) talgo_set_manual_back(i, x[i], y[i], z[i]);
+							}
+						}
+						else {
+							ret = NETIP_UNKNOWNERROR;
+						}
+				#endif
+					}
+					/* ConfigRadar */
+					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "CfgRadar") != NULL) {
+				#if NBCOAP_DOWNLOAD_CMD_CFGRADAR
+						unsigned short interval, highpass, vtune;
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
+							"{(CfgRadar):{(interval):%hu,(hpass):%hu,(tune):%hu,(Magic):%hu}}", &interval, &highpass, &vtune, &recvMagicNum);
+						if (recvMagicNum == TCLOD_MAGIC_NUM) {
+							TCFG_SystemData.RadarSampleInterval = interval;
+							Radar_Set_SampleInterval(interval);
+							TCFG_EEPROM_SetSampleInterval(interval);
+							TCFG_SystemData.RadarHighPass = highpass;
+							TCFG_EEPROM_SetHighPass(highpass);
+							TCFG_SystemData.RadarGain = vtune;
+							TCFG_EEPROM_SetRadarGain(TCFG_SystemData.RadarGain);
 						}
 						else {
 							ret = NETIP_UNKNOWNERROR;

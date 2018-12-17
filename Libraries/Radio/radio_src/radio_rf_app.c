@@ -530,6 +530,33 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				#endif
 			#endif
 				}
+				/* radar sample interval */
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "interval")) {
+			#if RADIO_DOWNLOAD_CMD_INTERVAL
+					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "interval:%hu", &uval16);
+					if (TCFG_SystemData.RadarSampleInterval != uval16) {
+						TCFG_SystemData.RadarSampleInterval = uval16;
+						Radar_Set_SampleInterval(TCFG_SystemData.RadarSampleInterval);
+						TCFG_EEPROM_SetSampleInterval(TCFG_SystemData.RadarSampleInterval);
+					}
+				#if RADIO_CMD_ECHO_TYPE
+					Radio_Trf_Printf("RadarSampleInterval:%hd", TCFG_EEPROM_GetSampleInterval());
+				#endif
+			#endif
+				}
+				/* cut-off frequency of high pass */
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "highpass")) {
+			#if RADIO_DOWNLOAD_CMD_HIGHPASS
+					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "highpass:%hu", &uval16);
+					if (TCFG_SystemData.RadarHighPass != uval16) {
+						TCFG_SystemData.RadarHighPass = uval16;
+						TCFG_EEPROM_SetHighPass(TCFG_SystemData.RadarHighPass);
+					}
+				#if RADIO_CMD_ECHO_TYPE
+					Radio_Trf_Printf("RadarHighPass:%hd", TCFG_EEPROM_GetHighPass());
+				#endif
+			#endif
+				}
 				/* Restore */
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "restore")) {
 			#if RADIO_DOWNLOAD_CMD_RESTORE

@@ -195,6 +195,19 @@
 
 #define TCFG_SENSE_MODE_OFFSET			TCFG_RADAR_GAIN_OFFSET + TCFG_RADAR_GAIN_LENGTH			//0x08080E2F
 #define TCFG_SENSE_MODE_LENGTH			1												//Sense Mode			传感器模式
+
+#define TCFG_MAG_MANUALBACK_X_OFFSET		TCFG_SENSE_MODE_OFFSET + TCFG_SENSE_MODE_LENGTH			//0x08080E30
+#define TCFG_MAG_MANUALBACK_X_LENGTH		10												//Mag X Back			地磁X背景值
+#define TCFG_MAG_MANUALBACK_Y_OFFSET		TCFG_MAG_MANUALBACK_X_OFFSET + TCFG_MAG_MANUALBACK_X_LENGTH	//0x08080E3A
+#define TCFG_MAG_MANUALBACK_Y_LENGTH		10												//Mag Y Back			地磁Y背景值
+#define TCFG_MAG_MANUALBACK_Z_OFFSET		TCFG_MAG_MANUALBACK_Y_OFFSET + TCFG_MAG_MANUALBACK_Y_LENGTH	//0x08080E44
+#define TCFG_MAG_MANUALBACK_Z_LENGTH		10												//Mag Z Back			地磁Z背景值
+
+#define TCFG_RADAR_HIGHPASS_OFFSET			TCFG_MAG_MANUALBACK_Z_OFFSET + TCFG_MAG_MANUALBACK_Z_LENGTH	//0x08080E4E
+#define TCFG_RADAR_HIGHPASS_LENGTH			1												//RadarHighPass		Radar高通滤波值
+
+#define TCFG_RADAR_SAMPLEINTERVAL_OFFSET	TCFG_RADAR_HIGHPASS_OFFSET + TCFG_RADAR_HIGHPASS_LENGTH	//0x08080E4F
+#define TCFG_RADAR_SAMPLEINTERVAL_LENGTH	1												//RadarSampleInterval	Radar采样频率
 /************************************************************** End **************************************************************/
 
 enum TCFG_SENSITIVITY																	//传感器灵敏度
@@ -237,6 +250,9 @@ typedef struct
 	signed char						MagCoefX;											//地磁温飘计算值X
 	signed char						MagCoefY;											//地磁温飘计算值Y
 	signed char						MagCoefZ;											//地磁温飘计算值Z
+	short							MagBackManualX[5];									//地磁手动背景值X
+	short							MagBackManualY[5];									//地磁手动背景值Y
+	short							MagBackManualZ[5];									//地磁手动背景值Z
 	unsigned char						WorkMode;											//工作模式
 	unsigned char						WorkModeStr[10];									//工作模式名
 	unsigned char						RFChannel;										//无线通道
@@ -247,6 +263,8 @@ typedef struct
 	unsigned char						RadarRange;										//雷达检测范围
 	unsigned char						CoverGain;										//雷达覆水增益
 	unsigned char						RadarGain;										//雷达增益
+	unsigned char						RadarHighPass;										//雷达高通滤波值
+	unsigned char						RadarSampleInterval;								//雷达采样频率
 	unsigned char						CarInDelay;										//车辆进入延时上报时间
 	unsigned int						SpotStatusCount;									//车位检测车辆次数
 	unsigned char						NBIotHeart;										//NBIot心跳间隔
@@ -309,6 +327,9 @@ unsigned char	TCFG_EEPROM_GetBootVersion(void);												//读取BootVersion
 
 void			TCFG_EEPROM_SetMagBackgroud(int16_t x_axis, int16_t y_axis, int16_t z_axis);			//保存地磁背景值
 unsigned short	TCFG_EEPROM_GetMagBackgroud(char axis);											//读取地磁背景值
+
+void			TCFG_EEPROM_SetMagManualBack(uint8_t i, int16_t x_axis, int16_t y_axis, int16_t z_axis);	//保存手动地磁背景值
+short		TCFG_EEPROM_GetMagManualBack(uint8_t i, char axis);								//读取手动地磁背景值
 
 void			TCFG_EEPROM_SetMagTempCoef(signed char coef_x, signed char coef_y, signed char coef_z);	//保存地磁温飘计算值
 void			TCFG_EEPROM_GetMagTempCoef(signed char* coef_x, signed char* coef_y, signed char* coef_z);//读取地磁温飘计算值
@@ -420,6 +441,12 @@ unsigned char	TCFG_EEPROM_GetCoverGain(void);												//读取 radar gain in 
 
 void			TCFG_EEPROM_SetRadarGain(unsigned char val);										//保存 radar gain
 unsigned char	TCFG_EEPROM_GetRadarGain(void);												//读取 radar gain
+
+void			TCFG_EEPROM_SetHighPass(unsigned char val);										//保存 cut-off frequency of high pass
+unsigned char	TCFG_EEPROM_GetHighPass(void);												//读取 cut-off frequency of high pass
+
+void			TCFG_EEPROM_SetSampleInterval(unsigned char val);									//保存 采样间隔
+unsigned char	TCFG_EEPROM_GetSampleInterval(void);											//读取 采样间隔
 
 void			TCFG_EEPROM_SetCarInDelay(uint8_t val);											//保存CarInDelay
 unsigned char	TCFG_EEPROM_GetCarInDelay(void);												//读取CarInDelay

@@ -74,6 +74,7 @@ int n_array = 0;
 int flag_main_go = 0;
 u8  bgTimes = 1;
 u8  radar_trigged_again = 0;
+int inteval = 4;
 
 /**********************************************************************************************************
  @Function			void Radar_Init(void)
@@ -385,7 +386,7 @@ u8 Radar_GetData(tradar_targetinfo_s* pTargetinfo[], u8 dataNum)
 				pTargetinfo[0]->pMagNow[9],pTargetinfo[0]->pMagNow[10],pTargetinfo[0]->pMagNow[11],
 				pTargetinfo[0]->pMagNow[12],pTargetinfo[0]->pMagNow[13],pTargetinfo[0]->pMagNow[14],
 				pTargetinfo[0]->pMagNow[15],pTargetinfo[0]->pMagNow[16],pTargetinfo[0]->pMagNow[17],
-				talgo_get_fredomain_least(),Qmc5883lDiff.BackVal_Diff);
+				Qmc5883lDiff.GraduaVal_Diff,Qmc5883lDiff.BackVal_Diff);
 		
 		Radio_Trf_Debug_Printf_Level3("b:%02d%02d%02d%02d%02d;%02d%02d%02d%02d%02d;%02d%02d%02d%02d%02d%02d.%d",
 				pTargetinfo[0]->pMagBG[2],
@@ -441,7 +442,7 @@ void Radar_GetSample_Time(void)
 	
 	if (xx < 1) {
 #ifdef XIAMEN
-		xx = 13;
+		xx = inteval;
 #else
 		xx = 13;
 #endif
@@ -483,6 +484,7 @@ void Radar_EnterCriticalSection(void)
 		radar_model = TRADAR_IMSEMI;
 	}
 	else {
+		inteval = 13;													// 针对下沙老版本的雷达方案,采样周期仍旧为13
 		RADER_RANGE = 8;												// 6x304 +650 = 2486
 		RADER_LOW = 250;
 		radar_model = TRADAR_INFINEON;
@@ -537,6 +539,30 @@ void Radar_ExitCriticalSection(void)
 char Radar_GetModel(void)
 {
 	return radar_model;
+}
+
+/**********************************************************************************************************
+ @Function			void Radar_Set_SampleInterval(char val)
+ @Description			set the sample interval
+ @Input				val 				: sample interval 4~13
+ @Return				void
+**********************************************************************************************************/
+void Radar_Set_SampleInterval(char val)
+{
+	if ((val < 14) && (val > 3)) {
+		inteval = val;
+	}
+}
+
+/**********************************************************************************************************
+ @Function			char Radar_Get_SampleInterval(void)
+ @Description			get the sample interval
+ @Input				none
+ @Return				char				: sample interval 4~13
+**********************************************************************************************************/
+char Radar_Get_SampleInterval(void)
+{
+	return inteval;
 }
 
 /********************************************** END OF FLEE **********************************************/

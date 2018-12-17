@@ -152,8 +152,8 @@ typedef __packed struct
 {
 	MQTTSN_PacketHeadTypeDef				HeadPacket;
 	MQTTSN_PacketMsgTypeDef				MsgPacket;
-	u8								InfoData[300];
-}MQTTSN_PacketInfoTypeDef;																		//Info包314Byte
+	u8								InfoData[450];
+}MQTTSN_PacketInfoTypeDef;																		//Info包464Byte
 
 typedef __packed struct
 {
@@ -362,7 +362,7 @@ int NET_MQTTSN_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer);
 int NET_MQTTSN_Message_Operate_Creat_Json_Response_Info(char* outBuffer, u16 errcode);
 int NET_MQTTSN_Message_Operate_Creat_Qmc5883L_Data(unsigned char* outBuffer);
 
-bool NET_MqttSN_Message_SendDataisFull(void);														//检查发送队列是否已满
+void NET_MqttSN_FifoSendMessageInit(void);															//发送数据Fifo初始化
 bool NET_MqttSN_Message_SendDataisEmpty(void);														//检查发送队列是否已空
 void NET_MqttSN_Message_SendDataEnqueue(unsigned char* dataBuf, unsigned short dataLength);					//发送数据写入队列
 bool NET_MqttSN_Message_SendDataDequeue(unsigned char* dataBuf, unsigned short* dataLength);					//发送数据读出队列

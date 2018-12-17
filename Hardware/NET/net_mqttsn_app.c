@@ -2243,6 +2243,47 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					}
 			#endif
 				}
+				/* SetMag */
+				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "SetMag") != NULL) {
+			#if MQTTSN_DOWNLOAD_CMD_SETMAG
+					short x[5], y[5], z[5];
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
+						"{(SetMag):{(x):[%hd,%hd,%hd,%hd,%hd],(y):[%hd,%hd,%hd,%hd,%hd],(z):[%hd,%hd,%hd,%hd,%hd],(Magic):%hu}}", \
+						&x[0],&x[1],&x[2],&x[3],&x[4],&y[0],&y[1],&y[2],&y[3],&y[4],&z[0],&z[1],&z[2],&z[3],&z[4], &recvMagicNum);
+					if (recvMagicNum == TCLOD_MAGIC_NUM) {
+						for (unsigned char i = 0; i < 5; i++) {
+							TCFG_SystemData.MagBackManualX[i] = x[i];
+							TCFG_SystemData.MagBackManualY[i] = y[i];
+							TCFG_SystemData.MagBackManualZ[i] = z[i];
+							TCFG_EEPROM_SetMagManualBack(i, x[i], y[i], z[i]);
+							if (x[i] != 0) talgo_set_manual_back(i, x[i], y[i], z[i]);
+						}
+					}
+					else {
+						ret = NETIP_UNKNOWNERROR;
+					}
+			#endif
+				}
+				/* ConfigRadar */
+				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "CfgRadar") != NULL) {
+			#if MQTTSN_DOWNLOAD_CMD_CFGRADAR
+					unsigned short interval, highpass, vtune;
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
+						"{(CfgRadar):{(interval):%hu,(hpass):%hu,(tune):%hu,(Magic):%hu}}", &interval, &highpass, &vtune, &recvMagicNum);
+					if (recvMagicNum == TCLOD_MAGIC_NUM) {
+						TCFG_SystemData.RadarSampleInterval = interval;
+						Radar_Set_SampleInterval(interval);
+						TCFG_EEPROM_SetSampleInterval(interval);
+						TCFG_SystemData.RadarHighPass = highpass;
+						TCFG_EEPROM_SetHighPass(highpass);
+						TCFG_SystemData.RadarGain = vtune;
+						TCFG_EEPROM_SetRadarGain(TCFG_SystemData.RadarGain);
+					}
+					else {
+						ret = NETIP_UNKNOWNERROR;
+					}
+			#endif
+				}
 				/* ...... */
 			}
 			else if (messageHandler->message->payload[recvBufOffset + TCLOD_MSGID_OFFSET] == TCLOD_CONFIG_GET) {
@@ -2564,8 +2605,8 @@ void NET_MQTTSN_NBIOT_Listen_Event_EnterParameter(MQTTSN_ClientsTypeDef* pClient
 				pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt = 0;
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 				MQTTSN_DEBUG_LOG_PRINTF("MqttSN Para Check Ok");
-				Radio_Trf_Printf("RSSI:%d", pClient->SocketStack->NBIotStack->Parameter.rssi);
-				Radio_Trf_Printf("SNR:%d", pClient->SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR);
+				Radio_Trf_Printf("RSSI :%d", pClient->SocketStack->NBIotStack->Parameter.rssi);
+				Radio_Trf_Printf("SNR :%d", pClient->SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR);
 #endif
 			}
 			else {

@@ -48,9 +48,32 @@
 #define	NETCARRIEROTHERUNICOM			30								//其他网段
 #define	NETCARRIERTYPE					NETCARRIERCHINATELECOM				//运营商
 
-#define	NBIOT_PRINT_ERRORCODE_DISABLE		0
-#define	NBIOT_PRINT_ERRORCODE_ENABLE		1
-#define	NBIOT_PRINT_ERROR_CODE_TYPE		NBIOT_PRINT_ERRORCODE_ENABLE			//NBIOT输出错误码模式
+#define	NETFIFOMESSAGEDISABLE			0
+#define	NETFIFOMESSAGEENABLE			1
+#define	NETFIFOMESSAGETYPE				NETFIFOMESSAGEENABLE				//Net使能FifoMessage
+
+#define	NETFIFO_COAPSENDPARKNUM_MAX		30								//NetCoAP发送缓存最大包数
+#define	NETFIFO_COAPRECVPARKNUM_MAX		10								//NetCoAP接收缓存最大包数
+#define	NETFIFO_COAPSENDPARKSIZE_MAX		2048								//NetCoAP发送缓存大小
+#define	NETFIFO_COAPRECVPARKSIZE_MAX		1536								//NetCoAP接收缓存大小
+
+#define	NETFIFO_COAPPCPSENDPARKNUM_MAX	20								//NetCoAPPCP发送缓存最大包数
+#define	NETFIFO_COAPPCPRECVPARKNUM_MAX	20								//NetCoAPPCP接收缓存最大包数
+#define	NETFIFO_COAPPCPSENDPARKSIZE_MAX	512								//NetCoAPPCP发送缓存大小
+#define	NETFIFO_COAPPCPRECVPARKSIZE_MAX	1536								//NetCoAPPCP接收缓存大小
+
+#define	NETFIFO_MQTTSNSENDPARKNUM_MAX		30								//NetMqttSN发送缓存最大包数
+#define	NETFIFO_MQTTSNSENDPARKSIZE_MAX	2100								//NetMqttSN发送缓存大小
+
+#define	NETFIFO_MQTTSNPCPSENDPARKNUM_MAX	20								//NetMqttSNPCP发送缓存最大包数
+#define	NETFIFO_MQTTSNPCPRECVPARKNUM_MAX	20								//NetMqttSNPCP接收缓存最大包数
+#define	NETFIFO_MQTTSNPCPSENDPARKSIZE_MAX	520								//NetMqttSNPCP发送缓存大小
+#define	NETFIFO_MQTTSNPCPRECVPARKSIZE_MAX	1550								//NetMqttSNPCP接收缓存大小
+
+#define	NETFIFO_ONENETSENDPARKNUM_MAX		30								//NetOneNET发送缓存最大包数
+#define	NETFIFO_ONENETRECVPARKNUM_MAX		10								//NetOneNET接收缓存最大包数
+#define	NETFIFO_ONENETSENDPARKSIZE_MAX	2048								//NetOneNET发送缓存大小
+#define	NETFIFO_ONENETRECVPARKSIZE_MAX	1536								//NetOneNET接收缓存大小
 
 #define	NBCOAP_SENDMODE_NORMAL			SEND_DATA
 #define	NBCOAP_SENDMODE_RAIDLE			SEND_DATA_RA_NORMAL
@@ -77,7 +100,7 @@
 #define	NBCOAP_RATIME_NORMAL_TYPE		NBCOAP_RATIME_NORMAL_2HOUR			//Coap间隔时间发送普通数据包
 
 #define	NBCOAP_PCP_UPGRADE_LIMIT_RSSI		10								//PCP升级限制信号值
-#define	NBCOAP_PCP_UPGRADE_LIMIT_SNR		-50								//PCP升级限制信噪比
+#define	NBCOAP_PCP_UPGRADE_LIMIT_SNR		-80								//PCP升级限制信噪比
 
 #define	NBIOT_CONTINUE_LIFETIME			2								//NBIOT休眠正放继续活跃20秒
 #define	NBIOT_MAX_LIFETIME				12								//NBIOT休眠正放最大活跃120秒
@@ -125,6 +148,10 @@
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 
 #if NETPROTOCAL == NETCOAP
+#define	NBIOT_PRINT_ERRORCODE_DISABLE		0
+#define	NBIOT_PRINT_ERRORCODE_ENABLE		1
+#define	NBIOT_PRINT_ERROR_CODE_TYPE		NBIOT_PRINT_ERRORCODE_ENABLE			//NBIOT输出错误码模式
+
 #define	RADIO_PRINT_WORKINFO			1								//无线输出Workinfo
 #define	RADIO_PRINT_NETINFO				1								//无线输出NetInfo
 #define	RADIO_PRINT_DEVINFO				1								//无线输出DeviceInfo
@@ -172,8 +199,12 @@
 #define	RADIO_PRINT_DEVINFO_SMODE		1								//无线输出DeviceInfo SMODE
 #endif
 #if NETPROTOCAL == NETMQTTSN
-#define	RADIO_PRINT_WORKINFO			1								//无线输出Workinfo
-#define	RADIO_PRINT_NETINFO				1								//无线输出NetInfo
+#define	NBIOT_PRINT_ERRORCODE_DISABLE		0
+#define	NBIOT_PRINT_ERRORCODE_ENABLE		1
+#define	NBIOT_PRINT_ERROR_CODE_TYPE		NBIOT_PRINT_ERRORCODE_DISABLE			//NBIOT输出错误码模式
+
+#define	RADIO_PRINT_WORKINFO			0								//无线输出Workinfo
+#define	RADIO_PRINT_NETINFO				0								//无线输出NetInfo
 #define	RADIO_PRINT_DEVINFO				0								//无线输出DeviceInfo
 #define	RADIO_PRINT_UPGRADEINFO			0								//无线输出UpgradeInfo
 
@@ -219,6 +250,10 @@
 #define	RADIO_PRINT_DEVINFO_SMODE		1								//无线输出DeviceInfo SMODE
 #endif
 #if NETPROTOCAL == NETONENET
+#define	NBIOT_PRINT_ERRORCODE_DISABLE		0
+#define	NBIOT_PRINT_ERRORCODE_ENABLE		1
+#define	NBIOT_PRINT_ERROR_CODE_TYPE		NBIOT_PRINT_ERRORCODE_ENABLE			//NBIOT输出错误码模式
+
 #define	RADIO_PRINT_WORKINFO			1								//无线输出Workinfo
 #define	RADIO_PRINT_NETINFO				1								//无线输出NetInfo
 #define	RADIO_PRINT_DEVINFO				1								//无线输出DeviceInfo
@@ -310,6 +345,8 @@
 #define	RADIO_DOWNLOAD_CMD_COVERGAIN		1								//RADIO下行指令CoverGain
 #define	RADIO_DOWNLOAD_CMD_RADARGAIN		1								//RADIO下行指令RadarGain
 #define	RADIO_DOWNLOAD_CMD_SENSORMODE		1								//RADIO下行指令SensorMode
+#define	RADIO_DOWNLOAD_CMD_INTERVAL		1								//RADIO下行指令RadarSampleInterval
+#define	RADIO_DOWNLOAD_CMD_HIGHPASS		1								//RADIO下行指令RadarHighPass
 #define	RADIO_DOWNLOAD_CMD_RFDPRINTLV		1								//RADIO下行指令RFDprintLv
 #define	RADIO_DOWNLOAD_CMD_RESTORE		1								//RADIO下行指令Restore
 
@@ -333,8 +370,10 @@
 #define	NBCOAP_DOWNLOAD_CMD_BEEPOFF		1								//NBCOAP下行指令BeepOff
 #define	NBCOAP_DOWNLOAD_CMD_UPLIMIT		1								//NBCOAP下行指令UpLimit
 #define	NBCOAP_DOWNLOAD_CMD_COVERGAIN		1								//NBCOAP下行指令CoverGain
-#define	NBCOAP_DOWNLOAD_CMD_RADARGAIN		1								//NBCOAP下行指令RadarGain
+#define	NBCOAP_DOWNLOAD_CMD_RADARGAIN		0								//NBCOAP下行指令RadarGain
 #define	NBCOAP_DOWNLOAD_CMD_SENSORMODE	1								//NBCOAP下行指令SensorMode
+#define	NBCOAP_DOWNLOAD_CMD_SETMAG		1								//NBCOAP下行指令SetMag
+#define	NBCOAP_DOWNLOAD_CMD_CFGRADAR		1								//NBCOAP下行指令ConfigRadar
 
 #define	MQTTSN_DOWNLOAD_CMD_WORKMODE		1								//MQTTSN下行指令Workmode
 #define	MQTTSN_DOWNLOAD_CMD_SENSE		1								//MQTTSN下行指令Sense
@@ -354,8 +393,10 @@
 #define	MQTTSN_DOWNLOAD_CMD_BEEPOFF		1								//MQTTSN下行指令BeepOff
 #define	MQTTSN_DOWNLOAD_CMD_UPLIMIT		1								//MQTTSN下行指令UpLimit
 #define	MQTTSN_DOWNLOAD_CMD_COVERGAIN		1								//MQTTSN下行指令CoverGain
-#define	MQTTSN_DOWNLOAD_CMD_RADARGAIN		1								//MQTTSN下行指令RadarGain
+#define	MQTTSN_DOWNLOAD_CMD_RADARGAIN		0								//MQTTSN下行指令RadarGain
 #define	MQTTSN_DOWNLOAD_CMD_SENSORMODE	1								//MQTTSN下行指令SensorMode
+#define	MQTTSN_DOWNLOAD_CMD_SETMAG		1								//MQTTSN下行指令SetMag
+#define	MQTTSN_DOWNLOAD_CMD_CFGRADAR		1								//MQTTSN下行指令ConfigRadar
 
 #define	RF_DPRINT_LV_0					0								//调试信息不打印
 #define	RF_DPRINT_LV_1					1								//基本信息打印

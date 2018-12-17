@@ -76,8 +76,8 @@ typedef __packed struct
 {
 	COAP_PacketHeadTypeDef HeadPacket;
 	COAP_PacketMsgTypeDef MsgPacket;
-	u8	InfoData[300];
-}COAP_PacketInfoTypeDef;													//Info包314Byte
+	u8	InfoData[450];
+}COAP_PacketInfoTypeDef;													//Info包464Byte
 
 typedef __packed struct
 {
@@ -124,6 +124,8 @@ int NET_COAP_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer);
 int NET_COAP_Message_Operate_Creat_Json_Response_Info(char* outBuffer, u16 errcode);
 int NET_COAP_Message_Operate_Creat_Qmc5883L_Data(unsigned char* outBuffer);
 
+void NET_Coap_FifoSendMessageInit(void);																//发送数据Fifo初始化
+void NET_Coap_FifoRecvMessageInit(void);																//接收数据Fifo初始化
 void NET_Coap_Message_SendDataEnqueue(unsigned char* dataBuf, unsigned short dataLength);							//发送数据写入队列
 void NET_Coap_Message_RecvDataEnqueue(unsigned char* dataBuf, unsigned short dataLength);							//接收数据写入队列
 bool NET_Coap_Message_SendDataDequeue(unsigned char* dataBuf, unsigned short* dataLength);						//发送数据读出队列
