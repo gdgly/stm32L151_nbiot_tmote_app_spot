@@ -52,23 +52,23 @@
 #define	NETFIFOMESSAGEENABLE			1
 #define	NETFIFOMESSAGETYPE				NETFIFOMESSAGEENABLE				//Net使能FifoMessage
 
-#define	NETFIFO_COAPSENDPARKNUM_MAX		30								//NetCoAP发送缓存最大包数
-#define	NETFIFO_COAPRECVPARKNUM_MAX		10								//NetCoAP接收缓存最大包数
-#define	NETFIFO_COAPSENDPARKSIZE_MAX		2048								//NetCoAP发送缓存大小
-#define	NETFIFO_COAPRECVPARKSIZE_MAX		1536								//NetCoAP接收缓存大小
+#define	NETFIFO_COAPSENDPARKNUM_MAX		40								//NetCoAP发送缓存最大包数
+#define	NETFIFO_COAPRECVPARKNUM_MAX		20								//NetCoAP接收缓存最大包数
+#define	NETFIFO_COAPSENDPARKSIZE_MAX		3072								//NetCoAP发送缓存大小
+#define	NETFIFO_COAPRECVPARKSIZE_MAX		2048								//NetCoAP接收缓存大小
 
 #define	NETFIFO_COAPPCPSENDPARKNUM_MAX	20								//NetCoAPPCP发送缓存最大包数
 #define	NETFIFO_COAPPCPRECVPARKNUM_MAX	20								//NetCoAPPCP接收缓存最大包数
 #define	NETFIFO_COAPPCPSENDPARKSIZE_MAX	512								//NetCoAPPCP发送缓存大小
-#define	NETFIFO_COAPPCPRECVPARKSIZE_MAX	1536								//NetCoAPPCP接收缓存大小
+#define	NETFIFO_COAPPCPRECVPARKSIZE_MAX	2048								//NetCoAPPCP接收缓存大小
 
 #define	NETFIFO_MQTTSNSENDPARKNUM_MAX		30								//NetMqttSN发送缓存最大包数
-#define	NETFIFO_MQTTSNSENDPARKSIZE_MAX	2100								//NetMqttSN发送缓存大小
+#define	NETFIFO_MQTTSNSENDPARKSIZE_MAX	2122								//NetMqttSN发送缓存大小
 
 #define	NETFIFO_MQTTSNPCPSENDPARKNUM_MAX	20								//NetMqttSNPCP发送缓存最大包数
 #define	NETFIFO_MQTTSNPCPRECVPARKNUM_MAX	20								//NetMqttSNPCP接收缓存最大包数
-#define	NETFIFO_MQTTSNPCPSENDPARKSIZE_MAX	520								//NetMqttSNPCP发送缓存大小
-#define	NETFIFO_MQTTSNPCPRECVPARKSIZE_MAX	1550								//NetMqttSNPCP接收缓存大小
+#define	NETFIFO_MQTTSNPCPSENDPARKSIZE_MAX	512								//NetMqttSNPCP发送缓存大小
+#define	NETFIFO_MQTTSNPCPRECVPARKSIZE_MAX	2048								//NetMqttSNPCP接收缓存大小
 
 #define	NETFIFO_ONENETSENDPARKNUM_MAX		30								//NetOneNET发送缓存最大包数
 #define	NETFIFO_ONENETRECVPARKNUM_MAX		10								//NetOneNET接收缓存最大包数
@@ -130,6 +130,10 @@
 #define	PRODUCTTEST_TIMEOUT_TYPE			PRODUCTTEST_TIMEOUT_ENABLE			//测试点超时退出测试
 
 #define	PRODUCTTEST_OVER_TIME			300								//测试点超时时间
+
+#define	ROLLINGOVER_INITSENSOR_DISABLE	0
+#define	ROLLINGOVER_INITSENSOR_ENABLE		1
+#define	ROLLINGOVER_INITSENSOR_TYPE		ROLLINGOVER_INITSENSOR_ENABLE			//翻转初始化背景
 
 #define	RADAR_MODEL_V1					1
 #define	RADAR_MODEL_V2					2
@@ -303,6 +307,8 @@
 
 #define	RADIO_CMD_UPLOAD_WORKINFO		1								//无线命令主动上报WorkInfo
 #define	RADIO_CMD_UPLOAD_NETINFO			1								//无线命令主动上报NetInfo
+#define	RADIO_CMD_UPLOAD_DEVINFO			1								//无线命令主动上报DeviceInfo
+#define	RADIO_CMD_UPLOAD_UPGRADEINFO		1								//无线命令主动上报UpgradeInfo
 
 #define	NBCOAP_SENDCODE_SHORT_STATUS		0								//NB上报信息使能CoapShortStatus
 #define	NBCOAP_SENDCODE_LONG_STATUS		1								//NB上报信息使能CoapLongStatus

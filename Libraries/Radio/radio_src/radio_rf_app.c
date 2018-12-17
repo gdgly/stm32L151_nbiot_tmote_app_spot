@@ -287,28 +287,28 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 			else if (pPayload->head.type == TRF_MSG_GENERAL_CMD) {
 				((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf[15] = 0;
 				/* Reboot */
-				if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "reboot")) {
 			#if RADIO_DOWNLOAD_CMD_REBOOT
+				if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "reboot")) {
 					BEEP_CtrlRepeat_Extend(2, 500, 250);
 				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("Reboot : OK");
 				#endif
 					Stm32_System_Software_Reboot(RBTMODE_RADIO_COMMAND);
-			#endif
 				}
+			#endif
 				/* NewSn */
-				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "newsn")) {
 			#if RADIO_DOWNLOAD_CMD_NEWSN
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "newsn")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "newsn:%08x", &uval32);
 					TCFG_EEPROM_Set_MAC_SN(uval32);
 				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("New SN : %08x", TCFG_EEPROM_Get_MAC_SN());
 				#endif
-			#endif
 				}
+			#endif
 				/* CDPIP */
-				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "ip")) {
 			#if RADIO_DOWNLOAD_CMD_CDPIP
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "ip")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "ip%08x:%hu", &uval32, &uval16);
 					TCFG_EEPROM_SetServerIP(uval32);
 					TCFG_EEPROM_SetServerPort(uval16);
@@ -324,11 +324,11 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					TCFG_SystemData.NBCoapCDPServer.ip.ip8[1], TCFG_SystemData.NBCoapCDPServer.ip.ip8[0], 
 					TCFG_SystemData.NBCoapCDPServer.port);
 				#endif
-			#endif
 				}
+			#endif
 				/* Active */
-				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "active")) {
 			#if RADIO_DOWNLOAD_CMD_ACTIVE
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "active")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "active:%hu", &uval16);
 					TCFG_EEPROM_SetActiveDevice(uval16);
 				#if RADIO_CMD_ECHO_TYPE
@@ -355,33 +355,33 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 						DeviceActivedMode = false;
 						BEEP_CtrlRepeat_Extend(1, 500, 0);
 					}
-			#endif
 				}
+			#endif
 				/* Magmod */
-				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "magmod")) {
 			#if RADIO_DOWNLOAD_CMD_MAGMOD
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "magmod")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "magmod:%hu", &uval16);
 					TCFG_EEPROM_SetMagMode(uval16);
 					talgo_set_magmod(uval16);
 				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("MagMod : %hu", TCFG_EEPROM_GetMagMode());
 				#endif
-			#endif
 				}
+			#endif
 				/* NbHeart */
-				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "nbheart")) {
 			#if RADIO_DOWNLOAD_CMD_NBHEART
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "nbheart")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "nbheart:%hu", &uval16);
 					TCFG_EEPROM_SetNbiotHeart(uval16);
 					TCFG_SystemData.NBIotHeart = TCFG_EEPROM_GetNbiotHeart();
 				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("NbHeart : %hu", TCFG_SystemData.NBIotHeart);
 				#endif
-			#endif
 				}
+			#endif
 				/* DisRange */
-				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "disrange")) {
 			#if RADIO_DOWNLOAD_CMD_DISRANGE
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "disrange")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "disrange:%hu", &uval16);
 					tradar_set_distance_range(uval16 + 4);
 					TCFG_EEPROM_SetRadarRange(uval16);
@@ -389,54 +389,54 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("RadarRange : %hu", TCFG_SystemData.RadarRange);
 				#endif
-			#endif
 				}
+			#endif
 				/* MagInit */
-				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "maginit")) {
 			#if RADIO_DOWNLOAD_CMD_MAGINIT
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "maginit")) {
 					QMC5883L_InitBackgroud();
 					BEEP_CtrlRepeat_Extend(5, 30, 70);
 				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("MagInit : OK");
 				#endif
-			#endif
 				}
+			#endif
 				/* CarInDelay */
-				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "indelay")) {
 			#if RADIO_DOWNLOAD_CMD_CARINDELAY
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "indelay")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "indelay:%hu", &uval16);
 					TCFG_EEPROM_SetCarInDelay(uval16);
 					TCFG_SystemData.CarInDelay = TCFG_EEPROM_GetCarInDelay();
 				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("CarInDelay : %hu", TCFG_SystemData.CarInDelay);
 				#endif
-			#endif
 				}
+			#endif
 				/* RFDprintLv */
-				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "rfdplv")) {
 			#if RADIO_DOWNLOAD_CMD_RFDPRINTLV
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "rfdplv")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "rfdplv:%hu", &uval16);
 					TCFG_EEPROM_SetRFDprintLv(uval16);
 					TCFG_SystemData.RFDprintLv = TCFG_EEPROM_GetRFDprintLv();
 				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("RFDprintLv : %hu", TCFG_SystemData.RFDprintLv);
 				#endif
-			#endif
 				}
+			#endif
 				/* RATime */
-				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "ratime")) {
 			#if RADIO_DOWNLOAD_CMD_RATIME
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "ratime")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "ratime:%hu", &uval16);
 					TCFG_EEPROM_SetCoapRATimeHour(uval16);
 					TCFG_SystemData.CoapRATimeHour = TCFG_EEPROM_GetCoapRATimeHour();
 				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("RATime : %hu", TCFG_SystemData.CoapRATimeHour);
 				#endif
-			#endif
 				}
+			#endif
 				/* MagTempCoef */
-				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "coef")) {
 			#if RADIO_DOWNLOAD_CMD_MAGTEMPCOEF
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "coef")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "coef:%hd,%hd,%hd", &magTempCoefX, &magTempCoefY, &magTempCoefZ);
 					TCFG_SystemData.MagCoefX = magTempCoefX;
 					TCFG_SystemData.MagCoefY = magTempCoefY;
@@ -445,11 +445,11 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("Coef:%hd,%hd,%hd", TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
 				#endif
-			#endif
 				}
+			#endif
 				/* SetQmcCoef */
-				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "SetQmcCoef")) {
 			#if RADIO_DOWNLOAD_CMD_SETQMCCOEF
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "SetQmcCoef")) {
 					QMC5883L_measure_qmc_coef((signed char*)&magTempCoefX, (signed char*)&magTempCoefY, (signed char*)&magTempCoefZ);
 					TCFG_SystemData.MagCoefX = magTempCoefX;
 					TCFG_SystemData.MagCoefY = magTempCoefY;
@@ -458,22 +458,22 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("Coef:%hd,%hd,%hd", TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
 				#endif
-			#endif
 				}
+			#endif
 				/* BeepOff */
-				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "beepoff")) {
 			#if RADIO_DOWNLOAD_CMD_BEEPOFF
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "beepoff")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "beepoff:%hu", &uval16);
 					TCFG_SystemData.BeepCtrlOff = uval16;
 					TCFG_EEPROM_SetBeepOff(TCFG_SystemData.BeepCtrlOff);
 				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("Beepoff:%hu", TCFG_EEPROM_GetBeepOff());
 				#endif
-			#endif
 				}
+			#endif
 				/* UpLimit */
-				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "uplimit")) {
 			#if RADIO_DOWNLOAD_CMD_UPLIMIT
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "uplimit")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "uplimit:%hd,%hd", &limitRssi, &limitSnr);
 					TCFG_SystemData.UpgradeLimitRssi = limitRssi;
 					TCFG_SystemData.UpgradeLimitSnr = limitSnr;
@@ -482,11 +482,11 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("Uplimit:%hd,%hd", TCFG_EEPROM_GetUpgradeLimitRssi(), TCFG_EEPROM_GetUpgradeLimitSnr());
 				#endif
-			#endif
 				}
+			#endif
 				/* CoverGain */
-				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "covergain")) {
 			#if RADIO_DOWNLOAD_CMD_COVERGAIN
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "covergain")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "covergain:%hu", &uval16);
 					if ((uval16 < RADAR_COVERGAIN_LOW) || (uval16 > RADAR_COVERGAIN_HIGH)) {
 						uval16 = RADAR_COVERGAIN_DEFAULT;
@@ -499,11 +499,11 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("CoverGain:%hd", TCFG_EEPROM_GetCoverGain());
 				#endif
-			#endif
 				}
+			#endif
 				/* RadarGain */
-				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "radargain")) {
 			#if RADIO_DOWNLOAD_CMD_RADARGAIN
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "radargain")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "radargain:%hu", &uval16);
 					if ((uval16 < TRADAR_GAIN_LOWEST) || (uval16 > TRADAR_GAIN_HIGHEST)) {
 						uval16 = TRADAR_GAIN_DEFAULT;
@@ -515,11 +515,11 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("RadarGain:%hd", TCFG_EEPROM_GetRadarGain());
 				#endif
-			#endif
 				}
+			#endif
 				/* SensorMode */
-				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "sensormode")) {
 			#if RADIO_DOWNLOAD_CMD_SENSORMODE
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "sensormode")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "sensormode:%hu", &uval16);
 					if (TCFG_SystemData.SenseMode != uval16) {
 						TCFG_SystemData.SenseMode = uval16;
@@ -528,11 +528,11 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("SensorMode:%hd", TCFG_EEPROM_GetSenseMode());
 				#endif
-			#endif
 				}
+			#endif
 				/* radar sample interval */
-				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "interval")) {
 			#if RADIO_DOWNLOAD_CMD_INTERVAL
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "interval")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "interval:%hu", &uval16);
 					if (TCFG_SystemData.RadarSampleInterval != uval16) {
 						TCFG_SystemData.RadarSampleInterval = uval16;
@@ -542,11 +542,11 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("RadarSampleInterval:%hd", TCFG_EEPROM_GetSampleInterval());
 				#endif
-			#endif
 				}
+			#endif
 				/* cut-off frequency of high pass */
-				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "highpass")) {
 			#if RADIO_DOWNLOAD_CMD_HIGHPASS
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "highpass")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "highpass:%hu", &uval16);
 					if (TCFG_SystemData.RadarHighPass != uval16) {
 						TCFG_SystemData.RadarHighPass = uval16;
@@ -555,21 +555,21 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("RadarHighPass:%hd", TCFG_EEPROM_GetHighPass());
 				#endif
-			#endif
 				}
+			#endif
 				/* Restore */
-				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "restore")) {
 			#if RADIO_DOWNLOAD_CMD_RESTORE
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "restore")) {
 					TCFG_EEPROM_WriteConfigData();
 					BEEP_CtrlRepeat_Extend(5, 30, 70);
 				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("Restore Config Data");
 				#endif
-			#endif
 				}
+			#endif
 				/* WorkInfo */
-				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "workinfo")) {
 			#if RADIO_CMD_UPLOAD_WORKINFO
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "workinfo")) {
 				#if NETPROTOCAL == NETCOAP
 					#if NBCOAP_SENDCODE_WORK_INFO
 					NETCoapNeedSendCode.WorkInfo = 1;
@@ -583,14 +583,14 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					NETOneNETNeedSendCode.WorkInfo = 1;
 					#endif
 				#endif
-			#endif
-			#if RADIO_PRINT_WORKINFO
+				#if RADIO_PRINT_WORKINFO
 					RadioPrintWorkinfo();
-			#endif
+				#endif
 				}
+			#endif
 				/* NetInfo */
-				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "netinfo")) {
 			#if RADIO_CMD_UPLOAD_NETINFO
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "netinfo")) {
 				#if NETPROTOCAL == NETCOAP
 					#if NBCOAP_SENDCODE_BASIC_INFO
 					NETCoapNeedSendCode.BasicInfo = 1;
@@ -613,23 +613,27 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					NETOneNETNeedSendCode.DynamicInfo = 1;
 					#endif
 				#endif
-			#endif
-			#if RADIO_PRINT_NETINFO
+				#if RADIO_PRINT_NETINFO
 					RadioPrintNetinfo();
-			#endif
+				#endif
 				}
+			#endif
 				/* DeviceInfo */
+			#if RADIO_CMD_UPLOAD_DEVINFO
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "devinfo")) {
-			#if RADIO_PRINT_DEVINFO
+				#if RADIO_PRINT_DEVINFO
 					RadioPrintDeviceinfo();
-			#endif
+				#endif
 				}
+			#endif
 				/* UpgradeInfo */
+			#if RADIO_CMD_UPLOAD_UPGRADEINFO
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "upgradeinfo")) {
-			#if RADIO_PRINT_UPGRADEINFO
+				#if RADIO_PRINT_UPGRADEINFO
 					RadioPrintUpgradeinfo();
-			#endif
+				#endif
 				}
+			#endif
 				/* ...... */
 			}
 		}
