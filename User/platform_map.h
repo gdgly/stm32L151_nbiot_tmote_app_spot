@@ -141,6 +141,12 @@
 #define TCFG_BEEP_OFF_LENGTH				1												//Beep Ctrl OFF		蜂鸣器关闭
 #define TCFG_ROLL_INITSENSOR_OFFSET		TCFG_BEEP_OFF_OFFSET + TCFG_BEEP_OFF_LENGTH				//0x080804E3
 #define TCFG_ROLL_INITSENSOR_LENGTH		1												//Rollingover Init Sensor
+#define TCFG_NBIOT_SENTCOUNT_OFFSET		TCFG_ROLL_INITSENSOR_OFFSET + TCFG_ROLL_INITSENSOR_LENGTH	//0x080804E4
+#define TCFG_NBIOT_SENTCOUNT_LENGTH		4												//NBIoT Sent Count		NB发送包数
+#define TCFG_NBIOT_RECVCOUNT_OFFSET		TCFG_NBIOT_SENTCOUNT_OFFSET + TCFG_NBIOT_SENTCOUNT_LENGTH	//0x080804E8
+#define TCFG_NBIOT_RECVCOUNT_LENGTH		4												//NBIoT Recv Count		NB接收包数
+#define TCFG_NBIOT_SENTCOUNT_DAY_OFFSET		TCFG_NBIOT_RECVCOUNT_OFFSET + TCFG_NBIOT_RECVCOUNT_LENGTH	//0x080804EC
+#define TCFG_NBIOT_SENTCOUNT_DAY_LENGTH		2												//NBIoT Sent Count Day	NB一天发送包数
 
 /************************************** The environment parameters are used both by extend ***************************************/
 #define EEPROM_CONFIG_PAGE2_ADDRESS		0x08080E00										//配置页2起始地址 EEPROM_BASE_ADD + 0x0E00(3.5K)
@@ -271,12 +277,9 @@ typedef struct
 	unsigned int						SpotStatusCount;									//车位检测车辆次数
 	unsigned char						NBIotHeart;										//NBIot心跳间隔
 	unsigned int						NBIotBootCount;									//NBIot重启次数
-	unsigned int						CoapSentCount;										//Coap发送包数
-	unsigned int						CoapRecvCount;										//Coap接收包数
-	unsigned int						MqttSNSentCount;									//MqttSN发送包数
-	unsigned int						MqttSNRecvCount;									//MqttSN接收包数
-	unsigned int						OneNETSentCount;									//OneNET发送包数
-	unsigned int						OneNETRecvCount;									//OneNET接收包数
+	unsigned int						NBIotSentCount;									//NBIot发送包数
+	unsigned int						NBIotRecvCount;									//NBIot接收包数
+	unsigned short						NBIotSentCountDay;									//NBIot一天发送包数
 	unsigned char						RFCommandCount;									//RF命令接收条数
 	unsigned char						NBCommandCount;									//NB命令接收条数
 	unsigned short						DeviceBootCount;									//设备重启次数
@@ -382,23 +385,14 @@ unsigned char	TCFG_EEPROM_GetActiveDevice(void);												//读取ActiveDevice
 void			TCFG_EEPROM_SetNbiotBootCnt(unsigned int val);									//保存NbiotBootCnt
 unsigned int	TCFG_EEPROM_GetNbiotBootCnt(void);												//读取NbiotBootCnt
 
-void			TCFG_EEPROM_SetCoapSentCnt(unsigned int val);									//保存CoapSentCnt
-unsigned int	TCFG_EEPROM_GetCoapSentCnt(void);												//读取CoapSentCnt
+void			TCFG_EEPROM_SetNBIotSentCount(unsigned int val);									//保存NBIotSentCount
+unsigned int	TCFG_EEPROM_GetNBIotSentCount(void);											//读取NBIotSentCount
 
-void			TCFG_EEPROM_SetCoapRecvCnt(unsigned int val);									//保存CoapRecvCnt
-unsigned int	TCFG_EEPROM_GetCoapRecvCnt(void);												//读取CoapRecvCnt
+void			TCFG_EEPROM_SetNBIotRecvCount(unsigned int val);									//保存NBIotRecvCount
+unsigned int	TCFG_EEPROM_GetNBIotRecvCount(void);											//读取NBIotRecvCount
 
-void			TCFG_EEPROM_SetMqttSNSentCnt(unsigned int val);									//保存MqttSNSentCnt
-unsigned int	TCFG_EEPROM_GetMqttSNSentCnt(void);											//读取MqttSNSentCnt
-
-void			TCFG_EEPROM_SetMqttSNRecvCnt(unsigned int val);									//保存MqttSNRecvCnt
-unsigned int	TCFG_EEPROM_GetMqttSNRecvCnt(void);											//读取MqttSNRecvCnt
-
-void			TCFG_EEPROM_SetOneNETSentCnt(unsigned int val);									//保存OneNETSentCnt
-unsigned int	TCFG_EEPROM_GetOneNETSentCnt(void);											//读取OneNETSentCnt
-
-void			TCFG_EEPROM_SetOneNETRecvCnt(unsigned int val);									//保存OneNETRecvCnt
-unsigned int	TCFG_EEPROM_GetOneNETRecvCnt(void);											//读取OneNETRecvCnt
+void			TCFG_EEPROM_SetNBIotSentCountDay(unsigned short val);								//保存NBIotSentCountDay
+unsigned short	TCFG_EEPROM_GetNBIotSentCountDay(void);											//读取NBIotSentCountDay
 
 void			TCFG_EEPROM_SetDevBootCnt(unsigned short val);									//保存DevBootCnt
 unsigned short	TCFG_EEPROM_GetDevBootCnt(void);												//读取DevBootCnt
@@ -496,18 +490,13 @@ void			TCFG_Utility_Add_Device_BootCount(void);										//Device重启次数累
 unsigned short TCFG_Utility_Get_Device_BootCount(void);										//Device重启次数获取
 void			TCFG_Utility_Add_Nbiot_BootCount(void);											//NBIot重启次数累加
 unsigned int	TCFG_Utility_Get_Nbiot_BootCount(void);											//NBIot重启次数获取
-void			TCFG_Utility_Add_Coap_SentCount(void);											//NBIot Coap发送次数累加
-unsigned int	TCFG_Utility_Get_Coap_SentCount(void);											//NBIot Coap发送次数获取
-void			TCFG_Utility_Add_Coap_RecvCount(void);											//NBIot Coap接收次数累加
-unsigned int	TCFG_Utility_Get_Coap_RecvCount(void);											//NBIot Coap接收次数获取
-void			TCFG_Utility_Add_MqttSN_SentCount(void);										//NBIot MqttSN发送次数累加
-unsigned int	TCFG_Utility_Get_MqttSN_SentCount(void);										//NBIot MqttSN发送次数获取
-void			TCFG_Utility_Add_MqttSN_RecvCount(void);										//NBIot MqttSN接收次数累加
-unsigned int	TCFG_Utility_Get_MqttSN_RecvCount(void);										//NBIot MqttSN接收次数获取
-void			TCFG_Utility_Add_OneNET_SentCount(void);										//NBIot OneNET发送次数累加
-unsigned int	TCFG_Utility_Get_OneNET_SentCount(void);										//NBIot OneNET发送次数获取
-void			TCFG_Utility_Add_OneNET_RecvCount(void);										//NBIot OneNET接收次数累加
-unsigned int	TCFG_Utility_Get_OneNET_RecvCount(void);										//NBIot OneNET接收次数获取
+
+void			TCFG_Utility_Add_NBIot_SentCount(void);											//NBIot 发送次数累加
+unsigned int	TCFG_Utility_Get_NBIot_SentCount(void);											//NBIot 发送次数获取
+void			TCFG_Utility_Add_NBIot_RecvCount(void);											//NBIot 接收次数累加
+unsigned int	TCFG_Utility_Get_NBIot_RecvCount(void);											//NBIot 接收次数获取
+void			TCFG_Utility_Add_NBIot_SentCountDay(void);										//NBIot 一天发送次数累加
+unsigned short	TCFG_Utility_Get_NBIot_SentCountDay(void);										//NBIot 一天发送次数获取
 
 void			TCFG_Utility_Set_Nbiot_IdleLifetime(unsigned short val);							//NBIot 休眠模式保活时间设置
 unsigned short	TCFG_Utility_Get_Nbiot_IdleLifetime(void);										//NBIot 休眠模式保活时间获取

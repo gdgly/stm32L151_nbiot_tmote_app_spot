@@ -202,6 +202,7 @@ void NET_NBIOT_CoapLongStructureInit(void)
 
 void NET_NBIOT_CoapInfoStructureInit(void)
 {
+	memset((void*)&CoapInfoStructure.InfoData, 0, sizeof(CoapInfoStructure.InfoData));
 	CoapInfoStructure.HeadPacket.DeviceSN					= TCFG_EEPROM_Get_MAC_SN();
 	CoapInfoStructure.HeadPacket.DataLen					= 0x00;
 	CoapInfoStructure.HeadPacket.ProtocolType				= 0x00;
@@ -216,6 +217,7 @@ void NET_NBIOT_CoapInfoStructureInit(void)
 
 void NET_NBIOT_CoapPrivateStructureInit(void)
 {
+	memset((void*)&CoapPrivateStructure.PrivateData, 0, sizeof(CoapPrivateStructure.PrivateData));
 	CoapPrivateStructure.HeadPacket.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
 	CoapPrivateStructure.HeadPacket.DataLen					= 0x00;
 	CoapPrivateStructure.HeadPacket.ProtocolType				= 0x00;
@@ -226,6 +228,14 @@ void NET_NBIOT_CoapPrivateStructureInit(void)
 	CoapPrivateStructure.HeadPacket.PacketNumber				= 0x00;
 	CoapPrivateStructure.MsgPacket.DestSN					= 0x00;
 	CoapPrivateStructure.MsgPacket.Version					= 0x01;
+}
+
+void NET_NBIOT_CoapSentDataAfterExexution(void)
+{
+	TCFG_Utility_Add_NBIot_SentCount();
+#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
+	NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
+#endif
 }
 #endif
 
@@ -264,6 +274,7 @@ void NET_NBIOT_MqttSNLongStructureInit(void)
 
 void NET_NBIOT_MqttSNInfoStructureInit(void)
 {
+	memset((void*)&MqttSNInfoStructure.InfoData, 0, sizeof(MqttSNInfoStructure.InfoData));
 	MqttSNInfoStructure.HeadPacket.DeviceSN					= TCFG_EEPROM_Get_MAC_SN();
 	MqttSNInfoStructure.HeadPacket.DataLen					= 0x00;
 	MqttSNInfoStructure.HeadPacket.ProtocolType				= 0x00;
@@ -278,6 +289,7 @@ void NET_NBIOT_MqttSNInfoStructureInit(void)
 
 void NET_NBIOT_MqttSNPrivateStructureInit(void)
 {
+	memset((void*)&MqttSNPrivateStructure.PrivateData, 0, sizeof(MqttSNPrivateStructure.PrivateData));
 	MqttSNPrivateStructure.HeadPacket.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
 	MqttSNPrivateStructure.HeadPacket.DataLen				= 0x00;
 	MqttSNPrivateStructure.HeadPacket.ProtocolType			= 0x00;
@@ -288,6 +300,14 @@ void NET_NBIOT_MqttSNPrivateStructureInit(void)
 	MqttSNPrivateStructure.HeadPacket.PacketNumber			= 0x00;
 	MqttSNPrivateStructure.MsgPacket.DestSN					= 0x00;
 	MqttSNPrivateStructure.MsgPacket.Version				= 0x01;
+}
+
+void NET_NBIOT_MqttSNSentDataAfterExexution(void)
+{
+	TCFG_Utility_Add_NBIot_SentCount();
+#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
+	MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
+#endif
 }
 #endif
 
@@ -326,6 +346,7 @@ void NET_NBIOT_OneNETLongStructureInit(void)
 
 void NET_NBIOT_OneNETInfoStructureInit(void)
 {
+	memset((void*)&OneNETInfoStructure.InfoData, 0, sizeof(OneNETInfoStructure.InfoData));
 	OneNETInfoStructure.HeadPacket.DeviceSN					= TCFG_EEPROM_Get_MAC_SN();
 	OneNETInfoStructure.HeadPacket.DataLen					= 0x00;
 	OneNETInfoStructure.HeadPacket.ProtocolType				= 0x00;
@@ -340,6 +361,7 @@ void NET_NBIOT_OneNETInfoStructureInit(void)
 
 void NET_NBIOT_OneNETPrivateStructureInit(void)
 {
+	memset((void*)&OneNETPrivateStructure.PrivateData, 0, sizeof(OneNETPrivateStructure.PrivateData));
 	OneNETPrivateStructure.HeadPacket.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
 	OneNETPrivateStructure.HeadPacket.DataLen				= 0x00;
 	OneNETPrivateStructure.HeadPacket.ProtocolType			= 0x00;
@@ -350,6 +372,11 @@ void NET_NBIOT_OneNETPrivateStructureInit(void)
 	OneNETPrivateStructure.HeadPacket.PacketNumber			= 0x00;
 	OneNETPrivateStructure.MsgPacket.DestSN					= 0x00;
 	OneNETPrivateStructure.MsgPacket.Version				= 0x01;
+}
+
+void NET_NBIOT_OneNETSentDataAfterExexution(void)
+{
+	TCFG_Utility_Add_NBIot_SentCount();
 }
 #endif
 
@@ -385,10 +412,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NET_Coap_Message_SendDataEnqueue((unsigned char *)&CoapShortStructure, sizeof(CoapShortStructure));
 		NETCoapNeedSendCode.ShortStatus = 0;
 		Inspect_Message_SpotStatusOffSet();
-		TCFG_Utility_Add_Coap_SentCount();
-	#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
-		NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
-	#endif
+		NET_NBIOT_CoapSentDataAfterExexution();
 #endif
 	}
 	/* COAP LONG STATUS DATA ENQUEUE */
@@ -425,10 +449,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NET_Coap_Message_SendDataEnqueue((unsigned char *)&CoapLongStructure, sizeof(CoapLongStructure));
 		NETCoapNeedSendCode.LongStatus = 0;
 		Inspect_Message_SpotStatusOffSet();
-		TCFG_Utility_Add_Coap_SentCount();
-	#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
-		NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
-	#endif
+		NET_NBIOT_CoapSentDataAfterExexution();
 #endif
 	}
 	/* COAP WORK INFO DATA ENQUEUE */
@@ -437,16 +458,12 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
 			return;
 		}
-		memset((void*)&CoapInfoStructure.InfoData, 0, sizeof(CoapInfoStructure.InfoData));
 		NET_NBIOT_CoapInfoStructureInit();
 		CoapInfoStructure.MsgPacket.Type					= COAP_MSGTYPE_TYPE_WORK_INFO;
 		len = NET_COAP_Message_Operate_Creat_Json_Work_Info((char *)&CoapInfoStructure.InfoData);
 		NET_Coap_Message_SendDataEnqueue((unsigned char *)&CoapInfoStructure, sizeof(CoapInfoStructure) - sizeof(CoapInfoStructure.InfoData) + len);
 		NETCoapNeedSendCode.WorkInfo = 0;
-		TCFG_Utility_Add_Coap_SentCount();
-	#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
-		NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
-	#endif
+		NET_NBIOT_CoapSentDataAfterExexution();
 #endif
 	}
 	/* COAP BASIC INFO DATA ENQUEUE */
@@ -455,16 +472,12 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
 			return;
 		}
-		memset((void*)&CoapInfoStructure.InfoData, 0, sizeof(CoapInfoStructure.InfoData));
 		NET_NBIOT_CoapInfoStructureInit();
 		CoapInfoStructure.MsgPacket.Type					= COAP_MSGTYPE_TYPE_BASIC_INFO;
 		len = NET_COAP_Message_Operate_Creat_Json_Basic_Info((char *)&CoapInfoStructure.InfoData);
 		NET_Coap_Message_SendDataEnqueue((unsigned char *)&CoapInfoStructure, sizeof(CoapInfoStructure) - sizeof(CoapInfoStructure.InfoData) + len);
 		NETCoapNeedSendCode.BasicInfo = 0;
-		TCFG_Utility_Add_Coap_SentCount();
-	#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
-		NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
-	#endif
+		NET_NBIOT_CoapSentDataAfterExexution();
 #endif
 	}
 	/* COAP DYNAMIC INFO DATA ENQUEUE */
@@ -473,46 +486,34 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
 			return;
 		}
-		memset((void*)&CoapInfoStructure.InfoData, 0, sizeof(CoapInfoStructure.InfoData));
 		NET_NBIOT_CoapInfoStructureInit();
 		CoapInfoStructure.MsgPacket.Type					= COAP_MSGTYPE_TYPE_DYNAMIC_INFO;
 		len = NET_COAP_Message_Operate_Creat_Json_Dynamic_Info((char *)&CoapInfoStructure.InfoData);
 		NET_Coap_Message_SendDataEnqueue((unsigned char *)&CoapInfoStructure, sizeof(CoapInfoStructure) - sizeof(CoapInfoStructure.InfoData) + len);
 		NETCoapNeedSendCode.DynamicInfo = 0;
-		TCFG_Utility_Add_Coap_SentCount();
-	#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
-		NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
-	#endif
+		NET_NBIOT_CoapSentDataAfterExexution();
 #endif
 	}
 	/* COAP Qmc5883L DATA ENQUEUE */
 	else if (NETCoapNeedSendCode.QmcData) {
 #if NBCOAP_SENDCODE_QMC_DATA
-		memset((void*)&CoapPrivateStructure.PrivateData, 0, sizeof(CoapPrivateStructure.PrivateData));
 		NET_NBIOT_CoapPrivateStructureInit();
 		CoapPrivateStructure.MsgPacket.Type				= COAP_MSGTYPE_TYPE_QMC_DATA;
 		len = NET_COAP_Message_Operate_Creat_Qmc5883L_Data((unsigned char *)&CoapPrivateStructure.PrivateData);
 		NET_Coap_Message_SendDataEnqueue((unsigned char *)&CoapPrivateStructure, sizeof(CoapPrivateStructure) - sizeof(CoapPrivateStructure.PrivateData) + len);
 		NETCoapNeedSendCode.QmcData = 0;
-		TCFG_Utility_Add_Coap_SentCount();
-	#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
-		NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
-	#endif
+		NET_NBIOT_CoapSentDataAfterExexution();
 #endif
 	}
 	/* COAP RESPONSE INFO DATA ENQUEUE */
 	else if (NETCoapNeedSendCode.ResponseInfo) {
 #if NBCOAP_SENDCODE_RESPONSE_INFO
-		memset((void*)&CoapInfoStructure.InfoData, 0, sizeof(CoapInfoStructure.InfoData));
 		NET_NBIOT_CoapInfoStructureInit();
 		CoapInfoStructure.MsgPacket.Type					= COAP_MSGTYPE_TYPE_INFO;
 		len = NET_COAP_Message_Operate_Creat_Json_Response_Info((char *)&CoapInfoStructure.InfoData, NETCoapNeedSendCode.ResponseInfoErrcode);
 		NET_Coap_Message_SendDataEnqueue((unsigned char *)&CoapInfoStructure, sizeof(CoapInfoStructure) - sizeof(CoapInfoStructure.InfoData) + len);
 		NETCoapNeedSendCode.ResponseInfo = 0;
-		TCFG_Utility_Add_Coap_SentCount();
-	#if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
-		NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
-	#endif
+		NET_NBIOT_CoapSentDataAfterExexution();
 #endif
 	}
 	
@@ -662,10 +663,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNShortStructure, sizeof(MqttSNShortStructure));
 		NETMqttSNNeedSendCode.StatusBasic = 0;
 		Inspect_Message_SpotStatusOffSet();
-		TCFG_Utility_Add_MqttSN_SentCount();
-	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
-		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
-	#endif
+		NET_NBIOT_MqttSNSentDataAfterExexution();
 #endif
 	}
 	/* MQTTSN LONG STATUS DATA ENQUEUE */
@@ -702,10 +700,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNLongStructure, sizeof(MqttSNLongStructure));
 		NETMqttSNNeedSendCode.StatusExtend = 0;
 		Inspect_Message_SpotStatusOffSet();
-		TCFG_Utility_Add_MqttSN_SentCount();
-	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
-		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
-	#endif
+		NET_NBIOT_MqttSNSentDataAfterExexution();
 #endif
 	}
 	/* MQTTSN INFO WORK DATA ENQUEUE */
@@ -714,16 +709,12 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
 			return;
 		}
-		memset((void*)&MqttSNInfoStructure.InfoData, 0, sizeof(MqttSNInfoStructure.InfoData));
 		NET_NBIOT_MqttSNInfoStructureInit();
 		MqttSNInfoStructure.MsgPacket.Type					= MQTTSN_MSGTYPE_TYPE_WORK_INFO;
 		len = NET_MQTTSN_Message_Operate_Creat_Json_Work_Info((char *)&MqttSNInfoStructure.InfoData);
 		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNInfoStructure, sizeof(MqttSNInfoStructure) - sizeof(MqttSNInfoStructure.InfoData) + len);
 		NETMqttSNNeedSendCode.InfoWork = 0;
-		TCFG_Utility_Add_MqttSN_SentCount();
-	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
-		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
-	#endif
+		NET_NBIOT_MqttSNSentDataAfterExexution();
 #endif
 	}
 	/* MQTTSN INFO BASIC DATA ENQUEUE */
@@ -732,16 +723,12 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
 			return;
 		}
-		memset((void*)&MqttSNInfoStructure.InfoData, 0, sizeof(MqttSNInfoStructure.InfoData));
 		NET_NBIOT_MqttSNInfoStructureInit();
 		MqttSNInfoStructure.MsgPacket.Type					= MQTTSN_MSGTYPE_TYPE_BASIC_INFO;
 		len = NET_MQTTSN_Message_Operate_Creat_Json_Basic_Info((char *)&MqttSNInfoStructure.InfoData);
 		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNInfoStructure, sizeof(MqttSNInfoStructure) - sizeof(MqttSNInfoStructure.InfoData) + len);
 		NETMqttSNNeedSendCode.InfoBasic = 0;
-		TCFG_Utility_Add_MqttSN_SentCount();
-	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
-		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
-	#endif
+		NET_NBIOT_MqttSNSentDataAfterExexution();
 #endif
 	}
 	/* MQTTSN INFO DYNAMIC DATA ENQUEUE */
@@ -750,46 +737,34 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
 			return;
 		}
-		memset((void*)&MqttSNInfoStructure.InfoData, 0, sizeof(MqttSNInfoStructure.InfoData));
 		NET_NBIOT_MqttSNInfoStructureInit();
 		MqttSNInfoStructure.MsgPacket.Type					= MQTTSN_MSGTYPE_TYPE_DYNAMIC_INFO;
 		len = NET_MQTTSN_Message_Operate_Creat_Json_Dynamic_Info((char *)&MqttSNInfoStructure.InfoData);
 		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNInfoStructure, sizeof(MqttSNInfoStructure) - sizeof(MqttSNInfoStructure.InfoData) + len);
 		NETMqttSNNeedSendCode.InfoDynamic = 0;
-		TCFG_Utility_Add_MqttSN_SentCount();
-	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
-		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
-	#endif
+		NET_NBIOT_MqttSNSentDataAfterExexution();
 #endif
 	}
 	/* MQTTSN Qmc5883L DATA ENQUEUE */
 	else if (NETMqttSNNeedSendCode.QmcData) {
 #if NBMQTTSN_SENDCODE_QMC_DATA
-		memset((void*)&MqttSNPrivateStructure.PrivateData, 0, sizeof(MqttSNPrivateStructure.PrivateData));
 		NET_NBIOT_MqttSNPrivateStructureInit();
 		MqttSNPrivateStructure.MsgPacket.Type				= MQTTSN_MSGTYPE_TYPE_QMC_DATA;
 		len = NET_MQTTSN_Message_Operate_Creat_Qmc5883L_Data((unsigned char *)&MqttSNPrivateStructure.PrivateData);
 		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNPrivateStructure, sizeof(MqttSNPrivateStructure) - sizeof(MqttSNPrivateStructure.PrivateData) + len);
 		NETMqttSNNeedSendCode.QmcData = 0;
-		TCFG_Utility_Add_MqttSN_SentCount();
-	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
-		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
-	#endif
+		NET_NBIOT_MqttSNSentDataAfterExexution();
 #endif
 	}
 	/* MQTTSN INFO RESPONSE DATA ENQUEUE */
 	else if (NETMqttSNNeedSendCode.InfoResponse) {
 #if NBMQTTSN_SENDCODE_RESPONSE_INFO
-		memset((void*)&MqttSNInfoStructure.InfoData, 0, sizeof(MqttSNInfoStructure.InfoData));
 		NET_NBIOT_MqttSNInfoStructureInit();
 		MqttSNInfoStructure.MsgPacket.Type					= MQTTSN_MSGTYPE_TYPE_INFO;
 		len = NET_MQTTSN_Message_Operate_Creat_Json_Response_Info((char *)&MqttSNInfoStructure.InfoData, NETMqttSNNeedSendCode.InfoResponseErrcode);
 		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNInfoStructure, sizeof(MqttSNInfoStructure) - sizeof(MqttSNInfoStructure.InfoData) + len);
 		NETMqttSNNeedSendCode.InfoResponse = 0;
-		TCFG_Utility_Add_MqttSN_SentCount();
-	#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
-		MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
-	#endif
+		NET_NBIOT_MqttSNSentDataAfterExexution();
 #endif
 	}
 #endif
@@ -818,7 +793,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NET_OneNET_Message_SendDataEnqueue((unsigned char *)&OneNETShortStructure, sizeof(OneNETShortStructure));
 		NETOneNETNeedSendCode.ShortStatus = 0;
 		Inspect_Message_SpotStatusOffSet();
-		TCFG_Utility_Add_OneNET_SentCount();
+		NET_NBIOT_OneNETSentDataAfterExexution();
 #endif
 	}
 	/* ONENET LONG STATUS DATA ENQUEUE */
@@ -855,7 +830,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NET_OneNET_Message_SendDataEnqueue((unsigned char *)&OneNETLongStructure, sizeof(OneNETLongStructure));
 		NETOneNETNeedSendCode.LongStatus = 0;
 		Inspect_Message_SpotStatusOffSet();
-		TCFG_Utility_Add_OneNET_SentCount();
+		NET_NBIOT_OneNETSentDataAfterExexution();
 #endif
 	}
 	/* ONENET WORK INFO DATA ENQUEUE */
@@ -864,13 +839,12 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
 			return;
 		}
-		memset((void*)&OneNETInfoStructure.InfoData, 0, sizeof(OneNETInfoStructure.InfoData));
 		NET_NBIOT_OneNETInfoStructureInit();
 		OneNETInfoStructure.MsgPacket.Type					= ONENET_MSGTYPE_TYPE_WORK_INFO;
 		len = NET_ONENET_Message_Operate_Creat_Json_Work_Info((char *)&OneNETInfoStructure.InfoData);
 		NET_OneNET_Message_SendDataEnqueue((unsigned char *)&OneNETInfoStructure, sizeof(OneNETInfoStructure) - sizeof(OneNETInfoStructure.InfoData) + len);
 		NETOneNETNeedSendCode.WorkInfo = 0;
-		TCFG_Utility_Add_OneNET_SentCount();
+		NET_NBIOT_OneNETSentDataAfterExexution();
 #endif
 	}
 	/* ONENET BASIC INFO DATA ENQUEUE */
@@ -879,13 +853,12 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
 			return;
 		}
-		memset((void*)&OneNETInfoStructure.InfoData, 0, sizeof(OneNETInfoStructure.InfoData));
 		NET_NBIOT_OneNETInfoStructureInit();
 		OneNETInfoStructure.MsgPacket.Type					= ONENET_MSGTYPE_TYPE_BASIC_INFO;
 		len = NET_ONENET_Message_Operate_Creat_Json_Basic_Info((char *)&OneNETInfoStructure.InfoData);
 		NET_OneNET_Message_SendDataEnqueue((unsigned char *)&OneNETInfoStructure, sizeof(OneNETInfoStructure) - sizeof(OneNETInfoStructure.InfoData) + len);
 		NETOneNETNeedSendCode.BasicInfo = 0;
-		TCFG_Utility_Add_OneNET_SentCount();
+		NET_NBIOT_OneNETSentDataAfterExexution();
 #endif
 	}
 	/* ONENET DYNAMIC INFO DATA ENQUEUE */
@@ -894,37 +867,34 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
 			return;
 		}
-		memset((void*)&OneNETInfoStructure.InfoData, 0, sizeof(OneNETInfoStructure.InfoData));
 		NET_NBIOT_OneNETInfoStructureInit();
 		OneNETInfoStructure.MsgPacket.Type					= ONENET_MSGTYPE_TYPE_DYNAMIC_INFO;
 		len = NET_ONENET_Message_Operate_Creat_Json_Dynamic_Info((char *)&OneNETInfoStructure.InfoData);
 		NET_OneNET_Message_SendDataEnqueue((unsigned char *)&OneNETInfoStructure, sizeof(OneNETInfoStructure) - sizeof(OneNETInfoStructure.InfoData) + len);
 		NETOneNETNeedSendCode.DynamicInfo = 0;
-		TCFG_Utility_Add_OneNET_SentCount();
+		NET_NBIOT_OneNETSentDataAfterExexution();
 #endif
 	}
 	/* ONENET Qmc5883L DATA ENQUEUE */
 	else if (NETOneNETNeedSendCode.QmcData) {
 #if NBONENET_SENDCODE_QMC_DATA
-		memset((void*)&OneNETPrivateStructure.PrivateData, 0, sizeof(OneNETPrivateStructure.PrivateData));
 		NET_NBIOT_OneNETPrivateStructureInit();
 		OneNETPrivateStructure.MsgPacket.Type				= ONENET_MSGTYPE_TYPE_QMC_DATA;
 		len = NET_ONENET_Message_Operate_Creat_Qmc5883L_Data((unsigned char *)&OneNETPrivateStructure.PrivateData);
 		NET_OneNET_Message_SendDataEnqueue((unsigned char *)&OneNETPrivateStructure, sizeof(OneNETPrivateStructure) - sizeof(OneNETPrivateStructure.PrivateData) + len);
 		NETOneNETNeedSendCode.QmcData = 0;
-		TCFG_Utility_Add_OneNET_SentCount();
+		NET_NBIOT_OneNETSentDataAfterExexution();
 #endif
 	}
 	/* ONENET RESPONSE INFO DATA ENQUEUE */
 	else if (NETOneNETNeedSendCode.ResponseInfo) {
 #if NBONENET_SENDCODE_RESPONSE_INFO
-		memset((void*)&OneNETInfoStructure.InfoData, 0, sizeof(OneNETInfoStructure.InfoData));
 		NET_NBIOT_OneNETInfoStructureInit();
 		OneNETInfoStructure.MsgPacket.Type					= ONENET_MSGTYPE_TYPE_INFO;
 		len = NET_ONENET_Message_Operate_Creat_Json_Response_Info((char *)&OneNETInfoStructure.InfoData, NETOneNETNeedSendCode.ResponseInfoErrcode);
 		NET_OneNET_Message_SendDataEnqueue((unsigned char *)&OneNETInfoStructure, sizeof(OneNETInfoStructure) - sizeof(OneNETInfoStructure.InfoData) + len);
 		NETOneNETNeedSendCode.ResponseInfo = 0;
-		TCFG_Utility_Add_OneNET_SentCount();
+		NET_NBIOT_OneNETSentDataAfterExexution();
 #endif
 	}
 	

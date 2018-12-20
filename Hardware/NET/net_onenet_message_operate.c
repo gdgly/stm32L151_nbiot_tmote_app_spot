@@ -173,6 +173,7 @@ int NET_ONENET_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer)
 				"\"Smode\":%d,"
 				"\"Sinter\":%d,"
 				"\"hpass\":%d,"
+				"\"Rvcc\":%d,"
 				"\"x\":[%d,%d,%d,%d,%d],"
 				"\"y\":[%d,%d,%d,%d,%d],"
 				"\"z\":[%d,%d,%d,%d,%d]"
@@ -196,7 +197,8 @@ int NET_ONENET_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer)
 		TCFG_EEPROM_GetRadarGain(),
 		TCFG_EEPROM_GetSenseMode(),
 		Radar_Get_SampleInterval(),
-		TCFG_EEPROM_GetHighPass(),
+		tradar_get_highpass(),
+		Radar_Get_RadarVcc(),
 		TCFG_EEPROM_GetMagManualBack(0, TCFG_X_AXIS),
 		TCFG_EEPROM_GetMagManualBack(1, TCFG_X_AXIS),
 		TCFG_EEPROM_GetMagManualBack(2, TCFG_X_AXIS),

@@ -1838,6 +1838,7 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 				if (pClient->Recvbuf[recvBufOffset + TCLOD_MSGID_OFFSET] == TCLOD_CONFIG_SET) {
 					BEEP_CtrlRepeat_Extend(1, 300, 0);
 					TCFG_EEPROM_SetNBCmdCnt(1 + TCFG_EEPROM_GetNBCmdCnt());
+					TCFG_Utility_Add_NBIot_RecvCount();
 					
 					/* 工作模式配置指令 */
 				#if NBCOAP_DOWNLOAD_CMD_WORKMODE

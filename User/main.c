@@ -91,6 +91,9 @@ int main(void)
 	TCFG_EEPROM_SetVender(MVB_BRAND);														//写入Verder
 	TCFG_EEPROM_WriteConfigData();														//写入系统配置信息
 #endif
+	
+	Radar_Init();																		//雷达初始化
+	
 	if (TCFG_EEPROM_CheckNewSNorBrand() == true) {											//检测新设备号或厂牌
 		TCFG_EEPROM_WriteConfigData();													//写入系统配置信息
 	}
@@ -125,7 +128,6 @@ int main(void)
 #endif
 	
 	QMC5883L_Init();																	//地磁初始化
-	Radar_Init();																		//雷达初始化
 	
 	Inspect_Spot_Init();																//车位检测算法初始化
 	

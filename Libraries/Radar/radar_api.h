@@ -14,8 +14,11 @@
 #define NOT_SAVE_RADAR_BACKGROUND			0
 
 #define TRADAR_GAIN_HIGHEST				15
-#define TRADAR_GAIN_DEFAULT				15
 #define TRADAR_GAIN_LOWEST				12
+
+extern char TRADAR_GAIN_DEFAULT;
+extern char TRADAR_HIGHPASS_DEFAULT;
+extern char RADAR_COVERGAIN_DEFAULT;
 
 extern tradar_targetinfo_s radar_targetinfo;
 extern int inteval;
@@ -36,5 +39,8 @@ char Radar_Get_SampleInterval(void);										//get the sample interval
 
 void Radar_EnterCriticalSection(void);										//雷达启动初始化配置系统时钟HSI
 void Radar_ExitCriticalSection(void);										//雷达退出反初始化配置为原系统时钟MSI
+
+u8 Radar_MeasureRadarVCC(void);											// measure the vcc of radar ic
+u8 Radar_Get_RadarVcc(void);												// get the radar vcc that have been measureed
 
 #endif

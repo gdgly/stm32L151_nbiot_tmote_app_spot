@@ -1903,6 +1903,7 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 			if (messageHandler->message->payload[recvBufOffset + TCLOD_MSGID_OFFSET] == TCLOD_CONFIG_SET) {
 				BEEP_CtrlRepeat_Extend(1, 300, 0);
 				TCFG_EEPROM_SetNBCmdCnt(1 + TCFG_EEPROM_GetNBCmdCnt());
+				TCFG_Utility_Add_NBIot_RecvCount();
 				
 				/* 工作模式配置指令 */
 			#if MQTTSN_DOWNLOAD_CMD_WORKMODE

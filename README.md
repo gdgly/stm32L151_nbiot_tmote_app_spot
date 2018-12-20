@@ -1,6 +1,15 @@
 # stm32L151_nbiot_tmote_app_spot
 movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2018-12-20 :
+	* 优化NB发送接收包数统计。
+* 2018-12-20 :
+	* 默认采样周期从10ms改回18ms。
+	* 雷达库更新到51版本。
+	* 当雷达芯片电压为2.5v时:默认CoverGain=7,RadarGain=13,highpass=800Hz。
+	* 当雷达芯片电压为3.0v时:默认CoverGain=10,RadarGain=15,highpass=1200Hz。
+* 2018-12-20 :
+	* 版本号修改为136。
 * 2018-12-18 :
 	* 发布V135版本固件。
 * 2018-12-17 :

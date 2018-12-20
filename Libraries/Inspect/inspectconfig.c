@@ -116,6 +116,8 @@ void Inspect_Spot_ExistenceDetect(void)
 		noStatusSent = 0;
 		Radio_Trf_Do_Heartbeat();
 		
+		Radio_Trf_Debug_Printf_Level3("ispect:errcode=%d", SpotStatusData.radarData.timedomain_dif);
+		
 		if (SpotStatus == SPOT_OCCUPY2FREE) {
 			BEEP_CtrlRepeat_Extend(1, 30, 70);
 		}

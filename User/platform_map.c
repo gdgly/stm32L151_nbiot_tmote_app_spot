@@ -191,29 +191,17 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_SystemData.NBIotBootCount = 0;
 	TCFG_EEPROM_SetNbiotBootCnt(TCFG_SystemData.NBIotBootCount);
 	
-	/* NBIot Coap 接收数据次数 */
-	TCFG_SystemData.CoapRecvCount = 0;
-	TCFG_EEPROM_SetCoapRecvCnt(TCFG_SystemData.CoapRecvCount);
+	/* NBIot 发送数据包数 */
+	TCFG_SystemData.NBIotSentCount = 0;
+	TCFG_EEPROM_SetNBIotSentCount(TCFG_SystemData.NBIotSentCount);
 	
-	/* NBIot Coap 发送数据次数 */
-	TCFG_SystemData.CoapSentCount = 0;
-	TCFG_EEPROM_SetCoapSentCnt(TCFG_SystemData.CoapSentCount);
+	/* NBIot 接收数据包数 */
+	TCFG_SystemData.NBIotRecvCount = 0;
+	TCFG_EEPROM_SetNBIotRecvCount(TCFG_SystemData.NBIotRecvCount);
 	
-	/* NBIot MqttSN 接收数据次数 */
-	TCFG_SystemData.MqttSNRecvCount = 0;
-	TCFG_EEPROM_SetMqttSNRecvCnt(TCFG_SystemData.MqttSNRecvCount);
-	
-	/* NBIot MqttSN 发送数据次数 */
-	TCFG_SystemData.MqttSNSentCount = 0;
-	TCFG_EEPROM_SetMqttSNSentCnt(TCFG_SystemData.MqttSNSentCount);
-	
-	/* NBIot OneNET 接收数据次数 */
-	TCFG_SystemData.OneNETRecvCount = 0;
-	TCFG_EEPROM_SetOneNETRecvCnt(TCFG_SystemData.OneNETRecvCount);
-	
-	/* NBIot OneNET 发送数据次数 */
-	TCFG_SystemData.OneNETSentCount = 0;
-	TCFG_EEPROM_SetOneNETSentCnt(TCFG_SystemData.OneNETSentCount);
+	/* NBIot 一天发送数据包数 */
+	TCFG_SystemData.NBIotSentCountDay = 0;
+	TCFG_EEPROM_SetNBIotSentCountDay(TCFG_SystemData.NBIotSentCountDay);
 	
 	/* RF命令接收条数 */
 	TCFG_SystemData.RFCommandCount = 0;
@@ -301,6 +289,9 @@ void TCFG_EEPROM_ReadConfigData(void)
 	
 	/* 获取高通滤波器截止频率 */
 	TCFG_SystemData.RadarHighPass = TCFG_EEPROM_GetHighPass();
+	if ((TCFG_SystemData.RadarHighPass < RADAR_HIGHPASS_800) || (TCFG_SystemData.RadarHighPass > RADAR_HIGHPASS_1000)) {
+		TCFG_SystemData.RadarHighPass = TRADAR_HIGHPASS_DEFAULT;
+	}
 	
 	/* 获取采样间隔,间隔越小越省电,但对实时性要求越高 */
 	TCFG_SystemData.RadarSampleInterval = TCFG_EEPROM_GetSampleInterval();
@@ -397,23 +388,14 @@ void TCFG_EEPROM_ReadConfigData(void)
 	/* NBIot重启次数 */
 	TCFG_SystemData.NBIotBootCount = TCFG_EEPROM_GetNbiotBootCnt();
 	
-	/* NBIot Coap 接收数据次数 */
-	TCFG_SystemData.CoapRecvCount = TCFG_EEPROM_GetCoapRecvCnt();
+	/* NBIot 发送数据包数 */
+	TCFG_SystemData.NBIotSentCount = TCFG_EEPROM_GetNBIotSentCount();
 	
-	/* NBIot Coap 发送数据次数 */
-	TCFG_SystemData.CoapSentCount = TCFG_EEPROM_GetCoapSentCnt();
+	/* NBIot 接收数据包数 */
+	TCFG_SystemData.NBIotRecvCount = TCFG_EEPROM_GetNBIotRecvCount();
 	
-	/* NBIot MqttSN 接收数据次数 */
-	TCFG_SystemData.MqttSNRecvCount = TCFG_EEPROM_GetMqttSNRecvCnt();
-	
-	/* NBIot MqttSN 发送数据次数 */
-	TCFG_SystemData.MqttSNSentCount = TCFG_EEPROM_GetMqttSNSentCnt();
-	
-	/* NBIot OneNET 接收数据次数 */
-	TCFG_SystemData.OneNETRecvCount = TCFG_EEPROM_GetOneNETRecvCnt();
-	
-	/* NBIot OneNET 发送数据次数 */
-	TCFG_SystemData.OneNETSentCount = TCFG_EEPROM_GetOneNETSentCnt();
+	/* NBIot 一天发送数据包数 */
+	TCFG_SystemData.NBIotSentCountDay = TCFG_EEPROM_GetNBIotSentCountDay();
 	
 	/* Coap间隔时间发送普通数据包用于接收下行数据 */
 	TCFG_SystemData.CoapRATimeHour = TCFG_EEPROM_GetCoapRATimeHour();
@@ -1248,135 +1230,69 @@ unsigned int TCFG_EEPROM_GetNbiotBootCnt(void)
 }
 
 /**********************************************************************************************************
- @Function			void TCFG_EEPROM_SetCoapSentCnt(unsigned int val)
- @Description			TCFG_EEPROM_SetCoapSentCnt					: 保存CoapSentCnt
+ @Function			void TCFG_EEPROM_SetNBIotSentCount(unsigned int val)
+ @Description			TCFG_EEPROM_SetNBIotSentCount					: 保存NBIotSentCount
  @Input				val
  @Return				void
 **********************************************************************************************************/
-void TCFG_EEPROM_SetCoapSentCnt(unsigned int val)
+void TCFG_EEPROM_SetNBIotSentCount(unsigned int val)
 {
-	FLASH_EEPROM_WriteWord(TCFG_COAP_SENTCNT_OFFSET, val);
+	FLASH_EEPROM_WriteWord(TCFG_NBIOT_SENTCOUNT_OFFSET, val);
 }
 
 /**********************************************************************************************************
- @Function			unsigned int TCFG_EEPROM_GetCoapSentCnt(void)
- @Description			TCFG_EEPROM_GetCoapSentCnt					: 读取CoapSentCnt
+ @Function			unsigned int TCFG_EEPROM_GetNBIotSentCount(void)
+ @Description			TCFG_EEPROM_GetNBIotSentCount					: 读取NBIotSentCount
  @Input				void
  @Return				val
 **********************************************************************************************************/
-unsigned int TCFG_EEPROM_GetCoapSentCnt(void)
+unsigned int TCFG_EEPROM_GetNBIotSentCount(void)
 {
-	return FLASH_EEPROM_ReadWord(TCFG_COAP_SENTCNT_OFFSET);
+	return FLASH_EEPROM_ReadWord(TCFG_NBIOT_SENTCOUNT_OFFSET);
 }
 
 /**********************************************************************************************************
- @Function			void TCFG_EEPROM_SetCoapRecvCnt(unsigned int val)
- @Description			TCFG_EEPROM_SetCoapRecvCnt					: 保存CoapRecvCnt
+ @Function			void TCFG_EEPROM_SetNBIotRecvCount(unsigned int val)
+ @Description			TCFG_EEPROM_SetNBIotRecvCount					: 保存NBIotRecvCount
  @Input				val
  @Return				void
 **********************************************************************************************************/
-void TCFG_EEPROM_SetCoapRecvCnt(unsigned int val)
+void TCFG_EEPROM_SetNBIotRecvCount(unsigned int val)
 {
-	FLASH_EEPROM_WriteWord(TCFG_COAP_RECVCNT_OFFSET, val);
+	FLASH_EEPROM_WriteWord(TCFG_NBIOT_RECVCOUNT_OFFSET, val);
 }
 
 /**********************************************************************************************************
- @Function			unsigned int TCFG_EEPROM_GetCoapRecvCnt(void)
- @Description			TCFG_EEPROM_GetCoapRecvCnt					: 读取CoapRecvCnt
+ @Function			unsigned int TCFG_EEPROM_GetNBIotRecvCount(void)
+ @Description			TCFG_EEPROM_GetNBIotRecvCount					: 读取NBIotRecvCount
  @Input				void
  @Return				val
 **********************************************************************************************************/
-unsigned int TCFG_EEPROM_GetCoapRecvCnt(void)
+unsigned int TCFG_EEPROM_GetNBIotRecvCount(void)
 {
-	return FLASH_EEPROM_ReadWord(TCFG_COAP_RECVCNT_OFFSET);
+	return FLASH_EEPROM_ReadWord(TCFG_NBIOT_RECVCOUNT_OFFSET);
 }
 
 /**********************************************************************************************************
- @Function			void TCFG_EEPROM_SetMqttSNSentCnt(unsigned int val)
- @Description			TCFG_EEPROM_SetMqttSNSentCnt					: 保存MqttSNSentCnt
+ @Function			void TCFG_EEPROM_SetNBIotSentCountDay(unsigned short val)
+ @Description			TCFG_EEPROM_SetNBIotSentCountDay				: 保存NBIotSentCountDay
  @Input				val
  @Return				void
 **********************************************************************************************************/
-void TCFG_EEPROM_SetMqttSNSentCnt(unsigned int val)
+void TCFG_EEPROM_SetNBIotSentCountDay(unsigned short val)
 {
-	FLASH_EEPROM_WriteWord(TCFG_MQTTSN_SENTCNT_OFFSET, val);
+	FLASH_EEPROM_WriteHalfWord(TCFG_NBIOT_SENTCOUNT_DAY_OFFSET, val);
 }
 
 /**********************************************************************************************************
- @Function			unsigned int TCFG_EEPROM_GetMqttSNSentCnt(void)
- @Description			TCFG_EEPROM_GetMqttSNSentCnt					: 读取MqttSNSentCnt
+ @Function			unsigned short TCFG_EEPROM_GetNBIotSentCountDay(void)
+ @Description			TCFG_EEPROM_GetNBIotSentCountDay				: 读取NBIotSentCountDay
  @Input				void
  @Return				val
 **********************************************************************************************************/
-unsigned int TCFG_EEPROM_GetMqttSNSentCnt(void)
+unsigned short TCFG_EEPROM_GetNBIotSentCountDay(void)
 {
-	return FLASH_EEPROM_ReadWord(TCFG_MQTTSN_SENTCNT_OFFSET);
-}
-
-/**********************************************************************************************************
- @Function			void TCFG_EEPROM_SetMqttSNRecvCnt(unsigned int val)
- @Description			TCFG_EEPROM_SetMqttSNRecvCnt					: 保存MqttSNRecvCnt
- @Input				val
- @Return				void
-**********************************************************************************************************/
-void TCFG_EEPROM_SetMqttSNRecvCnt(unsigned int val)
-{
-	FLASH_EEPROM_WriteWord(TCFG_MQTTSN_RECVCNT_OFFSET, val);
-}
-
-/**********************************************************************************************************
- @Function			unsigned int TCFG_EEPROM_GetMqttSNRecvCnt(void)
- @Description			TCFG_EEPROM_GetMqttSNRecvCnt					: 读取MqttSNRecvCnt
- @Input				void
- @Return				val
-**********************************************************************************************************/
-unsigned int TCFG_EEPROM_GetMqttSNRecvCnt(void)
-{
-	return FLASH_EEPROM_ReadWord(TCFG_MQTTSN_RECVCNT_OFFSET);
-}
-
-/**********************************************************************************************************
- @Function			void TCFG_EEPROM_SetOneNETSentCnt(unsigned int val)
- @Description			TCFG_EEPROM_SetOneNETSentCnt					: 保存OneNETSentCnt
- @Input				val
- @Return				void
-**********************************************************************************************************/
-void TCFG_EEPROM_SetOneNETSentCnt(unsigned int val)
-{
-	FLASH_EEPROM_WriteWord(TCFG_ONENET_SENTCNT_OFFSET, val);
-}
-
-/**********************************************************************************************************
- @Function			unsigned int TCFG_EEPROM_GetOneNETSentCnt(void)
- @Description			TCFG_EEPROM_GetOneNETSentCnt					: 读取OneNETSentCnt
- @Input				void
- @Return				val
-**********************************************************************************************************/
-unsigned int TCFG_EEPROM_GetOneNETSentCnt(void)
-{
-	return FLASH_EEPROM_ReadWord(TCFG_ONENET_SENTCNT_OFFSET);
-}
-
-/**********************************************************************************************************
- @Function			void TCFG_EEPROM_SetOneNETRecvCnt(unsigned int val)
- @Description			TCFG_EEPROM_SetOneNETRecvCnt					: 保存OneNETRecvCnt
- @Input				val
- @Return				void
-**********************************************************************************************************/
-void TCFG_EEPROM_SetOneNETRecvCnt(unsigned int val)
-{
-	FLASH_EEPROM_WriteWord(TCFG_ONENET_RECVCNT_OFFSET, val);
-}
-
-/**********************************************************************************************************
- @Function			unsigned int TCFG_EEPROM_GetOneNETRecvCnt(void)
- @Description			TCFG_EEPROM_GetOneNETRecvCnt					: 读取OneNETRecvCnt
- @Input				void
- @Return				val
-**********************************************************************************************************/
-unsigned int TCFG_EEPROM_GetOneNETRecvCnt(void)
-{
-	return FLASH_EEPROM_ReadWord(TCFG_ONENET_RECVCNT_OFFSET);
+	return FLASH_EEPROM_ReadHalfWord(TCFG_NBIOT_SENTCOUNT_DAY_OFFSET);
 }
 
 /**********************************************************************************************************
@@ -2242,153 +2158,78 @@ unsigned int TCFG_Utility_Get_Nbiot_BootCount(void)
 }
 
 /**********************************************************************************************************
- @Function			void TCFG_Utility_Add_Coap_SentCount(void)
- @Description			TCFG_Utility_Add_Coap_SentCount				: NBIot Coap发送次数累加
+ @Function			void TCFG_Utility_Add_NBIot_SentCount(void)
+ @Description			TCFG_Utility_Add_NBIot_SentCount				: NBIot 发送次数累加
  @Input				void
  @Return				void
 **********************************************************************************************************/
-void TCFG_Utility_Add_Coap_SentCount(void)
+void TCFG_Utility_Add_NBIot_SentCount(void)
 {
-	TCFG_SystemData.CoapSentCount++;
-	if (TCFG_SystemData.CoapSentCount > (10 + TCFG_EEPROM_GetCoapSentCnt())) {
-		TCFG_EEPROM_SetCoapSentCnt(TCFG_SystemData.CoapSentCount);
+	TCFG_SystemData.NBIotSentCount++;
+	if (TCFG_SystemData.NBIotSentCount > (10 + TCFG_EEPROM_GetNBIotSentCount())) {
+		TCFG_EEPROM_SetNBIotSentCount(TCFG_SystemData.NBIotSentCount);
 	}
 }
 
 /**********************************************************************************************************
- @Function			unsigned int TCFG_Utility_Get_Coap_SentCount(void)
- @Description			TCFG_Utility_Get_Coap_SentCount				: NBIot Coap发送次数获取
+ @Function			unsigned int TCFG_Utility_Get_NBIot_SentCount(void)
+ @Description			TCFG_Utility_Get_NBIot_SentCount				: NBIot 发送次数获取
  @Input				void
- @Return				Coap_SentCount
+ @Return				SentCount
 **********************************************************************************************************/
-unsigned int TCFG_Utility_Get_Coap_SentCount(void)
+unsigned int TCFG_Utility_Get_NBIot_SentCount(void)
 {
-	return TCFG_SystemData.CoapSentCount;
+	return TCFG_SystemData.NBIotSentCount;
 }
 
 /**********************************************************************************************************
- @Function			void TCFG_Utility_Add_Coap_RecvCount(void)
- @Description			TCFG_Utility_Add_Coap_RecvCount				: NBIot Coap接收次数累加
+ @Function			void TCFG_Utility_Add_NBIot_RecvCount(void)
+ @Description			TCFG_Utility_Add_NBIot_RecvCount				: NBIot 接收次数累加
  @Input				void
  @Return				void
 **********************************************************************************************************/
-void TCFG_Utility_Add_Coap_RecvCount(void)
+void TCFG_Utility_Add_NBIot_RecvCount(void)
 {
-	TCFG_SystemData.CoapRecvCount++;
-	if (TCFG_SystemData.CoapRecvCount > (10 + TCFG_EEPROM_GetCoapRecvCnt())) {
-		TCFG_EEPROM_SetCoapRecvCnt(TCFG_SystemData.CoapRecvCount);
+	TCFG_SystemData.NBIotRecvCount++;
+	if (TCFG_SystemData.NBIotRecvCount > (10 + TCFG_EEPROM_GetNBIotRecvCount())) {
+		TCFG_EEPROM_SetNBIotRecvCount(TCFG_SystemData.NBIotRecvCount);
 	}
 }
 
 /**********************************************************************************************************
- @Function			unsigned int TCFG_Utility_Get_Coap_RecvCount(void)
- @Description			TCFG_Utility_Get_Coap_RecvCount				: NBIot Coap接收次数获取
+ @Function			unsigned int TCFG_Utility_Get_NBIot_RecvCount(void)
+ @Description			TCFG_Utility_Get_NBIot_RecvCount				: NBIot 接收次数获取
  @Input				void
- @Return				Coap_RecvCount
+ @Return				RecvCount
 **********************************************************************************************************/
-unsigned int TCFG_Utility_Get_Coap_RecvCount(void)
+unsigned int TCFG_Utility_Get_NBIot_RecvCount(void)
 {
-	return TCFG_SystemData.CoapRecvCount;
+	return TCFG_SystemData.NBIotRecvCount;
 }
 
 /**********************************************************************************************************
- @Function			void TCFG_Utility_Add_MqttSN_SentCount(void)
- @Description			TCFG_Utility_Add_MqttSN_SentCount				: NBIot MqttSN发送次数累加
+ @Function			void TCFG_Utility_Add_NBIot_SentCountDay(void)
+ @Description			TCFG_Utility_Add_NBIot_SentCountDay			: NBIot 一天发送次数累加
  @Input				void
  @Return				void
 **********************************************************************************************************/
-void TCFG_Utility_Add_MqttSN_SentCount(void)
+void TCFG_Utility_Add_NBIot_SentCountDay(void)
 {
-	TCFG_SystemData.MqttSNSentCount++;
-	if (TCFG_SystemData.MqttSNSentCount > (10 + TCFG_EEPROM_GetMqttSNSentCnt())) {
-		TCFG_EEPROM_SetMqttSNSentCnt(TCFG_SystemData.MqttSNSentCount);
+	TCFG_SystemData.NBIotSentCountDay++;
+	if (TCFG_SystemData.NBIotSentCountDay > (10 + TCFG_EEPROM_GetNBIotSentCountDay())) {
+		TCFG_EEPROM_SetNBIotSentCountDay(TCFG_SystemData.NBIotSentCountDay);
 	}
 }
 
 /**********************************************************************************************************
- @Function			unsigned int TCFG_Utility_Get_MqttSN_SentCount(void)
- @Description			TCFG_Utility_Get_MqttSN_SentCount				: NBIot MqttSN发送次数获取
+ @Function			unsigned int TCFG_Utility_Get_NBIot_SentCountDay(void)
+ @Description			TCFG_Utility_Get_NBIot_SentCountDay			: NBIot 一天发送次数获取
  @Input				void
- @Return				MqttSN_SentCount
+ @Return				SentCountDay
 **********************************************************************************************************/
-unsigned int TCFG_Utility_Get_MqttSN_SentCount(void)
+unsigned short TCFG_Utility_Get_NBIot_SentCountDay(void)
 {
-	return TCFG_SystemData.MqttSNSentCount;
-}
-
-/**********************************************************************************************************
- @Function			void TCFG_Utility_Add_MqttSN_RecvCount(void)
- @Description			TCFG_Utility_Add_MqttSN_RecvCount				: NBIot MqttSN接收次数累加
- @Input				void
- @Return				void
-**********************************************************************************************************/
-void TCFG_Utility_Add_MqttSN_RecvCount(void)
-{
-	TCFG_SystemData.MqttSNRecvCount++;
-	if (TCFG_SystemData.MqttSNRecvCount > (10 + TCFG_EEPROM_GetMqttSNRecvCnt())) {
-		TCFG_EEPROM_SetMqttSNRecvCnt(TCFG_SystemData.MqttSNRecvCount);
-	}
-}
-
-/**********************************************************************************************************
- @Function			unsigned int TCFG_Utility_Get_MqttSN_RecvCount(void)
- @Description			TCFG_Utility_Get_MqttSN_RecvCount				: NBIot MqttSN接收次数获取
- @Input				void
- @Return				MqttSN_RecvCount
-**********************************************************************************************************/
-unsigned int TCFG_Utility_Get_MqttSN_RecvCount(void)
-{
-	return TCFG_SystemData.MqttSNRecvCount;
-}
-
-/**********************************************************************************************************
- @Function			void TCFG_Utility_Add_OneNET_SentCount(void)
- @Description			TCFG_Utility_Add_OneNET_SentCount				: NBIot OneNET发送次数累加
- @Input				void
- @Return				void
-**********************************************************************************************************/
-void TCFG_Utility_Add_OneNET_SentCount(void)
-{
-	TCFG_SystemData.OneNETSentCount++;
-	if (TCFG_SystemData.OneNETSentCount > (10 + TCFG_EEPROM_GetOneNETSentCnt())) {
-		TCFG_EEPROM_SetOneNETSentCnt(TCFG_SystemData.OneNETSentCount);
-	}
-}
-
-/**********************************************************************************************************
- @Function			unsigned int TCFG_Utility_Get_OneNET_SentCount(void)
- @Description			TCFG_Utility_Get_OneNET_SentCount				: NBIot OneNET发送次数获取
- @Input				void
- @Return				OneNET_SentCount
-**********************************************************************************************************/
-unsigned int TCFG_Utility_Get_OneNET_SentCount(void)
-{
-	return TCFG_SystemData.OneNETSentCount;
-}
-
-/**********************************************************************************************************
- @Function			void TCFG_Utility_Add_OneNET_RecvCount(void)
- @Description			TCFG_Utility_Add_OneNET_RecvCount				: NBIot OneNET接收次数累加
- @Input				void
- @Return				void
-**********************************************************************************************************/
-void TCFG_Utility_Add_OneNET_RecvCount(void)
-{
-	TCFG_SystemData.OneNETRecvCount++;
-	if (TCFG_SystemData.OneNETRecvCount > (10 + TCFG_EEPROM_GetOneNETRecvCnt())) {
-		TCFG_EEPROM_SetOneNETRecvCnt(TCFG_SystemData.OneNETRecvCount);
-	}
-}
-
-/**********************************************************************************************************
- @Function			unsigned int TCFG_Utility_Get_OneNET_RecvCount(void)
- @Description			TCFG_Utility_Get_OneNET_RecvCount				: NBIot OneNET接收次数获取
- @Input				void
- @Return				OneNET_RecvCount
-**********************************************************************************************************/
-unsigned int TCFG_Utility_Get_OneNET_RecvCount(void)
-{
-	return TCFG_SystemData.OneNETRecvCount;
+	return TCFG_SystemData.NBIotSentCountDay;
 }
 
 /**********************************************************************************************************
@@ -3212,13 +3053,7 @@ char* TCFG_Utility_Get_Nbiot_APN(void)
 **********************************************************************************************************/
 unsigned int TCFG_Utility_Get_Nbiot_SentCount(void)
 {
-#if NETPROTOCAL == NETCOAP
-	return TCFG_Utility_Get_Coap_SentCount();
-#elif NETPROTOCAL == NETMQTTSN
-	return TCFG_Utility_Get_MqttSN_SentCount();
-#elif NETPROTOCAL == NETONENET
-	return TCFG_Utility_Get_OneNET_SentCount();
-#endif
+	return TCFG_Utility_Get_NBIot_SentCount();
 }
 
 /**********************************************************************************************************
@@ -3229,13 +3064,7 @@ unsigned int TCFG_Utility_Get_Nbiot_SentCount(void)
 **********************************************************************************************************/
 unsigned int TCFG_Utility_Get_Nbiot_RecvCount(void)
 {
-#if NETPROTOCAL == NETCOAP
-	return TCFG_Utility_Get_Coap_RecvCount();
-#elif NETPROTOCAL == NETMQTTSN
-	return TCFG_Utility_Get_MqttSN_RecvCount();
-#elif NETPROTOCAL == NETONENET
-	return TCFG_Utility_Get_OneNET_RecvCount();
-#endif
+	return TCFG_Utility_Get_NBIot_RecvCount();
 }
 
 /**********************************************************************************************************
