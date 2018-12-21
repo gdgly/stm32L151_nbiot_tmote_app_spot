@@ -201,10 +201,12 @@ static uint8_t RTC_WeekDayNum(uint32_t nYear, uint8_t nMonth, uint8_t nDay);
 HAL_StatusTypeDef HAL_RTC_Init(RTC_HandleTypeDef *hrtc)
 {
   /* Check the RTC peripheral state */
+#if 0
   if(hrtc == NULL)
   {
      return HAL_ERROR;
   }
+#endif
   
   /* Check the parameters */
   assert_param(IS_RTC_ALL_INSTANCE(hrtc->Instance));

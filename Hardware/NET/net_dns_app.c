@@ -867,7 +867,7 @@ void NET_DNS_NBIOT_Event_SimICCIDCheck(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, ICCID_CHECK);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		DNS_DEBUG_LOG_PRINTF("NB ICCID Check Ok");
+		DNS_DEBUG_LOG_PRINTF("NB ICCID Ok");
 #endif
 	}
 	else {
@@ -876,9 +876,9 @@ void NET_DNS_NBIOT_Event_SimICCIDCheck(DNS_ClientsTypeDef* pClient)
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		DNS_DEBUG_LOG_PRINTF("NB ICCID Check Fail ECde %d", NBStatus);
+		DNS_DEBUG_LOG_PRINTF("NB ICCID Fail ECde %d", NBStatus);
 	#else
-		DNS_DEBUG_LOG_PRINTF("NB ICCID Check Fail");
+		DNS_DEBUG_LOG_PRINTF("NB ICCID Fail");
 	#endif
 #endif
 	}

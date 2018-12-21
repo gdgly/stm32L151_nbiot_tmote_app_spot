@@ -203,6 +203,9 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_SystemData.NBIotSentCountDay = 0;
 	TCFG_EEPROM_SetNBIotSentCountDay(TCFG_SystemData.NBIotSentCountDay);
 	
+	/* NBIot 一天限定数据包数 */
+	TCFG_EEPROM_SetNBIotSentCountLimit(NBIOT_SNEDCOUNTDAY_LIMIT_NUM);
+	
 	/* RF命令接收条数 */
 	TCFG_SystemData.RFCommandCount = 0;
 	TCFG_EEPROM_SetRFCmdCnt(TCFG_SystemData.RFCommandCount);
@@ -396,6 +399,9 @@ void TCFG_EEPROM_ReadConfigData(void)
 	
 	/* NBIot 一天发送数据包数 */
 	TCFG_SystemData.NBIotSentCountDay = TCFG_EEPROM_GetNBIotSentCountDay();
+	
+	/* NBIot 一天限定数据包数 */
+	if (TCFG_EEPROM_GetNBIotSentCountLimit() == 0) TCFG_EEPROM_SetNBIotSentCountLimit(NBIOT_SNEDCOUNTDAY_LIMIT_NUM);
 	
 	/* Coap间隔时间发送普通数据包用于接收下行数据 */
 	TCFG_SystemData.CoapRATimeHour = TCFG_EEPROM_GetCoapRATimeHour();
@@ -1281,7 +1287,7 @@ unsigned int TCFG_EEPROM_GetNBIotRecvCount(void)
 **********************************************************************************************************/
 void TCFG_EEPROM_SetNBIotSentCountDay(unsigned short val)
 {
-	FLASH_EEPROM_WriteHalfWord(TCFG_NBIOT_SENTCOUNT_DAY_OFFSET, val);
+	FLASH_EEPROM_WriteHalfWord(TCFG_NBIOT_SENTCNTDAY_OFFSET, val);
 }
 
 /**********************************************************************************************************
@@ -1292,7 +1298,29 @@ void TCFG_EEPROM_SetNBIotSentCountDay(unsigned short val)
 **********************************************************************************************************/
 unsigned short TCFG_EEPROM_GetNBIotSentCountDay(void)
 {
-	return FLASH_EEPROM_ReadHalfWord(TCFG_NBIOT_SENTCOUNT_DAY_OFFSET);
+	return FLASH_EEPROM_ReadHalfWord(TCFG_NBIOT_SENTCNTDAY_OFFSET);
+}
+
+/**********************************************************************************************************
+ @Function			void TCFG_EEPROM_SetNBIotSentCountLimit(unsigned short val)
+ @Description			TCFG_EEPROM_SetNBIotSentCountLimit				: 保存NBIotSentCountLimit
+ @Input				val
+ @Return				void
+**********************************************************************************************************/
+void TCFG_EEPROM_SetNBIotSentCountLimit(unsigned short val)
+{
+	FLASH_EEPROM_WriteHalfWord(TCFG_NBIOT_SENTCNTLMT_OFFSET, val);
+}
+
+/**********************************************************************************************************
+ @Function			unsigned short TCFG_EEPROM_GetNBIotSentCountLimit(void)
+ @Description			TCFG_EEPROM_GetNBIotSentCountLimit				: 读取NBIotSentCountLimit
+ @Input				void
+ @Return				val
+**********************************************************************************************************/
+unsigned short TCFG_EEPROM_GetNBIotSentCountLimit(void)
+{
+	return FLASH_EEPROM_ReadHalfWord(TCFG_NBIOT_SENTCNTLMT_OFFSET);
 }
 
 /**********************************************************************************************************
@@ -2230,6 +2258,18 @@ void TCFG_Utility_Add_NBIot_SentCountDay(void)
 unsigned short TCFG_Utility_Get_NBIot_SentCountDay(void)
 {
 	return TCFG_SystemData.NBIotSentCountDay;
+}
+
+/**********************************************************************************************************
+ @Function			unsigned int TCFG_Utility_Get_NBIot_SentCountLimit(void)
+ @Description			TCFG_Utility_Get_NBIot_SentCountLimit			: NBIot 一天剩余次数获取
+ @Input				void
+ @Return				SentCountLimit
+**********************************************************************************************************/
+unsigned short TCFG_Utility_Get_NBIot_SentCountLimit(void)
+{
+	unsigned short countLimit = (TCFG_Utility_Get_NBIot_SentCountDay() > TCFG_EEPROM_GetNBIotSentCountLimit()) ? TCFG_EEPROM_GetNBIotSentCountLimit() : TCFG_Utility_Get_NBIot_SentCountDay();
+	return TCFG_EEPROM_GetNBIotSentCountLimit() - countLimit;
 }
 
 /**********************************************************************************************************

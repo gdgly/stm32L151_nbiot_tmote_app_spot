@@ -512,9 +512,9 @@ void NET_COAP_NBIOT_Event_ModuleCheck(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		COAP_DEBUG_LOG_PRINTF("NB Module Fail ECde %d", NBStatus);
+		COAP_DEBUG_LOG_PRINTF("NB Module Check Fail ECde %d", NBStatus);
 	#else
-		COAP_DEBUG_LOG_PRINTF("NB Module Fail");
+		COAP_DEBUG_LOG_PRINTF("NB Module Check Fail");
 	#endif
 #endif
 	}
@@ -537,7 +537,7 @@ void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, ICCID_CHECK, PARAMETER_CONFIG);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		COAP_DEBUG_LOG_PRINTF("NB Para Cfg Ok");
+		COAP_DEBUG_LOG_PRINTF("NB Para Config Ok");
 #endif
 	}
 	else {
@@ -546,9 +546,9 @@ void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		COAP_DEBUG_LOG_PRINTF("NB Para Cfg Fail ECde %d", NBStatus);
+		COAP_DEBUG_LOG_PRINTF("NB Para Config Fail ECde %d", NBStatus);
 	#else
-		COAP_DEBUG_LOG_PRINTF("NB Para Cfg Fail");
+		COAP_DEBUG_LOG_PRINTF("NB Para Config Fail");
 	#endif
 #endif
 		return;
@@ -692,7 +692,7 @@ void NET_COAP_NBIOT_Event_SimICCIDCheck(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, ICCID_CHECK);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		COAP_DEBUG_LOG_PRINTF("NB ICCID Ok");
+		COAP_DEBUG_LOG_PRINTF("NB ICCID Check Ok");
 #endif
 	}
 	else {
@@ -701,9 +701,9 @@ void NET_COAP_NBIOT_Event_SimICCIDCheck(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		COAP_DEBUG_LOG_PRINTF("NB ICCID Fail ECde %d", NBStatus);
+		COAP_DEBUG_LOG_PRINTF("NB ICCID Check Fail ECde %d", NBStatus);
 	#else
-		COAP_DEBUG_LOG_PRINTF("NB ICCID Fail");
+		COAP_DEBUG_LOG_PRINTF("NB ICCID Check Fail");
 	#endif
 #endif
 	}
@@ -726,7 +726,7 @@ void NET_COAP_NBIOT_Event_FullFunctionality(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, CDP_SERVER_CHECK, FULL_FUNCTIONALITY);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		COAP_DEBUG_LOG_PRINTF("CoAP FullFunc Ok");
+		COAP_DEBUG_LOG_PRINTF("CoAP FullFunc Check Ok");
 #endif
 	}
 	else {
@@ -735,9 +735,9 @@ void NET_COAP_NBIOT_Event_FullFunctionality(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		COAP_DEBUG_LOG_PRINTF("CoAP FullFunc Fail ECde %d", NBStatus);
+		COAP_DEBUG_LOG_PRINTF("CoAP FullFunc Check Fail ECde %d", NBStatus);
 	#else
-		COAP_DEBUG_LOG_PRINTF("CoAP FullFunc Fail");
+		COAP_DEBUG_LOG_PRINTF("CoAP FullFunc Check Fail");
 	#endif
 #endif
 		return;
@@ -785,7 +785,7 @@ void NET_COAP_NBIOT_Event_MinimumFunctionality(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, CDP_SERVER_CONFIG, MINIMUM_FUNCTIONALITY);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		COAP_DEBUG_LOG_PRINTF("CoAP MinFunc Ok");
+		COAP_DEBUG_LOG_PRINTF("CoAP MinFunc Check Ok");
 #endif
 	}
 	else {
@@ -794,9 +794,9 @@ void NET_COAP_NBIOT_Event_MinimumFunctionality(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		COAP_DEBUG_LOG_PRINTF("CoAP MinFunc Fail ECde %d", NBStatus);
+		COAP_DEBUG_LOG_PRINTF("CoAP MinFunc Check Fail ECde %d", NBStatus);
 	#else
-		COAP_DEBUG_LOG_PRINTF("CoAP MinFunc Fail");
+		COAP_DEBUG_LOG_PRINTF("CoAP MinFunc Check Fail");
 	#endif
 #endif
 		return;
@@ -1020,9 +1020,9 @@ void NET_COAP_NBIOT_Event_NbandModeConfig(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		COAP_DEBUG_LOG_PRINTF("CoAP BAND Fail ECde %d", NBStatus);
+		COAP_DEBUG_LOG_PRINTF("CoAP BAND Read Fail ECde %d", NBStatus);
 	#else
-		COAP_DEBUG_LOG_PRINTF("CoAP BAND Fail");
+		COAP_DEBUG_LOG_PRINTF("CoAP BAND Read Fail");
 	#endif
 #endif
 	}
@@ -2174,6 +2174,20 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 							TCFG_SystemData.UpgradeLimitSnr = limitSnr;
 							TCFG_EEPROM_SetUpgradeLimitRssi(TCFG_SystemData.UpgradeLimitRssi);
 							TCFG_EEPROM_SetUpgradeLimitSnr(TCFG_SystemData.UpgradeLimitSnr);
+						}
+						else {
+							ret = NETIP_UNKNOWNERROR;
+						}
+					}
+				#endif
+					/* NBLimit */
+				#if NBCOAP_DOWNLOAD_CMD_NBLIMIT
+					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "NBLimit") != NULL) {
+						short nblimit;
+						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
+							"{(NBLimit):{(val):%hd,(Magic):%hu}}", &nblimit, &recvMagicNum);
+						if (recvMagicNum == TCLOD_MAGIC_NUM) {
+							TCFG_EEPROM_SetNBIotSentCountLimit(nblimit);
 						}
 						else {
 							ret = NETIP_UNKNOWNERROR;

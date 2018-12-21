@@ -259,10 +259,13 @@ static void DAC_DMAHalfConvCpltCh1(DMA_HandleTypeDef *hdma);
 HAL_StatusTypeDef HAL_DAC_Init(DAC_HandleTypeDef* hdac)
 { 
   /* Check DAC handle */
+#if 0
   if(hdac == NULL)
   {
      return HAL_ERROR;
   }
+#endif
+  
   /* Check the parameters */
   assert_param(IS_DAC_ALL_INSTANCE(hdac->Instance));
   
@@ -297,10 +300,12 @@ HAL_StatusTypeDef HAL_DAC_Init(DAC_HandleTypeDef* hdac)
 HAL_StatusTypeDef HAL_DAC_DeInit(DAC_HandleTypeDef* hdac)
 {
   /* Check DAC handle */
+#if 0
   if(hdac == NULL)
   {
      return HAL_ERROR;
   }
+#endif
 
   /* Check the parameters */
   assert_param(IS_DAC_ALL_INSTANCE(hdac->Instance));

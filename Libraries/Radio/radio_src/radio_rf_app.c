@@ -495,6 +495,16 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				#endif
 				}
 			#endif
+				/* NBLimit */
+			#if RADIO_DOWNLOAD_CMD_NBLIMIT
+				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "nblimit")) {
+					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "nblimit:%hd", &uval16);
+					TCFG_EEPROM_SetNBIotSentCountLimit(uval16);
+				#if RADIO_CMD_ECHO_TYPE
+					Radio_Trf_Printf("NBlimit:%hd", TCFG_EEPROM_GetNBIotSentCountLimit());
+				#endif
+				}
+			#endif
 				/* CoverGain */
 			#if RADIO_DOWNLOAD_CMD_COVERGAIN
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "covergain")) {

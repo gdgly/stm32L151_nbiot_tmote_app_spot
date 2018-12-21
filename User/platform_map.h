@@ -145,8 +145,10 @@
 #define TCFG_NBIOT_SENTCOUNT_LENGTH		4												//NBIoT Sent Count		NB发送包数
 #define TCFG_NBIOT_RECVCOUNT_OFFSET		TCFG_NBIOT_SENTCOUNT_OFFSET + TCFG_NBIOT_SENTCOUNT_LENGTH	//0x080804E8
 #define TCFG_NBIOT_RECVCOUNT_LENGTH		4												//NBIoT Recv Count		NB接收包数
-#define TCFG_NBIOT_SENTCOUNT_DAY_OFFSET		TCFG_NBIOT_RECVCOUNT_OFFSET + TCFG_NBIOT_RECVCOUNT_LENGTH	//0x080804EC
-#define TCFG_NBIOT_SENTCOUNT_DAY_LENGTH		2												//NBIoT Sent Count Day	NB一天发送包数
+#define TCFG_NBIOT_SENTCNTDAY_OFFSET		TCFG_NBIOT_RECVCOUNT_OFFSET + TCFG_NBIOT_RECVCOUNT_LENGTH	//0x080804EC
+#define TCFG_NBIOT_SENTCNTDAY_LENGTH		2												//NBIoT Sent Count Day	NB一天发送包数
+#define TCFG_NBIOT_SENTCNTLMT_OFFSET		TCFG_NBIOT_SENTCNTDAY_OFFSET + TCFG_NBIOT_SENTCNTDAY_LENGTH	//0x080804EE
+#define TCFG_NBIOT_SENTCNTLMT_LENGTH		2												//NBIoT Sent Count Limit	NB一天限定包数
 
 /************************************** The environment parameters are used both by extend ***************************************/
 #define EEPROM_CONFIG_PAGE2_ADDRESS		0x08080E00										//配置页2起始地址 EEPROM_BASE_ADD + 0x0E00(3.5K)
@@ -394,6 +396,9 @@ unsigned int	TCFG_EEPROM_GetNBIotRecvCount(void);											//读取NBIotRecvCou
 void			TCFG_EEPROM_SetNBIotSentCountDay(unsigned short val);								//保存NBIotSentCountDay
 unsigned short	TCFG_EEPROM_GetNBIotSentCountDay(void);											//读取NBIotSentCountDay
 
+void			TCFG_EEPROM_SetNBIotSentCountLimit(unsigned short val);							//保存NBIotSentCountLimit
+unsigned short	TCFG_EEPROM_GetNBIotSentCountLimit(void);										//读取NBIotSentCountLimit
+
 void			TCFG_EEPROM_SetDevBootCnt(unsigned short val);									//保存DevBootCnt
 unsigned short	TCFG_EEPROM_GetDevBootCnt(void);												//读取DevBootCnt
 
@@ -497,6 +502,7 @@ void			TCFG_Utility_Add_NBIot_RecvCount(void);											//NBIot 接收次数累
 unsigned int	TCFG_Utility_Get_NBIot_RecvCount(void);											//NBIot 接收次数获取
 void			TCFG_Utility_Add_NBIot_SentCountDay(void);										//NBIot 一天发送次数累加
 unsigned short	TCFG_Utility_Get_NBIot_SentCountDay(void);										//NBIot 一天发送次数获取
+unsigned short	TCFG_Utility_Get_NBIot_SentCountLimit(void);										//NBIot 一天剩余次数获取
 
 void			TCFG_Utility_Set_Nbiot_IdleLifetime(unsigned short val);							//NBIot 休眠模式保活时间设置
 unsigned short	TCFG_Utility_Get_Nbiot_IdleLifetime(void);										//NBIot 休眠模式保活时间获取

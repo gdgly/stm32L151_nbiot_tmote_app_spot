@@ -207,10 +207,12 @@ static void TIM_SlaveTimer_SetConfig(TIM_HandleTypeDef *htim, TIM_SlaveConfigTyp
 HAL_StatusTypeDef HAL_TIM_Base_Init(TIM_HandleTypeDef *htim)
 {
   /* Check the TIM handle allocation */
+#if 0
   if(htim == NULL)
   {
     return HAL_ERROR;
   }
+#endif
 
   /* Check the parameters */
   assert_param(IS_TIM_INSTANCE(htim->Instance));

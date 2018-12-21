@@ -240,10 +240,12 @@ static HAL_StatusTypeDef USART_WaitOnFlagUntilTimeout(USART_HandleTypeDef *husar
 HAL_StatusTypeDef HAL_USART_Init(USART_HandleTypeDef *husart)
 {
   /* Check the USART handle allocation */
+#if 0
   if(husart == NULL)
   {
     return HAL_ERROR;
   }
+#endif
 
   /* Check the parameters */
   assert_param(IS_USART_INSTANCE(husart->Instance));
@@ -287,10 +289,12 @@ HAL_StatusTypeDef HAL_USART_Init(USART_HandleTypeDef *husart)
 HAL_StatusTypeDef HAL_USART_DeInit(USART_HandleTypeDef *husart)
 {
    /* Check the USART handle allocation */
+#if 0
   if(husart == NULL)
   {
     return HAL_ERROR;
   }
+#endif
 
   /* Check the parameters */
   assert_param(IS_USART_INSTANCE(husart->Instance));

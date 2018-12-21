@@ -387,10 +387,12 @@ HAL_StatusTypeDef HAL_ADC_Init(ADC_HandleTypeDef* hadc)
   uint32_t tmp_cr2 = 0;
   
   /* Check ADC handle */
+#if 0
   if(hadc == NULL)
   {
     return HAL_ERROR;
   }
+#endif
   
   /* Check the parameters */
   assert_param(IS_ADC_ALL_INSTANCE(hadc->Instance));
@@ -617,10 +619,12 @@ HAL_StatusTypeDef HAL_ADC_DeInit(ADC_HandleTypeDef* hadc)
   HAL_StatusTypeDef tmp_hal_status = HAL_OK;
   
   /* Check ADC handle */
+#if 0
   if(hadc == NULL)
   {
     return HAL_ERROR;
   }
+#endif
   
   /* Check the parameters */
   assert_param(IS_ADC_ALL_INSTANCE(hadc->Instance));

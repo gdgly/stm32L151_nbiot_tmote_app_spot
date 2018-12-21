@@ -195,10 +195,12 @@ __weak HAL_StatusTypeDef HAL_SPI_Init(SPI_HandleTypeDef *hspi)
 HAL_StatusTypeDef HAL_SPI_DeInit(SPI_HandleTypeDef *hspi)
 {
   /* Check the SPI handle allocation */
+#if 0
   if(hspi == NULL)
   {
     return HAL_ERROR;
   }
+#endif
 
   /* Disable the SPI Peripheral Clock */
   __HAL_SPI_DISABLE(hspi);

@@ -165,10 +165,12 @@ HAL_StatusTypeDef HAL_IWDG_Init(IWDG_HandleTypeDef *hiwdg)
   uint32_t tickstart;
 
   /* Check the IWDG handle allocation */
+#if 0
   if(hiwdg == NULL)
   {
     return HAL_ERROR;
   }
+#endif
 
   /* Check the parameters */
   assert_param(IS_IWDG_ALL_INSTANCE(hiwdg->Instance));

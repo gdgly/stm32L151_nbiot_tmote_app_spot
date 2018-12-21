@@ -162,10 +162,12 @@ HAL_StatusTypeDef HAL_DMA_Init(DMA_HandleTypeDef *hdma)
   uint32_t tmp = 0;
   
   /* Check the DMA handle allocation */
+#if 0
   if(hdma == NULL)
   {
     return HAL_ERROR;
   }
+#endif
   
   /* Check the parameters */
   assert_param(IS_DMA_ALL_INSTANCE(hdma->Instance));
@@ -245,10 +247,12 @@ HAL_StatusTypeDef HAL_DMA_Init(DMA_HandleTypeDef *hdma)
 HAL_StatusTypeDef HAL_DMA_DeInit(DMA_HandleTypeDef *hdma)
 {
   /* Check the DMA handle allocation */
+#if 0
   if (NULL == hdma )
   {
     return HAL_ERROR;
   }
+#endif
 
   /* Check the parameters */
   assert_param(IS_DMA_ALL_INSTANCE(hdma->Instance));

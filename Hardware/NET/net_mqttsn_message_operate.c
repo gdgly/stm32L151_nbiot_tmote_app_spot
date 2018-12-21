@@ -519,6 +519,7 @@ int NET_MQTTSN_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer)
 				"\"Nbboot\":%d,"
 				"\"Nbsent\":%d,"
 				"\"Nbrecv\":%d,"
+				"\"Nblimit\":%d,"
 				"\"Indelay\":%d,"
 				"\"Nbheart\":%d,"
 				"\"Cgain\":%d,"
@@ -544,6 +545,7 @@ int NET_MQTTSN_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer)
 		TCFG_Utility_Get_Nbiot_BootCount(),
 		TCFG_Utility_Get_Nbiot_SentCount(),
 		TCFG_Utility_Get_Nbiot_RecvCount(),
+		TCFG_Utility_Get_NBIot_SentCountLimit(),
 		TCFG_EEPROM_GetCarInDelay(),
 		TCFG_EEPROM_GetNbiotHeart(),
 		TCFG_Utility_Get_GainCover(),

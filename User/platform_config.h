@@ -139,6 +139,12 @@
 #define	ROLLINGOVER_INITSENSOR_ENABLE		1
 #define	ROLLINGOVER_INITSENSOR_TYPE		ROLLINGOVER_INITSENSOR_DISABLE		//翻转初始化背景
 
+#define	NBIOT_SNEDCOUNTDAY_LIMIT_DISABLE	0
+#define	NBIOT_SNEDCOUNTDAY_LIMIT_ENABLE	1
+#define	NBIOT_SNEDCOUNTDAY_LIMIT_TYPE		NBIOT_SNEDCOUNTDAY_LIMIT_ENABLE		//限定一天NB发送包数使能
+
+#define	NBIOT_SNEDCOUNTDAY_LIMIT_NUM		200								//限定一天NB发送包数
+
 #define	RADAR_MODEL_V1					1
 #define	RADAR_MODEL_V2					2
 #define	RADAR_MODEL_TYPE				RADAR_MODEL_V2						//雷达类型
@@ -338,6 +344,7 @@
 #define	NBONENET_SENDCODE_RESPONSE_INFO	1								//NB上报信息使能OneNETResponseInfo
 #define	NBONENET_SENDCODE_QMC_DATA		1								//NB上报信息使能OneNETQmcData
 
+#if NETPROTOCAL == NETCOAP
 #define	RADIO_DOWNLOAD_CMD_REBOOT		1								//RADIO下行指令Reboot
 #define	RADIO_DOWNLOAD_CMD_NEWSN			1								//RADIO下行指令NewSn
 #define	RADIO_DOWNLOAD_CMD_CDPIP			1								//RADIO下行指令CDPIP
@@ -353,6 +360,7 @@
 #define	RADIO_DOWNLOAD_CMD_BEEPOFF		1								//RADIO下行指令BeepOff
 #define	RADIO_DOWNLOAD_CMD_ROLLINIT		1								//RADIO下行指令RollInit
 #define	RADIO_DOWNLOAD_CMD_UPLIMIT		1								//RADIO下行指令UpLimit
+#define	RADIO_DOWNLOAD_CMD_NBLIMIT		1								//RADIO下行指令NBLimit
 #define	RADIO_DOWNLOAD_CMD_COVERGAIN		1								//RADIO下行指令CoverGain
 #define	RADIO_DOWNLOAD_CMD_RADARGAIN		1								//RADIO下行指令RadarGain
 #define	RADIO_DOWNLOAD_CMD_SENSORMODE		1								//RADIO下行指令SensorMode
@@ -360,6 +368,57 @@
 #define	RADIO_DOWNLOAD_CMD_HIGHPASS		1								//RADIO下行指令RadarHighPass
 #define	RADIO_DOWNLOAD_CMD_RFDPRINTLV		1								//RADIO下行指令RFDprintLv
 #define	RADIO_DOWNLOAD_CMD_RESTORE		1								//RADIO下行指令Restore
+#endif
+#if NETPROTOCAL == NETMQTTSN
+#define	RADIO_DOWNLOAD_CMD_REBOOT		1								//RADIO下行指令Reboot
+#define	RADIO_DOWNLOAD_CMD_NEWSN			1								//RADIO下行指令NewSn
+#define	RADIO_DOWNLOAD_CMD_CDPIP			0								//RADIO下行指令CDPIP
+#define	RADIO_DOWNLOAD_CMD_ACTIVE		1								//RADIO下行指令Active
+#define	RADIO_DOWNLOAD_CMD_MAGMOD		1								//RADIO下行指令MagMod
+#define	RADIO_DOWNLOAD_CMD_NBHEART		1								//RADIO下行指令NbHeart
+#define	RADIO_DOWNLOAD_CMD_MAGINIT		1								//RADIO下行指令MagInit
+#define	RADIO_DOWNLOAD_CMD_DISRANGE		1								//RADIO下行指令DisRange
+#define	RADIO_DOWNLOAD_CMD_CARINDELAY		1								//RADIO下行指令CarInDelay
+#define	RADIO_DOWNLOAD_CMD_RATIME		0								//RADIO下行指令RATime
+#define	RADIO_DOWNLOAD_CMD_MAGTEMPCOEF	1								//RADIO下行指令MagTempCoef
+#define	RADIO_DOWNLOAD_CMD_SETQMCCOEF		1								//RADIO下行指令SetQmcCoef
+#define	RADIO_DOWNLOAD_CMD_BEEPOFF		0								//RADIO下行指令BeepOff
+#define	RADIO_DOWNLOAD_CMD_ROLLINIT		1								//RADIO下行指令RollInit
+#define	RADIO_DOWNLOAD_CMD_UPLIMIT		1								//RADIO下行指令UpLimit
+#define	RADIO_DOWNLOAD_CMD_NBLIMIT		1								//RADIO下行指令NBLimit
+#define	RADIO_DOWNLOAD_CMD_COVERGAIN		1								//RADIO下行指令CoverGain
+#define	RADIO_DOWNLOAD_CMD_RADARGAIN		1								//RADIO下行指令RadarGain
+#define	RADIO_DOWNLOAD_CMD_SENSORMODE		1								//RADIO下行指令SensorMode
+#define	RADIO_DOWNLOAD_CMD_INTERVAL		1								//RADIO下行指令RadarSampleInterval
+#define	RADIO_DOWNLOAD_CMD_HIGHPASS		1								//RADIO下行指令RadarHighPass
+#define	RADIO_DOWNLOAD_CMD_RFDPRINTLV		1								//RADIO下行指令RFDprintLv
+#define	RADIO_DOWNLOAD_CMD_RESTORE		1								//RADIO下行指令Restore
+#endif
+#if NETPROTOCAL == NETONENET
+#define	RADIO_DOWNLOAD_CMD_REBOOT		1								//RADIO下行指令Reboot
+#define	RADIO_DOWNLOAD_CMD_NEWSN			1								//RADIO下行指令NewSn
+#define	RADIO_DOWNLOAD_CMD_CDPIP			1								//RADIO下行指令CDPIP
+#define	RADIO_DOWNLOAD_CMD_ACTIVE		1								//RADIO下行指令Active
+#define	RADIO_DOWNLOAD_CMD_MAGMOD		1								//RADIO下行指令MagMod
+#define	RADIO_DOWNLOAD_CMD_NBHEART		1								//RADIO下行指令NbHeart
+#define	RADIO_DOWNLOAD_CMD_MAGINIT		1								//RADIO下行指令MagInit
+#define	RADIO_DOWNLOAD_CMD_DISRANGE		1								//RADIO下行指令DisRange
+#define	RADIO_DOWNLOAD_CMD_CARINDELAY		1								//RADIO下行指令CarInDelay
+#define	RADIO_DOWNLOAD_CMD_RATIME		1								//RADIO下行指令RATime
+#define	RADIO_DOWNLOAD_CMD_MAGTEMPCOEF	1								//RADIO下行指令MagTempCoef
+#define	RADIO_DOWNLOAD_CMD_SETQMCCOEF		1								//RADIO下行指令SetQmcCoef
+#define	RADIO_DOWNLOAD_CMD_BEEPOFF		1								//RADIO下行指令BeepOff
+#define	RADIO_DOWNLOAD_CMD_ROLLINIT		1								//RADIO下行指令RollInit
+#define	RADIO_DOWNLOAD_CMD_UPLIMIT		1								//RADIO下行指令UpLimit
+#define	RADIO_DOWNLOAD_CMD_NBLIMIT		1								//RADIO下行指令NBLimit
+#define	RADIO_DOWNLOAD_CMD_COVERGAIN		1								//RADIO下行指令CoverGain
+#define	RADIO_DOWNLOAD_CMD_RADARGAIN		1								//RADIO下行指令RadarGain
+#define	RADIO_DOWNLOAD_CMD_SENSORMODE		1								//RADIO下行指令SensorMode
+#define	RADIO_DOWNLOAD_CMD_INTERVAL		1								//RADIO下行指令RadarSampleInterval
+#define	RADIO_DOWNLOAD_CMD_HIGHPASS		1								//RADIO下行指令RadarHighPass
+#define	RADIO_DOWNLOAD_CMD_RFDPRINTLV		1								//RADIO下行指令RFDprintLv
+#define	RADIO_DOWNLOAD_CMD_RESTORE		1								//RADIO下行指令Restore
+#endif
 
 #define	NBCOAP_DOWNLOAD_CMD_WORKMODE		1								//NBCOAP下行指令Workmode
 #define	NBCOAP_DOWNLOAD_CMD_SENSE		1								//NBCOAP下行指令Sense
@@ -381,6 +440,7 @@
 #define	NBCOAP_DOWNLOAD_CMD_BEEPOFF		1								//NBCOAP下行指令BeepOff
 #define	NBCOAP_DOWNLOAD_CMD_ROLLINIT		1								//NBCOAP下行指令RollInit
 #define	NBCOAP_DOWNLOAD_CMD_UPLIMIT		1								//NBCOAP下行指令UpLimit
+#define	NBCOAP_DOWNLOAD_CMD_NBLIMIT		1								//NBCOAP下行指令NBLimit
 #define	NBCOAP_DOWNLOAD_CMD_COVERGAIN		1								//NBCOAP下行指令CoverGain
 #define	NBCOAP_DOWNLOAD_CMD_RADARGAIN		1								//NBCOAP下行指令RadarGain
 #define	NBCOAP_DOWNLOAD_CMD_SENSORMODE	1								//NBCOAP下行指令SensorMode
@@ -388,7 +448,7 @@
 #define	NBCOAP_DOWNLOAD_CMD_CFGRADAR		1								//NBCOAP下行指令ConfigRadar
 
 #define	MQTTSN_DOWNLOAD_CMD_WORKMODE		1								//MQTTSN下行指令Workmode
-#define	MQTTSN_DOWNLOAD_CMD_SENSE		1								//MQTTSN下行指令Sense
+#define	MQTTSN_DOWNLOAD_CMD_SENSE		0								//MQTTSN下行指令Sense
 #define	MQTTSN_DOWNLOAD_CMD_RFHEART		0								//MQTTSN下行指令RFHeart
 #define	MQTTSN_DOWNLOAD_CMD_BACKGROUND	1								//MQTTSN下行指令Background
 #define	MQTTSN_DOWNLOAD_CMD_REBOOT		1								//MQTTSN下行指令Reboot
@@ -403,8 +463,9 @@
 #define	MQTTSN_DOWNLOAD_CMD_MAGTEMPCOEF	1								//MQTTSN下行指令MagTempCoef
 #define	MQTTSN_DOWNLOAD_CMD_SETQMCCOEF	1								//MQTTSN下行指令SetQmcCoef
 #define	MQTTSN_DOWNLOAD_CMD_BEEPOFF		0								//MQTTSN下行指令BeepOff
-#define	MQTTSN_DOWNLOAD_CMD_ROLLINIT		1								//NBCOAP下行指令RollInit
+#define	MQTTSN_DOWNLOAD_CMD_ROLLINIT		1								//MQTTSN下行指令RollInit
 #define	MQTTSN_DOWNLOAD_CMD_UPLIMIT		1								//MQTTSN下行指令UpLimit
+#define	MQTTSN_DOWNLOAD_CMD_NBLIMIT		1								//MQTTSN下行指令NBLimit
 #define	MQTTSN_DOWNLOAD_CMD_COVERGAIN		1								//MQTTSN下行指令CoverGain
 #define	MQTTSN_DOWNLOAD_CMD_RADARGAIN		0								//MQTTSN下行指令RadarGain
 #define	MQTTSN_DOWNLOAD_CMD_SENSORMODE	1								//MQTTSN下行指令SensorMode

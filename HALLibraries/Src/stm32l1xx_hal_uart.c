@@ -248,10 +248,12 @@ static HAL_StatusTypeDef UART_WaitOnFlagUntilTimeout(UART_HandleTypeDef *huart, 
 HAL_StatusTypeDef HAL_UART_Init(UART_HandleTypeDef *huart)
 {
   /* Check the UART handle allocation */
+#if 0
   if(huart == NULL)
   {
     return HAL_ERROR;
   }
+#endif
 
   /* Check the parameters */
   if(huart->Init.HwFlowCtl != UART_HWCONTROL_NONE)
@@ -498,10 +500,12 @@ HAL_StatusTypeDef HAL_MultiProcessor_Init(UART_HandleTypeDef *huart, uint8_t Add
 HAL_StatusTypeDef HAL_UART_DeInit(UART_HandleTypeDef *huart)
 {
   /* Check the UART handle allocation */
+#if 0
   if(huart == NULL)
   {
     return HAL_ERROR;
   }
+#endif
   
   /* Check the parameters */
   assert_param(IS_UART_INSTANCE(huart->Instance));

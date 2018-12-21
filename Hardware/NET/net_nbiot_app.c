@@ -233,6 +233,7 @@ void NET_NBIOT_CoapPrivateStructureInit(void)
 void NET_NBIOT_CoapSentDataAfterExexution(void)
 {
 	TCFG_Utility_Add_NBIot_SentCount();
+	TCFG_Utility_Add_NBIot_SentCountDay();
 #if NBCOAP_LISTEN_PARAMETER_TYPE == NBCOAP_LISTEN_PARAMETER_ENABLE
 	NbiotClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
 #endif
@@ -305,6 +306,7 @@ void NET_NBIOT_MqttSNPrivateStructureInit(void)
 void NET_NBIOT_MqttSNSentDataAfterExexution(void)
 {
 	TCFG_Utility_Add_NBIot_SentCount();
+	TCFG_Utility_Add_NBIot_SentCountDay();
 #if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
 	MqttSNClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
 #endif
@@ -377,6 +379,7 @@ void NET_NBIOT_OneNETPrivateStructureInit(void)
 void NET_NBIOT_OneNETSentDataAfterExexution(void)
 {
 	TCFG_Utility_Add_NBIot_SentCount();
+	TCFG_Utility_Add_NBIot_SentCountDay();
 }
 #endif
 

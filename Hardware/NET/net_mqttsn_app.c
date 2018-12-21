@@ -2201,6 +2201,20 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					}
 				}
 			#endif
+				/* NBLimit */
+			#if MQTTSN_DOWNLOAD_CMD_NBLIMIT
+				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "NBLimit") != NULL) {
+					short nblimit;
+					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
+						"{(NBLimit):{(val):%hd,(Magic):%hu}}", &nblimit, &recvMagicNum);
+					if (recvMagicNum == TCLOD_MAGIC_NUM) {
+						TCFG_EEPROM_SetNBIotSentCountLimit(nblimit);
+					}
+					else {
+						ret = NETIP_UNKNOWNERROR;
+					}
+				}
+			#endif
 				/* CoverGain */
 			#if MQTTSN_DOWNLOAD_CMD_COVERGAIN
 				else if (strstr((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, "CoverGain") != NULL) {
