@@ -1,6 +1,10 @@
 # stm32L151_nbiot_tmote_app_spot
-movebroad Knagkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
+> ##### Copyright (C) 2018 Movebroad Version:20.136 Design by Movebroad
+> ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2018-12-22 :
+	* 雷达库更新到52版本,计算背景时也进行四舍五入。
+	* 修改nb一天可发送数据包在7点补充到200包。
 * 2018-12-21 :
 	* 限制NB发送包数,默认一天200包。
 	* DynamicInto中 : Nblimit : 197 为当天剩余可发送包数。

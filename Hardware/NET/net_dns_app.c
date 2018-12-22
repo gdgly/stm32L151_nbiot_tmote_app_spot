@@ -646,7 +646,7 @@ void NET_DNS_NBIOT_Event_ReportError(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, MODULE_CHECK, REPORT_ERROE);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		DNS_DEBUG_LOG_PRINTF("NB ReportECde Set %d Ok", CMEEnable);
+		DNS_DEBUG_LOG_PRINTF("NB ReportECde %d Ok", CMEEnable);
 #endif
 	}
 	else {
@@ -678,7 +678,7 @@ void NET_DNS_NBIOT_Event_ModuleCheck(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, PARAMETER_CONFIG, MODULE_CHECK);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		DNS_DEBUG_LOG_PRINTF("NB Module Check Ok");
+		DNS_DEBUG_LOG_PRINTF("NB Module Ok");
 #endif
 	}
 	else {
@@ -901,7 +901,7 @@ void NET_DNS_NBIOT_Event_FullFunctionality(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, FULL_FUNCTIONALITY);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		DNS_DEBUG_LOG_PRINTF("NB FullFunc Check Ok");
+		DNS_DEBUG_LOG_PRINTF("NB FullFunc Ok");
 #endif
 	}
 	else {
@@ -960,7 +960,7 @@ void NET_DNS_NBIOT_Event_MinimumFunctionality(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CONFIG, MINIMUM_FUNCTIONALITY);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		DNS_DEBUG_LOG_PRINTF("NB MinFunc Check Ok");
+		DNS_DEBUG_LOG_PRINTF("NB MinFunc Ok");
 #endif
 	}
 	else {

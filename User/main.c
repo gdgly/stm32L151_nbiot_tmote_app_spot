@@ -575,7 +575,7 @@ void MainHandleRoutine(void)
 	if ((Stm32_GetSecondTick() / 2400) != SystemRunningTime.fortyMinutes) {
 		SystemRunningTime.fortyMinutes = Stm32_GetSecondTick() / 2400;
 		
-		if (RTC_Time_GetCurrentHour() == 0) {
+		if (RTC_Time_GetCurrentHour() == 7) {
 			if (Inspect_Message_SpotStatusisEmpty() != false) {
 				NET_NBIOT_Initialization();
 			}

@@ -512,9 +512,9 @@ void NET_COAP_NBIOT_Event_ModuleCheck(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		COAP_DEBUG_LOG_PRINTF("NB Module Check Fail ECde %d", NBStatus);
+		COAP_DEBUG_LOG_PRINTF("NB Module Fail ECde %d", NBStatus);
 	#else
-		COAP_DEBUG_LOG_PRINTF("NB Module Check Fail");
+		COAP_DEBUG_LOG_PRINTF("NB Module Fail");
 	#endif
 #endif
 	}
@@ -735,9 +735,9 @@ void NET_COAP_NBIOT_Event_FullFunctionality(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		COAP_DEBUG_LOG_PRINTF("CoAP FullFunc Check Fail ECde %d", NBStatus);
+		COAP_DEBUG_LOG_PRINTF("CoAP FullFunc Fail ECde %d", NBStatus);
 	#else
-		COAP_DEBUG_LOG_PRINTF("CoAP FullFunc Check Fail");
+		COAP_DEBUG_LOG_PRINTF("CoAP FullFunc Fail");
 	#endif
 #endif
 		return;
@@ -794,9 +794,9 @@ void NET_COAP_NBIOT_Event_MinimumFunctionality(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		COAP_DEBUG_LOG_PRINTF("CoAP MinFunc Check Fail ECde %d", NBStatus);
+		COAP_DEBUG_LOG_PRINTF("CoAP MinFunc Fail ECde %d", NBStatus);
 	#else
-		COAP_DEBUG_LOG_PRINTF("CoAP MinFunc Check Fail");
+		COAP_DEBUG_LOG_PRINTF("CoAP MinFunc Fail");
 	#endif
 #endif
 		return;
