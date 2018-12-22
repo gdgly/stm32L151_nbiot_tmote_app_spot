@@ -300,7 +300,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadModuleVersion(NBIOT_ClientsTypeDef*
 	
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
 		memset((void *)pClient->Parameter.modelversion, 0x0, sizeof(pClient->Parameter.modelversion));
-		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^SECURITY]%*[^,],%*11s%[^\r]", pClient->Parameter.modelversion) <= 0) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^APPLICATION]%*[^,],%*11s%[^\r]", pClient->Parameter.modelversion) <= 0) {
 			NBStatus = NBIOT_ERROR;
 		}
 	}
