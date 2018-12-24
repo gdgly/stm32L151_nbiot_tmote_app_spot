@@ -85,7 +85,7 @@ u16 VPTAT_ADC_Read(u32 timeout)
 	
 	HAL_ADC_DeInit(&VPTAT_ADC_Handler);
 	
-	return pwr_vol * 100 * 2.8 / 4096.0;
+	return pwr_vol * 100 * 28 / 40960;
 }
 
 /********************************************** END OF FLEE **********************************************/

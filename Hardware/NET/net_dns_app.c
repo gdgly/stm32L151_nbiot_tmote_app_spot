@@ -867,7 +867,7 @@ void NET_DNS_NBIOT_Event_SimICCIDCheck(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, ICCID_CHECK);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		DNS_DEBUG_LOG_PRINTF("NB ICCID Ok");
+		DNS_DEBUG_LOG_PRINTF("NB ICCID Check Ok");
 #endif
 	}
 	else {

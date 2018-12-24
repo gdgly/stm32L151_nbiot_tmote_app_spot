@@ -65,7 +65,7 @@ char TRADAR_HIGHPASS_DEFAULT = RADAR_HIGHPASS_800;
 
 char radar_model = TRADAR_INFINEON;
 
-short val_vptat, val_vptat_adjust;
+short val_vptat = 100, val_vptat_adjust;
 
 u16 fre_magBG[TRADAR_BACKGROUND_NUM] = {10};
 s16 time_magBG[TRADAR_BACKGROUND_NUM] = {10};
@@ -80,6 +80,8 @@ u8  bgTimes = 1;
 u8  radar_trigged_again = 0;
 int inteval = 7;
 u8  radar_vcc = 0;
+
+u16 talgo_get_radartunebase_vptat(void);
 
 /**********************************************************************************************************
  @Function			void Radar_Init(void)
@@ -111,6 +113,8 @@ void Radar_Init(void)
 		TRADAR_GAIN_DEFAULT 	= 15;
 		TRADAR_HIGHPASS_DEFAULT	= RADAR_HIGHPASS_1200;
 	}
+	
+	//talgo_get_radartunebase_vptat();
 	
 	FLASH_EEPROM_ReadBuffer(EEPROM_BASE_ADDR1, (u8 *)fre_magBG, sizeof(fre_magBG));							//读取EEPROM背景值
 	FLASH_EEPROM_ReadBuffer(EEPROM_BASE_ADDR1+256, (u8 *)time_magBG, sizeof(time_magBG));					//读取EEPROM背景值
@@ -267,7 +271,7 @@ u8 Radar_InitBackground(char mode)
 				return TRADAR_ERROR;
 			}
 			
-#if 0
+#if 1
 #if RADAR_MODEL_TYPE == RADAR_MODEL_V1
 			
 #elif RADAR_MODEL_TYPE == RADAR_MODEL_V2
@@ -278,7 +282,7 @@ u8 Radar_InitBackground(char mode)
 #endif
 			BEEP_CtrlRepeat_Extend(1, 30, 0);
 			
-#if 0
+#if 1
 #if RADAR_MODEL_TYPE == RADAR_MODEL_V1
 			
 #elif RADAR_MODEL_TYPE == RADAR_MODEL_V2
@@ -287,7 +291,7 @@ u8 Radar_InitBackground(char mode)
 	#error RADAR_MODEL_TYPE Define Error
 #endif
 #endif
-			Delay_MS(30);
+			Delay_MS(10);
 			
 			flag_main_go = 0;
 		}
@@ -523,14 +527,23 @@ u16 talgo_get_radartunebase_vptat(void)
  @Input				void
  @Return				void
 **********************************************************************************************************/
+char times_measured = 0, vptat_is_ground = 0;
 void Radar_EnterCriticalSection(void)
 {
 #if RADAR_MODEL_TYPE == RADAR_MODEL_V1
 	//talgo_get_radartunebase_test();
 #elif RADAR_MODEL_TYPE == RADAR_MODEL_V2
-	talgo_get_radartunebase_vptat();
-	/* -<0.1v 那么是国产雷达- */
-	if (val_vptat < 10) {
+	if (times_measured < 5) {											// measure the voltage everytime
+		talgo_get_radartunebase_vptat();
+		times_measured++;
+		/* -<0.1v 那么是国产雷达- */
+		if (val_vptat < 10)
+			vptat_is_ground++;
+		else
+			vptat_is_ground--;
+	}
+	
+	if (vptat_is_ground > 0) {
 		RADER_RANGE = TCFG_SystemData.RadarGain;							// 6x304 +650 = 2486
 		RADER_LOW = 100;
 		radar_model = TRADAR_IMSEMI;
