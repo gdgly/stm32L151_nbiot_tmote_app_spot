@@ -537,7 +537,7 @@ void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, ICCID_CHECK, PARAMETER_CONFIG);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		COAP_DEBUG_LOG_PRINTF("NB Para Config Ok");
+		COAP_DEBUG_LOG_PRINTF("NB Para Cfg Ok");
 #endif
 	}
 	else {
@@ -546,9 +546,9 @@ void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		COAP_DEBUG_LOG_PRINTF("NB Para Config Fail ECde %d", NBStatus);
+		COAP_DEBUG_LOG_PRINTF("NB Para Cfg Fail ECde %d", NBStatus);
 	#else
-		COAP_DEBUG_LOG_PRINTF("NB Para Config Fail");
+		COAP_DEBUG_LOG_PRINTF("NB Para Cfg Fail");
 	#endif
 #endif
 		return;
@@ -726,7 +726,7 @@ void NET_COAP_NBIOT_Event_FullFunctionality(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, CDP_SERVER_CHECK, FULL_FUNCTIONALITY);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		COAP_DEBUG_LOG_PRINTF("CoAP FullFunc Check Ok");
+		COAP_DEBUG_LOG_PRINTF("CoAP FullFunc Ok");
 #endif
 	}
 	else {
@@ -785,7 +785,7 @@ void NET_COAP_NBIOT_Event_MinimumFunctionality(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, CDP_SERVER_CONFIG, MINIMUM_FUNCTIONALITY);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		COAP_DEBUG_LOG_PRINTF("CoAP MinFunc Check Ok");
+		COAP_DEBUG_LOG_PRINTF("CoAP MinFunc Ok");
 #endif
 	}
 	else {
@@ -1078,7 +1078,7 @@ void NET_COAP_NBIOT_Event_MiscEquipConfig(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, ATTACH_CHECK, MISC_EQUIP_CONFIG);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		COAP_DEBUG_LOG_PRINTF("CoAP Misc Read Ok");
+		COAP_DEBUG_LOG_PRINTF("CoAP Misc Ok");
 #endif
 	}
 	else {

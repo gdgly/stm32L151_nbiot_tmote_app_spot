@@ -1019,4 +1019,33 @@ void NET_NBIOT_App_Task(void)
 	NET_NBIOT_TaskProcessing(&NetNbiotClientHandler);							//工作处理
 }
 
+/**********************************************************************************************************
+ @Function			void NET_NBIOT_BackupCurrentApp_Task(void)
+ @Description			NET_NBIOT_BackupCurrentApp_Task				: NET备份固件
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+void NET_NBIOT_BackupCurrentApp_Task(void)
+{
+#ifndef NETPROTOCAL
+	#error No Define NETPROTOCAL!
+#else
+#if (NETPROTOCAL == NETCOAP)
+	
+	PCP_Upgrade_BackupCurrentAPP(&PCPClientHandler);
+	
+#elif (NETPROTOCAL == NETMQTTSN)
+	
+	MqttPCP_Upgrade_BackupCurrentAPP(&MqttSNPCPClientHandler);
+	
+#elif (NETPROTOCAL == NETONENET)
+	
+	//Todo
+	
+#else
+	#error NETPROTOCAL Define Error
+#endif
+#endif
+}
+
 /********************************************** END OF FLEE **********************************************/

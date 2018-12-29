@@ -660,6 +660,8 @@ void MainHandleRoutine(void)
 		NETOneNETNeedSendCode.DynamicInfo = 1;
 	#endif
 #endif
+		NET_NBIOT_BackupCurrentApp_Task();
+		
 		TCFG_SystemData.CoapConnectTime = TCFG_Utility_GetCoapConnectTime();
 		TCFG_EEPROM_SetCoapConnectTime(TCFG_SystemData.CoapConnectTime);
 		

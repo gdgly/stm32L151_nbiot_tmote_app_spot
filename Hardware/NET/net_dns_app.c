@@ -1115,9 +1115,9 @@ void NET_DNS_NBIOT_Event_NbandModeConfig(DNS_ClientsTypeDef* pClient)
 			
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 		#if NBIOT_PRINT_ERROR_CODE_TYPE
-			DNS_DEBUG_LOG_PRINTF("NB BAND Set Fail ECde %d", NBStatus);
+			DNS_DEBUG_LOG_PRINTF("NB BAND Fail ECde %d", NBStatus);
 		#else
-			DNS_DEBUG_LOG_PRINTF("NB BAND Set Fail");
+			DNS_DEBUG_LOG_PRINTF("NB BAND Fail");
 		#endif
 #endif
 			return;
