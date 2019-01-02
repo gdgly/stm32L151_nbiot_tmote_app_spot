@@ -2,8 +2,6 @@
 > ##### Copyright (C) 2018 Movebroad Version:20.136 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
-* 2019-01-02 :
-	* 发布V136固件。
 * 2018-12-29 :
 	* 间隔24小时查询spiflash备份域是否备份当前app,无备份则备份当前app。
 * 2018-12-24 :
