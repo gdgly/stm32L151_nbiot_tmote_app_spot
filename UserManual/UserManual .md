@@ -11,90 +11,9 @@
 |2018-10-08|V0.0.1|康运杰|初次编写|
 |2018-10-15|V0.0.2|康运杰|修订无线下发指令；增加NB指令通过平台下发|
 |2018-10-15|V0.0.3|康运杰|增加NBIoT远程PCP升级|
+|2019-01-03|V0.1.0|康运杰|更新手册兼容到V136版本|
 
-#### < 固件版本: V20.120 ~ V20.128 且向后兼容 >
-
-<!-- TOC -->
-
-- [MVB-VD33D-P2 使用手册 (内部使用)](#mvb-vd33d-p2-使用手册-内部使用)
-    - [-- 杭州目博科技有限公司 --](#---杭州目博科技有限公司---)
-            - [< 固件版本: V20.120 ~ V20.128 且向后兼容 >](#-固件版本-v20120--v20128-且向后兼容-)
-    - [一、小无线调试信息](#一小无线调试信息)
-        - [1.启动信息：](#1启动信息)
-            - [Ⅰ、<font color="#dd0000"> Device Reboot: <#1> Cause: <#2> Nor: <#3> </font>](#ⅰfont-colordd0000-device-reboot-1-cause-2-nor-3-font)
-            - [Ⅱ、<font color="#dd0000"> Copyright (C) 2018 Movebroad Version:<#1>.<#2> </font>](#ⅱfont-colordd0000-copyright-c-2018-movebroad-version12-font)
-            - [Ⅲ、<font color="#dd0000"> Entered Up Work </font>](#ⅲfont-colordd0000-entered-up-work-font)
-            - [Ⅳ、<font color="#dd0000"> Entering Up Work </font>](#ⅳfont-colordd0000-entering-up-work-font)
-        - [2.NBIoT运行信息(CoAP)：](#2nbiot运行信息coap)
-            - [Ⅰ、错误码(ECde <#1>)](#ⅰ错误码ecde-1)
-            - [Ⅱ、<font color="#dd0000"> NB HDRBT Ok, Baud:<#1> </font>](#ⅱfont-colordd0000-nb-hdrbt-ok-baud1-font)
-            - [Ⅲ、<font color="#dd0000"> NB ReportErrorCode Set 1 Ok </font>](#ⅲfont-colordd0000-nb-reporterrorcode-set-1-ok-font)
-            - [Ⅳ、<font color="#dd0000"> NB Module Check Ok </font>](#ⅳfont-colordd0000-nb-module-check-ok-font)
-            - [Ⅴ、<font color="#dd0000"> NB Parameter Config ... </font>](#ⅴfont-colordd0000-nb-parameter-config--font)
-            - [Ⅵ、<font color="#dd0000"> NB ICCID Check Ok </font>](#ⅵfont-colordd0000-nb-iccid-check-ok-font)
-            - [Ⅶ、<font color="#dd0000"> CoAP FullFunc Check Ok </font>](#ⅶfont-colordd0000-coap-fullfunc-check-ok-font)
-            - [Ⅷ、<font color="#dd0000"> CoAP MinFunc Check Ok </font>](#ⅷfont-colordd0000-coap-minfunc-check-ok-font)
-            - [Ⅸ、<font color="#dd0000"> CoAP CDP Read <#1>:<#2> Ok </font>](#ⅸfont-colordd0000-coap-cdp-read-12-ok-font)
-            - [Ⅹ、<font color="#dd0000"> CoAP CDP Set <#1>:<#2> Ok </font>](#ⅹfont-colordd0000-coap-cdp-set-12-ok-font)
-            - [ⅩⅠ、<font color="#dd0000"> CoAP BAND Read <#1> Ok </font>](#ⅹⅰfont-colordd0000-coap-band-read-1-ok-font)
-            - [ⅩⅡ、<font color="#dd0000"> CoAP MiscEquip Read Ok </font>](#ⅹⅱfont-colordd0000-coap-miscequip-read-ok-font)
-            - [ⅩⅢ、<font color="#dd0000"> CoAP CGATT <#1> Ok </font>](#ⅹⅲfont-colordd0000-coap-cgatt-1-ok-font)
-            - [ⅩⅣ、<font color="#dd0000"> CoAP Parameter Check Ok </font>](#ⅹⅳfont-colordd0000-coap-parameter-check-ok-font)
-            - [ⅩⅤ、<font color="#dd0000"> CoAP Send Payload Ok </font>](#ⅹⅴfont-colordd0000-coap-send-payload-ok-font)
-            - [ⅩⅥ、<font color="#dd0000"> CoAP Send Ok </font>](#ⅹⅵfont-colordd0000-coap-send-ok-font)
-            - [ⅩⅦ、<font color="#dd0000"> CoAP Recv Data Ok </font>](#ⅹⅶfont-colordd0000-coap-recv-data-ok-font)
-            - [ⅩⅧ、<font color="#dd0000"> CoAP Wait Send Ok </font>](#ⅹⅷfont-colordd0000-coap-wait-send-ok-font)
-            - [ⅩⅨ、<font color="#dd0000"> RSSI:<#1> SNR:<#2> </font>](#ⅹⅸfont-colordd0000-rssi1-snr2-font)
-        - [3.NBIoT运行信息(MqttSN)：](#3nbiot运行信息mqttsn)
-            - [Ⅰ、错误码(ECde <#1>)](#ⅰ错误码ecde-1-1)
-            - [Ⅱ、<font color="#dd0000"> xxx Creat UDP Ok </font>](#ⅱfont-colordd0000-xxx-creat-udp-ok-font)
-            - [Ⅲ、<font color="#dd0000"> DNS Analysis <#1> OK </font>](#ⅲfont-colordd0000-dns-analysis-1-ok-font)
-            - [Ⅳ、<font color="#dd0000"> xxx Close UDP Ok </font>](#ⅳfont-colordd0000-xxx-close-udp-ok-font)
-            - [Ⅴ、<font color="#dd0000"> MqttSN Connect Server Ok </font>](#ⅴfont-colordd0000-mqttsn-connect-server-ok-font)
-            - [Ⅵ、<font color="#dd0000"> MqttSN Subscrib <#1> Ok </font>](#ⅵfont-colordd0000-mqttsn-subscrib-1-ok-font)
-            - [Ⅶ、<font color="#dd0000"> MqttSN Send Payload Ok </font>](#ⅶfont-colordd0000-mqttsn-send-payload-ok-font)
-            - [Ⅷ、<font color="#dd0000"> MqttSN DisConnect Ok </font>](#ⅷfont-colordd0000-mqttsn-disconnect-ok-font)
-            - [Ⅸ、<font color="#dd0000"> MqttSN Recv Filter:<#1>, topicid:<#2> </font>](#ⅸfont-colordd0000-mqttsn-recv-filter1-topicid2-font)
-            - [Ⅹ、<font color="#dd0000"> MqttSN Recv Payload:<#1> </font>](#ⅹfont-colordd0000-mqttsn-recv-payload1-font)
-    - [二、小无线命令下发指令](#二小无线命令下发指令)
-        - [1.重启设备：](#1重启设备)
-        - [2.设置新的设备号（SN号）：](#2设置新的设备号sn号)
-        - [3.设置NB模组CDP地址：](#3设置nb模组cdp地址)
-        - [4.设置设备工作状态：](#4设置设备工作状态)
-        - [5.雷达调试值：(已去除)](#5雷达调试值已去除)
-        - [6.地磁模式:](#6地磁模式)
-        - [7.NBIoT心跳包间隔值:](#7nbiot心跳包间隔值)
-        - [8.RadarRange:](#8radarrange)
-        - [9.地磁初始化:](#9地磁初始化)
-        - [10.车辆进入间隔时间发送状态数据:](#10车辆进入间隔时间发送状态数据)
-        - [11.小无线调试模式输出调试信息等级:](#11小无线调试模式输出调试信息等级)
-        - [12.NB模组间隔时间发送不带RA数据包:](#12nb模组间隔时间发送不带ra数据包)
-        - [13.地磁温飘值:](#13地磁温飘值)
-        - [14.自动设置地磁温飘值:](#14自动设置地磁温飘值)
-        - [15.蜂鸣器工作使能:](#15蜂鸣器工作使能)
-        - [16.设定PCP升级限制信号值与信噪比:](#16设定pcp升级限制信号值与信噪比)
-        - [17.恢复出厂参数:](#17恢复出厂参数)
-        - [18.发送workinfo:](#18发送workinfo)
-        - [19.发送netinfo:](#19发送netinfo)
-        - [20.发送devinfo:](#20发送devinfo)
-        - [21.发送upgradeinfo:](#21发送upgradeinfo)
-    - [三、NBIoT指令下发](#三nbiot指令下发)
-        - [1.指令下发平台:](#1指令下发平台)
-        - [2.操作步骤:](#2操作步骤)
-        - [3.指令详情:](#3指令详情)
-    - [四、NBIoT远程PCP升级](#四nbiot远程pcp升级)
-        - [1.PCP远程升级平台:](#1pcp远程升级平台)
-        - [2.操作步骤:](#2操作步骤-1)
-    - [五、NBIoT上报平台数据解析](#五nbiot上报平台数据解析)
-        - [1.WorkInfo:](#1workinfo)
-        - [2.BasicInfo:](#2basicinfo)
-        - [3.DynamicInfo:](#3dynamicinfo)
-    - [六、设备异常分析](#六设备异常分析)
-        - [1.设备运行异常，处理器运行不起来，30秒左右重启设备，且会进入Boot模式出不来。](#1设备运行异常处理器运行不起来30秒左右重启设备且会进入boot模式出不来)
-        - [2.小无线打印ICCID Error。](#2小无线打印iccid-error)
-    - [Copyright (C) 2018 Movebroad Version: 0.0.3](#copyright-c-2018-movebroad-version-003)
-
-<!-- /TOC -->
+#### < 固件版本: V.120 ~ V.136 且向后兼容 >
 
 ## 一、小无线调试信息
 > * 工作模式 : Config(配置器选择工作模式为调试模式并对设备列表中指定设备发送命令)。
@@ -116,7 +35,7 @@
 	* None 无SpiFLash或异常。
 	* Ok 有SpiFlash且正常。
 
-#### Ⅱ、<font color="#dd0000"> Copyright (C) 2018 Movebroad Version:<#1>.<#2> </font>
+#### Ⅱ、<font color="#dd0000"> Copyright (C) 2019 Movebroad Version:<#1>.<#2> </font>
 * #1 : 主软件版本号。
 	* 20 : CoAP协议设备。
 	* 21 : MqttSN协议设备。
@@ -392,6 +311,46 @@
 	Radio_Trf_Printf("APP2 CheckCode: %X", APP2Info.CheckCode);
 ```
 
+### 22.配置是否需要翻转初始化设备背景:
+* <font color="#dd00dd"> rollinit:<#1> </font>
+* #1 
+	* == 0 : 激活状态翻转不对设备初始化背景。
+	* != 0 : 激活状态翻转对设备进行初始化背景。
+
+### 23.配置NB限制发送数据包数:
+* <font color="#dd00dd"> nblimit:<#1> </font>
+* #1 
+	* NB一天发送数据包数。
+
+### 24.配置雷达覆水增益:
+* <font color="#dd00dd"> covergain:<#1> </font>
+* #1 
+	* 1~10 雷达覆水增益 default : 7。
+
+### 25.配置雷达增益:
+* <font color="#dd00dd"> radargain:<#1> </font>
+* #1 
+	* 12~15 雷达增益 default : 14。
+
+### 26.配置设备检测模式:
+* <font color="#dd00dd"> sensormode:<#1> </font>
+* #1 
+	* 0=both sensors, 1=magnetic only, 2=radar only。
+
+### 27.配置雷达采样频率:
+* <font color="#dd00dd"> interval:<#1> </font>
+* #1 
+	* 4~13 雷达采样周期。
+
+### 28.配置雷达高通滤波值:
+* <font color="#dd00dd"> highpass:<#1> </font>
+* #1 
+	* RADAR_HIGHPASS_800  = 1,
+	* RADAR_HIGHPASS_900  = 2,
+	* RADAR_HIGHPASS_1000 = 3,
+	* RADAR_HIGHPASS_1100 = 4,
+	* RADAR_HIGHPASS_1200 = 5,
+
 ## 三、NBIoT指令下发
 > * NBIoT命令下发与小无线命令基本兼容。
 > * NBIOT命令下发不得随意操作。
@@ -421,7 +380,7 @@
 	* 2.5.3最后点击确定创建命令成功。
 * 2.6查看命令是否下发成功:
 	* 2.6.1CoAP:
-		* DELIVERED : 下发成功。
+		* SUCCESS : 下发成功。
 		* EXPIRED : 下发失败。
 		* PENDING : 正在等待下发。
 	* 2.6.2MQTT:
@@ -535,9 +494,17 @@
 	* TCLD110G{(BasicInfo):{}}
 		* 获取BasicInfo
 	
-* 3.33 DynamicInfo
+* 3.23 DynamicInfo
 	* TCLD110G{(DynamicInfo):{}}
 		* 获取DynamicInfo
+
+* 3.24 RollInit
+	* TCLD110S{(RollInit):{(val):%hu,(Magic):%hu}}
+		* 翻转初始化控制
+
+* 3.25 NBLimit
+	* TCLD110S{(NBLimit):{(val):%hu,(Magic):%hu}}
+		* 限制NB一天发送数据包数
 
 ## 四、NBIoT远程PCP升级
 > * NBIoT远程PCP升级操作，需使用向上申请。
