@@ -48,6 +48,9 @@ u8 RTC_Init(void)
 	RTC_Handler.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
 	if (HAL_RTC_Init(&RTC_Handler) != HAL_OK) return 2;
 	
+	/* the code below wth one 4.7pf nearby rtc will make the high accuracy of rtc clock */
+	HAL_RTCEx_SetSmoothCalib(&RTC_Handler, 0, 0, RTC_CALR_CALM_8|RTC_CALR_CALM_7|RTC_CALR_CALM_5);
+	
 	if (HAL_RTCEx_BKUPRead(&RTC_Handler, RTC_BKP_DR0) != 0X5050)				//是否第一次配置
 	{
 #if RTCBulidTime

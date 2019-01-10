@@ -2,6 +2,14 @@
 > ##### Copyright (C) 2019 Movebroad Version:20.136 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2019-01-10 ：
+	* 远程命令下发TCLD110S,第5各字节设为msgid,随应答包中携带msgid发出。
+	* MqttSN去掉radio配置nblimit，uplimit。
+* 2019-01-07 :
+	* RTC校准设置。
+	* HAL_RTCEx_SetSmoothCalib(&RTC_Handler, 0, 0, RTC_CALR_CALM_8|RTC_CALR_CALM_7|RTC_CALR_CALM_5);
+* 2019-01-07 :
+	* 版本号修改为137。
 * 2019-01-02 :
 	* 发布V136固件。
 * 2018-12-29 :

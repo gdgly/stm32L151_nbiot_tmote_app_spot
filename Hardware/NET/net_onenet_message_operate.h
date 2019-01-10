@@ -121,7 +121,7 @@ typedef struct
 int NET_ONENET_Message_Operate_Creat_Json_Work_Info(char* outBuffer);
 int NET_ONENET_Message_Operate_Creat_Json_Basic_Info(char* outBuffer);
 int NET_ONENET_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer);
-int NET_ONENET_Message_Operate_Creat_Json_Response_Info(char* outBuffer, u16 errcode);
+int NET_ONENET_Message_Operate_Creat_Json_Response_Info(char* outBuffer, u16 errcode, char msgId);
 int NET_ONENET_Message_Operate_Creat_Qmc5883L_Data(unsigned char* outBuffer);
 
 void NET_OneNET_FifoSendMessageInit(void);																//发送数据Fifo初始化

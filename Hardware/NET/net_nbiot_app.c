@@ -513,7 +513,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 #if NBCOAP_SENDCODE_RESPONSE_INFO
 		NET_NBIOT_CoapInfoStructureInit();
 		CoapInfoStructure.MsgPacket.Type					= COAP_MSGTYPE_TYPE_INFO;
-		len = NET_COAP_Message_Operate_Creat_Json_Response_Info((char *)&CoapInfoStructure.InfoData, NETCoapNeedSendCode.ResponseInfoErrcode);
+		len = NET_COAP_Message_Operate_Creat_Json_Response_Info((char *)&CoapInfoStructure.InfoData, NETCoapNeedSendCode.ResponseInfoErrcode, NETCoapNeedSendCode.ResponseInfoMsgId);
 		NET_Coap_Message_SendDataEnqueue((unsigned char *)&CoapInfoStructure, sizeof(CoapInfoStructure) - sizeof(CoapInfoStructure.InfoData) + len);
 		NETCoapNeedSendCode.ResponseInfo = 0;
 		NET_NBIOT_CoapSentDataAfterExexution();
@@ -764,7 +764,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 #if NBMQTTSN_SENDCODE_RESPONSE_INFO
 		NET_NBIOT_MqttSNInfoStructureInit();
 		MqttSNInfoStructure.MsgPacket.Type					= MQTTSN_MSGTYPE_TYPE_INFO;
-		len = NET_MQTTSN_Message_Operate_Creat_Json_Response_Info((char *)&MqttSNInfoStructure.InfoData, NETMqttSNNeedSendCode.InfoResponseErrcode);
+		len = NET_MQTTSN_Message_Operate_Creat_Json_Response_Info((char *)&MqttSNInfoStructure.InfoData, NETMqttSNNeedSendCode.InfoResponseErrcode, NETMqttSNNeedSendCode.InfoResponseMsgId);
 		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNInfoStructure, sizeof(MqttSNInfoStructure) - sizeof(MqttSNInfoStructure.InfoData) + len);
 		NETMqttSNNeedSendCode.InfoResponse = 0;
 		NET_NBIOT_MqttSNSentDataAfterExexution();

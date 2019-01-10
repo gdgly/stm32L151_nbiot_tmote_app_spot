@@ -197,7 +197,9 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 	unsigned int uval32 = 0;
 	unsigned short int uval16 = 0;
 	short magTempCoefX, magTempCoefY, magTempCoefZ;
+#if RADIO_DOWNLOAD_CMD_UPLIMIT
 	short limitRssi, limitSnr;
+#endif
 	
 	mac_sn = TCFG_EEPROM_Get_MAC_SN();
 	

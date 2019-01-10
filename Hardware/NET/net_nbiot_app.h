@@ -3,9 +3,9 @@
 
 #include "sys.h"
 
-#define NETCoapNeedSendCode_initializer		{ 0, 0, 1, 0, 1, 1, 0, 0, NETIP_OK }
-#define NETMqttSNNeedSendCode_initializer	{ 0, 0, 1, 0, 1, 1, 0, 0, NETIP_OK }
-#define NETOneNETNeedSendCode_initializer	{ 0, 0, 1, 0, 1, 1, 0, 0, NETIP_OK }
+#define NETCoapNeedSendCode_initializer		{ 0, 0, 1, 0, 1, 1, 0, 0, NETIP_OK, 0 }
+#define NETMqttSNNeedSendCode_initializer	{ 0, 0, 1, 0, 1, 1, 0, 0, NETIP_OK, 0 }
+#define NETOneNETNeedSendCode_initializer	{ 0, 0, 1, 0, 1, 1, 0, 0, NETIP_OK, 0 }
 
 typedef struct NET_NBIOT_ClientsTypeDef		NET_NBIOT_ClientsTypeDef;
 
@@ -20,6 +20,7 @@ typedef struct
 	char								QmcData;
 	char								ResponseInfo;
 	u16								ResponseInfoErrcode;
+	char								ResponseInfoMsgId;
 }NETCoapNeedSendCodeTypeDef;
 
 extern NETCoapNeedSendCodeTypeDef NETCoapNeedSendCode;
@@ -35,6 +36,7 @@ typedef struct
 	char								QmcData;
 	char								InfoResponse;
 	u16								InfoResponseErrcode;
+	char								InfoResponseMsgId;
 }NETMqttSNNeedSendCodeTypeDef;
 
 extern NETMqttSNNeedSendCodeTypeDef NETMqttSNNeedSendCode;
@@ -50,6 +52,7 @@ typedef struct
 	char								QmcData;
 	char								ResponseInfo;
 	u16								ResponseInfoErrcode;
+	char								ResponseInfoMsgId;
 }NETOneNETNeedSendCodeTypeDef;
 
 extern NETOneNETNeedSendCodeTypeDef NETOneNETNeedSendCode;

@@ -2322,6 +2322,7 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 				ret = NETIP_NOTSUPPORT;
 			}
 			
+			NETCoapNeedSendCode.ResponseInfoMsgId = pClient->Recvbuf[recvBufOffset + TCLOD_MSGTYPE_OFFSET];
 			NETCoapNeedSendCode.ResponseInfoErrcode = ret;
 			NETCoapNeedSendCode.ResponseInfo = 1;
 		}

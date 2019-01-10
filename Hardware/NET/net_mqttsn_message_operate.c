@@ -575,26 +575,28 @@ int NET_MQTTSN_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer)
 }
 
 /**********************************************************************************************************
- @Function			int NET_MQTTSN_Message_Operate_Creat_Json_Response_Info(char* outBuffer, u16 errcode)
+ @Function			int NET_MQTTSN_Message_Operate_Creat_Json_Response_Info(char* outBuffer, u16 errcode, char msgId)
  @Description			NET_MQTTSN_Message_Operate_Creat_Json_Response_Info
  @Input				outBuffer
 					errcode
  @Return				Length
  @attention			!!<<< MaxLength 450Byte >>>!!
 **********************************************************************************************************/
-int NET_MQTTSN_Message_Operate_Creat_Json_Response_Info(char* outBuffer, u16 errcode)
+int NET_MQTTSN_Message_Operate_Creat_Json_Response_Info(char* outBuffer, u16 errcode, char msgId)
 {
 	sprintf(outBuffer, 
 		"{"
 			"\"SN\":\"%08x\","
 			"\"ResponseInfo\":"
 			"{"
-				"\"ret\":%d"
+				"\"ret\":%d,"
+				"\"msgid\":\"%c\""
 			"}"
 		"}",
 		
 		TCFG_EEPROM_Get_MAC_SN(),
-		errcode
+		errcode,
+		msgId
 	);
 	
 	return strlen(outBuffer);

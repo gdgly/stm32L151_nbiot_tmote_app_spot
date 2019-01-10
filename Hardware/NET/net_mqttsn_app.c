@@ -2343,6 +2343,7 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 			ret = NETIP_NOTSUPPORT;
 		}
 		
+		NETMqttSNNeedSendCode.InfoResponseMsgId = messageHandler->message->payload[recvBufOffset + TCLOD_MSGTYPE_OFFSET];
 		NETMqttSNNeedSendCode.InfoResponseErrcode = ret;
 		NETMqttSNNeedSendCode.InfoResponse = 1;
 	}
