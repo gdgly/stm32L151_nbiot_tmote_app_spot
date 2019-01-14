@@ -527,7 +527,7 @@ u16 talgo_get_radartunebase_vptat(void)
  @Input				void
  @Return				void
 **********************************************************************************************************/
-char times_measured = 0, vptat_is_ground = 0;
+int8_t times_measured = 0, vptat_is_ground = 0;
 void Radar_EnterCriticalSection(void)
 {
 #if RADAR_MODEL_TYPE == RADAR_MODEL_V1

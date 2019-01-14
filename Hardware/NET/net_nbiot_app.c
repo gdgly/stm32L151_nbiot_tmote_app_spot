@@ -430,7 +430,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		CoapLongStructure.MagneticX						= SpotStatusData.qmc5883lData.X_Now;
 		CoapLongStructure.MagneticY						= SpotStatusData.qmc5883lData.Y_Now;
 		CoapLongStructure.MagneticZ						= SpotStatusData.qmc5883lData.Z_Now;
-		CoapLongStructure.MagneticDiff					= SpotStatusData.qmc5883lDiff.BackVal_Diff;
+		CoapLongStructure.MagneticDiff					= SpotStatusData.qmc5883lDiff.BackVal_Diff > 65535 ? 65535 : SpotStatusData.qmc5883lDiff.BackVal_Diff;
 		CoapLongStructure.RadarDistance					= SpotStatusData.radarData.DisVal;
 		CoapLongStructure.RadarStrength					= SpotStatusData.radarData.MagVal;
 		CoapLongStructure.RadarCoverCount					= SpotStatusData.radarData.Diff_v2;
@@ -564,7 +564,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		MqttSNStatusExtendStructure.MagX					= SpotStatusData.qmc5883lData.X_Now;
 		MqttSNStatusExtendStructure.MagY					= SpotStatusData.qmc5883lData.Y_Now;
 		MqttSNStatusExtendStructure.MagZ					= SpotStatusData.qmc5883lData.Z_Now;
-		MqttSNStatusExtendStructure.MagDiff				= SpotStatusData.qmc5883lDiff.BackVal_Diff;
+		MqttSNStatusExtendStructure.MagDiff				= SpotStatusData.qmc5883lDiff.BackVal_Diff > 65535 ? 65535 : SpotStatusData.qmc5883lDiff.BackVal_Diff;
 		MqttSNStatusExtendStructure.Distance				= SpotStatusData.radarData.DisVal;
 		MqttSNStatusExtendStructure.Strength				= SpotStatusData.radarData.MagVal;
 		MqttSNStatusExtendStructure.CoverCount				= SpotStatusData.radarData.Diff_v2;
@@ -681,7 +681,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		MqttSNLongStructure.MagneticX						= SpotStatusData.qmc5883lData.X_Now;
 		MqttSNLongStructure.MagneticY						= SpotStatusData.qmc5883lData.Y_Now;
 		MqttSNLongStructure.MagneticZ						= SpotStatusData.qmc5883lData.Z_Now;
-		MqttSNLongStructure.MagneticDiff					= SpotStatusData.qmc5883lDiff.BackVal_Diff;
+		MqttSNLongStructure.MagneticDiff					= SpotStatusData.qmc5883lDiff.BackVal_Diff > 65535 ? 65535 : SpotStatusData.qmc5883lDiff.BackVal_Diff;
 		MqttSNLongStructure.RadarDistance					= SpotStatusData.radarData.DisVal;
 		MqttSNLongStructure.RadarStrength					= SpotStatusData.radarData.MagVal;
 		MqttSNLongStructure.RadarCoverCount				= SpotStatusData.radarData.Diff_v2;
@@ -811,7 +811,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		OneNETLongStructure.MagneticX						= SpotStatusData.qmc5883lData.X_Now;
 		OneNETLongStructure.MagneticY						= SpotStatusData.qmc5883lData.Y_Now;
 		OneNETLongStructure.MagneticZ						= SpotStatusData.qmc5883lData.Z_Now;
-		OneNETLongStructure.MagneticDiff					= SpotStatusData.qmc5883lDiff.BackVal_Diff;
+		OneNETLongStructure.MagneticDiff					= SpotStatusData.qmc5883lDiff.BackVal_Diff > 65535 ? 65535 : SpotStatusData.qmc5883lDiff.BackVal_Diff;
 		OneNETLongStructure.RadarDistance					= SpotStatusData.radarData.DisVal;
 		OneNETLongStructure.RadarStrength					= SpotStatusData.radarData.MagVal;
 		OneNETLongStructure.RadarCoverCount				= SpotStatusData.radarData.Diff_v2;
