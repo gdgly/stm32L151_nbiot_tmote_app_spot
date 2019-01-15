@@ -537,7 +537,7 @@ void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, ICCID_CHECK, PARAMETER_CONFIG);
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		COAP_DEBUG_LOG_PRINTF("NB Para Cfg Ok");
+		COAP_DEBUG_LOG_PRINTF("NB Parameter Config Ok");
 #endif
 	}
 	else {
@@ -546,9 +546,9 @@ void NET_COAP_NBIOT_Event_ParameterConfig(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		COAP_DEBUG_LOG_PRINTF("NB Para Cfg Fail ECde %d", NBStatus);
+		COAP_DEBUG_LOG_PRINTF("NB Parameter Config Fail ECde %d", NBStatus);
 	#else
-		COAP_DEBUG_LOG_PRINTF("NB Para Cfg Fail");
+		COAP_DEBUG_LOG_PRINTF("NB Parameter Config Fail");
 	#endif
 #endif
 		return;
@@ -701,9 +701,9 @@ void NET_COAP_NBIOT_Event_SimICCIDCheck(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		COAP_DEBUG_LOG_PRINTF("NB ICCID Fail ECde %d", NBStatus);
+		COAP_DEBUG_LOG_PRINTF("NB ICCID Check Fail ECde %d", NBStatus);
 	#else
-		COAP_DEBUG_LOG_PRINTF("NB ICCID Fail");
+		COAP_DEBUG_LOG_PRINTF("NB ICCID Check Fail");
 	#endif
 #endif
 	}
