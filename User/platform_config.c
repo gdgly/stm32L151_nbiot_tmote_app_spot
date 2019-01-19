@@ -21,6 +21,7 @@
 #include "pcpupgrade.h"
 
 bool BootUp					= true;									//BootUp
+bool BackUp					= true;									//BackUp
 
 /* Work Mode */
 bool DeviceIdleMode				= false;									//IDLE MODE

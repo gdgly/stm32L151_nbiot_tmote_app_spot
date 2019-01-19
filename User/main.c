@@ -179,6 +179,12 @@ int main(void)
 				BootUp = false;
 			}
 		}
+		
+		/* 运行正常BackupApp */
+		if ((BackUp == true) && (Stm32_GetSecondTick() > (24 * 3600))) {
+			NET_NBIOT_BackupCurrentApp_Task();
+			BackUp = false;
+		}
 	}
 }
 
@@ -660,7 +666,6 @@ void MainHandleRoutine(void)
 		NETOneNETNeedSendCode.DynamicInfo = 1;
 	#endif
 #endif
-		NET_NBIOT_BackupCurrentApp_Task();
 		
 		TCFG_SystemData.CoapConnectTime = TCFG_Utility_GetCoapConnectTime();
 		TCFG_EEPROM_SetCoapConnectTime(TCFG_SystemData.CoapConnectTime);
@@ -744,6 +749,12 @@ void DeBugMain(void)
 			if (TCFG_EEPROM_GetBootCount() == 0) {
 				BootUp = false;
 			}
+		}
+		
+		/* 运行正常BackupApp */
+		if ((BackUp == true) && (Stm32_GetSecondTick() > (24 * 3600))) {
+			NET_NBIOT_BackupCurrentApp_Task();
+			BackUp = false;
 		}
 	}
 }
