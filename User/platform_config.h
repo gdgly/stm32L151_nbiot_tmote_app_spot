@@ -157,7 +157,7 @@
 #define	BEEP_OFF_US					230								//无源蜂鸣器关时间
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					138								//从固件版本
+#define	SOFTWARESUB					139								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 
@@ -375,7 +375,7 @@
 #define	RADIO_DOWNLOAD_CMD_CDPIP			0								//RADIO下行指令CDPIP
 #define	RADIO_DOWNLOAD_CMD_ACTIVE		1								//RADIO下行指令Active
 #define	RADIO_DOWNLOAD_CMD_MAGMOD		1								//RADIO下行指令MagMod
-#define	RADIO_DOWNLOAD_CMD_NBHEART		1								//RADIO下行指令NbHeart
+#define	RADIO_DOWNLOAD_CMD_NBHEART		0								//RADIO下行指令NbHeart
 #define	RADIO_DOWNLOAD_CMD_MAGINIT		1								//RADIO下行指令MagInit
 #define	RADIO_DOWNLOAD_CMD_DISRANGE		1								//RADIO下行指令DisRange
 #define	RADIO_DOWNLOAD_CMD_CARINDELAY		0								//RADIO下行指令CarInDelay

@@ -2293,6 +2293,9 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						}
 					}
 				#endif
+					else {
+						ret = NETIP_NOTSUPPORT;
+					}
 					/* ...... */
 				}
 				else if (pClient->Recvbuf[recvBufOffset + TCLOD_MSGID_OFFSET] == TCLOD_CONFIG_GET) {
@@ -2315,7 +2318,13 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						NETCoapNeedSendCode.DynamicInfo = 1;
 				#endif
 					}
+					else {
+						ret = NETIP_NOTSUPPORT;
+					}
 					/* ...... */
+				}
+				else {
+					ret = NETIP_NOTSUPPORT;
 				}
 			}
 			else {

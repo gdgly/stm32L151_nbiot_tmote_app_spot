@@ -658,6 +658,9 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				#endif
 				}
 			#endif
+				else {
+					Radio_Trf_Printf("Cmd Not Support!");
+				}
 				/* ...... */
 			}
 		}

@@ -2314,6 +2314,9 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					}
 				}
 			#endif
+				else {
+					ret = NETIP_NOTSUPPORT;
+				}
 				/* ...... */
 			}
 			else if (messageHandler->message->payload[recvBufOffset + TCLOD_MSGID_OFFSET] == TCLOD_CONFIG_GET) {
@@ -2336,7 +2339,13 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					NETMqttSNNeedSendCode.InfoDynamic = 1;
 			#endif
 				}
+				else {
+					ret = NETIP_NOTSUPPORT;
+				}
 				/* ...... */
+			}
+			else {
+				ret = NETIP_NOTSUPPORT;
 			}
 		}
 		else {

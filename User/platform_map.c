@@ -1430,7 +1430,7 @@ bool TCFG_EEPROM_CheckNewSNorBrand(void)
 		Brand |= (vender[2] & 0x000000FF) << 1*8;
 		Brand |= (vender[3] & 0x000000FF) << 0*8;
 		TCFG_EEPROM_SetFactoryBrand(Brand);
-		ret = false;
+		ret = true;
 		goto exit;
 	}
 	

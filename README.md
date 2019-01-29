@@ -2,6 +2,13 @@
 > ##### Copyright (C) 2019 Movebroad Version:20.138 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2019-01-29 :
+	* 版本号修改为139。
+	* TCFG_EEPROM_CheckNewSNorBrand()中检测新烧写设备将备份域设备号与厂牌名为空则返回true。
+	* 读取磁场时,间隔5ms读取出来的差如果不大于900就认为正常。
+	* 下行命令如果不存在,那么返回102。
+	* MQTTSN协议固件开启小无线下发nbheart。
+	* 小无线命令下发异常提示。
 * 2019-01-19 :
 	* 发布V138固件。
 * 2019-01-19 :
