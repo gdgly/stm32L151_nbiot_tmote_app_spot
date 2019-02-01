@@ -75,7 +75,7 @@ bool RollingOverCheckToActive(void)
 	#if ROLLINGOVER_INITSENSOR_TYPE
 			InitSensorBackgroundCntdown = 3;
 	#else
-			if (TCFG_EEPROM_GetRollingOverInitSensor() != 0) {
+			if ((TCFG_EEPROM_GetRollingOverInitSensor() != 0) || (gateway_nearby > 0)) {
 				InitSensorBackgroundCntdown = 3;
 			}
 	#endif
