@@ -292,7 +292,7 @@ void TCFG_EEPROM_ReadConfigData(void)
 	
 	/* 获取高通滤波器截止频率 */
 	TCFG_SystemData.RadarHighPass = TCFG_EEPROM_GetHighPass();
-	if ((TCFG_SystemData.RadarHighPass < RADAR_HIGHPASS_800) || (TCFG_SystemData.RadarHighPass > RADAR_HIGHPASS_1000)) {
+	if ((TCFG_SystemData.RadarHighPass < RADAR_HIGHPASS_800) || (TCFG_SystemData.RadarHighPass > RADAR_HIGHPASS_1200)) {
 		TCFG_SystemData.RadarHighPass = TRADAR_HIGHPASS_DEFAULT;
 	}
 	

@@ -2,6 +2,8 @@
 > ##### Copyright (C) 2019 Movebroad Version:20.138 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2019-02-15 :
+	* 解决高通滤波器判断中的一个小bug。
 * 2019-02-01 :
 	* 有配置器在附近的时候可以翻转初始化。
 * 2019-01-29 :
