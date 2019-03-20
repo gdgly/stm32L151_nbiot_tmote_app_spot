@@ -103,7 +103,7 @@ void Radar_Init(void)
 	__HAL_TIM_DISABLE(&RADAR_TIM2_Handler);															//先关闭TIM2,等待使用雷达时开启
 	
 	radar_vcc = Radar_MeasureRadarVCC();
-	if (radar_vcc <= 26) {
+	if (radar_vcc <= 28) {
 		RADAR_COVERGAIN_DEFAULT	= 7;
 		TRADAR_GAIN_DEFAULT 	= 13;
 		TRADAR_HIGHPASS_DEFAULT	= RADAR_HIGHPASS_800;
@@ -476,7 +476,7 @@ void Radar_GetSample(void)
 	}
 	
 	sample_array0[n_array] = RADAR_ADC_ConvertedValue;
-		
+	
 	/* 设置DAC通道值 */
 	HAL_DAC_SetValue(&RADAR_DAC_Handler, DAC_CHANNEL_1, DAC_ALIGN_12B_R, (SAMPLE_NUM - n_array) * RADER_RANGE + RADER_LOW);
 	

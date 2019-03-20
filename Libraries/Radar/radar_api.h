@@ -22,6 +22,7 @@ extern char RADAR_COVERGAIN_DEFAULT;
 
 extern tradar_targetinfo_s radar_targetinfo;
 extern int inteval;
+extern u8  radar_vcc;
 
 void Radar_Init(void);													//雷达初始化
 u8   Radar_CheckData(u32 datain_t[], u16 in_num);								//雷达数据检查

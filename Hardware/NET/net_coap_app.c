@@ -2301,7 +2301,7 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 				else if (pClient->Recvbuf[recvBufOffset + TCLOD_MSGID_OFFSET] == TCLOD_CONFIG_GET) {
 					BEEP_CtrlRepeat_Extend(2, 50, 50);
 					/* Workinfo */
-					if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Workinfo") != NULL) {
+					if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "WorkInfo") != NULL) {
 				#if NBCOAP_SENDCODE_WORK_INFO
 						NETCoapNeedSendCode.WorkInfo = 1;
 				#endif

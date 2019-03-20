@@ -294,6 +294,7 @@ void TCFG_EEPROM_ReadConfigData(void)
 	TCFG_SystemData.RadarHighPass = TCFG_EEPROM_GetHighPass();
 	if ((TCFG_SystemData.RadarHighPass < RADAR_HIGHPASS_800) || (TCFG_SystemData.RadarHighPass > RADAR_HIGHPASS_1200)) {
 		TCFG_SystemData.RadarHighPass = TRADAR_HIGHPASS_DEFAULT;
+		TCFG_EEPROM_SetHighPass(TCFG_SystemData.RadarHighPass);
 	}
 	
 	/* 获取采样间隔,间隔越小越省电,但对实时性要求越高 */
