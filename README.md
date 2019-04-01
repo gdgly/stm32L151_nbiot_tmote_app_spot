@@ -2,6 +2,10 @@
 > ##### Copyright (C) 2019 Movebroad Version:20.138 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2019-03-01 :
+	* 版本号修改为141。
+	* radar_vcc 判断阈值由28修改为27。
+	* 修复因雷达供电引脚未初始化就进行雷达初始化BUG。
 * 2019-03-20 :
 	* 版本号修改为140。
 	* radar_vcc 判断阈值由26修改为28。

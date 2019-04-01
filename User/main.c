@@ -86,13 +86,20 @@ int main(void)
 	IWDG_Init(IWDG_PRESCALER_256, 0x0FFF);													//看门狗初始化,溢出时间28s
 	RTC_Init();																		//RTC初始化
 	
+	BEEP_CtrlRepeat_Extend(5, 50, 25);														//蜂鸣器
+	IWDG_Feed();																		//喂狗
+	
+	LowPowerCtrlIO_Init();																//低功耗控制IO初始化
+	ModulePowerReset_Init();																//模块电源复位
+	PowerCtrlIO_Init();																	//电源控制IO初始化
+	
+	Radar_Init();																		//雷达初始化
+	
 #ifdef MVB_SUBSN
 	TCFG_EEPROM_Set_MAC_SN(MVB_SUBSN);														//写入MACSN
 	TCFG_EEPROM_SetVender(MVB_BRAND);														//写入Verder
 	TCFG_EEPROM_WriteConfigData();														//写入系统配置信息
 #endif
-	
-	Radar_Init();																		//雷达初始化
 	
 	if (TCFG_EEPROM_CheckNewSNorBrand() == true) {											//检测新设备号或厂牌
 		TCFG_EEPROM_WriteConfigData();													//写入系统配置信息
@@ -101,13 +108,6 @@ int main(void)
 		TCFG_EEPROM_WriteParameterData();													//写入系统参数信息
 	}
 	TCFG_EEPROM_SystemInfo_Init();														//系统运行信息初始化
-	
-	BEEP_CtrlRepeat_Extend(5, 50, 25);														//蜂鸣器
-	IWDG_Feed();																		//喂狗
-	
-	LowPowerCtrlIO_Init();																//低功耗控制IO初始化
-	ModulePowerReset_Init();																//模块电源复位
-	PowerCtrlIO_Init();																	//电源控制IO初始化
 	
 #if USART1_TYPE
 	Uart1_Init(9700);																	//串口1初始化
