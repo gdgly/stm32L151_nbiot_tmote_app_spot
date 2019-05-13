@@ -1,7 +1,15 @@
 # stm32L151_nbiot_tmote_app_spot
-> ##### Copyright (C) 2019 Movebroad Version:20.141 Design by Movebroad
+> ##### Copyright (C) 2019 Movebroad Version:20.142 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2019-05-11 :
+	* 选项配置是否在自检结束后擦除flash最后4字节数据。
+* 2019-05-10 :
+	* 版本号修改为142。
+	* 增加测试架自检测试代码，可选开启。
+	* 测试架测试当60秒后，自检未成功也发送数据。
+	* 修复bug:自检数据未上报sn。
+	* RF4438当收到配置器数据才上报ID。
 * 2019-04-01 :
 	* 版本号修改为141。
 	* radar_vcc 判断阈值由28修改为27。

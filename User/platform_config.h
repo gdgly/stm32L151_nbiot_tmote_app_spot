@@ -131,6 +131,10 @@
 
 #define	PRODUCTTEST_OVER_TIME			300								//测试点超时时间
 
+#define	TESTBENCH_DISABLE				0
+#define	TESTBENCH_ENABLE				1
+#define	TESTBENCH_TYPE					TESTBENCH_DISABLE					//测试架测试
+
 #define	ROLLINGOVER_INITSENSOR_CLOSE		0
 #define	ROLLINGOVER_INITSENSOR_OPEN		1
 #define	ROLLINGOVER_INITSENSOR_DEFAULT	ROLLINGOVER_INITSENSOR_CLOSE			//翻转初始化默认
@@ -157,7 +161,7 @@
 #define	BEEP_OFF_US					230								//无源蜂鸣器关时间
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					141								//从固件版本
+#define	SOFTWARESUB					142								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 
@@ -489,7 +493,11 @@
 
 #define	USART2_DISABLE					0
 #define	USART2_ENABLE					1
+#if TESTBENCH_TYPE
+#define	USART2_TYPE					USART2_ENABLE						//串口2状态
+#else
 #define	USART2_TYPE					USART2_DISABLE						//串口2状态
+#endif
 
 #define	USART3_DISABLE					0
 #define	USART3_ENABLE					1

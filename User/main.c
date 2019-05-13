@@ -30,6 +30,7 @@
 #include "hal_temperature.h"
 #include "hal_qmc5883l.h"
 #include "hal_spiflash.h"
+#include "hal_testbench.h"
 #include "net_nbiot_app.h"
 #include "net_coap_app.h"
 #include "net_pcp_app.h"
@@ -101,6 +102,13 @@ int main(void)
 	TCFG_EEPROM_WriteConfigData();														//写入系统配置信息
 #endif
 	
+#if TESTBENCH_TYPE
+	if (TestBench_FLASH_CheckSubSN() == true) {												//测试架写入SN到FLASH
+		TestBench_FLASH_WriteSubSN();														//写入MACSN
+		TestBench_StateCtrl_ALL_ENBALE();													//启动测试架测试总开关
+	}
+#endif
+	
 	if (TCFG_EEPROM_CheckNewSNorBrand() == true) {											//检测新设备号或厂牌
 		TCFG_EEPROM_WriteConfigData();													//写入系统配置信息
 	}
@@ -113,7 +121,7 @@ int main(void)
 	Uart1_Init(9700);																	//串口1初始化
 #endif
 #if USART2_TYPE
-	Uart2_Init(9600);																	//串口2初始化
+	Uart2_Init(115200);																	//串口2初始化
 #endif
 	
 #ifdef GD25Q_80CSIG
@@ -512,7 +520,28 @@ void MainHandleRoutine(void)
 	if (Stm32_GetSecondTick() != SystemRunningTime.seconds) {
 		SystemRunningTime.seconds = Stm32_GetSecondTick();
 		
-		
+#if TESTBENCH_TYPE
+		if (TestBench_StateCtrl_ALL_STATE() != false) {
+			/* RF4438 */
+			if ((TRF_OK == Radio_Rf_get_Status()) && (gateway_nearby > 10)) {
+				TestBench_Tack_RF4438(0x4438);
+			}
+			/* Magnetism */
+			if ((Qmc5883lData.X_Now != 0) || (Qmc5883lData.Y_Now != 0) || (Qmc5883lData.Z_Now != 0)) {
+				TestBench_Tack_Magnetism(Qmc5883lData.X_Now, Qmc5883lData.Y_Now, Qmc5883lData.Z_Now);
+			}
+			/* Radarval */
+			if ((radar_targetinfo.pMagNow[2] != 0) || (radar_targetinfo.pMagNow[3] != 0) || (radar_targetinfo.pMagNow[4] != 0)) {
+				TestBench_Tack_Radarval(radar_targetinfo.pMagNow[2], radar_targetinfo.pMagNow[3], radar_targetinfo.pMagNow[4]);
+			}
+			/* NBIoTval */
+			if (TCFG_Utility_Get_Nbiot_Registered() != false) {
+				TestBench_Tack_NBIoTval(TCFG_Utility_Get_Nbiot_Imei_String(), TCFG_Utility_Get_Nbiot_Iccid_String());
+			}
+			/* Report Device TestBench */
+			TestBench_Report_DeviceData();
+		}
+#endif
 	}
 	/* Every Ten Secound Running */
 	if ((Stm32_GetSecondTick() / 10) != SystemRunningTime.tenseconds) {
@@ -563,7 +592,11 @@ void MainHandleRoutine(void)
 	if ((Stm32_GetSecondTick() / 60) != SystemRunningTime.minutes) {
 		SystemRunningTime.minutes = Stm32_GetSecondTick() / 60;
 		
-		
+#if TESTBENCH_TYPE
+		if (TestBench_StateCtrl_ALL_STATE() != false) {
+			TestBench_Report_Compel();
+		}
+#endif
 	}
 	/* Every FifteenMinutes Running */
 	if ((Stm32_GetSecondTick() / 900) != SystemRunningTime.fifteenMinutes) {
