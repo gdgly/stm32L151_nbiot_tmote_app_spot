@@ -413,6 +413,7 @@ struct NBIOT_ParameterTypeDef
 	char								cgpaddr[20];										//核心网地址
 	char								cgdcontPDPType[10];									//核心网类型
 	char								cgdcontAPN[15];									//核心网名称
+	bool								bandsupport;										//band支持
 	int								rssi;											//信号质量
 	
 	struct NetworkRegistrationStatusTypeDef

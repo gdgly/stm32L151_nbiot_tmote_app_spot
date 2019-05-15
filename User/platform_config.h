@@ -675,6 +675,16 @@
 #define	DNS_NBIOT_BAND_TYPE				DNSNBIoTBandType
 #endif
 
+#if NETPROTOCAL == NETCOAP
+#define	NBIOT_MODULE_BAND_SUPPORT		COAP_NBIOT_BAND_TYPE
+#endif
+#if NETPROTOCAL == NETMQTTSN
+#define	NBIOT_MODULE_BAND_SUPPORT		MQTTSN_NBIOT_BAND_TYPE
+#endif
+#if NETPROTOCAL == NETONENET
+#define	NBIOT_MODULE_BAND_SUPPORT		ONENET_NBIOT_BAND_TYPE
+#endif
+
 extern bool BootUp;														//BootUp
 extern bool BackUp;														//BackUp
 extern bool DeviceIdleMode;												//IDLE MODE

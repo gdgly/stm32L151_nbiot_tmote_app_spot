@@ -348,10 +348,17 @@ void MainRollingUpwardsActived(void)
 			/* NBIOT Power OFF */
 			if (NBIOTPOWER_IO_READ()) {
 				NBIOT_Neul_NBxx_CheckReadIMEI(&NbiotClientHandler);
+				NBIOT_Neul_NBxx_TestSupportedBands(&NbiotClientHandler, NBIOT_MODULE_BAND_SUPPORT);
 				NET_NBIOT_Initialization();
 				NBIOTPOWER(OFF);
 			}
-			Radio_Trf_Printf("imei:%s", TCFG_Utility_Get_Nbiot_Imei_String());
+			if (NbiotClientHandler.Parameter.bandsupport != true) {
+				Radio_Trf_Printf("imei:null or band:no support");
+				BEEP_CtrlRepeat_Extend(3, 50, 25);
+			}
+			else {
+				Radio_Trf_Printf("imei:%s", TCFG_Utility_Get_Nbiot_Imei_String());
+			}
 		}
 #else
 	#if NBIOT_SNEDCOUNTDAY_LIMIT_TYPE

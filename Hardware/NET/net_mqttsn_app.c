@@ -1321,7 +1321,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterCheckOut(MQTTSN_ClientsTypeDef* pClient)
 		pClient->SocketStack->NBIotStack->Registered = true;
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		MQTTSN_DEBUG_LOG_PRINTF("NB Para Check Ok");
+		MQTTSN_DEBUG_LOG_PRINTF("Para-C-K");
 #endif
 	}
 	else {
@@ -1332,7 +1332,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterCheckOut(MQTTSN_ClientsTypeDef* pClient)
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
 		MQTTSN_DEBUG_LOG_PRINTF("NB Para Check Fail ECde %d", NBStatus);
 	#else
-		MQTTSN_DEBUG_LOG_PRINTF("NB Para Check Fail");
+		MQTTSN_DEBUG_LOG_PRINTF("Para-C-F");
 	#endif
 #endif
 		return;
@@ -1360,14 +1360,14 @@ void NET_MQTTSN_Event_Init(MQTTSN_ClientsTypeDef* pClient)
 		/* Dictate execute is Success */
 		MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_DISCONNECT, MQTTSN_SUBSTATE_INIT, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		MQTTSN_DEBUG_LOG_PRINTF("MqttSN Creat UDP Ok");
+		MQTTSN_DEBUG_LOG_PRINTF("MN Creat UDP Ok");
 #endif
 	}
 	else {
 		/* Dictate execute is Fail */
 		MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_INIT);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		MQTTSN_DEBUG_LOG_PRINTF("MqttSN Creat UDP Fail");
+		MQTTSN_DEBUG_LOG_PRINTF("MN Creat UDP Fail");
 #endif
 		return;
 	}
@@ -1400,7 +1400,7 @@ void NET_MQTTSN_Event_Disconnect(MQTTSN_ClientsTypeDef* pClient)
 		/* Dictate execute is Fail */
 		MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_DISCONNECT);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		MQTTSN_DEBUG_LOG_PRINTF("MqttSN Cont Fail");
+		MQTTSN_DEBUG_LOG_PRINTF("MN Cont Fail");
 #endif
 	}
 	else {
@@ -1409,7 +1409,7 @@ void NET_MQTTSN_Event_Disconnect(MQTTSN_ClientsTypeDef* pClient)
 		/* Set Active Duration */
 		MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		MQTTSN_DEBUG_LOG_PRINTF("MqttSN Cont Ok");
+		MQTTSN_DEBUG_LOG_PRINTF("MN Cont Ok");
 #endif
 	}
 }
@@ -1430,7 +1430,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			/* Dictate execute is Fail */
 			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Sub %s Fail", MQTTSN_SUBSCRIBE_ID);
+			MQTTSN_DEBUG_LOG_PRINTF("MN Sub %s -F", MQTTSN_SUBSCRIBE_ID);
 #endif
 			return;
 		}
@@ -1439,7 +1439,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, false);
 			pClient->DictateRunCtl.dictateSubscribeStatus = true;
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Sub %s Ok", MQTTSN_SUBSCRIBE_ID);
+			MQTTSN_DEBUG_LOG_PRINTF("MN Sub %s -K", MQTTSN_SUBSCRIBE_ID);
 #endif
 		}
 	}
@@ -1685,7 +1685,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			/* Dictate execute is Fail */
 			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send Payload Fail");
+			MQTTSN_DEBUG_LOG_PRINTF("MN SD PLD-F");
 #endif
 		}
 		else {
@@ -1704,7 +1704,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			/* Get ConnectTime */
 			MQTTSN_NBIOT_GetConnectTime(pClient, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send Payload Ok");
+			MQTTSN_DEBUG_LOG_PRINTF("MN SD PLD-K");
 #endif
 		}
 	}
@@ -1717,14 +1717,14 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			/* Dictate execute is Fail */
 			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			MQTTSN_DEBUG_LOG_PRINTF("MqttSN DisCont Fail");
+			MQTTSN_DEBUG_LOG_PRINTF("MN-DCont-F");
 #endif
 		}
 		else {
 			/* Dictate execute is Success */
 			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_AWAKE, MQTTSN_SUBSTATE_ACTIVE, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			MQTTSN_DEBUG_LOG_PRINTF("MqttSN DisCont Ok");
+			MQTTSN_DEBUG_LOG_PRINTF("MN-DCont-K");
 #endif
 		}
 	}
@@ -1794,7 +1794,7 @@ void NET_MQTTSN_Event_Sleep(MQTTSN_ClientsTypeDef* pClient)
 			/* Dictate execute is Fail */
 			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_SLEEP);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Cont Fail");
+			MQTTSN_DEBUG_LOG_PRINTF("MN-Cont-F");
 #endif
 			return;
 		}
@@ -1804,7 +1804,7 @@ void NET_MQTTSN_Event_Sleep(MQTTSN_ClientsTypeDef* pClient)
 			/* Set Active Duration */
 			MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Cont Ok");
+			MQTTSN_DEBUG_LOG_PRINTF("MN-Cont-K");
 #endif
 			return;
 		}
@@ -1837,7 +1837,7 @@ void NET_MQTTSN_Event_Aweak(MQTTSN_ClientsTypeDef* pClient)
 		/* Dictate execute is Fail */
 		MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_AWAKE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		MQTTSN_DEBUG_LOG_PRINTF("MqttSN Ping Fail");
+		MQTTSN_DEBUG_LOG_PRINTF("MN-PG-F");
 #endif
 		return;
 	}
@@ -1845,7 +1845,7 @@ void NET_MQTTSN_Event_Aweak(MQTTSN_ClientsTypeDef* pClient)
 		/* Dictate execute is Success */
 		MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_SLEEP, MQTTSN_SUBSTATE_AWAKE, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		MQTTSN_DEBUG_LOG_PRINTF("MqttSN Ping Ok");
+		MQTTSN_DEBUG_LOG_PRINTF("MN-PG-K");
 #endif
 	}
 	
@@ -1881,8 +1881,8 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 	u8 ret = NETIP_OK;
 	
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-	Radio_Trf_Printf("MqttSN Rv Filter:%s, topicid:%d", pClient->messageHandlers[0].topicFilter, pClient->messageHandlers[0].topicid);
-	Radio_Trf_Printf("MqttSN Rv Len:%d", messageHandler->message->payloadlen);
+	Radio_Trf_Printf("Rv Filter:%s, topicid:%d", pClient->messageHandlers[0].topicFilter, pClient->messageHandlers[0].topicid);
+	Radio_Trf_Printf("Rv Len:%d", messageHandler->message->payloadlen);
 #endif
 	
 	messageHandler->message->payload[messageHandler->message->payloadlen] = '\0';
@@ -2644,7 +2644,6 @@ void NET_MQTTSN_NBIOT_Listen_Event_EnterParameter(MQTTSN_ClientsTypeDef* pClient
 				pClient->ListenRunCtl.listenEvent = NBMQTTSN_LISTEN_MODE_ENTER_PARAMETER;
 				pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt = 0;
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-				MQTTSN_DEBUG_LOG_PRINTF("MqttSN Para Check Ok");
 				Radio_Trf_Printf("RSSI: %d", pClient->SocketStack->NBIotStack->Parameter.rssi);
 				Radio_Trf_Printf("SNR: %d", pClient->SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR);
 #endif
@@ -2676,9 +2675,6 @@ void NET_MQTTSN_NBIOT_Listen_Event_EnterParameter(MQTTSN_ClientsTypeDef* pClient
 					/* Dictate isn't TimeOut */
 					pClient->ListenRunCtl.listenEvent = NBMQTTSN_LISTEN_MODE_ENTER_PARAMETER;
 				}
-#ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-				MQTTSN_DEBUG_LOG_PRINTF("MqttSN Para Check Fail");
-#endif
 				return;
 			}
 			

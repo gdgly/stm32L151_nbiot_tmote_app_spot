@@ -1298,6 +1298,89 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSupportedBands(NBIOT_ClientsTypeDef
 	return NBStatus;
 }
 
+#define NBTEST_BAND_MAX					20
+
+static bool isSubset(int mainarr[], int subarr[], int mainlen, int sublen)
+{
+	int i = 0, j = 0;
+	
+	for (i = 0; i < sublen; i++) {
+		for (j = 0; j < mainlen; j++)
+			if (subarr[i] == mainarr[j]) break;
+		if (j == mainlen) return false;
+	}
+	
+	return true;
+}
+
+/**********************************************************************************************************
+ @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_TestSupportedBands(NBIOT_ClientsTypeDef* pClient, NBIOT_NBandTypeDef bands)
+ @Description			NBIOT_Neul_NBxx_TestSupportedBands			: 测试Band是否支持
+ @Input				pClient								: NBIOT客户端实例
+					bands								: 需配置bands
+ @Return				NBIOT_StatusTypeDef						: NBIOT处理状态
+**********************************************************************************************************/
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_TestSupportedBands(NBIOT_ClientsTypeDef* pClient, NBIOT_NBandTypeDef bands)
+{
+	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NBAND_MSEC);
+#else
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
+	
+	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+NBAND=?\r", strlen("AT+NBAND=?\r"), "OK", "ERROR");
+	
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
+		char* pRecv = (char*)pClient->ATCmdStack->ATRecvbuf;
+		int v, n;
+		int SupportBands[NBTEST_BAND_MAX] = {0};
+		int SupportBandNum = 0;
+		int UserBands[NBTEST_BAND_MAX] = {0};
+		int UserBandNum = 0;
+		if (sscanf(pRecv, "%*[^+NBAND]%*[^:]:(%d,%n", &v, &n) == 1) {
+			SupportBands[0] = v;
+			SupportBandNum++;
+			pRecv += n;
+			for (int i = 1; i < NBTEST_BAND_MAX; i++) {
+				if (sscanf(pRecv, "%d,%n", &v, &n) == 1) {
+					SupportBands[i] = v;
+					SupportBandNum++;
+					pRecv += n;
+				}
+				else {
+					break;
+				}
+			}
+			for (int i = 0; i < bands.NBandNum; i++) {
+				UserBands[i] = bands.NBandVal[i];
+			}
+			UserBandNum = bands.NBandNum;
+			if (isSubset(SupportBands, UserBands, SupportBandNum, UserBandNum) != true) {
+				NBStatus = operation_not_supported;
+				pClient->Parameter.bandsupport = false;
+				goto exit;
+			}
+			else {
+				pClient->Parameter.bandsupport = true;
+			}
+		}
+		else {
+			NBStatus = NBIOT_ERROR;
+			goto exit;
+		}
+	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		NBStatus = NBIOT_Neul_NBxx_DictateEvent_GetError(pClient);
+	}
+#endif
+	
+exit:
+	return NBStatus;
+}
+
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetReportTerminationError(NBIOT_ClientsTypeDef* pClient, NBIOT_ReportErrorTypeDef enable)
  @Description			NBIOT_Neul_NBxx_SetReportTerminationError	: 设置CMEE
