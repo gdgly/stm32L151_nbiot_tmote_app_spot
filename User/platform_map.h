@@ -561,6 +561,7 @@ char*		TCFG_Utility_Get_Nbiot_Manufacturermode(void);									//读取Nbiot Manu
 char*		TCFG_Utility_Get_Nbiot_ModelVersion(void);										//读取Nbiot ModelVersion值
 char*		TCFG_Utility_Get_Nbiot_PDPType(void);											//读取Nbiot PDPType值
 char*		TCFG_Utility_Get_Nbiot_APN(void);												//读取Nbiot APN值
+char*		TCFG_Utility_Get_Nbiot_PDPContext_APN(void);										//读取Nbiot PDPContext APN值
 unsigned int	TCFG_Utility_Get_Nbiot_SentCount(void);											//读取Nbiot SentCount值
 unsigned int	TCFG_Utility_Get_Nbiot_RecvCount(void);											//读取Nbiot RecvCount值
 unsigned short	TCFG_Utility_Get_Device_Batt_ShortVal(void);										//读取Device Batt值

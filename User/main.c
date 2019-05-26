@@ -345,12 +345,18 @@ void MainRollingUpwardsActived(void)
 		#endif
 		}
 		else {
+		#if TESTBENCH_TYPE
+			static u8 tRadarStart = 0;
+		#endif
 			/* NBIOT Power OFF */
 			if (NBIOTPOWER_IO_READ()) {
 				NBIOT_Neul_NBxx_CheckReadIMEI(&NbiotClientHandler);
 				NBIOT_Neul_NBxx_TestSupportedBands(&NbiotClientHandler, NBIOT_MODULE_BAND_SUPPORT);
 				NET_NBIOT_Initialization();
 				NBIOTPOWER(OFF);
+		#if TESTBENCH_TYPE
+				tRadarStart = 1;
+		#endif
 			}
 			if (NbiotClientHandler.Parameter.bandsupport != true) {
 				Radio_Trf_Printf("imei:null or band:no support");
@@ -359,6 +365,14 @@ void MainRollingUpwardsActived(void)
 			else {
 				Radio_Trf_Printf("imei:%s", TCFG_Utility_Get_Nbiot_Imei_String());
 			}
+		#if TESTBENCH_TYPE
+			if (tRadarStart == 1) {
+				tRadarStart = 0;
+				RADARPOWER(ON);
+				Delay_MS(1000);
+				RADARPOWER(OFF);
+			}
+		#endif
 		}
 #else
 	#if NBIOT_SNEDCOUNTDAY_LIMIT_TYPE

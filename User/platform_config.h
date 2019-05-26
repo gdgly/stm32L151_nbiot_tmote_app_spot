@@ -105,6 +105,22 @@
 #define	NBIOT_CONTINUE_LIFETIME			2								//NBIOT休眠正放继续活跃20秒
 #define	NBIOT_MAX_LIFETIME				12								//NBIOT休眠正放最大活跃120秒
 
+#define	NBIOT_CLEAR_STORED_EARFCN_DISABLE	0
+#define	NBIOT_CLEAR_STORED_EARFCN_ENABLE	1
+#if NETPROTOCAL == NETCOAP
+#define	NBIOT_CLEAR_STORED_EARFCN_STAT	NBIOT_CLEAR_STORED_EARFCN_ENABLE		//NBIOT清除频点功能
+#endif
+#if NETPROTOCAL == NETMQTTSN
+#define	NBIOT_CLEAR_STORED_EARFCN_STAT	NBIOT_CLEAR_STORED_EARFCN_DISABLE		//NBIOT清除频点功能
+#endif
+#if NETPROTOCAL == NETONENET
+#define	NBIOT_CLEAR_STORED_EARFCN_STAT	NBIOT_CLEAR_STORED_EARFCN_ENABLE		//NBIOT清除频点功能
+#endif
+
+#define	NBIOT_CLEAR_STORED_EARFCN_TRUE	true
+#define	NBIOT_CLEAR_STORED_EARFCN_FALSE	false
+#define	NBIOT_CLEAR_STORED_EARFCN_TYPE	NBIOT_CLEAR_STORED_EARFCN_FALSE		//NBIOT默认初始化后清除频点
+
 #define	RADIO_CMD_ECHO_DISABLE			0
 #define	RADIO_CMD_ECHO_ENABLE			1
 #define	RADIO_CMD_ECHO_TYPE				RADIO_CMD_ECHO_DISABLE				//无线命令回显
@@ -161,7 +177,7 @@
 #define	BEEP_OFF_US					230								//无源蜂鸣器关时间
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					142								//从固件版本
+#define	SOFTWARESUB					143								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 
@@ -185,6 +201,7 @@
 #define	RADIO_PRINT_WORKINFO_CI			1								//无线输出Workinfo CI
 #define	RADIO_PRINT_WORKINFO_CMDCNT		0								//无线输出Workinfo CMDCNT
 #define	RADIO_PRINT_WORKINFO_NBRUNTIME	1								//无线输出Workinfo NBRUNTIME
+#define	RADIO_PRINT_WORKINFO_APN			1								//无线输出Workinfo APN
 #define	RADIO_PRINT_WORKINFO_COEF		1								//无线输出Workinfo COEF
 
 #define	RADIO_PRINT_NETINFO_MUFTUR		1								//无线输出NetInfo MUFTUR
@@ -236,6 +253,7 @@
 #define	RADIO_PRINT_WORKINFO_CI			1								//无线输出Workinfo CI
 #define	RADIO_PRINT_WORKINFO_CMDCNT		0								//无线输出Workinfo CMDCNT
 #define	RADIO_PRINT_WORKINFO_NBRUNTIME	1								//无线输出Workinfo NBRUNTIME
+#define	RADIO_PRINT_WORKINFO_APN			0								//无线输出Workinfo APN
 #define	RADIO_PRINT_WORKINFO_COEF		1								//无线输出Workinfo COEF
 
 #define	RADIO_PRINT_NETINFO_MUFTUR		0								//无线输出NetInfo MUFTUR
@@ -287,6 +305,7 @@
 #define	RADIO_PRINT_WORKINFO_CI			1								//无线输出Workinfo CI
 #define	RADIO_PRINT_WORKINFO_CMDCNT		0								//无线输出Workinfo CMDCNT
 #define	RADIO_PRINT_WORKINFO_NBRUNTIME	1								//无线输出Workinfo NBRUNTIME
+#define	RADIO_PRINT_WORKINFO_APN			1								//无线输出Workinfo APN
 #define	RADIO_PRINT_WORKINFO_COEF		1								//无线输出Workinfo COEF
 
 #define	RADIO_PRINT_NETINFO_MUFTUR		1								//无线输出NetInfo MUFTUR
@@ -387,7 +406,7 @@
 #define	RADIO_DOWNLOAD_CMD_MAGTEMPCOEF	1								//RADIO下行指令MagTempCoef
 #define	RADIO_DOWNLOAD_CMD_SETQMCCOEF		1								//RADIO下行指令SetQmcCoef
 #define	RADIO_DOWNLOAD_CMD_BEEPOFF		0								//RADIO下行指令BeepOff
-#define	RADIO_DOWNLOAD_CMD_ROLLINIT		1								//RADIO下行指令RollInit
+#define	RADIO_DOWNLOAD_CMD_ROLLINIT		0								//RADIO下行指令RollInit
 #define	RADIO_DOWNLOAD_CMD_UPLIMIT		0								//RADIO下行指令UpLimit
 #define	RADIO_DOWNLOAD_CMD_NBLIMIT		0								//RADIO下行指令NBLimit
 #define	RADIO_DOWNLOAD_CMD_COVERGAIN		1								//RADIO下行指令CoverGain
@@ -467,7 +486,7 @@
 #define	MQTTSN_DOWNLOAD_CMD_MAGTEMPCOEF	1								//MQTTSN下行指令MagTempCoef
 #define	MQTTSN_DOWNLOAD_CMD_SETQMCCOEF	1								//MQTTSN下行指令SetQmcCoef
 #define	MQTTSN_DOWNLOAD_CMD_BEEPOFF		0								//MQTTSN下行指令BeepOff
-#define	MQTTSN_DOWNLOAD_CMD_ROLLINIT		1								//MQTTSN下行指令RollInit
+#define	MQTTSN_DOWNLOAD_CMD_ROLLINIT		0								//MQTTSN下行指令RollInit
 #define	MQTTSN_DOWNLOAD_CMD_UPLIMIT		1								//MQTTSN下行指令UpLimit
 #define	MQTTSN_DOWNLOAD_CMD_NBLIMIT		1								//MQTTSN下行指令NBLimit
 #define	MQTTSN_DOWNLOAD_CMD_COVERGAIN		1								//MQTTSN下行指令CoverGain

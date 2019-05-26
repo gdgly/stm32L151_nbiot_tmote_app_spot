@@ -80,6 +80,14 @@ void NET_DNS_APP_PollExecution(DNS_ClientsTypeDef* pClient)
 		NET_DNS_NBIOT_Event_FullFunctionality(pClient);
 		break;
 	
+	case CLEAR_STORED_EARFCN:
+#if NBIOT_CLEAR_STORED_EARFCN_STAT
+		NET_DNS_NBIOT_Event_ClearStoredEARFCN(pClient);
+#else
+		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+#endif
+		break;
+	
 	case CDP_SERVER_CHECK:
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
 		break;
@@ -260,6 +268,10 @@ static unsigned char* DNS_NBIOT_GetDictateFailureCnt(DNS_ClientsTypeDef* pClient
 	
 	case FULL_FUNCTIONALITY:
 		dictateFailureCnt = &pClient->SocketStack->NBIotStack->DictateRunCtl.dictateFullFunctionalityFailureCnt;
+		break;
+	
+	case CLEAR_STORED_EARFCN:
+		dictateFailureCnt = &pClient->SocketStack->NBIotStack->DictateRunCtl.dictateClearStoredEARFCNFailureCnt;
 		break;
 	
 	case NBAND_MODE_CHECK:
@@ -866,7 +878,7 @@ void NET_DNS_NBIOT_Event_SimICCIDCheck(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, ICCID_CHECK);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		DNS_DEBUG_LOG_PRINTF("ICCID-K");
+		DNS_DEBUG_LOG_PRINTF("ID-K");
 #endif
 	}
 	else {
@@ -877,7 +889,7 @@ void NET_DNS_NBIOT_Event_SimICCIDCheck(DNS_ClientsTypeDef* pClient)
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
 		DNS_DEBUG_LOG_PRINTF("NB ICCID Fail ECde %d", NBStatus);
 	#else
-		DNS_DEBUG_LOG_PRINTF("ICCID-F");
+		DNS_DEBUG_LOG_PRINTF("ID-F");
 	#endif
 #endif
 	}
@@ -897,7 +909,18 @@ void NET_DNS_NBIOT_Event_FullFunctionality(DNS_ClientsTypeDef* pClient)
 	
 	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadMinOrFullFunc(pClient->SocketStack->NBIotStack)) == NBIOT_OK) {
 		/* Dictate execute is Success */
+#if NBIOT_CLEAR_STORED_EARFCN_STAT
+		if (pClient->SocketStack->NBIotStack->ClearStoredEARFCN != NBIOT_CLEAR_STORED_EARFCN_FALSE) {
+			/* 需清除频点 */
+			DNS_NBIOT_DictateEvent_SuccessExecute(pClient, MINIMUM_FUNCTIONALITY, FULL_FUNCTIONALITY);
+		}
+		else {
+			/* 无需清除频点 */
+			DNS_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, FULL_FUNCTIONALITY);
+		}
+#else
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, FULL_FUNCTIONALITY);
+#endif
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 		DNS_DEBUG_LOG_PRINTF("FF-K");
@@ -920,7 +943,18 @@ void NET_DNS_NBIOT_Event_FullFunctionality(DNS_ClientsTypeDef* pClient)
 	if (pClient->SocketStack->NBIotStack->Parameter.functionality != FullFunc) {
 		if ((NBStatus = NBIOT_Neul_NBxx_SetMinOrFullFunc(pClient->SocketStack->NBIotStack, FullFunc)) == NBIOT_OK) {
 			/* Dictate execute is Success */
+#if NBIOT_CLEAR_STORED_EARFCN_STAT
+			if (pClient->SocketStack->NBIotStack->ClearStoredEARFCN != NBIOT_CLEAR_STORED_EARFCN_FALSE) {
+				/* 需清除频点 */
+				DNS_NBIOT_DictateEvent_SuccessExecute(pClient, MINIMUM_FUNCTIONALITY, FULL_FUNCTIONALITY);
+			}
+			else {
+				/* 无需清除频点 */
+				DNS_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, FULL_FUNCTIONALITY);
+			}
+#else
 			DNS_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, FULL_FUNCTIONALITY);
+#endif
 			
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 			DNS_DEBUG_LOG_PRINTF("FF-S-K");
@@ -956,7 +990,18 @@ void NET_DNS_NBIOT_Event_MinimumFunctionality(DNS_ClientsTypeDef* pClient)
 	
 	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadMinOrFullFunc(pClient->SocketStack->NBIotStack)) == NBIOT_OK) {
 		/* Dictate execute is Success */
+#if NBIOT_CLEAR_STORED_EARFCN_STAT
+		if (pClient->SocketStack->NBIotStack->ClearStoredEARFCN != NBIOT_CLEAR_STORED_EARFCN_FALSE) {
+			/* 需清除频点 */
+			DNS_NBIOT_DictateEvent_SuccessExecute(pClient, CLEAR_STORED_EARFCN, MINIMUM_FUNCTIONALITY);
+		}
+		else {
+			/* 无需清除频点 */
+			DNS_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CONFIG, MINIMUM_FUNCTIONALITY);
+		}
+#else
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CONFIG, MINIMUM_FUNCTIONALITY);
+#endif
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 		DNS_DEBUG_LOG_PRINTF("MF-K");
@@ -979,7 +1024,18 @@ void NET_DNS_NBIOT_Event_MinimumFunctionality(DNS_ClientsTypeDef* pClient)
 	if (pClient->SocketStack->NBIotStack->Parameter.functionality != MinFunc) {
 		if ((NBStatus = NBIOT_Neul_NBxx_SetMinOrFullFunc(pClient->SocketStack->NBIotStack, MinFunc)) == NBIOT_OK) {
 			/* Dictate execute is Success */
+#if NBIOT_CLEAR_STORED_EARFCN_STAT
+			if (pClient->SocketStack->NBIotStack->ClearStoredEARFCN != NBIOT_CLEAR_STORED_EARFCN_FALSE) {
+				/* 需清除频点 */
+				DNS_NBIOT_DictateEvent_SuccessExecute(pClient, CLEAR_STORED_EARFCN, MINIMUM_FUNCTIONALITY);
+			}
+			else {
+				/* 无需清除频点 */
+				DNS_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CONFIG, MINIMUM_FUNCTIONALITY);
+			}
+#else
 			DNS_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CONFIG, MINIMUM_FUNCTIONALITY);
+#endif
 			
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 			DNS_DEBUG_LOG_PRINTF("MF-S-K");
@@ -998,6 +1054,43 @@ void NET_DNS_NBIOT_Event_MinimumFunctionality(DNS_ClientsTypeDef* pClient)
 #endif
 			return;
 		}
+	}
+}
+
+/**********************************************************************************************************
+ @Function			void NET_DNS_NBIOT_Event_ClearStoredEARFCN(DNS_ClientsTypeDef* pClient)
+ @Description			NET_DNS_NBIOT_Event_ClearStoredEARFCN		: 清除小区频点
+ @Input				pClient								: DNS客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_DNS_NBIOT_Event_ClearStoredEARFCN(DNS_ClientsTypeDef* pClient)
+{
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
+	
+	DNS_NBIOT_DictateEvent_SetTime(pClient, 30);
+	
+	if ((NBStatus = NBIOT_Neul_NBxx_ClearStoredEarfcn(pClient->SocketStack->NBIotStack)) == NBIOT_OK) {
+		/* Dictate execute is Success */
+		pClient->SocketStack->NBIotStack->ClearStoredEARFCN = NBIOT_CLEAR_STORED_EARFCN_FALSE;
+		
+		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, CLEAR_STORED_EARFCN);
+		
+#ifdef DNS_DEBUG_LOG_RF_PRINT
+		DNS_DEBUG_LOG_PRINTF("NB Clear Stored EARFCN OK");
+#endif
+	}
+	else {
+		/* Dictate execute is Fail */
+		DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, CLEAR_STORED_EARFCN);
+		
+#ifdef DNS_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		DNS_DEBUG_LOG_PRINTF("NB Clear Stored EARFCN Fail Ecde %d", NBStatus);
+	#else
+		DNS_DEBUG_LOG_PRINTF("NB Clear Stored EARFCN Fail");
+	#endif
+#endif
+		return;
 	}
 }
 
@@ -1033,10 +1126,10 @@ void NET_DNS_NBIOT_Event_NbandModeCheck(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, NBAND_MODE_CHECK);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		DNS_DEBUG_LOG_PRINTF("BAND %d:%d.%d.%d", pClient->SocketStack->NBIotStack->Parameter.band.NBandNum, \
-										 pClient->SocketStack->NBIotStack->Parameter.band.NBandVal[0], \
-										 pClient->SocketStack->NBIotStack->Parameter.band.NBandVal[1], \
-										 pClient->SocketStack->NBIotStack->Parameter.band.NBandVal[2]);
+		DNS_DEBUG_LOG_PRINTF("BD %d:%d.%d.%d", pClient->SocketStack->NBIotStack->Parameter.band.NBandNum, \
+									    pClient->SocketStack->NBIotStack->Parameter.band.NBandVal[0], \
+									    pClient->SocketStack->NBIotStack->Parameter.band.NBandVal[1], \
+									    pClient->SocketStack->NBIotStack->Parameter.band.NBandVal[2]);
 #endif
 	}
 	else {
@@ -1047,7 +1140,7 @@ void NET_DNS_NBIOT_Event_NbandModeCheck(DNS_ClientsTypeDef* pClient)
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
 		DNS_DEBUG_LOG_PRINTF("NB BAND Fail ECde %d", NBStatus);
 	#else
-		DNS_DEBUG_LOG_PRINTF("BAND-F");
+		DNS_DEBUG_LOG_PRINTF("BD-F");
 	#endif
 #endif
 	}
@@ -1079,7 +1172,7 @@ void NET_DNS_NBIOT_Event_NbandModeConfig(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, NBAND_MODE_CONFIG);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		DNS_DEBUG_LOG_PRINTF("BAND-R");
+		DNS_DEBUG_LOG_PRINTF("BD-R");
 #endif
 	}
 	else {
@@ -1090,7 +1183,7 @@ void NET_DNS_NBIOT_Event_NbandModeConfig(DNS_ClientsTypeDef* pClient)
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
 		DNS_DEBUG_LOG_PRINTF("NB BAND Fail ECde %d", NBStatus);
 	#else
-		DNS_DEBUG_LOG_PRINTF("BAND-F");
+		DNS_DEBUG_LOG_PRINTF("BD-F");
 	#endif
 #endif
 	}
@@ -1102,10 +1195,10 @@ void NET_DNS_NBIOT_Event_NbandModeConfig(DNS_ClientsTypeDef* pClient)
 			DNS_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, NBAND_MODE_CONFIG);
 			
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-			DNS_DEBUG_LOG_PRINTF("BAND-S %d:%d.%d.%d", DNS_NBIOT_BAND_TYPE.NBandNum, \
-											   DNS_NBIOT_BAND_TYPE.NBandVal[0], \
-											   DNS_NBIOT_BAND_TYPE.NBandVal[1], \
-											   DNS_NBIOT_BAND_TYPE.NBandVal[2]);
+			DNS_DEBUG_LOG_PRINTF("BD-S %d:%d.%d.%d", DNS_NBIOT_BAND_TYPE.NBandNum, \
+											 DNS_NBIOT_BAND_TYPE.NBandVal[0], \
+											 DNS_NBIOT_BAND_TYPE.NBandVal[1], \
+											 DNS_NBIOT_BAND_TYPE.NBandVal[2]);
 #endif
 		}
 		else {
@@ -1116,7 +1209,7 @@ void NET_DNS_NBIOT_Event_NbandModeConfig(DNS_ClientsTypeDef* pClient)
 		#if NBIOT_PRINT_ERROR_CODE_TYPE
 			DNS_DEBUG_LOG_PRINTF("NB BAND Fail ECde %d", NBStatus);
 		#else
-			DNS_DEBUG_LOG_PRINTF("BAND-S-F");
+			DNS_DEBUG_LOG_PRINTF("BD-S-F");
 		#endif
 #endif
 			return;
@@ -1265,6 +1358,7 @@ void NET_DNS_NBIOT_Event_ParameterCheckOut(DNS_ClientsTypeDef* pClient)
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadIMSI(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadCGPADDR(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadCGDCONT(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
+	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadPDPContext(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadRSSI(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadStatisticsRADIO(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadAreaCode(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
@@ -1275,7 +1369,7 @@ void NET_DNS_NBIOT_Event_ParameterCheckOut(DNS_ClientsTypeDef* pClient)
 		pClient->SocketStack->NBIotStack->Registered = true;
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		DNS_DEBUG_LOG_PRINTF("Para-C-K");
+		DNS_DEBUG_LOG_PRINTF("PR-C-K");
 #endif
 	}
 	else {
@@ -1286,7 +1380,7 @@ void NET_DNS_NBIOT_Event_ParameterCheckOut(DNS_ClientsTypeDef* pClient)
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
 		DNS_DEBUG_LOG_PRINTF("NB Para Check Fail ECde %d", NBStatus);
 	#else
-		DNS_DEBUG_LOG_PRINTF("Para-C-F");
+		DNS_DEBUG_LOG_PRINTF("PR-C-F");
 	#endif
 #endif
 		return;
@@ -1326,7 +1420,7 @@ void NET_DNS_Event_CreatUDPSocket(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_GetIdleTime(pClient, true);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		DNS_DEBUG_LOG_PRINTF("DNSTU-K");
+		DNS_DEBUG_LOG_PRINTF("DSTU-K");
 #endif
 	}
 	else {
@@ -1334,7 +1428,7 @@ void NET_DNS_Event_CreatUDPSocket(DNS_ClientsTypeDef* pClient)
 		DNS_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, DNS_PROCESS_CREAT_UDP_SOCKET, DNS_PROCESS_CREAT_UDP_SOCKET);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		DNS_DEBUG_LOG_PRINTF("DNSTU-F");
+		DNS_DEBUG_LOG_PRINTF("DSTU-F");
 #endif
 		return;
 	}
@@ -1366,7 +1460,7 @@ void NET_DNS_Event_SendDnsStructData(DNS_ClientsTypeDef* pClient)
 			DNS_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, DNS_PROCESS_CREAT_UDP_SOCKET, DNS_PROCESS_SEND_DNS_STRUCT_DATA);
 			
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-			DNS_DEBUG_LOG_PRINTF("DNSSd%s-F", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
+			DNS_DEBUG_LOG_PRINTF("DSSd%s-F", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
 #endif
 			return;
 		}
@@ -1375,7 +1469,7 @@ void NET_DNS_Event_SendDnsStructData(DNS_ClientsTypeDef* pClient)
 			DNS_DictateEvent_SuccessExecute(pClient, DNS_PROCESS_STACK, DNS_PROCESS_RECV_DNS_STRUCT_DATA, DNS_PROCESS_SEND_DNS_STRUCT_DATA, true);
 			
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-			DNS_DEBUG_LOG_PRINTF("DNSSd%s-K", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
+			DNS_DEBUG_LOG_PRINTF("DSSd%s-K", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
 #endif
 		}
 	}
@@ -1407,7 +1501,7 @@ void NET_DNS_Event_RecvDnsStructData(DNS_ClientsTypeDef* pClient)
 			DNS_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, DNS_PROCESS_CREAT_UDP_SOCKET, DNS_PROCESS_RECV_DNS_STRUCT_DATA);
 			
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-			DNS_DEBUG_LOG_PRINTF("DNSWRv %s", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
+			DNS_DEBUG_LOG_PRINTF("DSWRv %s", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
 #endif
 			return;
 		}
@@ -1435,7 +1529,7 @@ void NET_DNS_Event_RecvDnsStructData(DNS_ClientsTypeDef* pClient)
 						pClient->ProcessState = DNS_PROCESS_CREAT_UDP_SOCKET;
 					}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-					DNS_DEBUG_LOG_PRINTF("DNSA%s-F", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
+					DNS_DEBUG_LOG_PRINTF("DSA%s-F", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
 #endif
 					return;
 				}
@@ -1443,7 +1537,7 @@ void NET_DNS_Event_RecvDnsStructData(DNS_ClientsTypeDef* pClient)
 					/* Deserialize into IP OK */
 					DNS_DictateEvent_SuccessExecute(pClient, DNS_PROCESS_STACK, DNS_PROCESS_SEND_DNS_STRUCT_DATA, DNS_PROCESS_RECV_DNS_STRUCT_DATA, true);
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-					DNS_DEBUG_LOG_PRINTF("DNSA%s-K", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
+					DNS_DEBUG_LOG_PRINTF("DSA%s-K", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr);
 					DNS_DEBUG_LOG_PRINTF("%s:%s", pClient->AnalysisData[pClient->AnalysisTick].hostnameAddr, pClient->AnalysisData[pClient->AnalysisTick].hostIP);
 #endif
 					pClient->AnalysisTick += 1;
@@ -1476,7 +1570,7 @@ void NET_DNS_Event_CloseUDPSocket(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_GetConnectTime(pClient, true);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		DNS_DEBUG_LOG_PRINTF("DNSSU-K");
+		DNS_DEBUG_LOG_PRINTF("DSSU-K");
 #endif
 	}
 	else {
@@ -1493,7 +1587,7 @@ void NET_DNS_Event_CloseUDPSocket(DNS_ClientsTypeDef* pClient)
 			pClient->ProcessState = DNS_PROCESS_CLOSE_UDP_SOCKET;
 		}
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		DNS_DEBUG_LOG_PRINTF("DNSSU-F");
+		DNS_DEBUG_LOG_PRINTF("DSSU-F");
 #endif
 		return;
 	}

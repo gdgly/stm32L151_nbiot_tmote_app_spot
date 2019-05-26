@@ -85,6 +85,14 @@ void NET_COAP_APP_PollExecution(NBIOT_ClientsTypeDef* pClient)
 		NET_COAP_NBIOT_Event_FullFunctionality(pClient);
 		break;
 	
+	case CLEAR_STORED_EARFCN:
+#if NBIOT_CLEAR_STORED_EARFCN_STAT
+		NET_COAP_NBIOT_Event_ClearStoredEARFCN(pClient);
+#else
+		pClient->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+#endif
+		break;
+	
 	case CDP_SERVER_CHECK:
 		NET_COAP_NBIOT_Event_CDPServerCheck(pClient);
 		break;
@@ -204,6 +212,10 @@ static unsigned char* COAP_NBIOT_GetDictateFailureCnt(NBIOT_ClientsTypeDef* pCli
 	
 	case MINIMUM_FUNCTIONALITY:
 		dictateFailureCnt = &pClient->DictateRunCtl.dictateMinimumFunctionalityFailureCnt;
+		break;
+	
+	case CLEAR_STORED_EARFCN:
+		dictateFailureCnt = &pClient->DictateRunCtl.dictateClearStoredEARFCNFailureCnt;
 		break;
 	
 	case CDP_SERVER_CHECK:
@@ -396,6 +408,8 @@ void NET_COAP_NBIOT_Event_StopMode(NBIOT_ClientsTypeDef* pClient)
 		pClient->DictateRunCtl.dictateRunTime = dictateRunTime;
 		/* NBIOT Module Poweroff */
 		NBIOT_Neul_NBxx_HardwarePoweroff(pClient);
+		/* Clear Stored EARFCN */
+		pClient->ClearStoredEARFCN = NBIOT_CLEAR_STORED_EARFCN_TRUE;
 		/* Send Message Index */
 		CoapSendMessageIndex = NET_Coap_Message_SendDataRear();
 		
@@ -723,7 +737,18 @@ void NET_COAP_NBIOT_Event_FullFunctionality(NBIOT_ClientsTypeDef* pClient)
 	
 	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadMinOrFullFunc(pClient)) == NBIOT_OK) {
 		/* Dictate execute is Success */
+#if NBIOT_CLEAR_STORED_EARFCN_STAT
+		if (pClient->ClearStoredEARFCN != NBIOT_CLEAR_STORED_EARFCN_FALSE) {
+			/* 需清除频点 */
+			COAP_NBIOT_DictateEvent_SuccessExecute(pClient, MINIMUM_FUNCTIONALITY, FULL_FUNCTIONALITY);
+		}
+		else {
+			/* 无需清除频点 */
+			COAP_NBIOT_DictateEvent_SuccessExecute(pClient, CDP_SERVER_CHECK, FULL_FUNCTIONALITY);
+		}
+#else
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, CDP_SERVER_CHECK, FULL_FUNCTIONALITY);
+#endif
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 		COAP_DEBUG_LOG_PRINTF("CoAP FullFunc Ok");
@@ -746,7 +771,18 @@ void NET_COAP_NBIOT_Event_FullFunctionality(NBIOT_ClientsTypeDef* pClient)
 	if (pClient->Parameter.functionality != FullFunc) {
 		if ((NBStatus = NBIOT_Neul_NBxx_SetMinOrFullFunc(pClient, FullFunc)) == NBIOT_OK) {
 			/* Dictate execute is Success */
+#if NBIOT_CLEAR_STORED_EARFCN_STAT
+			if (pClient->ClearStoredEARFCN != NBIOT_CLEAR_STORED_EARFCN_FALSE) {
+				/* 需清除频点 */
+				COAP_NBIOT_DictateEvent_SuccessExecute(pClient, MINIMUM_FUNCTIONALITY, FULL_FUNCTIONALITY);
+			}
+			else {
+				/* 无需清除频点 */
+				COAP_NBIOT_DictateEvent_SuccessExecute(pClient, CDP_SERVER_CHECK, FULL_FUNCTIONALITY);
+			}
+#else
 			COAP_NBIOT_DictateEvent_SuccessExecute(pClient, CDP_SERVER_CHECK, FULL_FUNCTIONALITY);
+#endif
 			
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 			COAP_DEBUG_LOG_PRINTF("CoAP FullFunc Set Ok");
@@ -782,7 +818,18 @@ void NET_COAP_NBIOT_Event_MinimumFunctionality(NBIOT_ClientsTypeDef* pClient)
 	
 	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadMinOrFullFunc(pClient)) == NBIOT_OK) {
 		/* Dictate execute is Success */
+#if NBIOT_CLEAR_STORED_EARFCN_STAT
+		if (pClient->ClearStoredEARFCN != NBIOT_CLEAR_STORED_EARFCN_FALSE) {
+			/* 需清除频点 */
+			COAP_NBIOT_DictateEvent_SuccessExecute(pClient, CLEAR_STORED_EARFCN, MINIMUM_FUNCTIONALITY);
+		}
+		else {
+			/* 无需清除频点 */
+			COAP_NBIOT_DictateEvent_SuccessExecute(pClient, CDP_SERVER_CONFIG, MINIMUM_FUNCTIONALITY);
+		}
+#else
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, CDP_SERVER_CONFIG, MINIMUM_FUNCTIONALITY);
+#endif
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 		COAP_DEBUG_LOG_PRINTF("CoAP MinFunc Ok");
@@ -805,7 +852,18 @@ void NET_COAP_NBIOT_Event_MinimumFunctionality(NBIOT_ClientsTypeDef* pClient)
 	if (pClient->Parameter.functionality != MinFunc) {
 		if ((NBStatus = NBIOT_Neul_NBxx_SetMinOrFullFunc(pClient, MinFunc)) == NBIOT_OK) {
 			/* Dictate execute is Success */
+#if NBIOT_CLEAR_STORED_EARFCN_STAT
+			if (pClient->ClearStoredEARFCN != NBIOT_CLEAR_STORED_EARFCN_FALSE) {
+				/* 需清除频点 */
+				COAP_NBIOT_DictateEvent_SuccessExecute(pClient, CLEAR_STORED_EARFCN, MINIMUM_FUNCTIONALITY);
+			}
+			else {
+				/* 无需清除频点 */
+				COAP_NBIOT_DictateEvent_SuccessExecute(pClient, CDP_SERVER_CONFIG, MINIMUM_FUNCTIONALITY);
+			}
+#else
 			COAP_NBIOT_DictateEvent_SuccessExecute(pClient, CDP_SERVER_CONFIG, MINIMUM_FUNCTIONALITY);
+#endif
 			
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 			COAP_DEBUG_LOG_PRINTF("CoAP MinFunc Set Ok");
@@ -824,6 +882,43 @@ void NET_COAP_NBIOT_Event_MinimumFunctionality(NBIOT_ClientsTypeDef* pClient)
 #endif
 			return;
 		}
+	}
+}
+
+/**********************************************************************************************************
+ @Function			void NET_COAP_NBIOT_Event_ClearStoredEARFCN(NBIOT_ClientsTypeDef* pClient)
+ @Description			NET_COAP_NBIOT_Event_ClearStoredEARFCN		: 清除小区频点
+ @Input				pClient								: NBIOT客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_COAP_NBIOT_Event_ClearStoredEARFCN(NBIOT_ClientsTypeDef* pClient)
+{
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
+	
+	COAP_NBIOT_DictateEvent_SetTime(pClient, 30);
+	
+	if ((NBStatus = NBIOT_Neul_NBxx_ClearStoredEarfcn(pClient)) == NBIOT_OK) {
+		/* Dictate execute is Success */
+		pClient->ClearStoredEARFCN = NBIOT_CLEAR_STORED_EARFCN_FALSE;
+		
+		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, CLEAR_STORED_EARFCN);
+		
+#ifdef COAP_DEBUG_LOG_RF_PRINT
+		COAP_DEBUG_LOG_PRINTF("NB Clear Stored EARFCN OK");
+#endif
+	}
+	else {
+		/* Dictate execute is Fail */
+		COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, CLEAR_STORED_EARFCN);
+		
+#ifdef COAP_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		DNS_DEBUG_LOG_PRINTF("NB Clear Stored EARFCN Fail Ecde %d", NBStatus);
+	#else
+		DNS_DEBUG_LOG_PRINTF("NB Clear Stored EARFCN Fail");
+	#endif
+#endif
+		return;
 	}
 }
 
@@ -1281,6 +1376,7 @@ void NET_COAP_NBIOT_Event_ParameterCheckOut(NBIOT_ClientsTypeDef* pClient)
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadIMSI(pClient)) == NBIOT_OK) && 
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadCGPADDR(pClient)) == NBIOT_OK) && 
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadCGDCONT(pClient)) == NBIOT_OK) && 
+	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadPDPContext(pClient)) == NBIOT_OK) && 
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadRSSI(pClient)) == NBIOT_OK) && 
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadStatisticsRADIO(pClient)) == NBIOT_OK) && 
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadAreaCode(pClient)) == NBIOT_OK) && 

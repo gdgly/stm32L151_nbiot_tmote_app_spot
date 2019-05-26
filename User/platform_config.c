@@ -136,6 +136,9 @@ void RadioPrintWorkinfo(void)
 #if RADIO_PRINT_WORKINFO_NBRUNTIME
 	Radio_Trf_Printf("Nbruntime:%d.%d", TCFG_Utility_GetCoapConnectTime(), TCFG_Utility_GetCoapIdleTime());
 #endif
+#if RADIO_PRINT_WORKINFO_APN
+	Radio_Trf_Printf("APN:%s", TCFG_Utility_Get_Nbiot_PDPContext_APN());
+#endif
 #if RADIO_PRINT_WORKINFO_COEF
 	Radio_Trf_Printf("Coef:%d.%d.%d", TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
 #endif
@@ -172,6 +175,9 @@ void RadioPrintWorkinfo(void)
 #if RADIO_PRINT_WORKINFO_NBRUNTIME
 	Radio_Trf_Printf("Nbruntime:%d.%d", TCFG_Utility_GetCoapConnectTime(), TCFG_Utility_GetCoapIdleTime());
 #endif
+#if RADIO_PRINT_WORKINFO_APN
+	Radio_Trf_Printf("APN:%s", TCFG_Utility_Get_Nbiot_PDPContext_APN());
+#endif
 #if RADIO_PRINT_WORKINFO_COEF
 	Radio_Trf_Printf("Coef:%d.%d.%d", TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
 #endif
@@ -207,6 +213,9 @@ void RadioPrintWorkinfo(void)
 #endif
 #if RADIO_PRINT_WORKINFO_NBRUNTIME
 	Radio_Trf_Printf("Nbruntime:%d.%d", TCFG_Utility_GetCoapConnectTime(), TCFG_Utility_GetCoapIdleTime());
+#endif
+#if RADIO_PRINT_WORKINFO_APN
+	Radio_Trf_Printf("APN:%s", TCFG_Utility_Get_Nbiot_PDPContext_APN());
 #endif
 #if RADIO_PRINT_WORKINFO_COEF
 	Radio_Trf_Printf("Coef:%d.%d.%d", TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);

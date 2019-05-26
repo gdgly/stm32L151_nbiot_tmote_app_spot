@@ -78,7 +78,7 @@ void BEEP_PassiveCtrl(u16 speak_nMs)
 	for (u16 nCount = 0; nCount < speak_nMs * 2; nCount++) {
 		HAL_GPIO_WritePin(BEEP_GPIOx, BEEP_PIN, GPIO_PIN_SET);
 		Delay_US(BEEP_ON_US);
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(BEEP_GPIOx, BEEP_PIN, GPIO_PIN_RESET);
 		Delay_US(BEEP_OFF_US);
 	}
 }

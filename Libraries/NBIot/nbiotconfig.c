@@ -63,6 +63,7 @@ void NBIOT_Client_Init(NBIOT_ClientsTypeDef* pClient, NBIOT_ATCmdTypeDef* ATCmdS
 	pClient->DictateRunCtl.dictatePatameterCheckOutFailureCnt		= 0;
 	pClient->DictateRunCtl.dictateFullFunctionalityFailureCnt		= 0;
 	pClient->DictateRunCtl.dictateMinimumFunctionalityFailureCnt	= 0;
+	pClient->DictateRunCtl.dictateClearStoredEARFCNFailureCnt		= 0;
 	pClient->DictateRunCtl.dictateCDPServerCheckFailureCnt			= 0;
 	pClient->DictateRunCtl.dictateCDPServerConfigFailureCnt		= 0;
 	pClient->DictateRunCtl.dictateNbandModeCheckFailureCnt			= 0;
@@ -87,6 +88,7 @@ void NBIOT_Client_Init(NBIOT_ClientsTypeDef* pClient, NBIOT_ATCmdTypeDef* ATCmdS
 	
 	pClient->Registered										= false;
 	pClient->NetStateIdentification							= false;
+	pClient->ClearStoredEARFCN								= NBIOT_CLEAR_STORED_EARFCN_TYPE;
 	pClient->ATCmdStack										= ATCmdStack;
 	pClient->NetNbiotStack									= NetNbiotStack;
 	

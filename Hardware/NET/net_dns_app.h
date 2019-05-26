@@ -28,6 +28,7 @@ void NET_DNS_NBIOT_Event_ParameterConfig(DNS_ClientsTypeDef* pClient);			//参�
 void NET_DNS_NBIOT_Event_SimICCIDCheck(DNS_ClientsTypeDef* pClient);				//Sim卡检测
 void NET_DNS_NBIOT_Event_FullFunctionality(DNS_ClientsTypeDef* pClient);			//完整功能
 void NET_DNS_NBIOT_Event_MinimumFunctionality(DNS_ClientsTypeDef* pClient);		//最小功能
+void NET_DNS_NBIOT_Event_ClearStoredEARFCN(DNS_ClientsTypeDef* pClient);			//清除小区频点
 void NET_DNS_NBIOT_Event_NbandModeCheck(DNS_ClientsTypeDef* pClient);				//NBAND模式查询
 void NET_DNS_NBIOT_Event_NbandModeConfig(DNS_ClientsTypeDef* pClient);			//NBAND模式配置
 void NET_DNS_NBIOT_Event_AttachCheck(DNS_ClientsTypeDef* pClient);				//注网检查

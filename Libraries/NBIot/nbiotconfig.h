@@ -30,6 +30,7 @@
 #define NBIOT_COMMAND_CIMI_MSEC			600
 #define NBIOT_COMMAND_CGPADDR_MSEC			600
 #define NBIOT_COMMAND_CGDCONT_MSEC			600
+#define NBIOT_COMMAND_CGCONTRDP_MSEC		600
 #define NBIOT_COMMAND_CCLK_MSEC			600
 #define NBIOT_COMMAND_NPSMR_MSEC			1800
 #define NBIOT_COMMAND_CSCON_MSEC			600
@@ -353,19 +354,20 @@ typedef enum
 	PARAMETER_CHECKOUT					= 0x0A,											//参数检出
 	MINIMUM_FUNCTIONALITY				= 0x0B,											//最小功能
 	FULL_FUNCTIONALITY					= 0x0C,											//完整功能
-	CDP_SERVER_CHECK					= 0x0D,											//CDP服务器查询
-	CDP_SERVER_CONFIG					= 0x0E,											//CDP服务器配置
-	NBAND_MODE_CHECK					= 0x0F,											//NBAND模式查询
-	NBAND_MODE_CONFIG					= 0x10,											//NBAND模式配置
-	SEND_DATA							= 0x11,											//发送数据
-	RECV_DATA							= 0x12,											//接收数据
-	SEND_DATA_RA_NORMAL					= 0x13,											//发送数据RA_NORMAL
-	RECV_DATA_RA_NORMAL					= 0x14,											//接收数据RA_NORMAL
-	EXECUT_DOWNLINK_DATA				= 0x15,											//执行下行数据
-	MQTTSN_PROCESS_STACK				= 0x16,											//MQTTSN执行栈
-	DNS_PROCESS_STACK					= 0x17,											//DNS执行栈
-	ONENET_PROCESS_STACK				= 0x18,											//ONENET执行栈
-	LISTEN_RUN_CTL						= 0x19											//监听运行控制器
+	CLEAR_STORED_EARFCN					= 0x0D,											//清除小区频点
+	CDP_SERVER_CHECK					= 0x0E,											//CDP服务器查询
+	CDP_SERVER_CONFIG					= 0x0F,											//CDP服务器配置
+	NBAND_MODE_CHECK					= 0x10,											//NBAND模式查询
+	NBAND_MODE_CONFIG					= 0x11,											//NBAND模式配置
+	SEND_DATA							= 0x12,											//发送数据
+	RECV_DATA							= 0x13,											//接收数据
+	SEND_DATA_RA_NORMAL					= 0x14,											//发送数据RA_NORMAL
+	RECV_DATA_RA_NORMAL					= 0x15,											//接收数据RA_NORMAL
+	EXECUT_DOWNLINK_DATA				= 0x16,											//执行下行数据
+	MQTTSN_PROCESS_STACK				= 0x17,											//MQTTSN执行栈
+	DNS_PROCESS_STACK					= 0x18,											//DNS执行栈
+	ONENET_PROCESS_STACK				= 0x19,											//ONENET执行栈
+	LISTEN_RUN_CTL						= 0x1A											//监听运行控制器
 }NBIOT_DictateEventTypeDef;
 
 /* NBIOT Listen Event */
@@ -413,6 +415,7 @@ struct NBIOT_ParameterTypeDef
 	char								cgpaddr[20];										//核心网地址
 	char								cgdcontPDPType[10];									//核心网类型
 	char								cgdcontAPN[15];									//核心网名称
+	char								cgcontrdpAPN[50];									//核心网名称
 	bool								bandsupport;										//band支持
 	int								rssi;											//信号质量
 	
@@ -573,6 +576,7 @@ struct NBIOT_ClientsTypeDef
 		unsigned char					dictatePatameterCheckOutFailureCnt;
 		unsigned char					dictateFullFunctionalityFailureCnt;
 		unsigned char					dictateMinimumFunctionalityFailureCnt;
+		unsigned char					dictateClearStoredEARFCNFailureCnt;
 		unsigned char					dictateCDPServerCheckFailureCnt;
 		unsigned char					dictateCDPServerConfigFailureCnt;
 		unsigned char					dictateNbandModeCheckFailureCnt;
@@ -611,6 +615,7 @@ struct NBIOT_ClientsTypeDef
 	
 	bool								Registered;
 	bool								NetStateIdentification;
+	bool								ClearStoredEARFCN;
 	NBIOT_ParameterTypeDef				Parameter;
 	NBIOT_ATCmdTypeDef*					ATCmdStack;
 	NET_NBIOT_ClientsTypeDef*			NetNbiotStack;

@@ -3087,6 +3087,23 @@ char* TCFG_Utility_Get_Nbiot_APN(void)
 }
 
 /**********************************************************************************************************
+ @Function			char* TCFG_Utility_Get_Nbiot_PDPContext_APN(void)
+ @Description			TCFG_Utility_Get_Nbiot_PDPContext_APN			: 读取Nbiot PDPContext APN值
+ @Input				void
+ @Return				PDPContext_APN
+**********************************************************************************************************/
+char* TCFG_Utility_Get_Nbiot_PDPContext_APN(void)
+{
+#if NETPROTOCAL == NETCOAP
+	return NbiotClientHandler.Parameter.cgcontrdpAPN;
+#elif NETPROTOCAL == NETMQTTSN
+	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.cgcontrdpAPN;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.cgcontrdpAPN;
+#endif
+}
+
+/**********************************************************************************************************
  @Function			unsigned int TCFG_Utility_Get_Nbiot_SentCount(void)
  @Description			TCFG_Utility_Get_Nbiot_SentCount				: 读取Nbiot SentCount值
  @Input				void

@@ -23,6 +23,7 @@ void NET_ONENET_NBIOT_Event_ParameterConfig(ONENET_ClientsTypeDef* pClient);		//
 void NET_ONENET_NBIOT_Event_SimICCIDCheck(ONENET_ClientsTypeDef* pClient);			//Sim卡检测
 void NET_ONENET_NBIOT_Event_FullFunctionality(ONENET_ClientsTypeDef* pClient);		//完整功能
 void NET_ONENET_NBIOT_Event_MinimumFunctionality(ONENET_ClientsTypeDef* pClient);	//最小功能
+void NET_ONENET_NBIOT_Event_ClearStoredEARFCN(ONENET_ClientsTypeDef* pClient);		//清除小区频点
 void NET_ONENET_NBIOT_Event_NbandModeCheck(ONENET_ClientsTypeDef* pClient);		//NBAND模式查询
 void NET_ONENET_NBIOT_Event_NbandModeConfig(ONENET_ClientsTypeDef* pClient);		//NBAND模式配置
 void NET_ONENET_NBIOT_Event_AttachCheck(ONENET_ClientsTypeDef* pClient);			//注网检查

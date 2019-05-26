@@ -66,9 +66,9 @@ int NET_COAP_Message_Operate_Creat_Json_Work_Info(char* outBuffer)
 				"\"Ci\":\"%X\","
 				"\"Cmdcnt\":\"%d.%d\","
 				"\"Nbruntime\":\"%d.%d\","
+				"\"APN\":\"%s\","
 				"\"PCP\":\"%d.%d-%d.%d.V%d.%d\","
 				"\"Coef\":\"%d.%d.%d\","
-				"\"Beepoff\":%d,"
 				"\"Rollinit\":%d,"
 				"\"RadioRv\":%d"
 			"}"
@@ -84,10 +84,10 @@ int NET_COAP_Message_Operate_Creat_Json_Work_Info(char* outBuffer)
 		TCFG_Utility_Get_Nbiot_NetworkRegStatusCellID(),
 		TCFG_EEPROM_GetRFCmdCnt(), TCFG_EEPROM_GetNBCmdCnt(),
 		TCFG_Utility_GetCoapConnectTime(), TCFG_Utility_GetCoapIdleTime(),
+		TCFG_Utility_Get_Nbiot_PDPContext_APN(),
 		TCFG_Utility_Get_Nbiot_PCPUpgradeStartTimes(), TCFG_Utility_Get_Nbiot_PCPUpgradePackSliceIndex(), TCFG_Utility_Get_Nbiot_PCPUpgradePackSliceNum(),
 		TCFG_Utility_Get_Nbiot_PCPUpgradePackSliceSize(), TCFG_Utility_Get_Nbiot_PCPPlatformSoftVersionMajor(), TCFG_Utility_Get_Nbiot_PCPPlatformSoftVersionSub(),
 		TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ,
-		TCFG_EEPROM_GetBeepOff(),
 		TCFG_EEPROM_GetRollingOverInitSensor(),
 		TCFG_Utility_Get_RadioGatewayNearby()
 	);

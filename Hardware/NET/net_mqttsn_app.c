@@ -109,6 +109,16 @@ void NET_MQTTSN_APP_PollExecution(MQTTSN_ClientsTypeDef* pClient)
 #endif
 		break;
 	
+	case CLEAR_STORED_EARFCN:
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
+	#if NBIOT_CLEAR_STORED_EARFCN_STAT
+		NET_MQTTSN_NBIOT_Event_ClearStoredEARFCN(pClient);
+	#else
+		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+	#endif
+#endif
+		break;
+	
 	case CDP_SERVER_CHECK:
 #if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
@@ -318,6 +328,10 @@ static unsigned char* MQTTSN_NBIOT_GetDictateFailureCnt(MQTTSN_ClientsTypeDef* p
 	
 	case FULL_FUNCTIONALITY:
 		dictateFailureCnt = &pClient->SocketStack->NBIotStack->DictateRunCtl.dictateFullFunctionalityFailureCnt;
+		break;
+	
+	case CLEAR_STORED_EARFCN:
+		dictateFailureCnt = &pClient->SocketStack->NBIotStack->DictateRunCtl.dictateClearStoredEARFCNFailureCnt;
 		break;
 	
 	case NBAND_MODE_CHECK:
@@ -582,6 +596,8 @@ void NET_MQTTSN_NBIOT_Event_StopMode(MQTTSN_ClientsTypeDef* pClient)
 		pClient->SocketStack->NBIotStack->DictateRunCtl.dictateRunTime = dictateRunTime;
 		/* NBIOT Module Poweroff */
 		NBIOT_Neul_NBxx_HardwarePoweroff(pClient->SocketStack->NBIotStack);
+		/* Clear Stored EARFCN */
+		pClient->SocketStack->NBIotStack->ClearStoredEARFCN = NBIOT_CLEAR_STORED_EARFCN_TRUE;
 		/* Init Message Index */
 #if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
 		MqttSNStatusBasicIndex = NET_MqttSN_Message_StatusBasicRear();
@@ -943,7 +959,18 @@ void NET_MQTTSN_NBIOT_Event_FullFunctionality(MQTTSN_ClientsTypeDef* pClient)
 	
 	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadMinOrFullFunc(pClient->SocketStack->NBIotStack)) == NBIOT_OK) {
 		/* Dictate execute is Success */
+#if NBIOT_CLEAR_STORED_EARFCN_STAT
+		if (pClient->SocketStack->NBIotStack->ClearStoredEARFCN != NBIOT_CLEAR_STORED_EARFCN_FALSE) {
+			/* 需清除频点 */
+			MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, MINIMUM_FUNCTIONALITY, FULL_FUNCTIONALITY);
+		}
+		else {
+			/* 无需清除频点 */
+			MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, FULL_FUNCTIONALITY);
+		}
+#else
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, FULL_FUNCTIONALITY);
+#endif
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB FullFunc Check Ok");
@@ -966,7 +993,18 @@ void NET_MQTTSN_NBIOT_Event_FullFunctionality(MQTTSN_ClientsTypeDef* pClient)
 	if (pClient->SocketStack->NBIotStack->Parameter.functionality != FullFunc) {
 		if ((NBStatus = NBIOT_Neul_NBxx_SetMinOrFullFunc(pClient->SocketStack->NBIotStack, FullFunc)) == NBIOT_OK) {
 			/* Dictate execute is Success */
+#if NBIOT_CLEAR_STORED_EARFCN_STAT
+			if (pClient->SocketStack->NBIotStack->ClearStoredEARFCN != NBIOT_CLEAR_STORED_EARFCN_FALSE) {
+				/* 需清除频点 */
+				MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, MINIMUM_FUNCTIONALITY, FULL_FUNCTIONALITY);
+			}
+			else {
+				/* 无需清除频点 */
+				MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, FULL_FUNCTIONALITY);
+			}
+#else
 			MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, FULL_FUNCTIONALITY);
+#endif
 			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 			MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB FullFunc Set Ok");
@@ -1002,7 +1040,18 @@ void NET_MQTTSN_NBIOT_Event_MinimumFunctionality(MQTTSN_ClientsTypeDef* pClient)
 	
 	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadMinOrFullFunc(pClient->SocketStack->NBIotStack)) == NBIOT_OK) {
 		/* Dictate execute is Success */
+#if NBIOT_CLEAR_STORED_EARFCN_STAT
+		if (pClient->SocketStack->NBIotStack->ClearStoredEARFCN != NBIOT_CLEAR_STORED_EARFCN_FALSE) {
+			/* 需清除频点 */
+			MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, CLEAR_STORED_EARFCN, MINIMUM_FUNCTIONALITY);
+		}
+		else {
+			/* 无需清除频点 */
+			MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CONFIG, MINIMUM_FUNCTIONALITY);
+		}
+#else
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CONFIG, MINIMUM_FUNCTIONALITY);
+#endif
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB MinFunc Check Ok");
@@ -1025,7 +1074,18 @@ void NET_MQTTSN_NBIOT_Event_MinimumFunctionality(MQTTSN_ClientsTypeDef* pClient)
 	if (pClient->SocketStack->NBIotStack->Parameter.functionality != MinFunc) {
 		if ((NBStatus = NBIOT_Neul_NBxx_SetMinOrFullFunc(pClient->SocketStack->NBIotStack, MinFunc)) == NBIOT_OK) {
 			/* Dictate execute is Success */
+#if NBIOT_CLEAR_STORED_EARFCN_STAT
+			if (pClient->SocketStack->NBIotStack->ClearStoredEARFCN != NBIOT_CLEAR_STORED_EARFCN_FALSE) {
+				/* 需清除频点 */
+				MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, CLEAR_STORED_EARFCN, MINIMUM_FUNCTIONALITY);
+			}
+			else {
+				/* 无需清除频点 */
+				MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CONFIG, MINIMUM_FUNCTIONALITY);
+			}
+#else
 			MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CONFIG, MINIMUM_FUNCTIONALITY);
+#endif
 			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 			MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB MinFunc Set Ok");
@@ -1044,6 +1104,43 @@ void NET_MQTTSN_NBIOT_Event_MinimumFunctionality(MQTTSN_ClientsTypeDef* pClient)
 #endif
 			return;
 		}
+	}
+}
+
+/**********************************************************************************************************
+ @Function			void NET_MQTTSN_NBIOT_Event_ClearStoredEARFCN(MQTTSN_ClientsTypeDef* pClient)
+ @Description			NET_MQTTSN_NBIOT_Event_ClearStoredEARFCN	: 清除小区频点
+ @Input				pClient								: MqttSN客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_MQTTSN_NBIOT_Event_ClearStoredEARFCN(MQTTSN_ClientsTypeDef* pClient)
+{
+	NBIOT_StatusTypeDef NBStatus = NBStatus;
+	
+	MQTTSN_NBIOT_DictateEvent_SetTime(pClient, 30);
+	
+	if ((NBStatus = NBIOT_Neul_NBxx_ClearStoredEarfcn(pClient->SocketStack->NBIotStack)) == NBIOT_OK) {
+		/* Dictate execute is Success */
+		pClient->SocketStack->NBIotStack->ClearStoredEARFCN = NBIOT_CLEAR_STORED_EARFCN_FALSE;
+		
+		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, CLEAR_STORED_EARFCN);
+		
+#ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB Clear Stored EARFCN OK");
+#endif
+	}
+	else {
+		/* Dictate execute is Fail */
+		MQTTSN_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, CLEAR_STORED_EARFCN);
+		
+#ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB Clear Stored EARFCN Fail Ecde %d", NBStatus);
+	#else
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB Clear Stored EARFCN Fail");
+	#endif
+#endif
+		return;
 	}
 }
 
@@ -1311,6 +1408,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterCheckOut(MQTTSN_ClientsTypeDef* pClient)
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadIMSI(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadCGPADDR(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadCGDCONT(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
+	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadPDPContext(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadRSSI(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadStatisticsRADIO(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadAreaCode(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
@@ -1321,7 +1419,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterCheckOut(MQTTSN_ClientsTypeDef* pClient)
 		pClient->SocketStack->NBIotStack->Registered = true;
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		MQTTSN_DEBUG_LOG_PRINTF("Para-C-K");
+		MQTTSN_DEBUG_LOG_PRINTF("PR-C-K");
 #endif
 	}
 	else {
@@ -1332,7 +1430,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterCheckOut(MQTTSN_ClientsTypeDef* pClient)
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
 		MQTTSN_DEBUG_LOG_PRINTF("NB Para Check Fail ECde %d", NBStatus);
 	#else
-		MQTTSN_DEBUG_LOG_PRINTF("Para-C-F");
+		MQTTSN_DEBUG_LOG_PRINTF("PR-C-F");
 	#endif
 #endif
 		return;
@@ -1360,14 +1458,14 @@ void NET_MQTTSN_Event_Init(MQTTSN_ClientsTypeDef* pClient)
 		/* Dictate execute is Success */
 		MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_DISCONNECT, MQTTSN_SUBSTATE_INIT, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		MQTTSN_DEBUG_LOG_PRINTF("MN Creat UDP Ok");
+		MQTTSN_DEBUG_LOG_PRINTF("MNTU-K");
 #endif
 	}
 	else {
 		/* Dictate execute is Fail */
 		MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_INIT);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		MQTTSN_DEBUG_LOG_PRINTF("MN Creat UDP Fail");
+		MQTTSN_DEBUG_LOG_PRINTF("MNTU-F");
 #endif
 		return;
 	}
@@ -1400,7 +1498,7 @@ void NET_MQTTSN_Event_Disconnect(MQTTSN_ClientsTypeDef* pClient)
 		/* Dictate execute is Fail */
 		MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_DISCONNECT);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		MQTTSN_DEBUG_LOG_PRINTF("MN Cont Fail");
+		MQTTSN_DEBUG_LOG_PRINTF("MN-CNT-F");
 #endif
 	}
 	else {
@@ -1409,7 +1507,7 @@ void NET_MQTTSN_Event_Disconnect(MQTTSN_ClientsTypeDef* pClient)
 		/* Set Active Duration */
 		MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-		MQTTSN_DEBUG_LOG_PRINTF("MN Cont Ok");
+		MQTTSN_DEBUG_LOG_PRINTF("MN-CNT-K");
 #endif
 	}
 }
@@ -1430,7 +1528,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			/* Dictate execute is Fail */
 			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			MQTTSN_DEBUG_LOG_PRINTF("MN Sub %s -F", MQTTSN_SUBSCRIBE_ID);
+			MQTTSN_DEBUG_LOG_PRINTF("MN-SB-%s-F", MQTTSN_SUBSCRIBE_ID);
 #endif
 			return;
 		}
@@ -1439,7 +1537,7 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, false);
 			pClient->DictateRunCtl.dictateSubscribeStatus = true;
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			MQTTSN_DEBUG_LOG_PRINTF("MN Sub %s -K", MQTTSN_SUBSCRIBE_ID);
+			MQTTSN_DEBUG_LOG_PRINTF("MN-SB-%s-K", MQTTSN_SUBSCRIBE_ID);
 #endif
 		}
 	}
@@ -1717,14 +1815,14 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 			/* Dictate execute is Fail */
 			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			MQTTSN_DEBUG_LOG_PRINTF("MN-DCont-F");
+			MQTTSN_DEBUG_LOG_PRINTF("MN-DCNT-F");
 #endif
 		}
 		else {
 			/* Dictate execute is Success */
 			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_AWAKE, MQTTSN_SUBSTATE_ACTIVE, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			MQTTSN_DEBUG_LOG_PRINTF("MN-DCont-K");
+			MQTTSN_DEBUG_LOG_PRINTF("MN-DCNT-K");
 #endif
 		}
 	}
@@ -1794,7 +1892,7 @@ void NET_MQTTSN_Event_Sleep(MQTTSN_ClientsTypeDef* pClient)
 			/* Dictate execute is Fail */
 			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_SLEEP);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			MQTTSN_DEBUG_LOG_PRINTF("MN-Cont-F");
+			MQTTSN_DEBUG_LOG_PRINTF("MN-CNT-F");
 #endif
 			return;
 		}
@@ -1804,7 +1902,7 @@ void NET_MQTTSN_Event_Sleep(MQTTSN_ClientsTypeDef* pClient)
 			/* Set Active Duration */
 			MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			MQTTSN_DEBUG_LOG_PRINTF("MN-Cont-K");
+			MQTTSN_DEBUG_LOG_PRINTF("MN-CNT-K");
 #endif
 			return;
 		}

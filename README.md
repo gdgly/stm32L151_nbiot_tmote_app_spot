@@ -2,6 +2,13 @@
 > ##### Copyright (C) 2019 Movebroad Version:20.142 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2019-05-25 :
+	* 版本号修改为143。
+	* WorkInfo上报运营商卡APN信息。
+	* WorkInfo去除上报BeepOff信息。
+	* workinfo小无线输出APN信息。
+	* 增加NBIOT清除小区频点COAP,ONENET,MQTTSN同时增加。
+	* 设备上电或硬件重启不清除小区频点，当多次入网不成功时开启清频(3次)。
 * 2019-05-15 :
 	* 测试架相关代码暂未开启。
 	* 增加固件检查NBIOT模组频段是否在支持范围，当按下测试点，如未读取到IMEI或频段不匹配将警告。

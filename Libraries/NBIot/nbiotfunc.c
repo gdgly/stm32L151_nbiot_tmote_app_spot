@@ -666,6 +666,38 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCGDCONT(NBIOT_ClientsTypeDef* pClie
 }
 
 /**********************************************************************************************************
+ @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadPDPContext(NBIOT_ClientsTypeDef* pClient)
+ @Description			NBIOT_Neul_NBxx_CheckReadPDPContext		: 检出模组APN
+ @Input				pClient								: NBIOT客户端实例
+ @Return				NBIOT_StatusTypeDef						: NBIOT处理状态
+**********************************************************************************************************/
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadPDPContext(NBIOT_ClientsTypeDef* pClient)
+{
+	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_CGCONTRDP_MSEC);
+#else
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
+	
+	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+CGCONTRDP\r", strlen("AT+CGCONTRDP\r"), "OK", "ERROR");
+	
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
+		int cid = 0;
+		memset((void *)pClient->Parameter.cgcontrdpAPN, 0x0, sizeof(pClient->Parameter.cgcontrdpAPN));
+		sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+CGCONTRDP]%*[^:]:%d,,\"%[^\"]\"", &cid, pClient->Parameter.cgcontrdpAPN);
+	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		NBStatus = NBIOT_Neul_NBxx_DictateEvent_GetError(pClient);
+	}
+#endif
+	
+	return NBStatus;
+}
+
+/**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadDateTime(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadDateTime			: 检出DateTime基站时间
  @Input				pClient								: NBIOT客户端实例
