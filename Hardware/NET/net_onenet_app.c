@@ -1290,7 +1290,7 @@ void NET_ONENET_NBIOT_Event_AttachInquire(ONENET_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
-	ONENET_NBIOT_DictateEvent_SetTime(pClient, 60);
+	ONENET_NBIOT_DictateEvent_SetTime(pClient, ONENET_NBIOT_CGATT_TIME_S);
 	
 	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadAttachOrDetach(pClient->LWM2MStack->NBIotStack)) == NBIOT_OK) {
 		/* Dictate execute is Success */

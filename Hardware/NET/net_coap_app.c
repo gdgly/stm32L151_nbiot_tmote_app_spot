@@ -1325,7 +1325,7 @@ void NET_COAP_NBIOT_Event_AttachInquire(NBIOT_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
-	COAP_NBIOT_DictateEvent_SetTime(pClient, 60);
+	COAP_NBIOT_DictateEvent_SetTime(pClient, COAP_NBIOT_CGATT_TIME_S);
 	
 	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadAttachOrDetach(pClient)) == NBIOT_OK) {
 		/* Dictate execute is Success */

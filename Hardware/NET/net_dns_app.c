@@ -1307,7 +1307,7 @@ void NET_DNS_NBIOT_Event_AttachInquire(DNS_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
-	DNS_NBIOT_DictateEvent_SetTime(pClient, 60);
+	DNS_NBIOT_DictateEvent_SetTime(pClient, DNS_NBIOT_CGATT_TIME_S);
 	
 	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadAttachOrDetach(pClient->SocketStack->NBIotStack)) == NBIOT_OK) {
 		/* Dictate execute is Success */

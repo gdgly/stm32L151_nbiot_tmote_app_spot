@@ -1357,7 +1357,7 @@ void NET_MQTTSN_NBIOT_Event_AttachInquire(MQTTSN_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
-	MQTTSN_NBIOT_DictateEvent_SetTime(pClient, 60);
+	MQTTSN_NBIOT_DictateEvent_SetTime(pClient, MQTTSN_NBIOT_CGATT_TIME_S);
 	
 	if ((NBStatus = NBIOT_Neul_NBxx_CheckReadAttachOrDetach(pClient->SocketStack->NBIotStack)) == NBIOT_OK) {
 		/* Dictate execute is Success */

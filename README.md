@@ -2,6 +2,9 @@
 > ##### Copyright (C) 2019 Movebroad Version:20.142 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2019-06-10 :
+	* 版本号修改为144。
+	* 单band入网时间为180秒，多band入网时间为500秒。
 * 2019-05-25 :
 	* 版本号修改为143。
 	* WorkInfo上报运营商卡APN信息。
