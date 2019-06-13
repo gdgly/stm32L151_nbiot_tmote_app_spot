@@ -105,7 +105,6 @@ int main(void)
 #if TESTBENCH_TYPE
 	if (TestBench_FLASH_CheckSubSN() == true) {												//测试架写入SN到FLASH
 		TestBench_FLASH_WriteSubSN();														//写入MACSN
-		TestBench_StateCtrl_ALL_ENBALE();													//启动测试架测试总开关
 	}
 #endif
 	
@@ -345,18 +344,12 @@ void MainRollingUpwardsActived(void)
 		#endif
 		}
 		else {
-		#if TESTBENCH_TYPE
-			static u8 tRadarStart = 0;
-		#endif
 			/* NBIOT Power OFF */
 			if (NBIOTPOWER_IO_READ()) {
 				NBIOT_Neul_NBxx_CheckReadIMEI(&NbiotClientHandler);
 				NBIOT_Neul_NBxx_TestSupportedBands(&NbiotClientHandler, NBIOT_MODULE_BAND_SUPPORT);
 				NET_NBIOT_Initialization();
 				NBIOTPOWER(OFF);
-		#if TESTBENCH_TYPE
-				tRadarStart = 1;
-		#endif
 			}
 			if (NbiotClientHandler.Parameter.bandsupport != true) {
 				Radio_Trf_Printf("imei:null or band:no support");
@@ -365,14 +358,6 @@ void MainRollingUpwardsActived(void)
 			else {
 				Radio_Trf_Printf("imei:%s", TCFG_Utility_Get_Nbiot_Imei_String());
 			}
-		#if TESTBENCH_TYPE
-			if (tRadarStart == 1) {
-				tRadarStart = 0;
-				RADARPOWER(ON);
-				Delay_MS(1000);
-				RADARPOWER(OFF);
-			}
-		#endif
 		}
 #else
 	#if NBIOT_SNEDCOUNTDAY_LIMIT_TYPE
@@ -541,28 +526,6 @@ void MainHandleRoutine(void)
 	if (Stm32_GetSecondTick() != SystemRunningTime.seconds) {
 		SystemRunningTime.seconds = Stm32_GetSecondTick();
 		
-#if TESTBENCH_TYPE
-		if (TestBench_StateCtrl_ALL_STATE() != false) {
-			/* RF4438 */
-			if ((TRF_OK == Radio_Rf_get_Status()) && (gateway_nearby > 10)) {
-				TestBench_Tack_RF4438(0x4438);
-			}
-			/* Magnetism */
-			if ((Qmc5883lData.X_Now != 0) || (Qmc5883lData.Y_Now != 0) || (Qmc5883lData.Z_Now != 0)) {
-				TestBench_Tack_Magnetism(Qmc5883lData.X_Now, Qmc5883lData.Y_Now, Qmc5883lData.Z_Now);
-			}
-			/* Radarval */
-			if ((radar_targetinfo.pMagNow[2] != 0) || (radar_targetinfo.pMagNow[3] != 0) || (radar_targetinfo.pMagNow[4] != 0)) {
-				TestBench_Tack_Radarval(radar_targetinfo.pMagNow[2], radar_targetinfo.pMagNow[3], radar_targetinfo.pMagNow[4]);
-			}
-			/* NBIoTval */
-			if (TCFG_Utility_Get_Nbiot_Registered() != false) {
-				TestBench_Tack_NBIoTval(TCFG_Utility_Get_Nbiot_Imei_String(), TCFG_Utility_Get_Nbiot_Iccid_String());
-			}
-			/* Report Device TestBench */
-			TestBench_Report_DeviceData();
-		}
-#endif
 	}
 	/* Every Ten Secound Running */
 	if ((Stm32_GetSecondTick() / 10) != SystemRunningTime.tenseconds) {
@@ -613,11 +576,6 @@ void MainHandleRoutine(void)
 	if ((Stm32_GetSecondTick() / 60) != SystemRunningTime.minutes) {
 		SystemRunningTime.minutes = Stm32_GetSecondTick() / 60;
 		
-#if TESTBENCH_TYPE
-		if (TestBench_StateCtrl_ALL_STATE() != false) {
-			TestBench_Report_Compel();
-		}
-#endif
 	}
 	/* Every FifteenMinutes Running */
 	if ((Stm32_GetSecondTick() / 900) != SystemRunningTime.fifteenMinutes) {

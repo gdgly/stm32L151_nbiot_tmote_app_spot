@@ -512,11 +512,7 @@
 
 #define	USART2_DISABLE					0
 #define	USART2_ENABLE					1
-#if TESTBENCH_TYPE
-#define	USART2_TYPE					USART2_ENABLE						//串口2状态
-#else
 #define	USART2_TYPE					USART2_DISABLE						//串口2状态
-#endif
 
 #define	USART3_DISABLE					0
 #define	USART3_ENABLE					1
