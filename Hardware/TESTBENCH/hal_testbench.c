@@ -24,14 +24,19 @@
 **********************************************************************************************************/
 bool TestBench_FLASH_CheckSubSN(void)
 {
-	if ( (0x00 == *(__IO uint8_t *)(FLASH_END - 0)) && \
-		(0x00 == *(__IO uint8_t *)(FLASH_END - 1)) && \
-		(0x00 == *(__IO uint8_t *)(FLASH_END - 2)) && \
-		(0x00 == *(__IO uint8_t *)(FLASH_END - 3)) ) {
+	if (TCFG_EEPROM_Get_MAC_SN() != 1) {
 		return false;
 	}
 	else {
-		return true;
+		if ( (0x00 == *(__IO uint8_t *)(FLASH_END - 0)) && \
+			(0x00 == *(__IO uint8_t *)(FLASH_END - 1)) && \
+			(0x00 == *(__IO uint8_t *)(FLASH_END - 2)) && \
+			(0x00 == *(__IO uint8_t *)(FLASH_END - 3)) ) {
+			return false;
+		}
+		else {
+			return true;
+		}
 	}
 }
 

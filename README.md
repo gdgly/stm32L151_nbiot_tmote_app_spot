@@ -2,6 +2,8 @@
 > ##### Copyright (C) 2019 Movebroad Version:20.144 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2019-06014 :
+	* EEPROM中SN号为空检查FLASH最后4字节，不为空将SN写入EEPROM。
 * 2019-06-10 :
 	* 版本号修改为144。
 	* 单band入网时间为180秒，多band入网时间为500秒。

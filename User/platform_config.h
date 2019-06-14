@@ -149,7 +149,7 @@
 
 #define	TESTBENCH_DISABLE				0
 #define	TESTBENCH_ENABLE				1
-#define	TESTBENCH_TYPE					TESTBENCH_DISABLE					//测试架测试
+#define	TESTBENCH_TYPE					TESTBENCH_ENABLE					//测试架测试
 
 #define	ROLLINGOVER_INITSENSOR_CLOSE		0
 #define	ROLLINGOVER_INITSENSOR_OPEN		1
@@ -403,8 +403,8 @@
 #define	RADIO_DOWNLOAD_CMD_DISRANGE		1								//RADIO下行指令DisRange
 #define	RADIO_DOWNLOAD_CMD_CARINDELAY		0								//RADIO下行指令CarInDelay
 #define	RADIO_DOWNLOAD_CMD_RATIME		0								//RADIO下行指令RATime
-#define	RADIO_DOWNLOAD_CMD_MAGTEMPCOEF	1								//RADIO下行指令MagTempCoef
-#define	RADIO_DOWNLOAD_CMD_SETQMCCOEF		1								//RADIO下行指令SetQmcCoef
+#define	RADIO_DOWNLOAD_CMD_MAGTEMPCOEF	0								//RADIO下行指令MagTempCoef
+#define	RADIO_DOWNLOAD_CMD_SETQMCCOEF		0								//RADIO下行指令SetQmcCoef
 #define	RADIO_DOWNLOAD_CMD_BEEPOFF		0								//RADIO下行指令BeepOff
 #define	RADIO_DOWNLOAD_CMD_ROLLINIT		0								//RADIO下行指令RollInit
 #define	RADIO_DOWNLOAD_CMD_UPLIMIT		0								//RADIO下行指令UpLimit

@@ -1076,7 +1076,7 @@ void NET_DNS_NBIOT_Event_ClearStoredEARFCN(DNS_ClientsTypeDef* pClient)
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, FULL_FUNCTIONALITY, CLEAR_STORED_EARFCN);
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
-		DNS_DEBUG_LOG_PRINTF("NB Clear Stored EARFCN OK");
+		DNS_DEBUG_LOG_PRINTF("Clr-ER-K");
 #endif
 	}
 	else {
@@ -1087,7 +1087,7 @@ void NET_DNS_NBIOT_Event_ClearStoredEARFCN(DNS_ClientsTypeDef* pClient)
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
 		DNS_DEBUG_LOG_PRINTF("NB Clear Stored EARFCN Fail Ecde %d", NBStatus);
 	#else
-		DNS_DEBUG_LOG_PRINTF("NB Clear Stored EARFCN Fail");
+		DNS_DEBUG_LOG_PRINTF("Clr-ER-F");
 	#endif
 #endif
 		return;
