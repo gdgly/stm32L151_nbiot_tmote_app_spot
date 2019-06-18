@@ -564,11 +564,18 @@ int NET_MQTTSN_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer)
 		TCFG_EEPROM_GetMagManualBack(2, TCFG_Y_AXIS),
 		TCFG_EEPROM_GetMagManualBack(3, TCFG_Y_AXIS),
 		TCFG_EEPROM_GetMagManualBack(4, TCFG_Y_AXIS),
+		Qmc5883lHistoryBack.Z_Back[0],
+		Qmc5883lHistoryBack.Z_Back[1],
+		Qmc5883lHistoryBack.Z_Back[2],
+		Qmc5883lHistoryBack.Z_Back[3],
+		Qmc5883lHistoryBack.Z_Back[4]
+#if 0
 		TCFG_EEPROM_GetMagManualBack(0, TCFG_Z_AXIS),
 		TCFG_EEPROM_GetMagManualBack(1, TCFG_Z_AXIS),
 		TCFG_EEPROM_GetMagManualBack(2, TCFG_Z_AXIS),
 		TCFG_EEPROM_GetMagManualBack(3, TCFG_Z_AXIS),
 		TCFG_EEPROM_GetMagManualBack(4, TCFG_Z_AXIS)
+#endif
 	);
 	
 	return strlen(outBuffer);

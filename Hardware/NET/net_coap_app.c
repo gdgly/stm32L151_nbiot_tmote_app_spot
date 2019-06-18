@@ -751,7 +751,7 @@ void NET_COAP_NBIOT_Event_FullFunctionality(NBIOT_ClientsTypeDef* pClient)
 #endif
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		COAP_DEBUG_LOG_PRINTF("CoAP FullFunc Ok");
+		COAP_DEBUG_LOG_PRINTF("CoAP FullFunc Read Ok");
 #endif
 	}
 	else {
@@ -832,7 +832,7 @@ void NET_COAP_NBIOT_Event_MinimumFunctionality(NBIOT_ClientsTypeDef* pClient)
 #endif
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		COAP_DEBUG_LOG_PRINTF("CoAP MinFunc Ok");
+		COAP_DEBUG_LOG_PRINTF("CoAP MinFunc Read Ok");
 #endif
 	}
 	else {

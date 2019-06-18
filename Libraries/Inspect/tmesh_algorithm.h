@@ -38,6 +38,7 @@
   *		    版本32: 当设置了手动背景后,当前磁场与自动背景以及各手动背景分别比较,取最小的那个差值.
   *		    版本33: 如果磁场和雷达都波动了,磁场有车,雷达测得距离>20,即使雷达差值很小,也认为有车.
   *		    版本34: 覆水时(<12) 磁场的灵敏度可调无车的门槛一般是700~900,有车的门槛是980~1260.
+  *		    版本35: 最多记录5个历史磁场背景,每个磁场背景间隔24小时以上,以应对无车判定为有车的情况.
   *
   *********************************************************************************************************
   */
@@ -112,6 +113,15 @@ typedef __packed struct
 	
 	signed short int					temp_back;
 }QMC5883L_ManualBackGround;
+
+typedef __packed struct
+{
+	s16								X_Back[5];
+	s16								Y_Back[5];
+	s16								Z_Back[5];
+	
+	u16								record_hours;
+}QMC5883L_HistoryBackGround;
 
 typedef __packed struct
 {
@@ -235,6 +245,7 @@ typedef __packed struct
 extern QMC5883L_TypeDef					Qmc5883lData;
 extern QMC5883LDIFF_TypeDef				Qmc5883lDiff;
 extern QMC5883L_ManualBackGround			Qmc5883lManualBack;
+extern QMC5883L_HistoryBackGround			Qmc5883lHistoryBack;
 extern RADAR_DataStruct					sRadarData;
 extern radar_least_s					s_radar_least;
 
