@@ -715,9 +715,9 @@ void NET_COAP_NBIOT_Event_SimICCIDCheck(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		COAP_DEBUG_LOG_PRINTF("NB ICCID Check Fail ECde %d", NBStatus);
+		COAP_DEBUG_LOG_PRINTF("NB ICCID Fail ECde %d", NBStatus);
 	#else
-		COAP_DEBUG_LOG_PRINTF("NB ICCID Check Fail");
+		COAP_DEBUG_LOG_PRINTF("NB ICCID Fail");
 	#endif
 #endif
 	}
@@ -751,7 +751,7 @@ void NET_COAP_NBIOT_Event_FullFunctionality(NBIOT_ClientsTypeDef* pClient)
 #endif
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		COAP_DEBUG_LOG_PRINTF("CoAP FullFunc Read Ok");
+		COAP_DEBUG_LOG_PRINTF("CoAP FullFunc Ok");
 #endif
 	}
 	else {
@@ -832,7 +832,7 @@ void NET_COAP_NBIOT_Event_MinimumFunctionality(NBIOT_ClientsTypeDef* pClient)
 #endif
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
-		COAP_DEBUG_LOG_PRINTF("CoAP MinFunc Read Ok");
+		COAP_DEBUG_LOG_PRINTF("CoAP MinFunc Ok");
 #endif
 	}
 	else {
@@ -1349,11 +1349,18 @@ void NET_COAP_NBIOT_Event_AttachInquire(NBIOT_ClientsTypeDef* pClient)
 	}
 	
 	if (pClient->Parameter.netstate != Attach) {
+		/* 未注网 */
 		COAP_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, ATTACH_INQUIRE);
+		
+		/* 开启频点清除 */
+		pClient->ClearStoredEARFCN = NBIOT_CLEAR_STORED_EARFCN_TRUE;
 	}
 	else {
 		/* 注网成功 */
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, PARAMETER_CHECKOUT, ATTACH_INQUIRE);
+		
+		/* 关闭频点清除 */
+		pClient->ClearStoredEARFCN = NBIOT_CLEAR_STORED_EARFCN_FALSE;
 		
 		/* Get ConnectTime */
 		COAP_NBIOT_GetConnectTime(pClient, true);

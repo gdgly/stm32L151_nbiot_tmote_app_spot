@@ -1331,11 +1331,18 @@ void NET_DNS_NBIOT_Event_AttachInquire(DNS_ClientsTypeDef* pClient)
 	}
 	
 	if (pClient->SocketStack->NBIotStack->Parameter.netstate != Attach) {
+		/* 未注网 */
 		DNS_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, ATTACH_INQUIRE);
+		
+		/* 开启频点清除 */
+		pClient->SocketStack->NBIotStack->ClearStoredEARFCN = NBIOT_CLEAR_STORED_EARFCN_TRUE;
 	}
 	else {
 		/* 注网成功 */
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, PARAMETER_CHECKOUT, ATTACH_INQUIRE);
+		
+		/* 关闭频点清除 */
+		pClient->SocketStack->NBIotStack->ClearStoredEARFCN = NBIOT_CLEAR_STORED_EARFCN_FALSE;
 		
 		/* Get ConnectTime */
 		DNS_NBIOT_GetConnectTime(pClient, true);

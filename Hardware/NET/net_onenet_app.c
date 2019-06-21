@@ -1314,10 +1314,18 @@ void NET_ONENET_NBIOT_Event_AttachInquire(ONENET_ClientsTypeDef* pClient)
 	}
 	
 	if (pClient->LWM2MStack->NBIotStack->Parameter.netstate != Attach) {
+		/* 未注网 */
 		ONENET_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, ATTACH_INQUIRE);
+		
+		/* 开启频点清除 */
+		pClient->LWM2MStack->NBIotStack->ClearStoredEARFCN = NBIOT_CLEAR_STORED_EARFCN_TRUE;
 	}
 	else {
+		/* 注网成功 */
 		ONENET_NBIOT_DictateEvent_SuccessExecute(pClient, PARAMETER_CHECKOUT, ATTACH_INQUIRE);
+		
+		/* 关闭频点清除 */
+		pClient->LWM2MStack->NBIotStack->ClearStoredEARFCN = NBIOT_CLEAR_STORED_EARFCN_FALSE;
 	}
 }
 
