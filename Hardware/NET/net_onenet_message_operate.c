@@ -117,7 +117,6 @@ int NET_ONENET_Message_Operate_Creat_Json_Basic_Info(char* outBuffer)
 				"\"Imei\":\"%s\","
 				"\"Nbvender\":\"%s\","
 				"\"Nbmode\":\"%s\","
-				"\"Nbcgd\":\"%s,%s\","
 				"\"Boot\":\"%d.%d.%d\","
 				"\"Ver\":\"%s\","
 				"\"Rmold\":\"%d\""
@@ -133,7 +132,6 @@ int NET_ONENET_Message_Operate_Creat_Json_Basic_Info(char* outBuffer)
 		TCFG_Utility_Get_Nbiot_Imei_String(),
 		TCFG_Utility_Get_Nbiot_Manufacturer(),
 		TCFG_Utility_Get_Nbiot_Manufacturermode(),
-		TCFG_Utility_Get_Nbiot_PDPType(), TCFG_Utility_Get_Nbiot_APN(),
 		TCFG_Utility_Get_SoftResetFlag(), TCFG_Utility_Get_Device_BootCount(), TCFG_EEPROM_GetDeviceRbtMode(),
 		TCFG_Utility_Get_Nbiot_ModelVersion(),
 		Radar_GetModel()

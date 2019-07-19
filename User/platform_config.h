@@ -177,7 +177,7 @@
 #define	BEEP_OFF_US					230								//无源蜂鸣器关时间
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					145								//从固件版本
+#define	SOFTWARESUB					146								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 
@@ -211,8 +211,8 @@
 #define	RADIO_PRINT_NETINFO_ICCID		1								//无线输出NetInfo ICCID
 #define	RADIO_PRINT_NETINFO_IMSI			0								//无线输出NetInfo IMSI
 #define	RADIO_PRINT_NETINFO_CGP			1								//无线输出NetInfo CGP
-#define	RADIO_PRINT_NETINFO_PDPTYPE		1								//无线输出NetInfo PDPTYPE
-#define	RADIO_PRINT_NETINFO_APN			1								//无线输出NetInfo APN
+#define	RADIO_PRINT_NETINFO_PDPTYPE		0								//无线输出NetInfo PDPTYPE
+#define	RADIO_PRINT_NETINFO_APN			0								//无线输出NetInfo APN
 #define	RADIO_PRINT_NETINFO_RSSI			1								//无线输出NetInfo RSSI
 #define	RADIO_PRINT_NETINFO_SNR			1								//无线输出NetInfo SNR
 #define	RADIO_PRINT_NETINFO_OTHER		1								//无线输出NetInfo OTHER
@@ -315,8 +315,8 @@
 #define	RADIO_PRINT_NETINFO_ICCID		1								//无线输出NetInfo ICCID
 #define	RADIO_PRINT_NETINFO_IMSI			0								//无线输出NetInfo IMSI
 #define	RADIO_PRINT_NETINFO_CGP			1								//无线输出NetInfo CGP
-#define	RADIO_PRINT_NETINFO_PDPTYPE		1								//无线输出NetInfo PDPTYPE
-#define	RADIO_PRINT_NETINFO_APN			1								//无线输出NetInfo APN
+#define	RADIO_PRINT_NETINFO_PDPTYPE		0								//无线输出NetInfo PDPTYPE
+#define	RADIO_PRINT_NETINFO_APN			0								//无线输出NetInfo APN
 #define	RADIO_PRINT_NETINFO_RSSI			1								//无线输出NetInfo RSSI
 #define	RADIO_PRINT_NETINFO_SNR			1								//无线输出NetInfo SNR
 #define	RADIO_PRINT_NETINFO_OTHER		1								//无线输出NetInfo OTHER
