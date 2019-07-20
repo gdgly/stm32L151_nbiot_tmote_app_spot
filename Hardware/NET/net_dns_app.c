@@ -1359,6 +1359,11 @@ void NET_DNS_NBIOT_Event_ParameterCheckOut(DNS_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
+#if NBIOT_STATION_TIMESTAMP_TYPE
+	unsigned int devicetimestamp = 0;
+	unsigned int stationtimestamp = 0;
+#endif
+	
 	DNS_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if (((NBStatus = NBIOT_Neul_NBxx_CheckReadIMEI(pClient->SocketStack->NBIotStack)) == NBIOT_OK) && 
@@ -1391,6 +1396,20 @@ void NET_DNS_NBIOT_Event_ParameterCheckOut(DNS_ClientsTypeDef* pClient)
 #endif
 		return;
 	}
+	
+#if NBIOT_STATION_TIMESTAMP_TYPE
+	devicetimestamp = RTC_GetUnixTimeToStamp() + (8 * 60 * 60);
+	stationtimestamp = RTC_TimeToStamp(pClient->SocketStack->NBIotStack->Parameter.dataTime.year, pClient->SocketStack->NBIotStack->Parameter.dataTime.month, pClient->SocketStack->NBIotStack->Parameter.dataTime.day, \
+								pClient->SocketStack->NBIotStack->Parameter.dataTime.hour, pClient->SocketStack->NBIotStack->Parameter.dataTime.min,   pClient->SocketStack->NBIotStack->Parameter.dataTime.sec);
+	
+	if ((((stationtimestamp >= devicetimestamp) ? (stationtimestamp - devicetimestamp) : (devicetimestamp - stationtimestamp)) > (NBIOT_STATION_TIMESTAMP_DIFFTIME)) && (pClient->SocketStack->NBIotStack->Parameter.dataTime.errcount < NBIOT_STATION_TIMESTAMP_ERRCOUNT) && (BackUp != true)) {
+		pClient->SocketStack->NBIotStack->Parameter.dataTime.errcount++;
+		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, HARDWARE_REBOOT, PARAMETER_CHECKOUT);
+		return;
+	}
+	
+	pClient->SocketStack->NBIotStack->Parameter.dataTime.errcount = 0;
+#endif
 	
 	/* Set System Time */
 	RTC_Set_Date(pClient->SocketStack->NBIotStack->Parameter.dataTime.year, pClient->SocketStack->NBIotStack->Parameter.dataTime.month, pClient->SocketStack->NBIotStack->Parameter.dataTime.day);

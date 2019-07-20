@@ -460,6 +460,7 @@ struct NBIOT_ParameterTypeDef
 		int							min;
 		int							sec;
 		unsigned int					localstamp;
+		unsigned char					errcount;
 	}dataTime;
 	
 	struct COAPSendMessage

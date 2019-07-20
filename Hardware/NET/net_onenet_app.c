@@ -1339,6 +1339,11 @@ void NET_ONENET_NBIOT_Event_ParameterCheckOut(ONENET_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBStatus;
 	
+#if NBIOT_STATION_TIMESTAMP_TYPE
+	unsigned int devicetimestamp = 0;
+	unsigned int stationtimestamp = 0;
+#endif
+	
 	ONENET_NBIOT_DictateEvent_SetTime(pClient, 30);
 	
 	if (((NBStatus = NBIOT_Neul_NBxx_CheckReadIMEI(pClient->LWM2MStack->NBIotStack)) == NBIOT_OK) && 
@@ -1371,6 +1376,20 @@ void NET_ONENET_NBIOT_Event_ParameterCheckOut(ONENET_ClientsTypeDef* pClient)
 #endif
 		return;
 	}
+	
+#if NBIOT_STATION_TIMESTAMP_TYPE
+	devicetimestamp = RTC_GetUnixTimeToStamp() + (8 * 60 * 60);
+	stationtimestamp = RTC_TimeToStamp(pClient->LWM2MStack->NBIotStack->Parameter.dataTime.year, pClient->LWM2MStack->NBIotStack->Parameter.dataTime.month, pClient->LWM2MStack->NBIotStack->Parameter.dataTime.day, \
+								pClient->LWM2MStack->NBIotStack->Parameter.dataTime.hour, pClient->LWM2MStack->NBIotStack->Parameter.dataTime.min,   pClient->LWM2MStack->NBIotStack->Parameter.dataTime.sec);
+	
+	if ((((stationtimestamp >= devicetimestamp) ? (stationtimestamp - devicetimestamp) : (devicetimestamp - stationtimestamp)) > (NBIOT_STATION_TIMESTAMP_DIFFTIME)) && (pClient->LWM2MStack->NBIotStack->Parameter.dataTime.errcount < NBIOT_STATION_TIMESTAMP_ERRCOUNT) && (BackUp != true)) {
+		pClient->LWM2MStack->NBIotStack->Parameter.dataTime.errcount++;
+		ONENET_NBIOT_DictateEvent_SuccessExecute(pClient, HARDWARE_REBOOT, PARAMETER_CHECKOUT);
+		return;
+	}
+	
+	pClient->LWM2MStack->NBIotStack->Parameter.dataTime.errcount = 0;
+#endif
 	
 	/* Set System Time */
 	RTC_Set_Date(pClient->LWM2MStack->NBIotStack->Parameter.dataTime.year, pClient->LWM2MStack->NBIotStack->Parameter.dataTime.month, pClient->LWM2MStack->NBIotStack->Parameter.dataTime.day);
