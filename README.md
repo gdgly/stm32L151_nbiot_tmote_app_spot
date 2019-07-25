@@ -1,7 +1,9 @@
 # stm32L151_nbiot_tmote_app_spot
-> ##### Copyright (C) 2019 Movebroad Version:20.146 Design by Movebroad
+> ##### Copyright (C) 2019 Movebroad Version:20.147 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2019-07-25 :
+	* 版本号修改为147。
 * 2019-07-24 :
 	* 发布146固件。
 * 2019-07-20 :
