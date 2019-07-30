@@ -119,7 +119,8 @@ int NET_COAP_Message_Operate_Creat_Json_Basic_Info(char* outBuffer)
 				"\"Nbmode\":\"%s\","
 				"\"Boot\":\"%d.%d.%d\","
 				"\"Ver\":\"%s\","
-				"\"Rmold\":\"%d\""
+				"\"Rmold\":%d,"
+				"\"Rvcc\":%d"
 			"}"
 		"}",
 		
@@ -134,7 +135,8 @@ int NET_COAP_Message_Operate_Creat_Json_Basic_Info(char* outBuffer)
 		TCFG_Utility_Get_Nbiot_Manufacturermode(),
 		TCFG_Utility_Get_SoftResetFlag(), TCFG_Utility_Get_Device_BootCount(), TCFG_EEPROM_GetDeviceRbtMode(),
 		TCFG_Utility_Get_Nbiot_ModelVersion(),
-		Radar_GetModel()
+		Radar_GetModel(),
+		Radar_Get_RadarVcc()
 	);
 	
 	return strlen(outBuffer);
@@ -166,7 +168,6 @@ int NET_COAP_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer)
 				"\"Smode\":%d,"
 				"\"Sinter\":%d,"
 				"\"hpass\":%d,"
-				"\"Rvcc\":%d,"
 				"\"x\":[%d,%d,%d,%d,%d],"
 				"\"y\":[%d,%d,%d,%d,%d],"
 				"\"z\":[%d,%d,%d,%d,%d]"
@@ -187,7 +188,6 @@ int NET_COAP_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer)
 		TCFG_EEPROM_GetSenseMode(),
 		Radar_Get_SampleInterval(),
 		tradar_get_highpass(),
-		Radar_Get_RadarVcc(),
 		TCFG_EEPROM_GetMagManualBack(0, TCFG_X_AXIS),
 		TCFG_EEPROM_GetMagManualBack(1, TCFG_X_AXIS),
 		TCFG_EEPROM_GetMagManualBack(2, TCFG_X_AXIS),

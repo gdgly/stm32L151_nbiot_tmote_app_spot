@@ -2,6 +2,8 @@
 > ##### Copyright (C) 2019 Movebroad Version:20.147 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2019-07-30 :
+	* DynamicInfo中Rvcc字段移动到BasicInfo中。
 * 2019-07-25 :
 	* 版本号修改为147。
 * 2019-07-24 :
