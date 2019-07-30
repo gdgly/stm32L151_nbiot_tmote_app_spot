@@ -3094,12 +3094,24 @@ char* TCFG_Utility_Get_Nbiot_APN(void)
 **********************************************************************************************************/
 char* TCFG_Utility_Get_Nbiot_PDPContext_APN(void)
 {
+#if NBIOT_MODULE_MODE_TYPE == NBIOT_MODULE_MODE_V120
+#if NETPROTOCAL == NETCOAP
+	return NbiotClientHandler.Parameter.cgdcontAPN;
+#elif NETPROTOCAL == NETMQTTSN
+	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.cgdcontAPN;
+#elif NETPROTOCAL == NETONENET
+	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.cgdcontAPN;
+#endif
+#endif
+	
+#if NBIOT_MODULE_MODE_TYPE == NBIOT_MODULE_MODE_V150
 #if NETPROTOCAL == NETCOAP
 	return NbiotClientHandler.Parameter.cgcontrdpAPN;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNClientHandler.SocketStack->NBIotStack->Parameter.cgcontrdpAPN;
 #elif NETPROTOCAL == NETONENET
 	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.cgcontrdpAPN;
+#endif
 #endif
 }
 
