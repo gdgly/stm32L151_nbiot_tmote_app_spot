@@ -2,8 +2,10 @@
 > ##### Copyright (C) 2019 Movebroad Version:20.147 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2019-08-01 :
+	* 修复因处理器或硬件差异性导致SPIFLASH在备份固件时间不同导致备份时间超时看门狗重启设备。
 * 2019-07-30 :
-	* DynamicInfo中Rvcc字段移动到BasicInfo中。
+	* 为修复MqttSN固件中DynamicInfo包有可能过长导致数据发不出来的隐患，DynamicInfo中Rvcc字段移动到BasicInfo中。
 	* 增加对NBIoTV120模组的支持。
 * 2019-07-25 :
 	* 版本号修改为147。

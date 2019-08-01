@@ -118,12 +118,14 @@ PCP_ResultCodeTypeDef PCP_Upgrade_BackupCurrentAPP(PCP_ClientsTypeDef* pClient)
 		GD25Q_SPIFLASH_EraseBlock(APP2_BASE_ADDR + 1 * GD25Q80_BLOCK_BYTE_SIZE);
 		GD25Q_SPIFLASH_EraseBlock(APP2_BASE_ADDR + 2 * GD25Q80_BLOCK_BYTE_SIZE);
 		GD25Q_SPIFLASH_EraseBlock(APP2_BASE_ADDR + 3 * GD25Q80_BLOCK_BYTE_SIZE);
+		IWDG_Feed();
 		/* 写入APP2DATA */
 		for (int packIndex = 0; packIndex < 228; packIndex++) {
 			STMFLASH_ReadBuffer(APP_LOWEST_ADDRESS + packIndex * 512, pClient->DataProcessStack, 512);
 			GD25Q_SPIFLASH_WriteBuffer(pClient->DataProcessStack, APP2_DATA_ADDR + packIndex * 512, 512);
 			STMFlashCheckCode = CalculateSumCheckCode(STMFlashCheckCode, pClient->DataProcessStack, 512);
 		}
+		IWDG_Feed();
 		/* 校验APP2DATA */
 		for (int packIndex = 0; packIndex < 228; packIndex++) {
 			GD25Q_SPIFLASH_ReadBuffer(pClient->DataProcessStack, APP2_DATA_ADDR + packIndex * 512, 512);
