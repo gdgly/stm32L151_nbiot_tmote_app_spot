@@ -158,6 +158,8 @@
 
 #define	PRODUCTTEST_OVER_TIME			300								//测试点超时时间
 
+#define	PRODUCTTEST_OVER_BOOTCNT			30								//测试点超过启动次数
+
 #define	TESTBENCH_DISABLE				0
 #define	TESTBENCH_ENABLE				1
 #define	TESTBENCH_TYPE					TESTBENCH_ENABLE					//测试架测试

@@ -317,7 +317,7 @@ void MainRollingUpwardsActived(void)
 	
 	if (!((NETCoapNeedSendCode.WorkInfoWait > 0) || (NETMqttSNNeedSendCode.InfoWorkWait > 0) || (NETOneNETNeedSendCode.WorkInfoWait > 0))) {
 #if PRODUCTTEST_READ_TYPE
-		if (ProductTest_Read()) {
+		if (ProductTest_Read() || (TCFG_Utility_Get_Device_BootCount() > PRODUCTTEST_OVER_BOOTCNT)) {
 		#if NBIOT_SNEDCOUNTDAY_LIMIT_TYPE
 			if (TCFG_Utility_Get_NBIot_SentCountDay() == TCFG_EEPROM_GetNBIotSentCountLimit()) {
 			#if NETPROTOCAL == NETCOAP
@@ -461,7 +461,7 @@ void MainRollingEnteredDownSleepKeepActived(void)
 	
 	if (!((NETCoapNeedSendCode.WorkInfoWait > 0) || (NETMqttSNNeedSendCode.InfoWorkWait > 0) || (NETOneNETNeedSendCode.WorkInfoWait > 0))) {
 #if PRODUCTTEST_READ_TYPE
-		if (ProductTest_Read()) {
+		if (ProductTest_Read() || (TCFG_Utility_Get_Device_BootCount() > PRODUCTTEST_OVER_BOOTCNT)) {
 			/* NBIOT APP Task */
 			NET_NBIOT_App_Task();
 		}
