@@ -434,6 +434,7 @@ unsigned char	TCFG_EEPROM_GetSenseMode(void);												//读取 sense mode
 
 void			TCFG_EEPROM_SetNbiotHeart(uint8_t val);											//保存NbiotHeart
 unsigned char	TCFG_EEPROM_GetNbiotHeart(void);												//读取NbiotHeart
+unsigned char	TCFG_EEPROM_ChangeNbiotHeart(uint8_t val);										//转换NbiotHeart
 
 void			TCFG_EEPROM_SetRadarRange(uint8_t val);											//保存RadarRange
 unsigned char	TCFG_EEPROM_GetRadarRange(void);												//读取RadarRange

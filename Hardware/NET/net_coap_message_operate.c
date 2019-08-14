@@ -182,7 +182,7 @@ int NET_COAP_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer)
 		TCFG_GetRadarCount(),
 		TCFG_Utility_Get_Device_Temperature(),
 		TCFG_Utility_Get_ReInitModuleCount(),
-		TCFG_Utility_Get_Nbiot_BootCount(), TCFG_Utility_Get_Nbiot_SentCount(), TCFG_Utility_Get_Nbiot_RecvCount(), TCFG_Utility_Get_NBIot_SentCountLimit(), TCFG_EEPROM_GetNbiotHeart(),
+		TCFG_Utility_Get_Nbiot_BootCount(), TCFG_Utility_Get_Nbiot_SentCount(), TCFG_Utility_Get_Nbiot_RecvCount(), TCFG_Utility_Get_NBIot_SentCountLimit(), (TCFG_EEPROM_GetNbiotHeart() * 15),
 		TCFG_EEPROM_GetCarInDelay(),
 		TCFG_Utility_Get_GainCover(), TCFG_EEPROM_GetRadarGain(),
 		TCFG_EEPROM_GetSenseMode(),

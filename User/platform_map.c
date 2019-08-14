@@ -184,7 +184,7 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_EEPROM_SetDevBootCnt(TCFG_SystemData.DeviceBootCount);
 	
 	/* NBIot心跳间隔 */
-	TCFG_SystemData.NBIotHeart = NBIOT_HEART_DATA_HOURS;
+	TCFG_SystemData.NBIotHeart = NBIOT_HEART_DATA_TIMER;
 	TCFG_EEPROM_SetNbiotHeart(TCFG_SystemData.NBIotHeart);
 	
 	/* NBIot重启次数 */
@@ -384,8 +384,8 @@ void TCFG_EEPROM_ReadConfigData(void)
 	
 	/* NBIot心跳间隔 */
 	TCFG_SystemData.NBIotHeart = TCFG_EEPROM_GetNbiotHeart();
-	if ((TCFG_SystemData.NBIotHeart == 0) || (TCFG_SystemData.NBIotHeart > 12)) {
-		TCFG_SystemData.NBIotHeart = NBIOT_HEART_DATA_HOURS;
+	if ((TCFG_SystemData.NBIotHeart == 0) || (TCFG_SystemData.NBIotHeart > 48)) {
+		TCFG_SystemData.NBIotHeart = NBIOT_HEART_DATA_TIMER;
 		TCFG_EEPROM_SetNbiotHeart(TCFG_SystemData.NBIotHeart);
 	}
 	
@@ -456,6 +456,10 @@ void TCFG_EEPROM_WriteParameterData(void)
 	/* 升级信号质量限制下限 */
 	TCFG_SystemData.UpgradeLimitSnr = NBCOAP_PCP_UPGRADE_LIMIT_SNR;
 	TCFG_EEPROM_SetUpgradeLimitSnr(TCFG_SystemData.UpgradeLimitSnr);
+	
+	/* NBIot心跳间隔 */
+	TCFG_SystemData.NBIotHeart = NBIOT_HEART_DATA_TIMER;
+	TCFG_EEPROM_SetNbiotHeart(TCFG_SystemData.NBIotHeart);
 	
 	/* NB核心网地址 */
 #if NETPROTOCAL == NETCOAP
@@ -1653,10 +1657,10 @@ unsigned char TCFG_EEPROM_GetSenseMode(void)
 void TCFG_EEPROM_SetNbiotHeart(uint8_t val)
 {
 	if (val == 0) {
-		val = 4;
+		val = NBIOT_HEART_DATA_TIMER;
 	}
-	else if (val > 12) {
-		val = 12;
+	else if (val > 48) {
+		val = 48;
 	}
 	
 	FLASH_EEPROM_WriteByte(TCFG_NB_HEART_OFFSET, val);
@@ -1674,13 +1678,31 @@ unsigned char TCFG_EEPROM_GetNbiotHeart(void)
 	
 	val = FLASH_EEPROM_ReadByte(TCFG_NB_HEART_OFFSET);
 	if (val == 0) {
-		val = 4;
+		val = NBIOT_HEART_DATA_TIMER;
 	}
-	else if (val > 12) {
-		val = 12;
+	else if (val > 48) {
+		val = 48;
 	}
 	
 	return val;
+}
+
+/**********************************************************************************************************
+ @Function			unsigned char TCFG_EEPROM_ChangeNbiotHeart(uint8_t val)
+ @Description			TCFG_EEPROM_ChangeNbiotHeart					: 转换NbiotHeart
+ @Input				val
+ @Return				val
+**********************************************************************************************************/
+unsigned char TCFG_EEPROM_ChangeNbiotHeart(uint8_t val)
+{
+	if ((val > 0) && (val <= 10)) {
+		return (val * 4);
+	}
+	else if (val > 10) {
+		return (val - 10);
+	}
+	
+	return 0;
 }
 
 /**********************************************************************************************************

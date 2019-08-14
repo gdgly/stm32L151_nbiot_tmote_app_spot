@@ -397,7 +397,7 @@ void RadioPrintDeviceinfo(void)
 	Radio_Trf_Printf("Indelay:%d", TCFG_EEPROM_GetCarInDelay());
 #endif
 #if RADIO_PRINT_DEVINFO_NBHEART
-	Radio_Trf_Printf("Nbheart:%d", TCFG_EEPROM_GetNbiotHeart());
+	Radio_Trf_Printf("Nbheart:%d", (TCFG_EEPROM_GetNbiotHeart() * 15));
 #endif
 #if RADIO_PRINT_DEVINFO_CGAIN
 	Radio_Trf_Printf("Cgain:%d", TCFG_Utility_Get_GainCover());

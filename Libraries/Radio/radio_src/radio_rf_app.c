@@ -376,7 +376,7 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 			#if RADIO_DOWNLOAD_CMD_NBHEART
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "nbheart")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "nbheart:%hu", &uval16);
-					TCFG_EEPROM_SetNbiotHeart(uval16);
+					TCFG_EEPROM_SetNbiotHeart(TCFG_EEPROM_ChangeNbiotHeart(uval16));
 					TCFG_SystemData.NBIotHeart = TCFG_EEPROM_GetNbiotHeart();
 				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("NbHeart : %hu", TCFG_SystemData.NBIotHeart);

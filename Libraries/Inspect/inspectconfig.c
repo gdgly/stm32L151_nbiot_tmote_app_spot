@@ -164,7 +164,7 @@ void Inspect_Spot_ExistenceDetect(void)
 	}
 	
 	/* 心跳数据包 */
-	if ((Stm32_GetSecondTick() > (time2send_spot + 3600 * TCFG_EEPROM_GetNbiotHeart())) && ((Inspect_Detect_LastTime + 10) > Stm32_GetSecondTick())) {
+	if ((Stm32_GetSecondTick() > (time2send_spot + 900 * TCFG_EEPROM_GetNbiotHeart())) && ((Inspect_Detect_LastTime + 10) > Stm32_GetSecondTick())) {
 		Inspect_Message_SpotStatusDequeueEx(&SpotStatusData);
 		if (SpotStatusData.timeCounter != 0) {
 			SpotStatusData.spot_count = 0;

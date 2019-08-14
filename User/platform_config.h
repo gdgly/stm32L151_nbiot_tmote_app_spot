@@ -411,7 +411,7 @@
 #define	RADIO_DOWNLOAD_CMD_CDPIP			0								//RADIO下行指令CDPIP
 #define	RADIO_DOWNLOAD_CMD_ACTIVE		1								//RADIO下行指令Active
 #define	RADIO_DOWNLOAD_CMD_MAGMOD		1								//RADIO下行指令MagMod
-#define	RADIO_DOWNLOAD_CMD_NBHEART		0								//RADIO下行指令NbHeart
+#define	RADIO_DOWNLOAD_CMD_NBHEART		1								//RADIO下行指令NbHeart
 #define	RADIO_DOWNLOAD_CMD_MAGINIT		1								//RADIO下行指令MagInit
 #define	RADIO_DOWNLOAD_CMD_DISRANGE		1								//RADIO下行指令DisRange
 #define	RADIO_DOWNLOAD_CMD_CARINDELAY		0								//RADIO下行指令CarInDelay
@@ -549,7 +549,8 @@
 
 #define	TIME_TO_MODULE_INIT				3600*24*3							//间隔时间初始化模块
 
-#define	NBIOT_HEART_DATA_HOURS			4								//NB心跳数据包时间
+#define	NBIOT_HEART_DATA_HOURS			4								//NB心跳数据包时间( 4 * 60 * 60)S
+#define	NBIOT_HEART_DATA_TIMER			16								//NB心跳数据包时间(16 * 15 * 60)S
 
 #define	UPLOAD_QMCDATA_MAXPACK			16								//QMC一次上传最大包数
 

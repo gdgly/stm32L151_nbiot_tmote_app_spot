@@ -2148,7 +2148,7 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
 							"{(NbHeart):{(val):%hu,(Magic):%hu}}", &nbheartval, &recvMagicNum);
 						if (recvMagicNum == TCLOD_MAGIC_NUM) {
-							TCFG_EEPROM_SetNbiotHeart(nbheartval);
+							TCFG_EEPROM_SetNbiotHeart(TCFG_EEPROM_ChangeNbiotHeart(nbheartval));
 							TCFG_SystemData.NBIotHeart = TCFG_EEPROM_GetNbiotHeart();
 						}
 						else {

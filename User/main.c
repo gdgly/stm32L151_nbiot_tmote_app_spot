@@ -598,11 +598,6 @@ void MainHandleRoutine(void)
 				NET_NBIOT_Initialization();
 			}
 			
-			if (TCFG_EEPROM_GetNbiotHeart() > NBIOT_HEART_DATA_HOURS) {
-				TCFG_SystemData.NBIotHeart = NBIOT_HEART_DATA_HOURS;
-				TCFG_EEPROM_SetNbiotHeart(TCFG_SystemData.NBIotHeart);
-			}
-			
 			if ((TCFG_EEPROM_GetNBIotSentCountDay() != 0) || (TCFG_SystemData.NBIotSentCountDay != 0)) {
 				TCFG_SystemData.NBIotSentCountDay = 0;
 				TCFG_EEPROM_SetNBIotSentCountDay(TCFG_SystemData.NBIotSentCountDay);
