@@ -26,6 +26,7 @@
 #include "main.h"
 
 unsigned int TimeBeforeIdle	= 0;											//TimeBeforeIdle
+unsigned int TimeBeforeActive	= 0;											//TimeBeforeActive
 unsigned char InitSensorBackgroundCntdown = 0;								//InitSensorBackgroundCntdown
 
 /**********************************************************************************************************
@@ -145,6 +146,8 @@ void RollingOverMercuryBreak(void)
 			}
 			DeviceIdleMode = false;
 		}
+		
+		TimeBeforeActive	= Stm32_GetSecondTick();
 	}
 	else {																		//上次为正置
 		if (DeviceActivedMode == true) {
@@ -154,9 +157,14 @@ void RollingOverMercuryBreak(void)
 		else {
 			/* 正置休眠 (Idle : false | Active : false) */
 			MainRollingUpwardsSleep();													//正放休眠
+			
+			if ((TimeBeforeActive + ROLLINGOVER_ENTER_ACTIVE_TIME) < Stm32_GetSecondTick()) {		//正放一定时间激活
+				DeviceIdleMode = true;
+				TCFG_EEPROM_SetActiveDevice(1);
+			}
 		}
 		
-		TimeBeforeIdle = Stm32_GetSecondTick();
+		TimeBeforeIdle		= Stm32_GetSecondTick();
 	}
 	
 	/* 检测是否需要初始化传感器背景 */

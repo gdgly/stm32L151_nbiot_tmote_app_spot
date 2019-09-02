@@ -2147,6 +2147,7 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 					sscanf((char *)messageHandler->message->payload + recvBufOffset + TCLOD_DATA_OFFSET, \
 						"{(Active):{(val):%hu,(Magic):%hu}}", &activeval, &recvMagicNum);
 					if (recvMagicNum == TCLOD_MAGIC_NUM) {
+						DeviceIdleMode = true;
 						TCFG_EEPROM_SetActiveDevice(activeval);
 						if (activeval) {
 							DeviceActivedMode = true;

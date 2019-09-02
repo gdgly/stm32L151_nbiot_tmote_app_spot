@@ -334,6 +334,7 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 			#if RADIO_DOWNLOAD_CMD_ACTIVE
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "active")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "active:%hu", &uval16);
+					DeviceIdleMode = true;
 					TCFG_EEPROM_SetActiveDevice(uval16);
 				#if RADIO_CMD_ECHO_TYPE
 					Radio_Trf_Printf("Active : %hu", TCFG_EEPROM_GetActiveDevice());
