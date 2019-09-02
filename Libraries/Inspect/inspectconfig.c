@@ -125,7 +125,7 @@ void Inspect_Spot_ExistenceDetect(void)
 			BEEP_CtrlRepeat_Extend(2, 30, 70);
 		}
 	}
-	/* 车位状态保持不变(等待) */
+	/* 车位状态保持不变(等待), 初次上电才会发送此包数据 */
 	else if (((SpotStatus == SPOT_LONGFREE) || (SpotStatus == SPOT_LONGOCCUPY)) && noStatusSent) {
 		SpotStatusData.spot_count = 0;
 		noStatusSent = 0;
@@ -161,6 +161,7 @@ void Inspect_Spot_ExistenceDetect(void)
 		
 		time2send_spot = Stm32_GetSecondTick();
 		Inspect_Message_SpotStatusEnqueue(SpotStatusData);
+		status_pre = SpotStatusData.spot_status;
 	}
 	
 	/* 心跳数据包 */
@@ -187,10 +188,12 @@ void Inspect_Spot_ExistenceDetect(void)
 			SpotStatusData.radarData.Diff					= sRadarData.Diff;
 			SpotStatusData.radarData.Diff_v2				= sRadarData.Diff_v2;
 			SpotStatusData.radarData.timedomain_square_dif	= sRadarData.timedomain_square_dif;
+			SpotStatusData.radarData.timedomain_dif			= sRadarData.timedomain_dif;
 			
 			SpotStatusData.timeCounter					= Stm32_GetSecondTick();
 			
 			Inspect_Message_SpotStatusEnqueue(SpotStatusData);
+			status_pre = SpotStatusData.spot_status;
 		}
 		time2send_spot = Stm32_GetSecondTick();
 	}
