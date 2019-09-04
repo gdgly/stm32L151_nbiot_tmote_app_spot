@@ -2,6 +2,8 @@
 > ##### Copyright (C) 2019 Movebroad Version:20.148 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2019-09-03 :
+	* 增加BM1422地磁驱动。
 * 2019-09-02 :
 	* 避免重启后一直无车时有个扰动就报告车辆离场。
 * 2019-08-31 :
