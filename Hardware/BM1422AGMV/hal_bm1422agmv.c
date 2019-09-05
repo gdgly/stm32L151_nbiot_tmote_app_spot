@@ -17,6 +17,7 @@
 #include "platform_config.h"
 #include "platform_map.h"
 #include "stm32l1xx_config.h"
+#include "tmesh_algorithm.h"
 #include "hal_iic.h"
 #include "hal_beep.h"
 #include "hal_iwdg.h"
@@ -473,6 +474,35 @@ void BM1422AGMV_ClearInsideData(void)
 	if (BM1422_DRDY_READ() == 1) {
 		BM1422AGMV_ReadBuffer(BM1422_DATA_OUT_X_RO_L, ucReadBuf, BM1422_REG_MAG);
 	}
+}
+
+/**********************************************************************************************************
+ @Function			short BM1422AGMV_Temperature_Read(void)
+ @Description			BM1422AGMV温度读取
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+short BM1422AGMV_Temperature_Read(void)
+{
+	uint8_t ucReadBuf[2];
+	short tempval;
+	u32 readtimeover = 0;
+	
+	BM1422AGMV_Start_Measurement();
+	
+	while ((readtimeover++) < 1000) {
+		if (BM1422_DRDY_READ() == 1) {
+			BM1422AGMV_ReadBuffer(BM1422_TEMP_RO_L, ucReadBuf, 2);
+			break;
+		}
+		Delay_US(10);
+	}
+	
+	tempval = ((int16_t)(ucReadBuf[1] << 8) | ucReadBuf[0]);
+	
+	Qmc5883lData.temp_now = tempval / 100;
+	
+	return tempval;
 }
 
 /********************************************** END OF FLEE **********************************************/

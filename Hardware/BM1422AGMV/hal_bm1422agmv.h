@@ -84,4 +84,6 @@ void BM1422AGMV_ReadData_Single(short* x, short* y, short* z);									//BM1422A
 
 void BM1422AGMV_ClearInsideData(void);														//BM1422AGMV清除内部待读取数据缓存
 
+short BM1422AGMV_Temperature_Read(void);													//BM1422AGMV温度读取
+
 #endif /* __BSP_BM1422AGMV_H */
