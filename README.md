@@ -1,7 +1,16 @@
 # stm32L151_nbiot_tmote_app_spot
-> ##### Copyright (C) 2019 Movebroad Version:20.148 Design by Movebroad
+> ##### Copyright (C) 2019 Movebroad Version:20.149 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2019-09-09 :
+	* TMoteInfo上传IMSI号。
+	* Radio下发workinfo去掉打印nbruntime。
+	* Radio下发workinfo去掉打印apn。
+	* Radio下发netinfo打印imsi。
+	* mqttsn下发命令去掉:uplimit,nblimit。
+	* 联通band表改为b8，b3。
+* 2019-09-09 :
+	* 版本号修改为149。
 * 2019-09-03 :
 	* 增加BM1422地磁驱动。
 * 2019-09-02 :

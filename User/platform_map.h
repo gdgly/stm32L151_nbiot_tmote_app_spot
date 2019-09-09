@@ -512,7 +512,7 @@ void			TCFG_Utility_Sub_Nbiot_IdleLifetime(void);										//NBIot 休眠模式�
 char*		TCFG_Utility_Get_Nbiot_Iccid_String(void);										//读取Nbiot Iccid字符串
 char*		TCFG_Utility_Get_Nbiot_Imei_String(void);										//读取Nbiot Imei字符串
 char*		TCFG_Utility_Get_Nbiot_Imeisv_String(void);										//读取Nbiot Imeisv字符串
-char*		TCFG_Utility_Get_Nbiot_Imsi_String(void);										//读取Nbiot Imesi字符串
+char*		TCFG_Utility_Get_Nbiot_Imsi_String(void);										//读取Nbiot Imsi字符串
 int			TCFG_Utility_Get_Nbiot_Rssi_IntVal(void);										//读取Nbiot Rssi值
 unsigned char	TCFG_Utility_Get_Nbiot_Rssi_UnCharVal(void);										//读取Nbiot Rssi值
 unsigned char	TCFG_Utility_Get_Nbiot_WorkMode(void);											//读取Nbiot WorkMode值

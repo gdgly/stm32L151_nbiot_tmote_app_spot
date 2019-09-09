@@ -115,6 +115,7 @@ int NET_ONENET_Message_Operate_Creat_Json_Basic_Info(char* outBuffer)
 				"\"Soft\":\"%d:%d.%d\","
 				"\"Sim\":\"%s\","
 				"\"Imei\":\"%s\","
+				"\"Imsi\":\"%s\","
 				"\"Nbvender\":\"%s\","
 				"\"Nbmode\":\"%s\","
 				"\"Boot\":\"%d.%d.%d\","
@@ -131,6 +132,7 @@ int NET_ONENET_Message_Operate_Creat_Json_Basic_Info(char* outBuffer)
 		TCFG_EEPROM_GetBootVersion(), TCFG_Utility_Get_Major_Softnumber(), TCFG_Utility_Get_Sub_Softnumber(),
 		TCFG_Utility_Get_Nbiot_Iccid_String(),
 		TCFG_Utility_Get_Nbiot_Imei_String(),
+		TCFG_Utility_Get_Nbiot_Imsi_String(),
 		TCFG_Utility_Get_Nbiot_Manufacturer(),
 		TCFG_Utility_Get_Nbiot_Manufacturermode(),
 		TCFG_Utility_Get_SoftResetFlag(), TCFG_Utility_Get_Device_BootCount(), TCFG_EEPROM_GetDeviceRbtMode(),
