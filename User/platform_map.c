@@ -2905,6 +2905,8 @@ char* TCFG_Utility_Get_Nbiot_PCPPlatformSoftVersion(void)
 	return (char*)PCPClientHandler.Parameter.PlatformSoftVersion;
 #elif NETPROTOCAL == NETMQTTSN
 	return (char*)MqttSNPCPClientHandler.Parameter.PlatformSoftVersion;
+#elif NETPROTOCAL == NETONENET
+	return (char*)NULL;
 #endif
 }
 
@@ -2923,6 +2925,9 @@ unsigned char TCFG_Utility_Get_Nbiot_PCPPlatformSoftVersionMajor(void)
 	sscanf((const char*)PCPClientHandler.Parameter.PlatformSoftVersion, "V%d.%d", &softMajor, &softSub);
 #elif NETPROTOCAL == NETMQTTSN
 	sscanf((const char*)MqttSNPCPClientHandler.Parameter.PlatformSoftVersion, "V%d.%d", &softMajor, &softSub);
+#elif NETPROTOCAL == NETONENET
+	softMajor = softMajor;
+	softSub = softSub;
 #endif
 	
 	return softMajor;
@@ -2943,6 +2948,9 @@ unsigned char TCFG_Utility_Get_Nbiot_PCPPlatformSoftVersionSub(void)
 	sscanf((const char*)PCPClientHandler.Parameter.PlatformSoftVersion, "V%d.%d", &softMajor, &softSub);
 #elif NETPROTOCAL == NETMQTTSN
 	sscanf((const char*)MqttSNPCPClientHandler.Parameter.PlatformSoftVersion, "V%d.%d", &softMajor, &softSub);
+#elif NETPROTOCAL == NETONENET
+	softMajor = softMajor;
+	softSub = softSub;
 #endif
 	
 	return softSub;
@@ -2960,6 +2968,8 @@ unsigned short TCFG_Utility_Get_Nbiot_PCPUpgradePackSliceSize(void)
 	return PCPClientHandler.Parameter.UpgradePackSliceSize;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNPCPClientHandler.Parameter.UpgradePackSliceSize;
+#elif NETPROTOCAL == NETONENET
+	return 0;
 #endif
 }
 
@@ -2975,6 +2985,8 @@ unsigned short TCFG_Utility_Get_Nbiot_PCPUpgradePackSliceNum(void)
 	return PCPClientHandler.Parameter.UpgradePackSliceNum;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNPCPClientHandler.Parameter.UpgradePackSliceNum;
+#elif NETPROTOCAL == NETONENET
+	return 0;
 #endif
 }
 
@@ -2990,6 +3002,8 @@ unsigned short TCFG_Utility_Get_Nbiot_PCPUpgradePackSliceIndex(void)
 	return PCPClientHandler.Parameter.UpgradePackSliceIndex;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNPCPClientHandler.Parameter.UpgradePackSliceIndex;
+#elif NETPROTOCAL == NETONENET
+	return 0;
 #endif
 }
 
@@ -3005,6 +3019,8 @@ unsigned short TCFG_Utility_Get_Nbiot_PCPUpgradePackCheckCode(void)
 	return PCPClientHandler.Parameter.UpgradePackCheckCode;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNPCPClientHandler.Parameter.UpgradePackCheckCode;
+#elif NETPROTOCAL == NETONENET
+	return 0;
 #endif
 }
 
@@ -3020,6 +3036,8 @@ unsigned short TCFG_Utility_Get_Nbiot_PCPUpgradeStartTimes(void)
 	return PCPClientHandler.Parameter.UpgradeStartTimes;
 #elif NETPROTOCAL == NETMQTTSN
 	return MqttSNPCPClientHandler.Parameter.UpgradeStartTimes;
+#elif NETPROTOCAL == NETONENET
+	return 0;
 #endif
 }
 

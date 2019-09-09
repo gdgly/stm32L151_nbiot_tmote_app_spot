@@ -51,6 +51,10 @@
 #define ONENET_DISCOVER_VALSTR			"1000"											// 资源内容
 #define ONENET_DISCOVER_VALUE				 1000											// 资源内容
 
+/* ONENET 任务时间 */
+#define ONENET_UPDATE_TIMER				10 * 3600											// 更新时间
+#define ONENET_ACTIVE_TIMER				40												// 活跃时间
+
 typedef struct ONENET_ParameterTypeDef		ONENET_ParameterTypeDef;
 typedef struct ONENET_LWM2MTransportTypeDef	ONENET_LWM2MTransportTypeDef;
 typedef struct ONENET_ClientsTypeDef		ONENET_ClientsTypeDef;

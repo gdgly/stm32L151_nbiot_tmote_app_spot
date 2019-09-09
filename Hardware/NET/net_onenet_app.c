@@ -1615,9 +1615,9 @@ void NET_ONENET_Event_Register(ONENET_ClientsTypeDef* pClient)
 	}
 	
 	/* Set Update Duration */
-	ONENET_NormalDictateEvent_SetTime(pClient, &pClient->UpdateTimer, ONENET_REGISTER_LIFETIME);
+	ONENET_NormalDictateEvent_SetTime(pClient, &pClient->UpdateTimer, ONENET_UPDATE_TIMER);
 	/* Set Active Duration */
-	ONENET_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, 40);
+	ONENET_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, ONENET_ACTIVE_TIMER);
 }
 
 /**********************************************************************************************************
@@ -1676,7 +1676,7 @@ void NET_ONENET_Event_Active(ONENET_ClientsTypeDef* pClient)
 				ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_ACTIVE, ONENET_PROCESSSTATE_ACTIVE, true);
 				NET_OneNET_Message_SendDataOffSet();
 				/* Set Active Duration */
-				ONENET_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, 40);
+				ONENET_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, ONENET_ACTIVE_TIMER);
 #ifdef ONENET_DEBUG_LOG_RF_PRINT
 				ONENET_DEBUG_LOG_PRINTF("OneNET Ackid %d Ok", pClient->Parameter.eventInfo.ackid);
 #endif
@@ -1703,7 +1703,7 @@ void NET_ONENET_Event_Active(ONENET_ClientsTypeDef* pClient)
 		}
 		
 		/* Set Update Duration */
-		ONENET_NormalDictateEvent_SetTime(pClient, &pClient->UpdateTimer, ONENET_REGISTER_LIFETIME);
+		ONENET_NormalDictateEvent_SetTime(pClient, &pClient->UpdateTimer, ONENET_UPDATE_TIMER);
 		
 		return;
 	}
@@ -1732,7 +1732,7 @@ void NET_ONENET_Event_Sleep(ONENET_ClientsTypeDef* pClient)
 	
 	if (NET_OneNET_Message_SendDataisEmpty() != true) {
 		/* Set Active Duration */
-		ONENET_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, 40);
+		ONENET_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, ONENET_ACTIVE_TIMER);
 		ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_ACTIVE, ONENET_PROCESSSTATE_SLEEP, true);
 		return;
 	}
@@ -1780,7 +1780,7 @@ void NET_ONENET_Event_Aweak(ONENET_ClientsTypeDef* pClient)
 	}
 	
 	/* Set Update Duration */
-	ONENET_NormalDictateEvent_SetTime(pClient, &pClient->UpdateTimer, ONENET_REGISTER_LIFETIME);
+	ONENET_NormalDictateEvent_SetTime(pClient, &pClient->UpdateTimer, ONENET_UPDATE_TIMER);
 	
 	ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_SLEEP, ONENET_PROCESSSTATE_AWEAK, true);
 }

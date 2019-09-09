@@ -9,6 +9,7 @@
 	* Radio下发netinfo打印imsi。
 	* mqttsn下发命令去掉:uplimit,nblimit。
 	* 联通band表改为b8，b3。
+	* OneNET修复bug，命令下行应答参数少一个。
 * 2019-09-09 :
 	* 版本号修改为149。
 * 2019-09-03 :
