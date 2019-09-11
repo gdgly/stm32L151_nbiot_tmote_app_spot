@@ -5,6 +5,8 @@
 #include "nbiotconfig.h"
 #include "net_nbiot_app.h"
 
+#define ONENET_MAX_MSG_ID				255
+
 #define ONENET_COMMAND_TIMEOUT_SEC			30
 #define ONENET_COMMAND_FAILURE_CNT			3
 
@@ -264,15 +266,12 @@ struct ONENET_ParameterTypeDef
 	
 };
 
-
-
-
 /* ONENET Transport */
 struct ONENET_LWM2MTransportTypeDef
 {
 	NBIOT_ClientsTypeDef*				NBIotStack;
 	
-	ONENET_StatusTypeDef				(*Write)(ONENET_ClientsTypeDef*, ONENET_ObserveParaTypeDef, const char*, u16, u16);
+	ONENET_StatusTypeDef				(*Write)(ONENET_ClientsTypeDef*, ONENET_ObserveParaTypeDef, const char*, u16, u16, sc8*);
 //	ONENET_StatusTypeDef				(*Read)(ONENET_LWM2MTransportTypeDef*, char*, u16*);
 };
 
@@ -287,6 +286,7 @@ struct ONENET_ClientsTypeDef
 	short							Recvlen;
 	unsigned char*						DataProcessStack;
 	size_t							DataProcessStack_size;
+	unsigned short						MsgId;
 	unsigned short						Command_Timeout_Sec;
 	unsigned short						Command_Failure_Cnt;
 	

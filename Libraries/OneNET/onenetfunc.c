@@ -23,6 +23,19 @@
 #include "radio_rf_app.h"
 
 /**********************************************************************************************************
+ @Function			unsigned short NBIOT_OneNET_Related_GetNextMsgId(ONENET_ClientsTypeDef* pClient)
+ @Description			NBIOT_OneNET_Related_GetNextMsgId				: 获取下一个消息ID
+ @Input				pClient									: ONENET客户端实例
+ @Return				MsgId									: 消息ID
+**********************************************************************************************************/
+unsigned short NBIOT_OneNET_Related_GetNextMsgId(ONENET_ClientsTypeDef* pClient)
+{
+	pClient->MsgId = (pClient->MsgId == ONENET_MAX_MSG_ID) ? 1 : pClient->MsgId + 1;
+	
+	return pClient->MsgId;
+}
+
+/**********************************************************************************************************
  @Function			static void NBIOT_OneNET_Related_DictateEvent_SetTime(ONENET_ClientsTypeDef* pClient, unsigned int TimeoutMsec)
  @Description			NBIOT_OneNET_Related_DictateEvent_SetTime		: 事件运行控制器注入时间(内部使用)
  @Input				pClient									: ONENET客户端实例

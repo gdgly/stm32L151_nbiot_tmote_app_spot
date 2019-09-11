@@ -1648,8 +1648,10 @@ void NET_ONENET_Event_Active(ONENET_ClientsTypeDef* pClient)
 			observeInfo = pClient->Parameter.observeInfo[1];
 		}
 		
+		NBIOT_OneNET_Related_GetNextMsgId(pClient);
+		
 		/* 发送负载数据 */
-		if ((ONStatus = pClient->LWM2MStack->Write(pClient, observeInfo, (const char *)pClient->Sendbuf, pClient->Sendlen, 255)) == ONENET_OK) {
+		if ((ONStatus = pClient->LWM2MStack->Write(pClient, observeInfo, (const char *)pClient->Sendbuf, pClient->Sendlen, pClient->MsgId, (sc8 *)"0x400")) == ONENET_OK) {
 			/* Dictate execute is Success */
 			ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_ACTIVE, ONENET_PROCESSSTATE_ACTIVE, false);
 #ifdef ONENET_DEBUG_LOG_RF_PRINT
@@ -1672,7 +1674,7 @@ void NET_ONENET_Event_Active(ONENET_ClientsTypeDef* pClient)
 		/* This will be a blocking call, wait for the ONENET_MIPLEVENT */
 		if ((ONStatus = ONENET_WaitforRecvAck(pClient, ONENET_MIPLEVENT, &WaitforRecv_timer_s)) == ONENET_OK) {
 			/* Dictate execute is Success */
-			if ((pClient->Parameter.eventInfo.ackid == 255) && (pClient->Parameter.eventInfo.evtid == EVENT_NOTIFY_SUCCESS)) {
+			if ((pClient->Parameter.eventInfo.ackid == pClient->MsgId) && (pClient->Parameter.eventInfo.evtid == EVENT_NOTIFY_SUCCESS)) {
 				ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_ACTIVE, ONENET_PROCESSSTATE_ACTIVE, true);
 				NET_OneNET_Message_SendDataOffSet();
 				/* Set Active Duration */
@@ -1755,11 +1757,15 @@ void NET_ONENET_Event_Sleep(ONENET_ClientsTypeDef* pClient)
 void NET_ONENET_Event_Aweak(ONENET_ClientsTypeDef* pClient)
 {
 	ONENET_StatusTypeDef ONStatus = ONStatus;
+	Stm32_CalculagraphTypeDef WaitforRecv_timer_s;
 	
 	ONENET_DictateEvent_SetTime(pClient, 30);
 	
+	/* Configuration Calculagraph for WaitforRecv Timer */
+	Stm32_Calculagraph_CountdownSec(&WaitforRecv_timer_s, 20);
+	
 	/* Send Update Request */
-	if ((ONStatus = NBIOT_OneNET_Related_Send_UpdateRequest(pClient, pClient->Parameter.suiteRefer, ONENET_REGISTER_LIFETIME + 2 * 3600, 0, NULL)) == ONENET_OK) {
+	if ((ONStatus = NBIOT_OneNET_Related_Send_UpdateRequest(pClient, pClient->Parameter.suiteRefer, ONENET_REGISTER_LIFETIME + 2 * 3600, 0, (sc8 *)"0x400")) == ONENET_OK) {
 		/* Dictate execute is Success */
 		ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_AWEAK, ONENET_PROCESSSTATE_AWEAK, false);
 #ifdef ONENET_DEBUG_LOG_RF_PRINT
@@ -1774,6 +1780,36 @@ void NET_ONENET_Event_Aweak(ONENET_ClientsTypeDef* pClient)
 		ONENET_DEBUG_LOG_PRINTF("OneNET Update Request Fail ECde %d", ONStatus);
 	#else
 		ONENET_DEBUG_LOG_PRINTF("OneNET Update Request Fail");
+	#endif
+#endif
+		return;
+	}
+	
+	/* This will be a blocking call, wait for the ONENET_MIPLEVENT */
+	if ((ONStatus = ONENET_WaitforRecvAck(pClient, ONENET_MIPLEVENT, &WaitforRecv_timer_s)) == ONENET_OK) {
+		/* Dictate execute is Success */
+		if (pClient->Parameter.eventInfo.evtid == EVENT_UPDATE_SUCCESS) {
+			ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_AWEAK, ONENET_PROCESSSTATE_AWEAK, false);
+#ifdef ONENET_DEBUG_LOG_RF_PRINT
+			ONENET_DEBUG_LOG_PRINTF("OneNET Evtid %d Ok", pClient->Parameter.eventInfo.evtid);
+#endif
+		}
+		else {
+			ONENET_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, ONENET_PROCESSSTATE_INIT, ONENET_PROCESSSTATE_AWEAK);
+#ifdef ONENET_DEBUG_LOG_RF_PRINT
+			ONENET_DEBUG_LOG_PRINTF("OneNET Evtid %d Fail", pClient->Parameter.eventInfo.evtid);
+#endif
+			return;
+		}
+	}
+	else {
+		/* Dictate execute is Fail */
+		ONENET_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, ONENET_PROCESSSTATE_INIT, ONENET_PROCESSSTATE_AWEAK);
+#ifdef ONENET_DEBUG_LOG_RF_PRINT
+	#if NBIOT_PRINT_ERROR_CODE_TYPE
+		ONENET_DEBUG_LOG_PRINTF("OneNET Update Event Fail ECde %d", ONStatus);
+	#else
+		ONENET_DEBUG_LOG_PRINTF("OneNET Update Event Fail");
 	#endif
 #endif
 		return;

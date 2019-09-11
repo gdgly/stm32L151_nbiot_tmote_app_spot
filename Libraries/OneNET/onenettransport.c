@@ -21,16 +21,19 @@
 #include "string.h"
 
 /**********************************************************************************************************
- @Function			ONENET_StatusTypeDef ONENET_Transport_Write(ONENET_ClientsTypeDef* pClient, ONENET_ObserveParaTypeDef observeInfo, const char *buf, u16 sendlen, u16 ackid)
+ @Function			ONENET_StatusTypeDef ONENET_Transport_Write(ONENET_ClientsTypeDef* pClient, ONENET_ObserveParaTypeDef observeInfo, const char *buf, u16 sendlen, u16 ackid, sc8* raiMode)
  @Description			ONENET_Transport_Write	: OneNET连接发送一条负载数据
  @Input				pClient				: OneNET客户端实例
 					observeInfo			: OneNET实例消息
 					buf					: 负载数据
 					sendlen 				: 数据长度
 					ackid				: The Ack ID
+					raiMode				: NULL
+										  "0x200" Release Indicator: indicate release after the message.
+										  "0x400" Release Indicator: indicate release after the message has been replied.
  @Return				MQTTSN_StatusTypeDef	: MQTTSN处理状态
 **********************************************************************************************************/
-ONENET_StatusTypeDef ONENET_Transport_Write(ONENET_ClientsTypeDef* pClient, ONENET_ObserveParaTypeDef observeInfo, const char *buf, u16 sendlen, u16 ackid)
+ONENET_StatusTypeDef ONENET_Transport_Write(ONENET_ClientsTypeDef* pClient, ONENET_ObserveParaTypeDef observeInfo, const char *buf, u16 sendlen, u16 ackid, sc8* raiMode)
 {
 	ONENET_StatusTypeDef OneNETStatus = ONENET_OK;
 	ONENET_MessageParaTypeDef msg;
@@ -49,7 +52,7 @@ ONENET_StatusTypeDef ONENET_Transport_Write(ONENET_ClientsTypeDef* pClient, ONEN
 	msg.index				= 0;
 	msg.flag				= 0;
 	
-	OneNETStatus = NBIOT_OneNET_Related_Notify_ApplicationServer(pClient, pClient->Parameter.suiteRefer, observeInfo.msgId, &msg, ackid, NULL);
+	OneNETStatus = NBIOT_OneNET_Related_Notify_ApplicationServer(pClient, pClient->Parameter.suiteRefer, observeInfo.msgId, &msg, ackid, raiMode);
 	
 	return OneNETStatus;
 }

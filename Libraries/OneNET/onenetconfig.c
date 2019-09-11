@@ -55,6 +55,8 @@ void OneNET_Client_Init(ONENET_ClientsTypeDef* pClient, ONENET_LWM2MTransportTyp
 	pClient->DataProcessStack							= OneNET_DataStack;
 	pClient->DataProcessStack_size						= sizeof(OneNET_DataStack);
 	
+	pClient->MsgId										= 1;
+	
 	pClient->Command_Timeout_Sec							= ONENET_COMMAND_TIMEOUT_SEC;
 	pClient->Command_Failure_Cnt							= ONENET_COMMAND_FAILURE_CNT;
 	
