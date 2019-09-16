@@ -2,6 +2,9 @@
 > ##### Copyright (C) 2019 Movebroad Version:20.149 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2019-09-13 :
+	* OneNET监听器加入，监听信号检出。
+	* OneNET运行时间获取。
 * 2019-09-11 :
 	* OneNET发送数据ACKID采用自增方式，废弃原先255不变。
 	* OneNET发送数据携带raiMode标志0x400方式。

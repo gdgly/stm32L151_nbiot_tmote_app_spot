@@ -379,6 +379,9 @@ void NET_NBIOT_OneNETSentDataAfterExexution(void)
 {
 	TCFG_Utility_Add_NBIot_SentCount();
 	TCFG_Utility_Add_NBIot_SentCountDay();
+#if NBONENET_LISTEN_PARAMETER_TYPE == NBONENET_LISTEN_PARAMETER_ENABLE
+	OneNETClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
+#endif
 }
 #endif
 

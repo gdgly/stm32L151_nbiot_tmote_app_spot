@@ -41,4 +41,11 @@ void NET_ONENET_Event_Sleep(ONENET_ClientsTypeDef* pClient);					//SLEEP
 void NET_ONENET_Event_Aweak(ONENET_ClientsTypeDef* pClient);					//AWEAK
 void NET_ONENET_Event_Lost(ONENET_ClientsTypeDef* pClient);						//LOST
 
+void NET_ONENET_Listen_PollExecution(ONENET_ClientsTypeDef* pClient);				//ONENET监听器处理
+void NET_ONENET_NBIOT_Listen_Enable_EnterNone(ONENET_ClientsTypeDef* pClient);		//事件(进入None模式)监听
+#if NBONENET_LISTEN_PARAMETER_TYPE == NBONENET_LISTEN_PARAMETER_ENABLE
+void NET_ONENET_NBIOT_Listen_Enable_EnterParameter(ONENET_ClientsTypeDef* pClient);	//使能(进入NBIOT运行信息)监听
+void NET_ONENET_NBIOT_Listen_Event_EnterParameter(ONENET_ClientsTypeDef* pClient);	//事件(进入NBIOT运行信息)监听
+#endif
+
 #endif /* __NET_ONENET_APP_H */

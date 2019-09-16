@@ -46,40 +46,51 @@ void OneNET_WaitforCallback(ONENET_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void OneNET_Client_Init(ONENET_ClientsTypeDef* pClient, ONENET_LWM2MTransportTypeDef* NetSock, NET_NBIOT_ClientsTypeDef* NetNbiotStack)
 {
-	pClient->Sendbuf									= OneNET_SendBuf;
-	pClient->Recvbuf									= OneNET_RecvBuf;
-	pClient->Sendbuf_size								= sizeof(OneNET_SendBuf);
-	pClient->Recvbuf_size								= sizeof(OneNET_RecvBuf);
-	pClient->Sendlen									= 0;
-	pClient->Recvlen									= 0;
-	pClient->DataProcessStack							= OneNET_DataStack;
-	pClient->DataProcessStack_size						= sizeof(OneNET_DataStack);
+	pClient->Sendbuf											= OneNET_SendBuf;
+	pClient->Recvbuf											= OneNET_RecvBuf;
+	pClient->Sendbuf_size										= sizeof(OneNET_SendBuf);
+	pClient->Recvbuf_size										= sizeof(OneNET_RecvBuf);
+	pClient->Sendlen											= 0;
+	pClient->Recvlen											= 0;
+	pClient->DataProcessStack									= OneNET_DataStack;
+	pClient->DataProcessStack_size								= sizeof(OneNET_DataStack);
 	
-	pClient->MsgId										= 1;
+	pClient->MsgId												= 1;
 	
-	pClient->Command_Timeout_Sec							= ONENET_COMMAND_TIMEOUT_SEC;
-	pClient->Command_Failure_Cnt							= ONENET_COMMAND_FAILURE_CNT;
+	pClient->Command_Timeout_Sec									= ONENET_COMMAND_TIMEOUT_SEC;
+	pClient->Command_Failure_Cnt									= ONENET_COMMAND_FAILURE_CNT;
 	
-	pClient->DictateRunCtl.dictateEnable					= false;
-	pClient->DictateRunCtl.dictateTimeoutSec				= 0;
-	pClient->DictateRunCtl.dictateInitFailureCnt				= 0;
-	pClient->DictateRunCtl.dictateSuiteFailureCnt			= 0;
-	pClient->DictateRunCtl.dictateObjectFailureCnt			= 0;
-	pClient->DictateRunCtl.dictateRegisterFailureCnt			= 0;
-	pClient->DictateRunCtl.dictateActiveFailureCnt			= 0;
-	pClient->DictateRunCtl.dictateSleepFailureCnt			= 0;
-	pClient->DictateRunCtl.dictateAweakFailureCnt			= 0;
-	pClient->DictateRunCtl.dictateLostFailureCnt				= 0;
+	pClient->DictateRunCtl.dictateEnable							= false;
+	pClient->DictateRunCtl.dictateTimeoutSec						= 0;
+	pClient->DictateRunCtl.dictateInitFailureCnt						= 0;
+	pClient->DictateRunCtl.dictateSuiteFailureCnt					= 0;
+	pClient->DictateRunCtl.dictateObjectFailureCnt					= 0;
+	pClient->DictateRunCtl.dictateRegisterFailureCnt					= 0;
+	pClient->DictateRunCtl.dictateActiveFailureCnt					= 0;
+	pClient->DictateRunCtl.dictateSleepFailureCnt					= 0;
+	pClient->DictateRunCtl.dictateAweakFailureCnt					= 0;
+	pClient->DictateRunCtl.dictateLostFailureCnt						= 0;
 	
-	pClient->Parameter.objectInfo.objId					= ONENET_OBJECT_OBJID;
-	pClient->Parameter.objectInfo.insCount					= ONENET_OBJECT_INSCOUNT;
-	pClient->Parameter.objectInfo.insBitmap					= (sc8*)ONENET_OBJECT_INSBITMAP;
-	pClient->Parameter.objectInfo.attrCount					= ONENET_OBJECT_ATTRCOUNT;
-	pClient->Parameter.objectInfo.actCount					= ONENET_OBJECT_ACTCOUNT;
+	/* 事件运行监听器 */
+#if NBONENET_LISTEN_PARAMETER_TYPE == NBONENET_LISTEN_PARAMETER_ENABLE
+	pClient->ListenRunCtl.ListenEnterParameter.listenEnable			= false;
+	pClient->ListenRunCtl.ListenEnterParameter.listenStatus			= false;
+	pClient->ListenRunCtl.ListenEnterParameter.listenTimereachSec		= NBONENET_LISTEN_ENTER_PARAMETER_SEC;
+	pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventEnable		= false;
+	pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventTimeoutSec	= 0;
+	pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt	= 0;
+#endif
+	pClient->ListenRunCtl.listenEvent								= NBONENET_LISTEN_DEFAULT_BOOTMODE;
 	
-	pClient->ProcessState								= ONENET_PROCESSSTATE_INIT;
-	pClient->LWM2MStack									= NetSock;
-	pClient->NetNbiotStack								= NetNbiotStack;
+	pClient->Parameter.objectInfo.objId							= ONENET_OBJECT_OBJID;
+	pClient->Parameter.objectInfo.insCount							= ONENET_OBJECT_INSCOUNT;
+	pClient->Parameter.objectInfo.insBitmap							= (sc8*)ONENET_OBJECT_INSBITMAP;
+	pClient->Parameter.objectInfo.attrCount							= ONENET_OBJECT_ATTRCOUNT;
+	pClient->Parameter.objectInfo.actCount							= ONENET_OBJECT_ACTCOUNT;
+	
+	pClient->ProcessState										= ONENET_PROCESSSTATE_INIT;
+	pClient->LWM2MStack											= NetSock;
+	pClient->NetNbiotStack										= NetNbiotStack;
 }
 
 /********************************************** END OF FLEE **********************************************/

@@ -139,7 +139,7 @@ void NET_ONENET_APP_PollExecution(ONENET_ClientsTypeDef* pClient)
 		break;
 	
 	case LISTEN_RUN_CTL:
-		pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+		NET_ONENET_Listen_PollExecution(pClient);
 		break;
 	
 	default :
@@ -610,6 +610,8 @@ void NET_ONENET_NBIOT_Event_HardwareReboot(ONENET_ClientsTypeDef* pClient)
 #else
 		ONENET_NBIOT_DictateEvent_SuccessExecute(pClient, MODULE_CHECK, HARDWARE_REBOOT);
 #endif
+		/* Get IdleTime */
+		ONENET_NBIOT_GetIdleTime(pClient, true);
 		
 #ifdef ONENET_DEBUG_LOG_RF_PRINT
 		ONENET_DEBUG_LOG_PRINTF("NB HDRBT Ok, Baud:%d", NBIOTBaudRate.Baud);
@@ -1326,6 +1328,9 @@ void NET_ONENET_NBIOT_Event_AttachInquire(ONENET_ClientsTypeDef* pClient)
 		
 		/* 关闭频点清除 */
 		pClient->LWM2MStack->NBIotStack->ClearStoredEARFCN = NBIOT_CLEAR_STORED_EARFCN_FALSE;
+		
+		/* Get ConnectTime */
+		ONENET_NBIOT_GetConnectTime(pClient, true);
 	}
 }
 
@@ -1640,6 +1645,9 @@ void NET_ONENET_Event_Active(ONENET_ClientsTypeDef* pClient)
 	
 	/* Data packets need to be sent*/
 	if (NET_OneNET_Message_SendDataDequeue(pClient->Sendbuf, (unsigned short *)&pClient->Sendlen) == true) {
+		/* Get IdleTime */
+		ONENET_NBIOT_GetIdleTime(pClient, true);
+		
 		/* 判断数据包类型 */
 		if ((pMsg->MsgPacket.Type == ONENET_MSGTYPE_TYPE_SHORT_STATUS) || (pMsg->MsgPacket.Type == ONENET_MSGTYPE_TYPE_LONG_STATUS)) {
 			observeInfo = pClient->Parameter.observeInfo[0];
@@ -1676,9 +1684,17 @@ void NET_ONENET_Event_Active(ONENET_ClientsTypeDef* pClient)
 			/* Dictate execute is Success */
 			if ((pClient->Parameter.eventInfo.ackid == pClient->MsgId) && (pClient->Parameter.eventInfo.evtid == EVENT_NOTIFY_SUCCESS)) {
 				ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_ACTIVE, ONENET_PROCESSSTATE_ACTIVE, true);
+				pClient->LWM2MStack->NBIotStack->NetStateIdentification = true;
 				NET_OneNET_Message_SendDataOffSet();
 				/* Set Active Duration */
 				ONENET_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, ONENET_ACTIVE_TIMER);
+			#if NBONENET_LISTEN_PARAMETER_TYPE == NBONENET_LISTEN_PARAMETER_ENABLE
+				NET_ONENET_NBIOT_Listen_Enable_EnterParameter(pClient);
+			#endif
+				/* NB 继续活跃注入时间 */
+				TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
+				/* Get ConnectTime */
+				ONENET_NBIOT_GetConnectTime(pClient, true);
 #ifdef ONENET_DEBUG_LOG_RF_PRINT
 				ONENET_DEBUG_LOG_PRINTF("OneNET Ackid %d Ok", pClient->Parameter.eventInfo.ackid);
 #endif
@@ -1744,7 +1760,7 @@ void NET_ONENET_Event_Sleep(ONENET_ClientsTypeDef* pClient)
 		ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_AWEAK, ONENET_PROCESSSTATE_SLEEP, true);
 	}
 	else {
-		ONENET_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, ONENET_PROCESSSTATE_SLEEP, ONENET_PROCESSSTATE_SLEEP, true);
+		ONENET_DictateEvent_SuccessExecute(pClient, LISTEN_RUN_CTL, ONENET_PROCESSSTATE_SLEEP, ONENET_PROCESSSTATE_SLEEP, true);
 	}
 }
 
@@ -1831,5 +1847,131 @@ void NET_ONENET_Event_Lost(ONENET_ClientsTypeDef* pClient)
 {
 	ONENET_DictateEvent_SuccessExecute(pClient, STOP_MODE, ONENET_PROCESSSTATE_INIT, ONENET_PROCESSSTATE_LOST, true);
 }
+
+
+/**********************************************************************************************************
+ @Function			void NET_ONENET_Listen_PollExecution(ONENET_ClientsTypeDef* pClient)
+ @Description			NET_ONENET_Listen_PollExecution		: ONENET监听器处理
+ @Input				pClient							: ONENET客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_ONENET_Listen_PollExecution(ONENET_ClientsTypeDef* pClient)
+{
+	switch (pClient->ListenRunCtl.listenEvent)
+	{
+	case NBONENET_LISTEN_MODE_ENTER_NONE:
+		NET_ONENET_NBIOT_Listen_Enable_EnterNone(pClient);
+		break;
+	
+	case NBONENET_LISTEN_MODE_ENTER_PARAMETER:
+#if NBONENET_LISTEN_PARAMETER_TYPE == NBONENET_LISTEN_PARAMETER_ENABLE
+		NET_ONENET_NBIOT_Listen_Event_EnterParameter(pClient);
+#endif
+		break;
+	}
+}
+
+/**********************************************************************************************************
+ @Function			void NET_ONENET_NBIOT_Listen_Enable_EnterNone(ONENET_ClientsTypeDef* pClient)
+ @Description			NET_ONENET_NBIOT_Listen_Enable_EnterNone	: 事件(进入None模式)监听
+ @Input				pClient								: ONENET客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_ONENET_NBIOT_Listen_Enable_EnterNone(ONENET_ClientsTypeDef* pClient)
+{
+	pClient->DictateRunCtl.dictateEnable = false;
+	pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent = ONENET_PROCESS_STACK;
+	pClient->ProcessState = ONENET_PROCESSSTATE_SLEEP;
+	pClient->ListenRunCtl.listenEvent = NBONENET_LISTEN_DEFAULT_BOOTMODE;
+}
+
+#if NBONENET_LISTEN_PARAMETER_TYPE == NBONENET_LISTEN_PARAMETER_ENABLE
+/**********************************************************************************************************
+ @Function			void NET_ONENET_NBIOT_Listen_Enable_EnterParameter(ONENET_ClientsTypeDef* pClient)
+ @Description			NET_ONENET_NBIOT_Listen_Enable_EnterParameter: 使能(进入NBIOT运行信息)监听
+ @Input				pClient								: ONENET客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_ONENET_NBIOT_Listen_Enable_EnterParameter(ONENET_ClientsTypeDef* pClient)
+{
+	Stm32_CalculagraphTypeDef listenRunTime;
+	
+	/* Listen Enable */
+	if (pClient->ListenRunCtl.ListenEnterParameter.listenEnable == true) {
+		pClient->ListenRunCtl.ListenEnterParameter.listenStatus = true;
+		Stm32_Calculagraph_CountdownSec(&listenRunTime, pClient->ListenRunCtl.ListenEnterParameter.listenTimereachSec);
+		pClient->ListenRunCtl.ListenEnterParameter.listenRunTime = listenRunTime;
+	}
+}
+
+/**********************************************************************************************************
+ @Function			void NET_ONENET_NBIOT_Listen_Event_EnterParameter(ONENET_ClientsTypeDef* pClient)
+ @Description			NET_ONENET_NBIOT_Listen_Event_EnterParameter	: 事件(进入NBIOT运行信息)监听
+ @Input				pClient								: ONENET客户端实例
+ @Return				void
+**********************************************************************************************************/
+void NET_ONENET_NBIOT_Listen_Event_EnterParameter(ONENET_ClientsTypeDef* pClient)
+{
+	Stm32_CalculagraphTypeDef eventRunTime;
+	
+	if ((pClient->ListenRunCtl.ListenEnterParameter.listenEnable == true) && (pClient->ListenRunCtl.ListenEnterParameter.listenStatus == true)) {
+		if (Stm32_Calculagraph_IsExpiredSec(&pClient->ListenRunCtl.ListenEnterParameter.listenRunTime) == true) {
+			
+			/* It is the first time to execute */
+			if (pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventEnable != true) {
+				pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventEnable = true;
+				pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventTimeoutSec = 30;
+				Stm32_Calculagraph_CountdownSec(&eventRunTime, pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventTimeoutSec);
+				pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventRunTime = eventRunTime;
+			}
+			
+			if ((NBIOT_Neul_NBxx_CheckReadRSSI(pClient->LWM2MStack->NBIotStack) == NBIOT_OK) &&
+			    (NBIOT_Neul_NBxx_CheckReadStatisticsRADIO(pClient->LWM2MStack->NBIotStack) == NBIOT_OK)) {
+				/* Dictate execute is Success */
+				pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventEnable = false;
+				pClient->ListenRunCtl.listenEvent = NBONENET_LISTEN_MODE_ENTER_PARAMETER;
+				pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt = 0;
+#ifdef ONENET_DEBUG_LOG_RF_PRINT
+				Radio_Trf_Printf("RSSI: %d", pClient->LWM2MStack->NBIotStack->Parameter.rssi);
+				Radio_Trf_Printf("SNR: %d", pClient->LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR);
+#endif
+			}
+			else {
+				/* Dictate execute is Fail */
+				if (Stm32_Calculagraph_IsExpiredSec(&pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventRunTime) == true) {
+					/* Dictate TimeOut */
+					pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventEnable = false;
+					pClient->ListenRunCtl.listenEvent = NBONENET_LISTEN_MODE_ENTER_PARAMETER;
+					pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEnable = false;
+					pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+					pClient->ProcessState = ONENET_PROCESSSTATE_INIT;
+					pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_ONENET;
+					pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt++;
+					if (pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt > 3) {
+						pClient->ListenRunCtl.ListenEnterParameter.EventCtl.eventFailureCnt = 0;
+						pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent = ONENET_PROCESS_STACK;
+						pClient->ProcessState = ONENET_PROCESSSTATE_LOST;
+						pClient->NetNbiotStack->PollExecution = NET_POLL_EXECUTION_ONENET;
+					}
+				}
+				else {
+					/* Dictate isn't TimeOut */
+					pClient->ListenRunCtl.listenEvent = NBONENET_LISTEN_MODE_ENTER_PARAMETER;
+				}
+				return;
+			}
+			
+			pClient->ListenRunCtl.ListenEnterParameter.listenEnable = false;
+			pClient->ListenRunCtl.ListenEnterParameter.listenStatus = false;
+			pClient->ListenRunCtl.listenEvent = NBONENET_LISTEN_MODE_ENTER_PARAMETER;
+		}
+	}
+	
+	pClient->DictateRunCtl.dictateEnable = false;
+	pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent = ONENET_PROCESS_STACK;
+	pClient->ProcessState = ONENET_PROCESSSTATE_SLEEP;
+	pClient->ListenRunCtl.listenEvent = NBONENET_LISTEN_DEFAULT_BOOTMODE;
+}
+#endif
 
 /********************************************** END OF FLEE **********************************************/

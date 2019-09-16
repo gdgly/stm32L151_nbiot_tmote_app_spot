@@ -57,6 +57,17 @@
 #define ONENET_UPDATE_TIMER				10 * 3600											// 更新时间
 #define ONENET_ACTIVE_TIMER				40												// 活跃时间
 
+/* ONENET 事件监听器配置 */
+#define NBONENET_LISTEN_MODE_ENTER_NONE		ONENET_ENTER_NONE
+#define NBONENET_LISTEN_MODE_ENTER_PARAMETER	ONENET_ENTER_PARAMETER_CHECKOUT
+#define NBONENET_LISTEN_DEFAULT_BOOTMODE	NBONENET_LISTEN_MODE_ENTER_PARAMETER					// OneNET监听NB默认起始模式
+
+#define NBONENET_LISTEN_ENTER_PARAMETER_SEC	45												// OneNET监听NB进入参数检查等待时间
+
+#define NBONENET_LISTEN_PARAMETER_DISABLE	0
+#define NBONENET_LISTEN_PARAMETER_ENABLE	1
+#define NBONENET_LISTEN_PARAMETER_TYPE		NBONENET_LISTEN_PARAMETER_ENABLE						// OneNET监听NB进入参数检查模式
+
 typedef struct ONENET_ParameterTypeDef		ONENET_ParameterTypeDef;
 typedef struct ONENET_LWM2MTransportTypeDef	ONENET_LWM2MTransportTypeDef;
 typedef struct ONENET_ClientsTypeDef		ONENET_ClientsTypeDef;
@@ -204,6 +215,13 @@ typedef enum
 	ONENET_PROCESSSTATE_LOST				= 0x07
 }ONENET_ProcessStateTypeDef;
 
+/* ONENET Listen Event */
+typedef enum
+{
+	ONENET_ENTER_NONE					= 0x00,											//无监听
+	ONENET_ENTER_PARAMETER_CHECKOUT		= 0x01											//进入NBIOT运行信息监听
+}ONENET_ListenEventTypeDef;
+
 /* ONENET Message Parameter */
 typedef struct
 {
@@ -263,7 +281,6 @@ struct ONENET_ParameterTypeDef
 	ONENET_ObserveParaTypeDef			observeInfo[ONENET_OBJECT_INSCOUNT];					// 实例信息
 	ONENET_DiscoverParaTypeDef			discoverInfo;										// 资源信息
 	ONENET_EventParaTypeDef				eventInfo;										// 事件信息
-	
 };
 
 /* ONENET Transport */
@@ -304,6 +321,29 @@ struct ONENET_ClientsTypeDef
 		unsigned char					dictateLostFailureCnt;
 		Stm32_CalculagraphTypeDef		dictateRunTime;
 	}DictateRunCtl;
+	
+	/* 事件运行监听器 */
+	struct ONENETListenRuningCtlTypeDef
+	{
+#if NBONENET_LISTEN_PARAMETER_TYPE == NBONENET_LISTEN_PARAMETER_ENABLE
+		struct ONENETListenEnterParameterTypeDef
+		{
+			bool						listenEnable;
+			bool						listenStatus;
+			unsigned int				listenTimereachSec;
+			Stm32_CalculagraphTypeDef	listenRunTime;
+			
+			struct ONENETEventCtlParameterTypedef
+			{
+				bool						eventEnable;
+				unsigned int				eventTimeoutSec;
+				unsigned char				eventFailureCnt;
+				Stm32_CalculagraphTypeDef	eventRunTime;
+			}EventCtl;
+		}ListenEnterParameter;
+#endif
+		ONENET_ListenEventTypeDef		listenEvent;
+	}ListenRunCtl;
 	
 	ONENET_ParameterTypeDef				Parameter;
 	ONENET_ProcessStateTypeDef			ProcessState;
