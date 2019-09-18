@@ -1634,7 +1634,7 @@ void NET_ONENET_Event_Register(ONENET_ClientsTypeDef* pClient)
 void NET_ONENET_Event_Active(ONENET_ClientsTypeDef* pClient)
 {
 	ONENET_StatusTypeDef ONStatus = ONStatus;
-	ONENET_PacketPrivateTypeDef* pMsg = (ONENET_PacketPrivateTypeDef*)pClient->Sendbuf;
+	ONENET_PacketInfoTypeDef* pMsg = (ONENET_PacketInfoTypeDef*)pClient->Sendbuf;
 	ONENET_ObserveParaTypeDef observeInfo;
 	Stm32_CalculagraphTypeDef WaitforRecv_timer_s;
 	

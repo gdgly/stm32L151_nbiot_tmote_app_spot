@@ -79,13 +79,6 @@ typedef __packed struct
 	u8	InfoData[450];
 }ONENET_PacketInfoTypeDef;												//Info包464Byte
 
-typedef __packed struct
-{
-	ONENET_PacketHeadTypeDef HeadPacket;
-	ONENET_PacketMsgTypeDef MsgPacket;
-	u8	PrivateData[160];
-}ONENET_PacketPrivateTypeDef;												//Private包174Byte
-
 #define ONENET_SEND_BUFFER_SIZE			320
 #define ONENET_RECV_BUFFER_SIZE			128
 #define ONENET_SEND_PARK_NUM				10

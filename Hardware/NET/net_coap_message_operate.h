@@ -79,13 +79,6 @@ typedef __packed struct
 	u8	InfoData[450];
 }COAP_PacketInfoTypeDef;													//Info包464Byte
 
-typedef __packed struct
-{
-	COAP_PacketHeadTypeDef HeadPacket;
-	COAP_PacketMsgTypeDef MsgPacket;
-	u8	PrivateData[160];
-}COAP_PacketPrivateTypeDef;												//Private包174Byte
-
 #define COAP_SEND_BUFFER_SIZE				320
 #define COAP_RECV_BUFFER_SIZE				512
 #define COAP_SEND_PARK_NUM				10

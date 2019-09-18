@@ -11,10 +11,10 @@
 #define EXIT_CRITICAL_SECTION()	Uart_ExitCriticalSection();
 
 #define USART1_REC_LEN			1100										//串口1最大接收字节数
-#define USART2_REC_LEN			10										//串口2最大接收字节数
+#define USART2_REC_LEN			46										//串口2最大接收字节数
 
 #define USART1_CACHE_LEN			1100										//串口1最大接收字节数CACHE
-#define USART2_CACHE_LEN			10										//串口2最大接收字节数CACHE
+#define USART2_CACHE_LEN			46										//串口2最大接收字节数CACHE
 
 #define USART1_RXBUFFERSIZE   	1 										//HAL库使用的串口接收缓存大小
 #define USART2_RXBUFFERSIZE   	1 										//HAL库使用的串口接收缓存大小

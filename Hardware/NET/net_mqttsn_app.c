@@ -576,17 +576,7 @@ static void MQTTSN_NBIOT_GetIdleTime(MQTTSN_ClientsTypeDef* pClient, bool startC
 void NET_MQTTSN_NBIOT_Event_StopMode(MQTTSN_ClientsTypeDef* pClient)
 {
 	Stm32_CalculagraphTypeDef dictateRunTime;
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
-	static unsigned char MqttSNStatusBasicIndex;
-	static unsigned char MqttSNStatusExtendIndex;
-	static unsigned char MqttSNInfoWorkIndex;
-	static unsigned char MqttSNInfoBasicIndex;
-	static unsigned char MqttSNInfoDynamicIndex;
-	static unsigned char MqttSNInfoResponseIndex;
-#endif
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
 	static unsigned char MqttSNByteStreamIndex;
-#endif
 	
 	/* It is the first time to execute */
 	if (pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable != true) {
@@ -599,17 +589,7 @@ void NET_MQTTSN_NBIOT_Event_StopMode(MQTTSN_ClientsTypeDef* pClient)
 		/* Clear Stored EARFCN */
 		pClient->SocketStack->NBIotStack->ClearStoredEARFCN = NBIOT_CLEAR_STORED_EARFCN_TRUE;
 		/* Init Message Index */
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
-		MqttSNStatusBasicIndex = NET_MqttSN_Message_StatusBasicRear();
-		MqttSNStatusExtendIndex = NET_MqttSN_Message_StatusExtendRear();
-		MqttSNInfoWorkIndex = NET_MqttSN_Message_InfoWorkRear();
-		MqttSNInfoBasicIndex = NET_MqttSN_Message_InfoBasicRear();
-		MqttSNInfoDynamicIndex = NET_MqttSN_Message_InfoDynamicRear();
-		MqttSNInfoResponseIndex = NET_MqttSN_Message_InfoResponseRear();
-#endif
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
 		MqttSNByteStreamIndex = NET_MqttSN_Message_SendDataRear();
-#endif
 		/* Get ConnectTime & IdleTime */
 		MQTTSN_NBIOT_GetConnectTime(pClient, false);
 		MQTTSN_NBIOT_GetIdleTime(pClient, false);
@@ -629,17 +609,7 @@ void NET_MQTTSN_NBIOT_Event_StopMode(MQTTSN_ClientsTypeDef* pClient)
 	}
 	else {
 		/* Dictate isn't TimeOut */
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
-		if ( (NET_MqttSN_Message_StatusBasicRear() != MqttSNStatusBasicIndex) || 
-			(NET_MqttSN_Message_StatusExtendRear() != MqttSNStatusExtendIndex) ||
-			(NET_MqttSN_Message_InfoWorkRear() != MqttSNInfoWorkIndex) ||
-			(NET_MqttSN_Message_InfoBasicRear() != MqttSNInfoBasicIndex) ||
-			(NET_MqttSN_Message_InfoDynamicRear() != MqttSNInfoDynamicIndex) ||
-			(NET_MqttSN_Message_InfoResponseRear() != MqttSNInfoResponseIndex) ) {
-#endif
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
 		if ( NET_MqttSN_Message_SendDataRear() != MqttSNByteStreamIndex ) {
-#endif
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
 			pClient->SubState = MQTTSN_SUBSTATE_INIT;
@@ -1572,236 +1542,6 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 		}
 	}
 	
-	/* Whether the query has data needs to be sent */
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
-	/* OBJECT_TYPE_TMOTES_STATUS_BASIC_PUT */
-#if NBMQTTSN_SENDCODE_STATUS_BASIC
-	if (NET_MqttSN_Message_StatusBasicisEmpty() != true) {
-		pClient->MessageSendCtl.messageStatusBasic = true;
-		/* Get IdleTime */
-		MQTTSN_NBIOT_GetIdleTime(pClient, true);
-	}
-	if (pClient->MessageSendCtl.messageStatusBasic != false) {
-		if (NET_MQTTSN_SendPayloadPacket(pClient, OBJECT_TYPE_TMOTES_STATUS_BASIC_PUT) != MQTTSN_OK) {
-			/* Dictate execute is Fail */
-			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
-#ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send StatusBasic Fail");
-#endif
-			return;
-		}
-		else {
-			/* Dictate execute is Success */
-			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, true);
-			pClient->MessageSendCtl.messageStatusBasic = false;
-			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
-			NET_MqttSN_Message_StatusBasicOffSet();
-			/* Set Active Duration */
-			MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
-		#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
-			NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter(pClient);
-		#endif
-			/* NB 继续活跃注入时间 */
-			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
-			/* Get ConnectTime */
-			MQTTSN_NBIOT_GetConnectTime(pClient, true);
-#ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send StatusBasic Ok");
-#endif
-		}
-	}
-#endif
-	
-	/* OBJECT_TYPE_TMOTES_STATUS_EXTEND_PUT */
-#if NBMQTTSN_SENDCODE_STATUS_EXTEND
-	if (NET_MqttSN_Message_StatusExtendisEmpty() != true) {
-		pClient->MessageSendCtl.messageStatusExtend = true;
-		/* Get IdleTime */
-		MQTTSN_NBIOT_GetIdleTime(pClient, true);
-	}
-	if (pClient->MessageSendCtl.messageStatusExtend != false) {
-		if (NET_MQTTSN_SendPayloadPacket(pClient, OBJECT_TYPE_TMOTES_STATUS_EXTEND_PUT) != MQTTSN_OK) {
-			/* Dictate execute is Fail */
-			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
-#ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send StatusExtend Fail");
-#endif
-			return;
-		}
-		else {
-			/* Dictate execute is Success */
-			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, true);
-			pClient->MessageSendCtl.messageStatusExtend = false;
-			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
-			NET_MqttSN_Message_StatusExtendOffSet();
-			/* Set Active Duration */
-			MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
-		#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
-			NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter(pClient);
-		#endif
-			/* NB 继续活跃注入时间 */
-			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
-			/* Get ConnectTime */
-			MQTTSN_NBIOT_GetConnectTime(pClient, true);
-#ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send StatusExtend Ok");
-#endif
-		}
-	}
-#endif
-	
-	/* OBJECT_TYPE_TMOTES_INFO_WORK_PUT */
-#if NBMQTTSN_SENDCODE_WORK_INFO
-	if (NET_MqttSN_Message_InfoWorkisEmpty() != true) {
-		pClient->MessageSendCtl.messageInfoWork = true;
-		/* Get IdleTime */
-		MQTTSN_NBIOT_GetIdleTime(pClient, true);
-	}
-	if (pClient->MessageSendCtl.messageInfoWork != false) {
-		if (NET_MQTTSN_SendPayloadPacket(pClient, OBJECT_TYPE_TMOTES_INFO_WORK_PUT) != MQTTSN_OK) {
-			/* Dictate execute is Fail */
-			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
-#ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send InfoWork Fail");
-#endif
-			return;
-		}
-		else {
-			/* Dictate execute is Success */
-			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, true);
-			pClient->MessageSendCtl.messageInfoWork = false;
-			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
-			NET_MqttSN_Message_InfoWorkOffSet();
-			/* Set Active Duration */
-			MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
-		#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
-			NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter(pClient);
-		#endif
-			/* NB 继续活跃注入时间 */
-			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
-			/* Get ConnectTime */
-			MQTTSN_NBIOT_GetConnectTime(pClient, true);
-#ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send InfoWork Ok");
-#endif
-		}
-	}
-#endif
-	
-	/* OBJECT_TYPE_TMOTES_INFO_BASIC_PUT */
-#if NBMQTTSN_SENDCODE_BASIC_INFO
-	if (NET_MqttSN_Message_InfoBasicisEmpty() != true) {
-		pClient->MessageSendCtl.messageInfoBasic = true;
-		/* Get IdleTime */
-		MQTTSN_NBIOT_GetIdleTime(pClient, true);
-	}
-	if (pClient->MessageSendCtl.messageInfoBasic != false) {
-		if (NET_MQTTSN_SendPayloadPacket(pClient, OBJECT_TYPE_TMOTES_INFO_BASIC_PUT) != MQTTSN_OK) {
-			/* Dictate execute is Fail */
-			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
-#ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send InfoBasic Fail");
-#endif
-			return;
-		}
-		else {
-			/* Dictate execute is Success */
-			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, true);
-			pClient->MessageSendCtl.messageInfoBasic = false;
-			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
-			NET_MqttSN_Message_InfoBasicOffSet();
-			/* Set Active Duration */
-			MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
-		#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
-			NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter(pClient);
-		#endif
-			/* NB 继续活跃注入时间 */
-			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
-			/* Get ConnectTime */
-			MQTTSN_NBIOT_GetConnectTime(pClient, true);
-#ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send InfoBasic Ok");
-#endif
-		}
-	}
-#endif
-	
-	/* OBJECT_TYPE_TMOTES_INFO_DYNAMIC_PUT */
-#if NBMQTTSN_SENDCODE_DYNAMIC_INFO
-	if (NET_MqttSN_Message_InfoDynamicisEmpty() != true) {
-		pClient->MessageSendCtl.messageInfoDynamic = true;
-		/* Get IdleTime */
-		MQTTSN_NBIOT_GetIdleTime(pClient, true);
-	}
-	if (pClient->MessageSendCtl.messageInfoDynamic != false) {
-		if (NET_MQTTSN_SendPayloadPacket(pClient, OBJECT_TYPE_TMOTES_INFO_DYNAMIC_PUT) != MQTTSN_OK) {
-			/* Dictate execute is Fail */
-			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
-#ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send InfoDynamic Fail");
-#endif
-			return;
-		}
-		else {
-			/* Dictate execute is Success */
-			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, true);
-			pClient->MessageSendCtl.messageInfoDynamic = false;
-			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
-			NET_MqttSN_Message_InfoDynamicOffSet();
-			/* Set Active Duration */
-			MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
-		#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
-			NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter(pClient);
-		#endif
-			/* NB 继续活跃注入时间 */
-			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
-			/* Get ConnectTime */
-			MQTTSN_NBIOT_GetConnectTime(pClient, true);
-#ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send InfoDynamic Ok");
-#endif
-		}
-	}
-#endif
-	
-	/* OBJECT_TYPE_TMOTES_INFO_RESPONSE_PUT */
-	if (NET_MqttSN_Message_InfoResponseisEmpty() != true) {
-		pClient->MessageSendCtl.messageInfoResponse = true;
-		/* Get IdleTime */
-		MQTTSN_NBIOT_GetIdleTime(pClient, true);
-	}
-	if (pClient->MessageSendCtl.messageInfoResponse != false) {
-		if (NET_MQTTSN_SendPayloadPacket(pClient, OBJECT_TYPE_TMOTES_INFO_RESPONSE_PUT) != MQTTSN_OK) {
-			/* Dictate execute is Fail */
-			MQTTSN_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, MQTTSN_SUBSTATE_INIT, MQTTSN_SUBSTATE_ACTIVE);
-#ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send InfoResponse Fail");
-#endif
-			return;
-		}
-		else {
-			/* Dictate execute is Success */
-			MQTTSN_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, MQTTSN_SUBSTATE_ACTIVE, MQTTSN_SUBSTATE_ACTIVE, true);
-			pClient->MessageSendCtl.messageInfoResponse = false;
-			pClient->SocketStack->NBIotStack->NetStateIdentification = true;
-			NET_MqttSN_Message_InfoResponseOffSet();
-			/* Set Active Duration */
-			MQTTSN_NormalDictateEvent_SetTime(pClient, &pClient->ActiveTimer, TNET_MQTTSN_ACTIVE_DURATION);
-		#if NBMQTTSN_LISTEN_PARAMETER_TYPE == NBMQTTSN_LISTEN_PARAMETER_ENABLE
-			NET_MQTTSN_NBIOT_Listen_Enable_EnterParameter(pClient);
-		#endif
-			/* NB 继续活跃注入时间 */
-			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
-			/* Get ConnectTime */
-			MQTTSN_NBIOT_GetConnectTime(pClient, true);
-#ifdef MQTTSN_DEBUG_LOG_RF_PRINT
-			MQTTSN_DEBUG_LOG_PRINTF("MqttSN Send InfoResponse Ok");
-#endif
-		}
-	}
-#endif
-	
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
 	/* OBJECT_TYPE_TMOTES_BYTE_STREAM_PUT */
 	if (NET_MqttSN_Message_SendDataisEmpty() != true) {
 		pClient->MessageSendCtl.messageByteStream = true;
@@ -1836,7 +1576,6 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 #endif
 		}
 	}
-#endif
 	
 	/* Keep active for Active seconds before to Sleep, so we can send messsage contiguously */
 	if (Stm32_Calculagraph_IsExpiredSec(&pClient->ActiveTimer) == true) {
@@ -1878,43 +1617,11 @@ void NET_MQTTSN_Event_Sleep(MQTTSN_ClientsTypeDef* pClient)
 	MQTTSN_DictateEvent_SetTime(pClient, 60);
 	
 	/* Whether the query has data needs to be sent */
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
-	if (NET_MqttSN_Message_StatusBasicisEmpty() != true) {
-		pClient->MessageSendCtl.messageStatusBasic = true;
-	}
-	if (NET_MqttSN_Message_StatusExtendisEmpty() != true) {
-		pClient->MessageSendCtl.messageStatusExtend = true;
-	}
-	if (NET_MqttSN_Message_InfoWorkisEmpty() != true) {
-		pClient->MessageSendCtl.messageInfoWork = true;
-	}
-	if (NET_MqttSN_Message_InfoBasicisEmpty() != true) {
-		pClient->MessageSendCtl.messageInfoBasic = true;
-	}
-	if (NET_MqttSN_Message_InfoDynamicisEmpty() != true) {
-		pClient->MessageSendCtl.messageInfoDynamic = true;
-	}
-	if (NET_MqttSN_Message_InfoResponseisEmpty() != true) {
-		pClient->MessageSendCtl.messageInfoResponse = true;
-	}
-#endif
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
 	if (NET_MqttSN_Message_SendDataisEmpty() != true) {
 		pClient->MessageSendCtl.messageByteStream = true;
 	}
-#endif
 	
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
-	if ( (pClient->MessageSendCtl.messageStatusBasic != false) || 
-		(pClient->MessageSendCtl.messageStatusExtend != false) ||
-		(pClient->MessageSendCtl.messageInfoWork != false) ||
-		(pClient->MessageSendCtl.messageInfoBasic != false) ||
-		(pClient->MessageSendCtl.messageInfoDynamic != false) ||
-		(pClient->MessageSendCtl.messageInfoResponse != false) ) {
-#endif
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
 	if ( pClient->MessageSendCtl.messageByteStream != false ) {
-#endif
 		options.clientID.cstring = MQTTSN_CLIENT_ID;
 		options.duration = TNET_MQTTSN_ACTIVE_DURATION + 40;
 		options.cleansession = false;
@@ -2518,13 +2225,8 @@ MQTTSN_StatusTypeDef messageHandlerFunction(MQTTSN_ClientsTypeDef* pClient, MQTT
 MQTTSN_StatusTypeDef NET_MQTTSN_SendPayloadPacket(MQTTSN_ClientsTypeDef* pClient, NET_MQTTSN_ObjectPacketTypeDef ObjectPacket)
 {
 	MQTTSN_StatusTypeDef MQTTSNStatus = MQTTSN_OK;
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
-	NET_Message_TcldMsgTypeDef *pMsg = (NET_Message_TcldMsgTypeDef*)pClient->DataProcessStack;
-#endif
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
 	unsigned char* pMsg = pClient->DataProcessStack;
 	unsigned short pMsgLen = 0;
-#endif
 	MQTTSN_MessageTypeDef message;
 	MQTTSN_topicid topic;
 	
@@ -2541,137 +2243,42 @@ MQTTSN_StatusTypeDef NET_MQTTSN_SendPayloadPacket(MQTTSN_ClientsTypeDef* pClient
 	{
 		case OBJECT_TYPE_TMOTES_STATUS_BASIC_PUT:
 		{
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
-#if NBMQTTSN_SENDCODE_STATUS_BASIC
-			NET_MESSAGE_GET_MAGICNUM(pMsg->MsgHead.MagicNum);
-			pMsg->MsgHead.MsgType		=	MSG_JSON;
-			pMsg->MsgHead.Version		=	MESSAGE_VERSION;
-			pMsg->MsgHead.EncryptMode	=	ENCRYPT_NONE;
-			pMsg->MsgHead.MsgId			=	MSGID_PUT;
 			
-			message.payloadlen			=	NET_Message_Operate_Creat_Json_MoteStatus_Basic(pMsg->pData) + sizeof(NET_Message_TcldHeadTypeDef);
-			
-			topic.type = MQTTSN_TOPIC_TYPE_PREDEFINED;
-			topic.data.id = TOPICID_MOTESTATUS;
-			if ((MQTTSNStatus = MQTTSN_Publish(pClient, topic, &message)) != MQTTSN_OK) {
-				//Todo
-			}
-#endif
-#endif
 			break;
 		}
 		
 		case OBJECT_TYPE_TMOTES_STATUS_EXTEND_PUT:
 		{
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
-#if NBMQTTSN_SENDCODE_STATUS_EXTEND
-			NET_MESSAGE_GET_MAGICNUM(pMsg->MsgHead.MagicNum);
-			pMsg->MsgHead.MsgType		=	MSG_JSON;
-			pMsg->MsgHead.Version		=	MESSAGE_VERSION;
-			pMsg->MsgHead.EncryptMode	=	ENCRYPT_NONE;
-			pMsg->MsgHead.MsgId			=	MSGID_PUT;
 			
-			message.payloadlen			=	NET_Message_Operate_Creat_Json_MoteStatus_Extend(pMsg->pData) + sizeof(NET_Message_TcldHeadTypeDef);
-			
-			topic.type = MQTTSN_TOPIC_TYPE_PREDEFINED;
-			topic.data.id = TOPICID_MOTESTATUS;
-			if ((MQTTSNStatus = MQTTSN_Publish(pClient, topic, &message)) != MQTTSN_OK) {
-				//Todo
-			}
-#endif
-#endif
 			break;
 		}
 		
 		case OBJECT_TYPE_TMOTES_INFO_WORK_PUT:
 		{
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
-#if NBMQTTSN_SENDCODE_WORK_INFO
-			NET_MESSAGE_GET_MAGICNUM(pMsg->MsgHead.MagicNum);
-			pMsg->MsgHead.MsgType		=	MSG_JSON;
-			pMsg->MsgHead.Version		=	MESSAGE_VERSION;
-			pMsg->MsgHead.EncryptMode	=	ENCRYPT_NONE;
-			pMsg->MsgHead.MsgId			=	MSGID_PUT;
 			
-			message.payloadlen			=	NET_Message_Operate_Creat_Json_MoteInfo_Work(pMsg->pData) + sizeof(NET_Message_TcldHeadTypeDef);
-			
-			topic.type = MQTTSN_TOPIC_TYPE_PREDEFINED;
-			topic.data.id = TOPICID_MOTEINFO;
-			if ((MQTTSNStatus = MQTTSN_Publish(pClient, topic, &message)) != MQTTSN_OK) {
-				//Todo
-			}
-#endif
-#endif
 			break;
 		}
 		
 		case OBJECT_TYPE_TMOTES_INFO_BASIC_PUT:
 		{
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
-#if NBMQTTSN_SENDCODE_BASIC_INFO
-			NET_MESSAGE_GET_MAGICNUM(pMsg->MsgHead.MagicNum);
-			pMsg->MsgHead.MsgType		=	MSG_JSON;
-			pMsg->MsgHead.Version		=	MESSAGE_VERSION;
-			pMsg->MsgHead.EncryptMode	=	ENCRYPT_NONE;
-			pMsg->MsgHead.MsgId			=	MSGID_PUT;
 			
-			message.payloadlen			=	NET_Message_Operate_Creat_Json_MoteInfo_Basic(pMsg->pData) + sizeof(NET_Message_TcldHeadTypeDef);
-			
-			topic.type = MQTTSN_TOPIC_TYPE_PREDEFINED;
-			topic.data.id = TOPICID_MOTEINFO;
-			if ((MQTTSNStatus = MQTTSN_Publish(pClient, topic, &message)) != MQTTSN_OK) {
-				//Todo
-			}
-#endif
-#endif
 			break;
 		}
 		
 		case OBJECT_TYPE_TMOTES_INFO_DYNAMIC_PUT:
 		{
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
-#if NBMQTTSN_SENDCODE_DYNAMIC_INFO
-			NET_MESSAGE_GET_MAGICNUM(pMsg->MsgHead.MagicNum);
-			pMsg->MsgHead.MsgType		=	MSG_JSON;
-			pMsg->MsgHead.Version		=	MESSAGE_VERSION;
-			pMsg->MsgHead.EncryptMode	=	ENCRYPT_NONE;
-			pMsg->MsgHead.MsgId			=	MSGID_PUT;
 			
-			message.payloadlen			=	NET_Message_Operate_Creat_Json_MoteInfo_Dynamic(pMsg->pData) + sizeof(NET_Message_TcldHeadTypeDef);
-			
-			topic.type = MQTTSN_TOPIC_TYPE_PREDEFINED;
-			topic.data.id = TOPICID_MOTEINFO;
-			if ((MQTTSNStatus = MQTTSN_Publish(pClient, topic, &message)) != MQTTSN_OK) {
-				//Todo
-			}
-#endif
-#endif
 			break;
 		}
 		
 		case OBJECT_TYPE_TMOTES_INFO_RESPONSE_PUT:
 		{
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
-			NET_MESSAGE_GET_MAGICNUM(pMsg->MsgHead.MagicNum);
-			pMsg->MsgHead.MsgType		=	MSG_JSON;
-			pMsg->MsgHead.Version		=	MESSAGE_VERSION;
-			pMsg->MsgHead.EncryptMode	=	ENCRYPT_NONE;
-			pMsg->MsgHead.MsgId			=	MSGID_PUT;
 			
-			message.payloadlen			=	NET_Message_Operate_Creat_Json_MoteInfo_Response(pMsg->pData) + sizeof(NET_Message_TcldHeadTypeDef);
-			
-			topic.type = MQTTSN_TOPIC_TYPE_PREDEFINED;
-			topic.data.id = TOPICID_MOTEINFO;
-			if ((MQTTSNStatus = MQTTSN_Publish(pClient, topic, &message)) != MQTTSN_OK) {
-				//Todo
-			}
-#endif
 			break;
 		}
 		
 		case OBJECT_TYPE_TMOTES_BYTE_STREAM_PUT:
 		{
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
 			NET_MqttSN_Message_SendDataDequeue(pMsg, &pMsgLen);
 			
 			message.payloadlen			=	pMsgLen;
@@ -2681,7 +2288,6 @@ MQTTSN_StatusTypeDef NET_MQTTSN_SendPayloadPacket(MQTTSN_ClientsTypeDef* pClient
 			if ((MQTTSNStatus = MQTTSN_Publish(pClient, topic, &message)) != MQTTSN_OK) {
 				//Todo
 			}
-#endif
 			break;
 		}
 	}

@@ -32,25 +32,13 @@ bool DeviceActivedMode			= true;									//ACTIVED MODE
 COAP_PacketShortTypeDef			CoapShortStructure;							//Coap Short Packet
 COAP_PacketLongTypeDef			CoapLongStructure;							//Coap Long Packet
 COAP_PacketInfoTypeDef			CoapInfoStructure;							//Coap Info Packet
-COAP_PacketPrivateTypeDef		CoapPrivateStructure;						//Coap Private Packet
 #endif
 
 #if NETPROTOCAL == NETMQTTSN
 /* MqttSN Packet */
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
-MQTTSN_StatusBasicTypeDef		MqttSNStatusBasicStructure;					//MqttSN Basic Status Packet
-MQTTSN_StatusExtendTypeDef		MqttSNStatusExtendStructure;					//MqttSN Extend Status Packet
-MQTTSN_InfoWorkTypeDef			MqttSNInfoWorkStructure;						//MqttSN Work Info Packet
-MQTTSN_InfoBasicTypeDef			MqttSNInfoBasicStructure;					//MqttSN Basic Info Packet
-MQTTSN_InfoDynamicTypeDef		MqttSNInfoDynamicStructure;					//MqttSN Dynamic Info Packet
-MQTTSN_InfoResponseTypeDef		MqttSNInfoResponseStructure;					//MqttSN Response Info Packet
-#endif
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
 MQTTSN_PacketShortTypeDef		MqttSNShortStructure;						//MqttSN Short Packet
 MQTTSN_PacketLongTypeDef			MqttSNLongStructure;						//MqttSN Long Packet
 MQTTSN_PacketInfoTypeDef			MqttSNInfoStructure;						//MqttSN Info Packet
-MQTTSN_PacketPrivateTypeDef		MqttSNPrivateStructure;						//MqttSN Private Packet
-#endif
 #endif
 
 #if NETPROTOCAL == NETONENET
@@ -58,7 +46,6 @@ MQTTSN_PacketPrivateTypeDef		MqttSNPrivateStructure;						//MqttSN Private Packe
 ONENET_PacketShortTypeDef		OneNETShortStructure;						//ONENET Short Packet
 ONENET_PacketLongTypeDef			OneNETLongStructure;						//ONENET Long Packet
 ONENET_PacketInfoTypeDef			OneNETInfoStructure;						//ONENET Info Packet
-ONENET_PacketPrivateTypeDef		OneNETPrivateStructure;						//ONENET Private Packet
 #endif
 
 /* NET Handler */

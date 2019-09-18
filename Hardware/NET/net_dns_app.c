@@ -537,17 +537,7 @@ void NET_DNS_NBIOT_Event_StopMode(DNS_ClientsTypeDef* pClient)
 void NET_DNS_NBIOT_Event_StopMode(DNS_ClientsTypeDef* pClient)
 {
 	Stm32_CalculagraphTypeDef dictateRunTime;
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
-	static unsigned char DNSMqttSNStatusBasicIndex;
-	static unsigned char DNSMqttSNStatusExtendIndex;
-	static unsigned char DNSMqttSNInfoWorkIndex;
-	static unsigned char DNSMqttSNInfoBasicIndex;
-	static unsigned char DNSMqttSNInfoDynamicIndex;
-	static unsigned char DNSMqttSNInfoResponseIndex;
-#endif
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
 	static unsigned char DNSByteStreamIndex;
-#endif
 	
 	/* It is the first time to execute */
 	if (pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable != true) {
@@ -558,17 +548,7 @@ void NET_DNS_NBIOT_Event_StopMode(DNS_ClientsTypeDef* pClient)
 		/* NBIOT Module Poweroff */
 		NBIOT_Neul_NBxx_HardwarePoweroff(pClient->SocketStack->NBIotStack);
 		/* Init Message Index */
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
-		DNSMqttSNStatusBasicIndex = NET_MqttSN_Message_StatusBasicRear();
-		DNSMqttSNStatusExtendIndex = NET_MqttSN_Message_StatusExtendRear();
-		DNSMqttSNInfoWorkIndex = NET_MqttSN_Message_InfoWorkRear();
-		DNSMqttSNInfoBasicIndex = NET_MqttSN_Message_InfoBasicRear();
-		DNSMqttSNInfoDynamicIndex = NET_MqttSN_Message_InfoDynamicRear();
-		DNSMqttSNInfoResponseIndex = NET_MqttSN_Message_InfoResponseRear();
-#endif
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
 		DNSByteStreamIndex = NET_MqttSN_Message_SendDataRear();
-#endif
 		/* Get ConnectTime & IdleTime */
 		DNS_NBIOT_GetConnectTime(pClient, false);
 		DNS_NBIOT_GetIdleTime(pClient, false);
@@ -583,17 +563,7 @@ void NET_DNS_NBIOT_Event_StopMode(DNS_ClientsTypeDef* pClient)
 	}
 	else {
 		/* Dictate isn't TimeOut */
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_JSON_STREAM
-		if ( (NET_MqttSN_Message_StatusBasicRear() != DNSMqttSNStatusBasicIndex) || 
-			(NET_MqttSN_Message_StatusExtendRear() != DNSMqttSNStatusExtendIndex) ||
-			(NET_MqttSN_Message_InfoWorkRear() != DNSMqttSNInfoWorkIndex) ||
-			(NET_MqttSN_Message_InfoBasicRear() != DNSMqttSNInfoBasicIndex) ||
-			(NET_MqttSN_Message_InfoDynamicRear() != DNSMqttSNInfoDynamicIndex) ||
-			(NET_MqttSN_Message_InfoResponseRear() != DNSMqttSNInfoResponseIndex) ) {
-#endif
-#if MQTTSN_MSG_VERSION_STREAM_TYPE == MQTTSN_MSG_VERSION_BYTE_STREAM
 		if ( NET_MqttSN_Message_SendDataRear() != DNSByteStreamIndex ) {
-#endif
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEnable = false;
 			pClient->SocketStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
 			pClient->ProcessState = DNS_PROCESS_CREAT_UDP_SOCKET;

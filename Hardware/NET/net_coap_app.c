@@ -715,9 +715,9 @@ void NET_COAP_NBIOT_Event_SimICCIDCheck(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		COAP_DEBUG_LOG_PRINTF("NB ICCID Fail ECde %d", NBStatus);
+		COAP_DEBUG_LOG_PRINTF("NB ICCID Check Fail ECde %d", NBStatus);
 	#else
-		COAP_DEBUG_LOG_PRINTF("NB ICCID Fail");
+		COAP_DEBUG_LOG_PRINTF("NB ICCID Check Fail");
 	#endif
 #endif
 	}
@@ -948,9 +948,9 @@ void NET_COAP_NBIOT_Event_CDPServerCheck(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		COAP_DEBUG_LOG_PRINTF("CoAP CDP Fail ECde %d", NBStatus);
+		COAP_DEBUG_LOG_PRINTF("CoAP CDP Check Fail ECde %d", NBStatus);
 	#else
-		COAP_DEBUG_LOG_PRINTF("CoAP CDP Fail");
+		COAP_DEBUG_LOG_PRINTF("CoAP CDP Check Fail");
 	#endif
 #endif
 	}
