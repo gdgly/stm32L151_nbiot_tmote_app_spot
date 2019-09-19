@@ -462,7 +462,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 #if NBCOAP_SENDCODE_QMC_DATA
 		NET_NBIOT_CoapInfoStructureInit();
 		CoapInfoStructure.HeadPacket.PacketType				= 0x07;
-		CoapInfoStructure.MsgPacket.Type					= COAP_MSGTYPE_TYPE_QMC_DATA;
+		CoapInfoStructure.MsgPacket.Type					= COAP_MSGTYPE_TYPE_QMCDATA_INFO;
 		len = NET_COAP_Message_Operate_Creat_Qmc5883L_Data((unsigned char *)&CoapInfoStructure.InfoData);
 		NET_Coap_Message_SendDataEnqueue((unsigned char *)&CoapInfoStructure, sizeof(CoapInfoStructure) - sizeof(CoapInfoStructure.InfoData) + len);
 		NETCoapNeedSendCode.QmcData = 0;
@@ -596,7 +596,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 #if NBMQTTSN_SENDCODE_QMC_DATA
 		NET_NBIOT_MqttSNInfoStructureInit();
 		MqttSNInfoStructure.HeadPacket.PacketType			= 0x07;
-		MqttSNInfoStructure.MsgPacket.Type					= MQTTSN_MSGTYPE_TYPE_QMC_DATA;
+		MqttSNInfoStructure.MsgPacket.Type					= MQTTSN_MSGTYPE_TYPE_QMCDATA_INFO;
 		len = NET_MQTTSN_Message_Operate_Creat_Qmc5883L_Data((unsigned char *)&MqttSNInfoStructure.InfoData);
 		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNInfoStructure, sizeof(MqttSNInfoStructure) - sizeof(MqttSNInfoStructure.InfoData) + len);
 		NETMqttSNNeedSendCode.QmcData = 0;
@@ -730,7 +730,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 #if NBONENET_SENDCODE_QMC_DATA
 		NET_NBIOT_OneNETInfoStructureInit();
 		OneNETInfoStructure.HeadPacket.PacketType			= 0x07;
-		OneNETInfoStructure.MsgPacket.Type					= ONENET_MSGTYPE_TYPE_QMC_DATA;
+		OneNETInfoStructure.MsgPacket.Type					= ONENET_MSGTYPE_TYPE_QMCDATA_INFO;
 		len = NET_ONENET_Message_Operate_Creat_Qmc5883L_Data((unsigned char *)&OneNETInfoStructure.InfoData);
 		NET_OneNET_Message_SendDataEnqueue((unsigned char *)&OneNETInfoStructure, sizeof(OneNETInfoStructure) - sizeof(OneNETInfoStructure.InfoData) + len);
 		NETOneNETNeedSendCode.QmcData = 0;
