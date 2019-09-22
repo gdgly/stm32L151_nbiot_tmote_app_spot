@@ -102,7 +102,6 @@ int NET_MQTTSN_Message_Operate_Creat_Json_Work_Info(char* outBuffer);
 int NET_MQTTSN_Message_Operate_Creat_Json_Basic_Info(char* outBuffer);
 int NET_MQTTSN_Message_Operate_Creat_Json_Dynamic_Info(char* outBuffer);
 int NET_MQTTSN_Message_Operate_Creat_Json_Response_Info(char* outBuffer, u16 errcode, char msgId);
-int NET_MQTTSN_Message_Operate_Creat_Qmc5883L_Data(unsigned char* outBuffer);
 
 void NET_MqttSN_FifoSendMessageInit(void);															//发送数据Fifo初始化
 bool NET_MqttSN_Message_SendDataisEmpty(void);														//检查发送队列是否已空

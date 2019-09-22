@@ -2253,30 +2253,6 @@ MQTTSN_StatusTypeDef NET_MQTTSN_SendPayloadPacket(MQTTSN_ClientsTypeDef* pClient
 			break;
 		}
 		
-		case OBJECT_TYPE_TMOTES_INFO_WORK_PUT:
-		{
-			
-			break;
-		}
-		
-		case OBJECT_TYPE_TMOTES_INFO_BASIC_PUT:
-		{
-			
-			break;
-		}
-		
-		case OBJECT_TYPE_TMOTES_INFO_DYNAMIC_PUT:
-		{
-			
-			break;
-		}
-		
-		case OBJECT_TYPE_TMOTES_INFO_RESPONSE_PUT:
-		{
-			
-			break;
-		}
-		
 		case OBJECT_TYPE_TMOTES_BYTE_STREAM_PUT:
 		{
 			NET_MqttSN_Message_SendDataDequeue(pMsg, &pMsgLen);

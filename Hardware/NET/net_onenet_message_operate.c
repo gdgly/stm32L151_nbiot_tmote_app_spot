@@ -243,37 +243,6 @@ int NET_ONENET_Message_Operate_Creat_Json_Response_Info(char* outBuffer, u16 err
 }
 
 /**********************************************************************************************************
- @Function			int NET_ONENET_Message_Operate_Creat_Qmc5883L_Data(unsigned char* outBuffer)
- @Description			NET_ONENET_Message_Operate_Creat_Qmc5883L_Data
- @Input				outBuffer
- @Return				Length
- @attention			!!<<< MaxLength 160Byte >>>!!
-**********************************************************************************************************/
-int NET_ONENET_Message_Operate_Creat_Qmc5883L_Data(unsigned char* outBuffer)
-{
-	Qmc5883LStatusDataTypeDef QmcStatusData;
-	unsigned int bufoffset = 0;
-	
-	outBuffer[0] = 0;
-	bufoffset += 1;
-	
-	for (int packIndex = 0; packIndex < UPLOAD_QMCDATA_MAXPACK; packIndex++) {
-		if (Inspect_Message_QmcStatusisEmpty() != true) {
-			Inspect_Message_QmcStatusDequeue(&QmcStatusData);
-			memcpy(outBuffer + bufoffset, &QmcStatusData, sizeof(QmcStatusData));
-			bufoffset += sizeof(QmcStatusData);
-			outBuffer[0] += 1;
-			Inspect_Message_QmcStatusOffSet();
-		}
-		else {
-			break;
-		}
-	}
-	
-	return bufoffset;
-}
-
-/**********************************************************************************************************
  @Function			void NET_OneNET_FifoSendMessageInit(void)
  @Description			NET_OneNET_FifoSendMessageInit	: 发送数据Fifo初始化
  @Input				void

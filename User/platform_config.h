@@ -372,7 +372,6 @@
 #define	NBCOAP_SENDCODE_BASIC_INFO		1								//NB上报信息使能CoapBasicInfo
 #define	NBCOAP_SENDCODE_DYNAMIC_INFO		1								//NB上报信息使能CoapDynamicInfo
 #define	NBCOAP_SENDCODE_RESPONSE_INFO		1								//NB上报信息使能CoapResponseInfo
-#define	NBCOAP_SENDCODE_QMC_DATA			1								//NB上报信息使能CoapQmcData
 
 #define	NBMQTTSN_SENDCODE_STATUS_BASIC	0								//NB上报信息使能MqttSNStatusBasic
 #define	NBMQTTSN_SENDCODE_STATUS_EXTEND	1								//NB上报信息使能MqttSNStatusExtend
@@ -380,7 +379,6 @@
 #define	NBMQTTSN_SENDCODE_BASIC_INFO		1								//NB上报信息使能MqttSNBasicInfo
 #define	NBMQTTSN_SENDCODE_DYNAMIC_INFO	1								//NB上报信息使能MqttSNDynamicInfo
 #define	NBMQTTSN_SENDCODE_RESPONSE_INFO	1								//NB上报信息使能MqttSNResponseInfo
-#define	NBMQTTSN_SENDCODE_QMC_DATA		1								//NB上报信息使能MqttSNQmcData
 
 #define	NBONENET_SENDCODE_SHORT_STATUS	0								//NB上报信息使能OneNETShortStatus
 #define	NBONENET_SENDCODE_LONG_STATUS		1								//NB上报信息使能OneNETLongStatus
@@ -388,7 +386,6 @@
 #define	NBONENET_SENDCODE_BASIC_INFO		1								//NB上报信息使能OneNETBasicInfo
 #define	NBONENET_SENDCODE_DYNAMIC_INFO	1								//NB上报信息使能OneNETDynamicInfo
 #define	NBONENET_SENDCODE_RESPONSE_INFO	1								//NB上报信息使能OneNETResponseInfo
-#define	NBONENET_SENDCODE_QMC_DATA		1								//NB上报信息使能OneNETQmcData
 
 #if NETPROTOCAL == NETCOAP
 #define	RADIO_DOWNLOAD_CMD_REBOOT		1								//RADIO下行指令Reboot

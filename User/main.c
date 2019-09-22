@@ -522,7 +522,6 @@ void MainRollingDownSleep(void)
 void MainHandleRoutine(void)
 {
 	uint8_t val8;
-	Qmc5883LStatusDataTypeDef QmcStatusData;
 	
 	/* Every Second Running */
 	if (Stm32_GetSecondTick() != SystemRunningTime.seconds) {
@@ -583,13 +582,6 @@ void MainHandleRoutine(void)
 	if ((Stm32_GetSecondTick() / 900) != SystemRunningTime.fifteenMinutes) {
 		SystemRunningTime.fifteenMinutes = Stm32_GetSecondTick() / 900;
 		
-		QMC5883L_Temperature_Read();
-		QmcStatusData.X = Qmc5883lData.X_Now;
-		QmcStatusData.Y = Qmc5883lData.Y_Now;
-		QmcStatusData.Z = Qmc5883lData.Z_Now;
-		QmcStatusData.Temperature = Qmc5883lData.temp_now;
-		QmcStatusData.Status = talgo_get_spotstatus();
-		Inspect_Message_QmcStatusEnqueue(QmcStatusData);
 	}
 	/* Every FortyMinutes Running */
 	if ((Stm32_GetSecondTick() / 2400) != SystemRunningTime.fortyMinutes) {
@@ -635,19 +627,6 @@ void MainHandleRoutine(void)
 	if ((Stm32_GetSecondTick() / (4*3600)) != SystemRunningTime.fourHours) {
 		SystemRunningTime.fourHours = Stm32_GetSecondTick() / (4*3600);
 		
-#if NETPROTOCAL == NETCOAP
-	#if NBCOAP_SENDCODE_QMC_DATA
-		NETCoapNeedSendCode.QmcData = 1;
-	#endif
-#elif NETPROTOCAL == NETMQTTSN
-	#if NBMQTTSN_SENDCODE_QMC_DATA
-		NETMqttSNNeedSendCode.QmcData = 1;
-	#endif
-#elif NETPROTOCAL == NETONENET
-	#if NBONENET_SENDCODE_QMC_DATA
-		NETOneNETNeedSendCode.QmcData = 1;
-	#endif
-#endif
 	}
 	/* Every Day Running */
 	if ((Stm32_GetSecondTick() / (24*3600)) != SystemRunningTime.days) {

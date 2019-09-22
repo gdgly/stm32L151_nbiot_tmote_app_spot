@@ -2,6 +2,8 @@
 > ##### Copyright (C) 2019 Movebroad Version:20.149 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2019-09-22 :
+	* 去除QMCData数据包的发送。
 * 2019-09-18 :
 	* QMCData包采用Info包结构体就好了，没必要创建一个一样的。
 	* MqttSN固件就数据组包方式遗留的去除。

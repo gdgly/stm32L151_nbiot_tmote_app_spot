@@ -457,18 +457,6 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NET_NBIOT_CoapSentDataAfterExexution();
 #endif
 	}
-	/* COAP Qmc5883L DATA ENQUEUE */
-	else if (NETCoapNeedSendCode.QmcData) {
-#if NBCOAP_SENDCODE_QMC_DATA
-		NET_NBIOT_CoapInfoStructureInit();
-		CoapInfoStructure.HeadPacket.PacketType				= 0x07;
-		CoapInfoStructure.MsgPacket.Type					= COAP_MSGTYPE_TYPE_QMCDATA_INFO;
-		len = NET_COAP_Message_Operate_Creat_Qmc5883L_Data((unsigned char *)&CoapInfoStructure.InfoData);
-		NET_Coap_Message_SendDataEnqueue((unsigned char *)&CoapInfoStructure, sizeof(CoapInfoStructure) - sizeof(CoapInfoStructure.InfoData) + len);
-		NETCoapNeedSendCode.QmcData = 0;
-		NET_NBIOT_CoapSentDataAfterExexution();
-#endif
-	}
 	/* COAP RESPONSE INFO DATA ENQUEUE */
 	else if (NETCoapNeedSendCode.ResponseInfo) {
 #if NBCOAP_SENDCODE_RESPONSE_INFO
@@ -591,18 +579,6 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NET_NBIOT_MqttSNSentDataAfterExexution();
 #endif
 	}
-	/* MQTTSN Qmc5883L DATA ENQUEUE */
-	else if (NETMqttSNNeedSendCode.QmcData) {
-#if NBMQTTSN_SENDCODE_QMC_DATA
-		NET_NBIOT_MqttSNInfoStructureInit();
-		MqttSNInfoStructure.HeadPacket.PacketType			= 0x07;
-		MqttSNInfoStructure.MsgPacket.Type					= MQTTSN_MSGTYPE_TYPE_QMCDATA_INFO;
-		len = NET_MQTTSN_Message_Operate_Creat_Qmc5883L_Data((unsigned char *)&MqttSNInfoStructure.InfoData);
-		NET_MqttSN_Message_SendDataEnqueue((unsigned char *)&MqttSNInfoStructure, sizeof(MqttSNInfoStructure) - sizeof(MqttSNInfoStructure.InfoData) + len);
-		NETMqttSNNeedSendCode.QmcData = 0;
-		NET_NBIOT_MqttSNSentDataAfterExexution();
-#endif
-	}
 	/* MQTTSN INFO RESPONSE DATA ENQUEUE */
 	else if (NETMqttSNNeedSendCode.InfoResponse) {
 #if NBMQTTSN_SENDCODE_RESPONSE_INFO
@@ -722,18 +698,6 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		len = NET_ONENET_Message_Operate_Creat_Json_Dynamic_Info((char *)&OneNETInfoStructure.InfoData);
 		NET_OneNET_Message_SendDataEnqueue((unsigned char *)&OneNETInfoStructure, sizeof(OneNETInfoStructure) - sizeof(OneNETInfoStructure.InfoData) + len);
 		NETOneNETNeedSendCode.DynamicInfo = 0;
-		NET_NBIOT_OneNETSentDataAfterExexution();
-#endif
-	}
-	/* ONENET Qmc5883L DATA ENQUEUE */
-	else if (NETOneNETNeedSendCode.QmcData) {
-#if NBONENET_SENDCODE_QMC_DATA
-		NET_NBIOT_OneNETInfoStructureInit();
-		OneNETInfoStructure.HeadPacket.PacketType			= 0x07;
-		OneNETInfoStructure.MsgPacket.Type					= ONENET_MSGTYPE_TYPE_QMCDATA_INFO;
-		len = NET_ONENET_Message_Operate_Creat_Qmc5883L_Data((unsigned char *)&OneNETInfoStructure.InfoData);
-		NET_OneNET_Message_SendDataEnqueue((unsigned char *)&OneNETInfoStructure, sizeof(OneNETInfoStructure) - sizeof(OneNETInfoStructure.InfoData) + len);
-		NETOneNETNeedSendCode.QmcData = 0;
 		NET_NBIOT_OneNETSentDataAfterExexution();
 #endif
 	}

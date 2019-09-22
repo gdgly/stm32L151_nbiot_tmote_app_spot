@@ -20,7 +20,6 @@
 #include "usart.h"
 
 Inspect_SwapSpotStatusTypeDef		InspectSpotStatus;
-Inspect_SwapQmcStatusTypeDef		InspectQmcStatus;
 
 /********************************************Is Full******************************************************/
 /**********************************************************************************************************
@@ -44,27 +43,6 @@ bool Inspect_Message_SpotStatusisFull(void)
 	return MessageState;
 }
 
-/**********************************************************************************************************
- @Function			bool Inspect_Message_QmcStatusisFull(void)
- @Description			Inspect_Message_QmcStatusisFull
- @Input				void
- @Return				true							: 已满
-					false						: 未满
-**********************************************************************************************************/
-bool Inspect_Message_QmcStatusisFull(void)
-{
-	bool MessageState;
-	
-	if ((InspectQmcStatus.Rear + 1) % INSPECT_QMC_STATUS_PACK_NUM == InspectQmcStatus.Front) {
-		MessageState = true;
-	}
-	else {
-		MessageState = false;
-	}
-	
-	return MessageState;
-}
-
 /********************************************Is Empty*****************************************************/
 /**********************************************************************************************************
  @Function			bool Inspect_Message_SpotStatusisEmpty(void)
@@ -78,27 +56,6 @@ bool Inspect_Message_SpotStatusisEmpty(void)
 	bool MessageState;
 	
 	if (InspectSpotStatus.Front == InspectSpotStatus.Rear) {
-		MessageState = true;
-	}
-	else {
-		MessageState = false;
-	}
-	
-	return MessageState;
-}
-
-/**********************************************************************************************************
- @Function			bool Inspect_Message_QmcStatusisEmpty(void)
- @Description			Inspect_Message_QmcStatusisEmpty
- @Input				void
- @Return				true							: 已空
-					false						: 未空
-**********************************************************************************************************/
-bool Inspect_Message_QmcStatusisEmpty(void)
-{
-	bool MessageState;
-	
-	if (InspectQmcStatus.Front == InspectQmcStatus.Rear) {
 		MessageState = true;
 	}
 	else {
@@ -164,26 +121,6 @@ void Inspect_Message_SpotStatusEnqueue(SpotStatusTypedef dataBuf)
 	}
 }
 
-/**********************************************************************************************************
- @Function			void Inspect_Message_QmcStatusEnqueue(Qmc5883LStatusDataTypeDef dataBuf)
- @Description			Inspect_Message_QmcStatusEnqueue
- @Input				dataBuf	 		 				: 需写入数据
- @Return				void
-**********************************************************************************************************/
-void Inspect_Message_QmcStatusEnqueue(Qmc5883LStatusDataTypeDef dataBuf)
-{
-	InspectQmcStatus.Rear = (InspectQmcStatus.Rear + 1) % INSPECT_QMC_STATUS_PACK_NUM;									//队尾偏移1
-	InspectQmcStatus.QmcStatus[InspectQmcStatus.Rear].X = dataBuf.X;
-	InspectQmcStatus.QmcStatus[InspectQmcStatus.Rear].Y = dataBuf.Y;
-	InspectQmcStatus.QmcStatus[InspectQmcStatus.Rear].Z = dataBuf.Z;
-	InspectQmcStatus.QmcStatus[InspectQmcStatus.Rear].Temperature = dataBuf.Temperature;
-	InspectQmcStatus.QmcStatus[InspectQmcStatus.Rear].Status = dataBuf.Status;
-	
-	if (Inspect_Message_QmcStatusisFull() == true) {																//队列已满
-		InspectQmcStatus.Front = (InspectQmcStatus.Front + 1) % INSPECT_QMC_STATUS_PACK_NUM;								//队头偏移1
-	}
-}
-
 /******************************************** Dequeue ****************************************************/
 /**********************************************************************************************************
  @Function			bool Inspect_Message_SpotStatusDequeue(SpotStatusTypedef* dataBuf)
@@ -235,36 +172,6 @@ bool Inspect_Message_SpotStatusDequeue(SpotStatusTypedef* dataBuf)
 	return MessageState;
 }
 
-/**********************************************************************************************************
- @Function			bool Inspect_Message_QmcStatusDequeue(Qmc5883LStatusDataTypeDef* dataBuf)
- @Description			Inspect_Message_QmcStatusDequeue
- @Input				dataBuf	 		 				: 需读出数据地址
- @Return				true								: 未空
-					false							: 已空
-**********************************************************************************************************/
-bool Inspect_Message_QmcStatusDequeue(Qmc5883LStatusDataTypeDef* dataBuf)
-{
-	bool MessageState;
-	unsigned char front;
-	
-	if (Inspect_Message_QmcStatusisEmpty() == true) {																//队列已空
-		MessageState = false;
-	}
-	else {																								//队列未空
-		front = (InspectQmcStatus.Front + 1) % INSPECT_QMC_STATUS_PACK_NUM;											//队头偏移1
-		
-		dataBuf->X = InspectQmcStatus.QmcStatus[front].X;
-		dataBuf->Y = InspectQmcStatus.QmcStatus[front].Y;
-		dataBuf->Z = InspectQmcStatus.QmcStatus[front].Z;
-		dataBuf->Temperature = InspectQmcStatus.QmcStatus[front].Temperature;
-		dataBuf->Status = InspectQmcStatus.QmcStatus[front].Status;
-		
-		MessageState = true;
-	}
-	
-	return MessageState;
-}
-
 /******************************************** DequeueEx ****************************************************/
 /**********************************************************************************************************
  @Function			void Inspect_Message_SpotStatusDequeueEx(SpotStatusTypedef* dataBuf)
@@ -301,21 +208,6 @@ void Inspect_Message_SpotStatusDequeueEx(SpotStatusTypedef* dataBuf)
 	dataBuf->unixTime = InspectSpotStatus.SpotStatus[InspectSpotStatus.Rear].unixTime;
 }
 
-/**********************************************************************************************************
- @Function			void Inspect_Message_QmcStatusDequeueEx(Qmc5883LStatusDataTypeDef* dataBuf)
- @Description			Inspect_Message_QmcStatusDequeueEx
- @Input				dataBuf	 		 				: 需读出数据地址
- @Return				void
-**********************************************************************************************************/
-void Inspect_Message_QmcStatusDequeueEx(Qmc5883LStatusDataTypeDef* dataBuf)
-{
-	dataBuf->X = InspectQmcStatus.QmcStatus[InspectQmcStatus.Rear].X;
-	dataBuf->Y = InspectQmcStatus.QmcStatus[InspectQmcStatus.Rear].Y;
-	dataBuf->Z = InspectQmcStatus.QmcStatus[InspectQmcStatus.Rear].Z;
-	dataBuf->Temperature = InspectQmcStatus.QmcStatus[InspectQmcStatus.Rear].Temperature;
-	dataBuf->Status = InspectQmcStatus.QmcStatus[InspectQmcStatus.Rear].Status;
-}
-
 /********************************************* OffSet ****************************************************/
 /**********************************************************************************************************
  @Function			bool Inspect_Message_SpotStatusOffSet(void)
@@ -339,28 +231,6 @@ bool Inspect_Message_SpotStatusOffSet(void)
 	return MessageState;
 }
 
-/**********************************************************************************************************
- @Function			bool Inspect_Message_QmcStatusOffSet(void)
- @Description			Inspect_Message_QmcStatusOffSet
- @Input				void
- @Return				true							: 未空
-					false						: 已空
-**********************************************************************************************************/
-bool Inspect_Message_QmcStatusOffSet(void)
-{
-	bool MessageState;
-	
-	if (Inspect_Message_QmcStatusisEmpty() == true) {																//队列已空
-		MessageState = false;
-	}
-	else {																								//队列未空
-		InspectQmcStatus.Front = (InspectQmcStatus.Front + 1) % INSPECT_QMC_STATUS_PACK_NUM;
-		MessageState = true;
-	}
-	
-	return MessageState;
-}
-
 /********************************************* Rear *****************************************************/
 /**********************************************************************************************************
  @Function			unsigned char Inspect_Message_SpotStatusRear(void)
@@ -371,17 +241,6 @@ bool Inspect_Message_QmcStatusOffSet(void)
 unsigned char Inspect_Message_SpotStatusRear(void)
 {
 	return InspectSpotStatus.Rear;
-}
-
-/**********************************************************************************************************
- @Function			unsigned char Inspect_Message_QmcStatusRear(void)
- @Description			Inspect_Message_QmcStatusRear
- @Input				void
- @Return				队尾值
-**********************************************************************************************************/
-unsigned char Inspect_Message_QmcStatusRear(void)
-{
-	return InspectQmcStatus.Rear;
 }
 
 /********************************************** END OF FLEE **********************************************/
