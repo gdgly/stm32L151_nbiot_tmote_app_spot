@@ -71,9 +71,10 @@ static NBIOT_StatusTypeDef NBIOT_Neul_NBxx_DictateEvent_GetError(NBIOT_ClientsTy
 }
 #endif
 
+#if NBIOT_ATCMD_SET_HARDWAREPOWEROFF
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_HardwarePoweroff(NBIOT_ClientsTypeDef* pClient)
- @Description			NBIOT_Neul_NBxx_HardwareReboot			: 硬件断电
+ @Description			NBIOT_Neul_NBxx_HardwarePoweroff			: 硬件断电
  @Input				pClient								: NBIOT客户端实例
  @Return				NBIOT_StatusTypeDef						: NBIOT处理状态
 **********************************************************************************************************/
@@ -93,7 +94,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_HardwarePoweroff(NBIOT_ClientsTypeDef* pClie
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_SET_HARDWAREREBOOT
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_HardwareReboot(NBIOT_ClientsTypeDef* pClient, u32 rebootTimeoutMS)
  @Description			NBIOT_Neul_NBxx_HardwareReboot			: 硬件重启NB模块
@@ -158,7 +161,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_HardwareReboot(NBIOT_ClientsTypeDef* pClient
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_SET_SOFTWAREREBOOT
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SoftwareReboot(NBIOT_ClientsTypeDef* pClient, u32 rebootTimeoutMS)
  @Description			NBIOT_Neul_NBxx_SoftwareReboot			: 软件重启NB模块
@@ -184,7 +189,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SoftwareReboot(NBIOT_ClientsTypeDef* pClient
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_SET_CLEARSTOREDEARFCN
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_ClearStoredEarfcn(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_ClearStoredEarfcn			: 清除小区频点
@@ -213,7 +220,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_ClearStoredEarfcn(NBIOT_ClientsTypeDef* pCli
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_MANUFACTURER
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadManufacturer(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadManufacturer		: 检出制造商标识
@@ -246,7 +255,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadManufacturer(NBIOT_ClientsTypeDef* 
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_MANUFACTURERMODEL
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadManufacturerModel(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadManufacturerModel	: 检出制造商型号
@@ -279,7 +290,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadManufacturerModel(NBIOT_ClientsType
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_MODULEVERSION
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadModuleVersion(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadModuleVersion		: 检出模组软件版本号
@@ -312,7 +325,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadModuleVersion(NBIOT_ClientsTypeDef*
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_IMEI
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadIMEI(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadIMEI				: 检出IMEI号
@@ -345,7 +360,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadIMEI(NBIOT_ClientsTypeDef* pClient)
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_IMEISV
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadIMEISV(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadIMEISV			: 检出IMEISV号
@@ -378,7 +395,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadIMEISV(NBIOT_ClientsTypeDef* pClien
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_RSSI
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadRSSI(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadRSSI				: 检出RSSI号
@@ -410,7 +429,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadRSSI(NBIOT_ClientsTypeDef* pClient)
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_STATISTICSRADIO
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadStatisticsRADIO(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadStatisticsRADIO	: 检出基站连接参数RADIO
@@ -454,7 +475,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadStatisticsRADIO(NBIOT_ClientsTypeDe
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_STATISTICSCELL
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadStatisticsCELL(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadStatisticsCELL		: 检出基站连接参数CELL
@@ -494,7 +517,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadStatisticsCELL(NBIOT_ClientsTypeDef
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_AREACODE
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadAreaCode(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadAreaCode			: 检出基站区域码
@@ -535,7 +560,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadAreaCode(NBIOT_ClientsTypeDef* pCli
 exit:
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_ICCID
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadICCID(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadICCID			: 检出ICCID卡号
@@ -568,7 +595,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadICCID(NBIOT_ClientsTypeDef* pClient
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_IMSI
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadIMSI(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadIMSI				: 检出IMSI号
@@ -601,7 +630,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadIMSI(NBIOT_ClientsTypeDef* pClient)
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_CGPADDR
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCGPADDR(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadCGPADDR			: 检出CGPADDR地址
@@ -632,7 +663,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCGPADDR(NBIOT_ClientsTypeDef* pClie
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_CGDCONT
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCGDCONT(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadCGDCONT			: 检出CGDCONT网址
@@ -664,7 +697,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCGDCONT(NBIOT_ClientsTypeDef* pClie
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_PDPCONTEXT
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadPDPContext(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadPDPContext		: 检出模组APN
@@ -696,7 +731,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadPDPContext(NBIOT_ClientsTypeDef* pC
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_DATATIME
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadDateTime(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadDateTime			: 检出DateTime基站时间
@@ -760,7 +797,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadDateTime(NBIOT_ClientsTypeDef* pCli
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_PSMSTATUS
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadPowerSavingModeStatus(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadPowerSavingModeStatus	: 查询终端PSM状态
@@ -811,7 +850,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadPowerSavingModeStatus(NBIOT_Clients
 exit:
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_CSCON
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSignalConnectionStatus(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadSignalConnectionStatus	: 查询终端Connected状态
@@ -852,7 +893,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSignalConnectionStatus(NBIOT_Client
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_NMSTATUS
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadMessageRegistrationStatus(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadMessageRegistrationStatus: 查询终端MessageRegistration状态
@@ -948,7 +991,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadMessageRegistrationStatus(NBIOT_Cli
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_SET_CGATT
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetAttachOrDetach(NBIOT_ClientsTypeDef* pClient, NBIOT_NetstateTypeDef attdet)
  @Description			NBIOT_Neul_NBxx_SetAttachOrDetach			: 设置终端入网退网
@@ -981,7 +1026,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetAttachOrDetach(NBIOT_ClientsTypeDef* pCli
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_CGATT
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadAttachOrDetach(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadAttachOrDetach		: 查询终端入网退网
@@ -1022,7 +1069,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadAttachOrDetach(NBIOT_ClientsTypeDef
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_SET_CFUN
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetMinOrFullFunc(NBIOT_ClientsTypeDef* pClient, NBIOT_FunctionalityTypeDef minfull)
  @Description			NBIOT_Neul_NBxx_SetMinOrFullFunc			: 设置设备功能
@@ -1055,7 +1104,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetMinOrFullFunc(NBIOT_ClientsTypeDef* pClie
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_CFUN
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadMinOrFullFunc(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadMinOrFullFunc		: 查询设备功能
@@ -1096,7 +1147,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadMinOrFullFunc(NBIOT_ClientsTypeDef*
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_SET_NNMI
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetNewMessageIndications(NBIOT_ClientsTypeDef* pClient, NBIOT_OpenOrCloseFuncTypeDef state)
  @Description			NBIOT_Neul_NBxx_SetNewMessageIndications	: 设置NNMI功能是否开启
@@ -1129,7 +1182,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetNewMessageIndications(NBIOT_ClientsTypeDe
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_NNMI
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadNewMessageIndications(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadNewMessageIndications	: 查询NNMI功能是否开启
@@ -1170,7 +1225,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadNewMessageIndications(NBIOT_Clients
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_SET_NSMI
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetSentMessageIndications(NBIOT_ClientsTypeDef* pClient, NBIOT_OpenOrCloseFuncTypeDef state)
  @Description			NBIOT_Neul_NBxx_SetSentMessageIndications	: 设置NSMI功能是否开启
@@ -1203,7 +1260,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetSentMessageIndications(NBIOT_ClientsTypeD
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_NSMI
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSentMessageIndications(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadSentMessageIndications	: 查询NSMI功能是否开启
@@ -1244,7 +1303,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSentMessageIndications(NBIOT_Client
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_SET_NBAND
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetSupportedBands(NBIOT_ClientsTypeDef* pClient, NBIOT_NBandTypeDef bands)
  @Description			NBIOT_Neul_NBxx_SetSupportedBands			: 设置Band
@@ -1284,7 +1345,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetSupportedBands(NBIOT_ClientsTypeDef* pCli
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_NBAND
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSupportedBands(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadSupportedBands		: 查询Band
@@ -1329,6 +1392,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSupportedBands(NBIOT_ClientsTypeDef
 	
 	return NBStatus;
 }
+#endif
 
 #define NBTEST_BAND_MAX					20
 
@@ -1345,6 +1409,7 @@ static bool isSubset(int mainarr[], int subarr[], int mainlen, int sublen)
 	return true;
 }
 
+#if NBIOT_ATCMD_TST_NBAND
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_TestSupportedBands(NBIOT_ClientsTypeDef* pClient, NBIOT_NBandTypeDef bands)
  @Description			NBIOT_Neul_NBxx_TestSupportedBands			: 测试Band是否支持
@@ -1412,7 +1477,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_TestSupportedBands(NBIOT_ClientsTypeDef* pCl
 exit:
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_SET_CMEE
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetReportTerminationError(NBIOT_ClientsTypeDef* pClient, NBIOT_ReportErrorTypeDef enable)
  @Description			NBIOT_Neul_NBxx_SetReportTerminationError	: 设置CMEE
@@ -1440,7 +1507,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetReportTerminationError(NBIOT_ClientsTypeD
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_CMEE
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadReportTerminationError(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadReportTerminationError	: 查询CMEE
@@ -1476,7 +1545,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadReportTerminationError(NBIOT_Client
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_SET_NCDP
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetCDPServer(NBIOT_ClientsTypeDef* pClient, const char *host, unsigned short port)
  @Description			NBIOT_Neul_NBxx_SetCDPServer				: 设置CDP服务器
@@ -1510,7 +1581,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetCDPServer(NBIOT_ClientsTypeDef* pClient, 
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_NCDP
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCDPServer(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadCDPServer			: 查询CDP服务器
@@ -1544,7 +1617,91 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCDPServer(NBIOT_ClientsTypeDef* pCl
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_SET_DNSSERVERADDRESS
+/**********************************************************************************************************
+ @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetDNSServerAddress(NBIOT_ClientsTypeDef* pClient, const char *pri_dns, const char *sec_dns)
+ @Description			NBIOT_Neul_NBxx_SetDNSServerAddress		: 设置DNS服务器地址
+ @Input				pClient								: NBIOT客户端实例
+					pri_dns								: Primary   DNS Server Address
+					sec_dns								: Secondary DNS Server Address
+ @Return				NBIOT_StatusTypeDef						: NBIOT处理状态
+**********************************************************************************************************/
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetDNSServerAddress(NBIOT_ClientsTypeDef* pClient, const char *pri_dns, const char *sec_dns)
+{
+	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	u16 datalength = 0;
+	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_QIDNSCFG_MSEC);
+#else
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
+	
+	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
+	sprintf((char *)pClient->DataProcessStack, "AT+QIDNSCFG=%s", pri_dns);
+	
+	datalength = strlen((const char*)pClient->DataProcessStack);
+	if (sec_dns != NULL) {
+		sprintf((char *)(pClient->DataProcessStack + datalength), ",%s", sec_dns);
+		datalength = strlen((const char*)pClient->DataProcessStack);
+	}
+	
+	sprintf((char *)(pClient->DataProcessStack + datalength), "%c", '\r');
+	
+	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, pClient->DataProcessStack, strlen((char *)pClient->DataProcessStack), "OK", "ERROR");
+	
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_ERROR) {
+		NBStatus = NBIOT_Neul_NBxx_DictateEvent_GetError(pClient);
+	}
+#else
+	NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack);
+#endif
+	
+	return NBStatus;
+}
+#endif
+
+#if NBIOT_ATCMD_GET_DNSSERVERADDRESS
+/**********************************************************************************************************
+ @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadDNSServerAddress(NBIOT_ClientsTypeDef* pClient)
+ @Description			NBIOT_Neul_NBxx_CheckReadDNSServerAddress	: 查询DNS服务器地址
+ @Input				pClient								: NBIOT客户端实例
+ @Return				NBIOT_StatusTypeDef						: NBIOT处理状态
+**********************************************************************************************************/
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadDNSServerAddress(NBIOT_ClientsTypeDef* pClient)
+{
+	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_QIDNSCFG_MSEC);
+#else
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
+	
+	memset((void *)&pClient->Parameter.qidnscfg.PrimaryDns, 0x0, sizeof(pClient->Parameter.qidnscfg.PrimaryDns));
+	memset((void *)&pClient->Parameter.qidnscfg.SecondaryDns, 0x0, sizeof(pClient->Parameter.qidnscfg.SecondaryDns));
+	
+	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+QIDNSCFG?\r", strlen("AT+QIDNSCFG?\r"), "OK", "ERROR");
+	
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^PrimaryDns]%*[^: ]: %[^\n]%*[^SecondaryDns]%*[^: ]: %[^\r]", (char *)&pClient->Parameter.qidnscfg.PrimaryDns, pClient->Parameter.qidnscfg.SecondaryDns) <= 0) {
+			NBStatus = NBIOT_ERROR;
+		}
+	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		NBStatus = NBIOT_Neul_NBxx_DictateEvent_GetError(pClient);
+	}
+#endif
+	
+	return NBStatus;
+}
+#endif
+
+#if NBIOT_ATCMD_SET_NCONFIG
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetConfigUE(NBIOT_ClientsTypeDef* pClient, const char *ncmd, NBIOT_NConfigTypeDef state)
  @Description			NBIOT_Neul_NBxx_SetConfigUE				: 配置NCONFIG模式
@@ -1578,7 +1735,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetConfigUE(NBIOT_ClientsTypeDef* pClient, c
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_NCONFIG
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadConfigUE(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadConfigUE			: 查询NCONFIG模式
@@ -1673,7 +1832,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadConfigUE(NBIOT_ClientsTypeDef* pCli
 exit:
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_NQMGS
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_QuerySendMessageCOAPPayload(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_QuerySendMessageCOAPPayload	: COAP查询消息已送达NB
@@ -1707,7 +1868,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_QuerySendMessageCOAPPayload(NBIOT_ClientsTyp
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_NQMGR
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_QueryReadMessageCOAPPayload(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_QueryReadMessageCOAPPayload	: COAP查询消息是否下行
@@ -1741,7 +1904,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_QueryReadMessageCOAPPayload(NBIOT_ClientsTyp
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_SET_COAPPAYLOAD
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCOAPPayload(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_SendCOAPPayload			: COAP发送一条负载数据
@@ -1789,7 +1954,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCOAPPayload(NBIOT_ClientsTypeDef* pClien
 exit:
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_COAPPAYLOAD
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_ReadCOAPPayload(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_ReadCOAPPayload			: COAP读取一条负载数据
@@ -1831,7 +1998,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_ReadCOAPPayload(NBIOT_ClientsTypeDef* pClien
 exit:
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_GET_CONDATA
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCONDataStatus(NBIOT_ClientsTypeDef* pClient)
  @Description			NBIOT_Neul_NBxx_CheckReadCONDataStatus			: 查询终端CON数据发送状态
@@ -1924,7 +2093,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCONDataStatus(NBIOT_ClientsTypeDef*
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_SET_CONDATA
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCOAPPayloadFlag(NBIOT_ClientsTypeDef* pClient, const char *flag)
  @Description			NBIOT_Neul_NBxx_SendCOAPPayloadFlag		: COAP发送一条负载数据(FLAG)
@@ -2013,7 +2184,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCOAPPayloadFlag(NBIOT_ClientsTypeDef* pC
 exit:
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_CRT_UDPSOCKET
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CreateUDPSocket(NBIOT_ClientsTypeDef* pClient, u16 localport, u8 receivectl, int *socket)
  @Description			NBIOT_Neul_NBxx_CreateUDPSocket			: 创建UDP链接
@@ -2051,7 +2224,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CreateUDPSocket(NBIOT_ClientsTypeDef* pClien
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_CLS_UDPSOCKET
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CloseUDPSocket(NBIOT_ClientsTypeDef* pClient, int socket)
  @Description			NBIOT_Neul_NBxx_CloseUDPSocket			: 关闭UDP连接
@@ -2084,7 +2259,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CloseUDPSocket(NBIOT_ClientsTypeDef* pClient
 	
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_SED_UDPPAYLOAD
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendUDPPayload(NBIOT_ClientsTypeDef* pClient, int socket, const char *addr, u16 port)
  @Description			NBIOT_Neul_NBxx_SendUDPPayload			: UDP发送负载数据
@@ -2143,7 +2320,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendUDPPayload(NBIOT_ClientsTypeDef* pClient
 exit:
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_SED_UDPPAYLOADFLAG
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendUDPPayloadFlag(NBIOT_ClientsTypeDef* pClient, int socket, const char *addr, u16 port, const char *flag)
  @Description			NBIOT_Neul_NBxx_SendUDPPayloadFlag			: UDP发送负载数据(携带标志)
@@ -2205,7 +2384,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendUDPPayloadFlag(NBIOT_ClientsTypeDef* pCl
 exit:
 	return NBStatus;
 }
+#endif
 
+#if NBIOT_ATCMD_RED_UDPPAYLOAD
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_ReadUDPPayload(NBIOT_ClientsTypeDef* pClient, int socket, int maxrlen, int *rleft, char *addr, u16 *port)
  @Description			NBIOT_Neul_NBxx_ReadUDPPayload			: UDP读取负载数据
@@ -2261,5 +2442,6 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_ReadUDPPayload(NBIOT_ClientsTypeDef* pClient
 exit:
 	return NBStatus;
 }
+#endif
 
 /********************************************** END OF FLEE **********************************************/

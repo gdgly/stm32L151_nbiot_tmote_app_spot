@@ -2,6 +2,9 @@
 > ##### Copyright (C) 2019 Movebroad Version:20.149 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2019-09-25 :
+	* NBIOT 增加指令 QIDNSCFG。
+	* NBIOT 指令采用可配置型结构。
 * 2019-09-22 :
 	* 去除QMCData数据包的发送。
 * 2019-09-18 :
