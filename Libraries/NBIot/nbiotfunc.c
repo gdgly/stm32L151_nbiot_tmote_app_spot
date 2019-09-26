@@ -799,6 +799,38 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadDateTime(NBIOT_ClientsTypeDef* pCli
 }
 #endif
 
+#if NBIOT_ATCMD_GET_CHIPINFO
+/**********************************************************************************************************
+ @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSystemInformation(NBIOT_ClientsTypeDef* pClient)
+ @Description			NBIOT_Neul_NBxx_CheckReadSystemInformation	: 检出模组系统信息
+ @Input				pClient								: NBIOT客户端实例
+ @Return				NBIOT_StatusTypeDef						: NBIOT处理状态
+**********************************************************************************************************/
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSystemInformation(NBIOT_ClientsTypeDef* pClient)
+{
+	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_CHIPINFO_MSEC);
+#else
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
+	
+	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+QCHIPINFO=ALL\r", strlen("AT+QCHIPINFO=ALL\r"), "OK", "ERROR");
+	
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
+		sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+QCHIPINFO:TEMP]%*[^,],%d%*[^+QCHIPINFO:VBAT]%*[^,],%d", &pClient->Parameter.qchipinfo.temp, &pClient->Parameter.qchipinfo.vbat);
+	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		NBStatus = NBIOT_Neul_NBxx_DictateEvent_GetError(pClient);
+	}
+#endif
+	
+	return NBStatus;
+}
+#endif
+
 #if NBIOT_ATCMD_GET_PSMSTATUS
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadPowerSavingModeStatus(NBIOT_ClientsTypeDef* pClient)
@@ -1690,6 +1722,73 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadDNSServerAddress(NBIOT_ClientsTypeD
 		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^PrimaryDns]%*[^: ]: %[^\n]%*[^SecondaryDns]%*[^: ]: %[^\r]", (char *)&pClient->Parameter.qidnscfg.PrimaryDns, pClient->Parameter.qidnscfg.SecondaryDns) <= 0) {
 			NBStatus = NBIOT_ERROR;
 		}
+	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		NBStatus = NBIOT_Neul_NBxx_DictateEvent_GetError(pClient);
+	}
+#endif
+	
+	return NBStatus;
+}
+#endif
+
+#if NBIOT_ATCMD_SET_LWM2MLIFETIME
+/**********************************************************************************************************
+ @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetLWM2MLifetime(NBIOT_ClientsTypeDef* pClient, unsigned int lifetime)
+ @Description			NBIOT_Neul_NBxx_SetLWM2MLifetime			: 设置LWM2MLifetime
+ @Input				pClient								: NBIOT客户端实例
+					lifetime								: 活跃时间
+ @Return				NBIOT_StatusTypeDef						: NBIOT处理状态
+**********************************************************************************************************/
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetLWM2MLifetime(NBIOT_ClientsTypeDef* pClient, unsigned int lifetime)
+{
+	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_LWM2MLIFE_MSEC);
+#else
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
+	
+	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
+	sprintf((char *)pClient->DataProcessStack, "AT+QCFG=\"LWM2M/lifetime\",%d\r", lifetime);
+	
+	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, pClient->DataProcessStack, strlen((char *)pClient->DataProcessStack), "OK", "ERROR");
+	
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_ERROR) {
+		NBStatus = NBIOT_Neul_NBxx_DictateEvent_GetError(pClient);
+	}
+#else
+	NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack);
+#endif
+	
+	return NBStatus;
+}
+#endif
+
+#if NBIOT_ATCMD_GET_LWM2MLIFETIME
+/**********************************************************************************************************
+ @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadLWM2MLifetime(NBIOT_ClientsTypeDef* pClient)
+ @Description			NBIOT_Neul_NBxx_CheckReadLWM2MLifetime		: 查询LWM2MLifetime
+ @Input				pClient								: NBIOT客户端实例
+ @Return				NBIOT_StatusTypeDef						: NBIOT处理状态
+**********************************************************************************************************/
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadLWM2MLifetime(NBIOT_ClientsTypeDef* pClient)
+{
+	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_LWM2MLIFE_MSEC);
+#else
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
+	
+	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+QCFG=\"LWM2M/lifetime\"\r", strlen("AT+QCFG=\"LWM2M/lifetime\"\r"), "OK", "ERROR");
+	
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
+		sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+QCFG]%*[^:]:%*[^,],%d", &pClient->Parameter.lwm2mlifetime);
 	}
 #if NBIOT_PRINT_ERROR_CODE_TYPE
 	else {

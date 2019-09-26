@@ -37,6 +37,7 @@
 #define NBIOT_ATCMD_GET_CGDCONT			1
 #define NBIOT_ATCMD_GET_PDPCONTEXT			1
 #define NBIOT_ATCMD_GET_DATATIME			1
+#define NBIOT_ATCMD_GET_CHIPINFO			0
 #define NBIOT_ATCMD_GET_PSMSTATUS			1
 #define NBIOT_ATCMD_GET_CSCON				1
 #define NBIOT_ATCMD_GET_NMSTATUS			1
@@ -57,6 +58,8 @@
 #define NBIOT_ATCMD_GET_NCDP				1
 #define NBIOT_ATCMD_SET_DNSSERVERADDRESS	0
 #define NBIOT_ATCMD_GET_DNSSERVERADDRESS	0
+#define NBIOT_ATCMD_SET_LWM2MLIFETIME		0
+#define NBIOT_ATCMD_GET_LWM2MLIFETIME		0
 #define NBIOT_ATCMD_SET_NCONFIG			1
 #define NBIOT_ATCMD_GET_NCONFIG			1
 #define NBIOT_ATCMD_GET_NQMGS				1
@@ -86,6 +89,7 @@
 #define NBIOT_COMMAND_CGDCONT_MSEC			600
 #define NBIOT_COMMAND_CGCONTRDP_MSEC		600
 #define NBIOT_COMMAND_CCLK_MSEC			600
+#define NBIOT_COMMAND_CHIPINFO_MSEC		600
 #define NBIOT_COMMAND_NPSMR_MSEC			1800
 #define NBIOT_COMMAND_CSCON_MSEC			600
 #define NBIOT_COMMAND_NMSTATUS_MSEC		600
@@ -97,6 +101,7 @@
 #define NBIOT_COMMAND_CMEE_MSEC			600
 #define NBIOT_COMMAND_NCDP_MSEC			600
 #define NBIOT_COMMAND_QIDNSCFG_MSEC		600
+#define NBIOT_COMMAND_LWM2MLIFE_MSEC		600
 #define NBIOT_COMMAND_NCONFIG_MSEC			1000
 #define NBIOT_COMMAND_NQMGS_MSEC			600
 #define NBIOT_COMMAND_NQMGR_MSEC			600
@@ -460,19 +465,36 @@ struct NBIOT_NBandTypeDef
 /* NBIOT Parameter */
 struct NBIOT_ParameterTypeDef
 {
+#if NBIOT_ATCMD_GET_MANUFACTURER
 	char								manufacturer[10];									//厂商名
+#endif
+#if NBIOT_ATCMD_GET_MANUFACTURERMODEL
 	char								manufacturermode[20];								//厂商型号
+#endif
+#if NBIOT_ATCMD_GET_MODULEVERSION
 	char								modelversion[30];									//模块软件版本
+#endif
+#if NBIOT_ATCMD_GET_IMEI
 	char								imei[20];											//IMEI
+#endif
+#if NBIOT_ATCMD_GET_IMEISV
 	char								imeisv[20];										//IMEISV
+#endif
+#if NBIOT_ATCMD_GET_ICCID
 	char								iccid[25];										//运营商卡号
+#endif
+#if NBIOT_ATCMD_GET_IMSI
 	char								imsi[20];											//IMSI
+#endif
 	char								cgpaddr[20];										//核心网地址
 	char								cgdcontPDPType[10];									//核心网类型
 	char								cgdcontAPN[15];									//核心网名称
 	char								cgcontrdpAPN[50];									//核心网名称
 	bool								bandsupport;										//band支持
 	int								rssi;											//信号质量
+#if NBIOT_ATCMD_GET_LWM2MLIFETIME
+	unsigned int						lwm2mlifetime;										//LWM2MLifetime
+#endif
 	
 #if NBIOT_ATCMD_GET_AREACODE
 	struct NetworkRegistrationStatusTypeDef {
@@ -554,6 +576,13 @@ struct NBIOT_ParameterTypeDef
 		unsigned char					PrimaryDns[16];
 		unsigned char					SecondaryDns[16];
 	}qidnscfg;
+#endif
+	
+#if NBIOT_ATCMD_GET_CHIPINFO
+	struct ChipInfoTypeDef {
+		unsigned int					temp;
+		unsigned int					vbat;
+	}qchipinfo;
 #endif
 	
 	NBIOT_CONDataStatusTypeDef			condatastate;

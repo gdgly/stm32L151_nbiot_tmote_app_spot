@@ -61,6 +61,9 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadPDPContext(NBIOT_ClientsTypeDef* pC
 #if NBIOT_ATCMD_GET_DATATIME
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadDateTime(NBIOT_ClientsTypeDef* pClient);																		//检出基站时间
 #endif
+#if NBIOT_ATCMD_GET_CHIPINFO
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSystemInformation(NBIOT_ClientsTypeDef* pClient);																	//检出模组系统信息
+#endif
 #if NBIOT_ATCMD_GET_PSMSTATUS
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadPowerSavingModeStatus(NBIOT_ClientsTypeDef* pClient);																//查询终端PSM状态
 #endif
@@ -120,6 +123,12 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetDNSServerAddress(NBIOT_ClientsTypeDef* pC
 #endif
 #if NBIOT_ATCMD_GET_DNSSERVERADDRESS
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadDNSServerAddress(NBIOT_ClientsTypeDef* pClient);																	//查询DNS服务器地址
+#endif
+#if NBIOT_ATCMD_SET_LWM2MLIFETIME
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetLWM2MLifetime(NBIOT_ClientsTypeDef* pClient, unsigned int lifetime);														//设置LWM2MLifetime
+#endif
+#if NBIOT_ATCMD_GET_LWM2MLIFETIME
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadLWM2MLifetime(NBIOT_ClientsTypeDef* pClient);																	//查询LWM2MLifetime
 #endif
 #if NBIOT_ATCMD_SET_NCONFIG
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SetConfigUE(NBIOT_ClientsTypeDef* pClient, const char *ncmd, NBIOT_NConfigTypeDef state);										//配置NCONFIG模式

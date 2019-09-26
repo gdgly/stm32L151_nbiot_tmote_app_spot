@@ -2330,6 +2330,7 @@ void TCFG_Utility_Sub_Nbiot_IdleLifetime(void)
 	}
 }
 
+#if NBIOT_ATCMD_GET_ICCID
 /**********************************************************************************************************
  @Function			char* TCFG_Utility_Get_Nbiot_Iccid_String(void)
  @Description			TCFG_Utility_Get_Nbiot_Iccid_String			: 读取Nbiot Iccid字符串
@@ -2346,7 +2347,9 @@ char* TCFG_Utility_Get_Nbiot_Iccid_String(void)
 	return (char*)OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.iccid;
 #endif
 }
+#endif
 
+#if NBIOT_ATCMD_GET_IMEI
 /**********************************************************************************************************
  @Function			char* TCFG_Utility_Get_Nbiot_Imei_String(void)
  @Description			TCFG_Utility_Get_Nbiot_Imei_String				: 读取Nbiot Imei字符串
@@ -2363,7 +2366,9 @@ char* TCFG_Utility_Get_Nbiot_Imei_String(void)
 	return (char*)OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.imei;
 #endif
 }
+#endif
 
+#if NBIOT_ATCMD_GET_IMEISV
 /**********************************************************************************************************
  @Function			char* TCFG_Utility_Get_Nbiot_Imeisv_String(void)
  @Description			TCFG_Utility_Get_Nbiot_Imeisv_String			: 读取Nbiot Imeisv字符串
@@ -2380,7 +2385,9 @@ char* TCFG_Utility_Get_Nbiot_Imeisv_String(void)
 	return (char*)OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.imeisv;
 #endif
 }
+#endif
 
+#if NBIOT_ATCMD_GET_IMSI
 /**********************************************************************************************************
  @Function			char* TCFG_Utility_Get_Nbiot_Imsi_String(void)
  @Description			TCFG_Utility_Get_Nbiot_Imsi_String				: 读取Nbiot Imesi字符串
@@ -2397,6 +2404,7 @@ char* TCFG_Utility_Get_Nbiot_Imsi_String(void)
 	return (char*)OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.imsi;
 #endif
 }
+#endif
 
 /**********************************************************************************************************
  @Function			int TCFG_Utility_Get_Nbiot_Rssi_IntVal(void)
@@ -3049,6 +3057,7 @@ unsigned short TCFG_Utility_Get_Nbiot_PCPUpgradeStartTimes(void)
 #endif
 }
 
+#if NBIOT_ATCMD_GET_MANUFACTURER
 /**********************************************************************************************************
  @Function			char* TCFG_Utility_Get_Nbiot_Manufacturer(void)
  @Description			TCFG_Utility_Get_Nbiot_Manufacturer			: 读取Nbiot Manufacturer值
@@ -3065,7 +3074,9 @@ char* TCFG_Utility_Get_Nbiot_Manufacturer(void)
 	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.manufacturer;
 #endif
 }
+#endif
 
+#if NBIOT_ATCMD_GET_MANUFACTURERMODEL
 /**********************************************************************************************************
  @Function			char* TCFG_Utility_Get_Nbiot_Manufacturermode(void)
  @Description			TCFG_Utility_Get_Nbiot_Manufacturermode			: 读取Nbiot Manufacturermode值
@@ -3082,7 +3093,9 @@ char* TCFG_Utility_Get_Nbiot_Manufacturermode(void)
 	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.manufacturermode;
 #endif
 }
+#endif
 
+#if NBIOT_ATCMD_GET_MODULEVERSION
 /**********************************************************************************************************
  @Function			char* TCFG_Utility_Get_Nbiot_ModelVersion(void)
  @Description			TCFG_Utility_Get_Nbiot_ModelVersion			: 读取Nbiot ModelVersion值
@@ -3099,6 +3112,7 @@ char* TCFG_Utility_Get_Nbiot_ModelVersion(void)
 	return OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.modelversion;
 #endif
 }
+#endif
 
 /**********************************************************************************************************
  @Function			char* TCFG_Utility_Get_Nbiot_PDPType(void)
