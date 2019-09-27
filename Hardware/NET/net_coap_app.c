@@ -715,9 +715,9 @@ void NET_COAP_NBIOT_Event_SimICCIDCheck(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		COAP_DEBUG_LOG_PRINTF("NB ICCID Check Fail ECde %d", NBStatus);
+		COAP_DEBUG_LOG_PRINTF("NB ICCID Fail ECde %d", NBStatus);
 	#else
-		COAP_DEBUG_LOG_PRINTF("NB ICCID Check Fail");
+		COAP_DEBUG_LOG_PRINTF("NB ICCID Fail");
 	#endif
 #endif
 	}
@@ -913,9 +913,9 @@ void NET_COAP_NBIOT_Event_ClearStoredEARFCN(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		DNS_DEBUG_LOG_PRINTF("NB Clear Stored EARFCN Fail Ecde %d", NBStatus);
+		DNS_DEBUG_LOG_PRINTF("NB Clear EARFCN Fail Ecde %d", NBStatus);
 	#else
-		DNS_DEBUG_LOG_PRINTF("NB Clear Stored EARFCN Fail");
+		DNS_DEBUG_LOG_PRINTF("NB Clear EARFCN Fail");
 	#endif
 #endif
 		return;
@@ -948,9 +948,9 @@ void NET_COAP_NBIOT_Event_CDPServerCheck(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		COAP_DEBUG_LOG_PRINTF("CoAP CDP Check Fail ECde %d", NBStatus);
+		COAP_DEBUG_LOG_PRINTF("CoAP CDP Fail ECde %d", NBStatus);
 	#else
-		COAP_DEBUG_LOG_PRINTF("CoAP CDP Check Fail");
+		COAP_DEBUG_LOG_PRINTF("CoAP CDP Fail");
 	#endif
 #endif
 	}
@@ -1115,9 +1115,9 @@ void NET_COAP_NBIOT_Event_NbandModeConfig(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		COAP_DEBUG_LOG_PRINTF("CoAP BAND Read Fail ECde %d", NBStatus);
+		COAP_DEBUG_LOG_PRINTF("CoAP BAND Fail ECde %d", NBStatus);
 	#else
-		COAP_DEBUG_LOG_PRINTF("CoAP BAND Read Fail");
+		COAP_DEBUG_LOG_PRINTF("CoAP BAND Fail");
 	#endif
 #endif
 	}

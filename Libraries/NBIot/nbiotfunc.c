@@ -246,6 +246,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadManufacturer(NBIOT_ClientsTypeDef* 
 		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\n%[^\r]", pClient->Parameter.manufacturer) <= 0) {
 			NBStatus = NBIOT_ERROR;
 		}
+		pClient->Parameter.manufacturer[9] = 0x00;
 	}
 #if NBIOT_PRINT_ERROR_CODE_TYPE
 	else {
@@ -281,6 +282,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadManufacturerModel(NBIOT_ClientsType
 		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\n%[^\r]", pClient->Parameter.manufacturermode) <= 0) {
 			NBStatus = NBIOT_ERROR;
 		}
+		pClient->Parameter.manufacturermode[19] = 0x00;
 	}
 #if NBIOT_PRINT_ERROR_CODE_TYPE
 	else {
@@ -316,6 +318,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadModuleVersion(NBIOT_ClientsTypeDef*
 		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^APPLICATION]%*[^,],%*11s%[^\r]", pClient->Parameter.modelversion) <= 0) {
 			NBStatus = NBIOT_ERROR;
 		}
+		pClient->Parameter.modelversion[7] = 0x00;
 	}
 #if NBIOT_PRINT_ERROR_CODE_TYPE
 	else {
@@ -351,6 +354,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadIMEI(NBIOT_ClientsTypeDef* pClient)
 		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+CGSN]%*[^:]:%[^\r]", pClient->Parameter.imei) <= 0) {
 			NBStatus = NBIOT_ERROR;
 		}
+		pClient->Parameter.imei[15] = 0x00;
 	}
 #if NBIOT_PRINT_ERROR_CODE_TYPE
 	else {
@@ -386,6 +390,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadIMEISV(NBIOT_ClientsTypeDef* pClien
 		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+CGSN]%*[^:]:%[^\r]", pClient->Parameter.imeisv) <= 0) {
 			NBStatus = NBIOT_ERROR;
 		}
+		pClient->Parameter.imeisv[19] = 0x00;
 	}
 #if NBIOT_PRINT_ERROR_CODE_TYPE
 	else {
@@ -586,6 +591,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadICCID(NBIOT_ClientsTypeDef* pClient
 		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+NCCID]%*[^:]:%[^\r]", pClient->Parameter.iccid) <= 0) {
 			NBStatus = NBIOT_ERROR;
 		}
+		pClient->Parameter.iccid[20] = 0x00;
 	}
 #if NBIOT_PRINT_ERROR_CODE_TYPE
 	else {
@@ -621,6 +627,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadIMSI(NBIOT_ClientsTypeDef* pClient)
 		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\n%[^\r]", pClient->Parameter.imsi) <= 0) {
 			NBStatus = NBIOT_ERROR;
 		}
+		pClient->Parameter.imsi[15] = 0x00;
 	}
 #if NBIOT_PRINT_ERROR_CODE_TYPE
 	else {

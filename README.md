@@ -2,6 +2,8 @@
 > ##### Copyright (C) 2019 Movebroad Version:20.149 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2019-09-27 :
+	* NBIOT 限定字符串类参数读取字节数。
 * 2019-09-26 :
 	* NBIOT 增加指令 QCFG="LWM2M/lifetime"。
 	* NBIOT 增加指令 QCHIPINFO。
