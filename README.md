@@ -2,6 +2,9 @@
 > ##### Copyright (C) 2019 Movebroad Version:20.149 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2019-10-09 :
+	* instpectconfig.c中, < if (status_pre != SpotStatusDataBackUp.spot_status) { > 改为 < if ((status_pre&0x01) != (SpotStatusDataBackUp.spot_status&0x01)) { >。
+	* 修复会导致无车心跳之后继续发送无车心跳count会加1。
 * 2019-09-27 :
 	* NBIOT 限定字符串类参数读取字节数。
 * 2019-09-26 :
