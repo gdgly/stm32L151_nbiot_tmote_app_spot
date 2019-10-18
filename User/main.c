@@ -538,9 +538,11 @@ void MainHandleRoutine(void)
 				__NOP();
 			}
 			else if (NETCoapNeedSendCode.WorkInfoWait > 0) {
+		#if ROLLINGOVER_WORKINFO_TYPE
 			#if NBCOAP_SENDCODE_WORK_INFO
 				NETCoapNeedSendCode.WorkInfo = 1;
 			#endif
+		#endif
 			}
 			NETCoapNeedSendCode.WorkInfoWait--;
 		}
@@ -551,9 +553,11 @@ void MainHandleRoutine(void)
 				__NOP();
 			}
 			else if (NETMqttSNNeedSendCode.InfoWorkWait > 0) {
+		#if ROLLINGOVER_WORKINFO_TYPE
 			#if NBMQTTSN_SENDCODE_WORK_INFO
 				NETMqttSNNeedSendCode.InfoWork = 1;
 			#endif
+		#endif
 			}
 			NETMqttSNNeedSendCode.InfoWorkWait--;
 		}
@@ -564,9 +568,11 @@ void MainHandleRoutine(void)
 				__NOP();
 			}
 			else if (NETOneNETNeedSendCode.WorkInfoWait > 0) {
+		#if ROLLINGOVER_WORKINFO_TYPE
 			#if NBONENET_SENDCODE_WORK_INFO
 				NETOneNETNeedSendCode.WorkInfo = 1;
 			#endif
+		#endif
 			}
 			NETOneNETNeedSendCode.WorkInfoWait--;
 		}

@@ -2,6 +2,10 @@
 > ##### Copyright (C) 2019 Movebroad Version:20.149 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2019-10-18 :
+	* 关闭翻转设备发送workinfo包。
+* 2019-10-10 :
+	* MqttSN协议中当消息长度大于100则默认发送成功。
 * 2019-10-09 :
 	* instpectconfig.c中, < if (status_pre != SpotStatusDataBackUp.spot_status) { > 改为 < if ((status_pre&0x01) != (SpotStatusDataBackUp.spot_status&0x01)) { >。
 	* 修复会导致无车心跳之后继续发送无车心跳count会加1。
@@ -17,7 +21,7 @@
 	* 去除QMCData数据包的发送。
 * 2019-09-18 :
 	* QMCData包采用Info包结构体就好了，没必要创建一个一样的。
-	* MqttSN固件就数据组包方式遗留的去除。
+	* MqttSN固件旧数据组包方式遗留的去除。
 * 2019-09-13 :
 	* OneNET监听器加入，监听信号检出。
 	* OneNET运行时间获取。

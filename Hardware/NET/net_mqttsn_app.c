@@ -2262,7 +2262,10 @@ MQTTSN_StatusTypeDef NET_MQTTSN_SendPayloadPacket(MQTTSN_ClientsTypeDef* pClient
 			topic.type = MQTTSN_TOPIC_TYPE_PREDEFINED;
 			topic.data.id = TOPICID_STANDARD;
 			if ((MQTTSNStatus = MQTTSN_Publish(pClient, topic, &message)) != MQTTSN_OK) {
-				//Todo
+#if MQTTSN_EXCEED_MSGLEN_TYPE
+				/* It's info msg must Trans OK */
+				if (pMsgLen > MQTTSN_EXCEED_MSGLEN_MAX) MQTTSNStatus = MQTTSN_OK;
+#endif
 			}
 			break;
 		}
