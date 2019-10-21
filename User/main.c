@@ -401,6 +401,7 @@ void MainRollingUpwardsActived(void)
 **********************************************************************************************************/
 void MainRollingUpwardsSleep(void)
 {
+#if NBIOT_UPWARDSSLEEP_TYPE
 	/* 日常处理 */
 	MainHandleRoutine();
 	
@@ -409,15 +410,18 @@ void MainRollingUpwardsSleep(void)
 		NET_NBIOT_App_Task();
 	}
 	else {
+#endif
 		/* NBIOT Power OFF */
 		if (NBIOTPOWER_IO_READ()) {
 			NET_NBIOT_Initialization();
 			NBIOTPOWER(OFF);
 		}
+#if NBIOT_UPWARDSSLEEP_TYPE
 	}
 	
 	/* 小无线处理 */
 	Radio_Trf_App_Task();
+#endif
 }
 
 /* ============================================ 倒放处理 =============================================== */
@@ -504,11 +508,27 @@ void MainRollingEnteringDownSleep(void)
 **********************************************************************************************************/
 void MainRollingDownSleep(void)
 {
-	/* NBIOT Power OFF */
-	if (NBIOTPOWER_IO_READ()) {
-		NET_NBIOT_Initialization();
-		NBIOTPOWER(OFF);
+#if NBIOT_DNWARDSSLEEP_TYPE
+	/* 日常处理 */
+	MainHandleRoutine();
+	
+	if (TCFG_Utility_Get_Nbiot_IdleLifetime() > 0) {
+		/* NBIOT APP Task */
+		NET_NBIOT_App_Task();
 	}
+	else {
+#endif
+		/* NBIOT Power OFF */
+		if (NBIOTPOWER_IO_READ()) {
+			NET_NBIOT_Initialization();
+			NBIOTPOWER(OFF);
+		}
+#if NBIOT_DNWARDSSLEEP_TYPE
+	}
+	
+	/* 小无线处理 */
+	Radio_Trf_App_Task();
+#endif
 }
 
 /* ============================================ 日常处理 =============================================== */
