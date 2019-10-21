@@ -314,6 +314,7 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 			#if RADIO_DOWNLOAD_CMD_CDPIP
 				else if (strstr(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "ip")) {
 					sscanf(((tmote_general_cmd_s*)CFG_P_FRAME_PAYLOAD(inmsg))->buf, "ip%08x:%hu", &uval32, &uval16);
+				#if NETPROTOCAL == NETCOAP
 					TCFG_EEPROM_SetServerIP(uval32);
 					TCFG_EEPROM_SetServerPort(uval16);
 					TCFG_SystemData.NBCoapCDPServer.ip.ip32 = TCFG_EEPROM_GetServerIP();
@@ -327,6 +328,23 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					TCFG_SystemData.NBCoapCDPServer.ip.ip8[3], TCFG_SystemData.NBCoapCDPServer.ip.ip8[2], 
 					TCFG_SystemData.NBCoapCDPServer.ip.ip8[1], TCFG_SystemData.NBCoapCDPServer.ip.ip8[0], 
 					TCFG_SystemData.NBCoapCDPServer.port);
+				#endif
+				#endif
+				#if NETPROTOCAL == NETCTWING
+					TCFG_EEPROM_SetCTWingIP(uval32);
+					TCFG_EEPROM_SetCTWingPort(uval16);
+					TCFG_SystemData.CTWingCDPServer.ip.ip32 = TCFG_EEPROM_GetCTWingIP();
+					TCFG_SystemData.CTWingCDPServer.port = TCFG_EEPROM_GetCTWingPort();
+					#if NBCTWING_SENDCODE_DYNAMIC_INFO
+					NETCTWingNeedSendCode.DynamicInfo = 1;
+					#endif
+					NET_NBIOT_Initialization();
+				#if RADIO_CMD_ECHO_TYPE
+					Radio_Trf_Printf("CDP IP %d.%d.%d.%d:%d", 
+					TCFG_SystemData.CTWingCDPServer.ip.ip8[3], TCFG_SystemData.CTWingCDPServer.ip.ip8[2], 
+					TCFG_SystemData.CTWingCDPServer.ip.ip8[1], TCFG_SystemData.CTWingCDPServer.ip.ip8[0], 
+					TCFG_SystemData.CTWingCDPServer.port);
+				#endif
 				#endif
 				}
 			#endif
@@ -353,6 +371,10 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 				#elif NETPROTOCAL == NETONENET
 					#if NBONENET_SENDCODE_WORK_INFO
 						NETOneNETNeedSendCode.WorkInfo = 1;
+					#endif
+				#elif NETPROTOCAL == NETCTWING
+					#if NBCTWING_SENDCODE_WORK_INFO
+						NETCTWingNeedSendCode.WorkInfo = 1;
 					#endif
 				#endif
 					}
@@ -609,6 +631,10 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					#if NBONENET_SENDCODE_WORK_INFO
 					NETOneNETNeedSendCode.WorkInfo = 1;
 					#endif
+				#elif NETPROTOCAL == NETCTWING
+					#if NBCTWING_SENDCODE_WORK_INFO
+					NETCTWingNeedSendCode.WorkInfo = 1;
+					#endif
 				#endif
 				#if RADIO_PRINT_WORKINFO
 					RadioPrintWorkinfo();
@@ -638,6 +664,13 @@ char Radio_Rf_Operate_Recvmsg(uint8_t *inmsg, uint8_t len)
 					#endif
 					#if NBONENET_SENDCODE_DYNAMIC_INFO
 					NETOneNETNeedSendCode.DynamicInfo = 1;
+					#endif
+				#elif NETPROTOCAL == NETCTWING
+					#if NBCTWING_SENDCODE_BASIC_INFO
+					NETCTWingNeedSendCode.BasicInfo = 1;
+					#endif
+					#if NBCTWING_SENDCODE_DYNAMIC_INFO
+					NETCTWingNeedSendCode.DynamicInfo = 1;
 					#endif
 				#endif
 				#if RADIO_PRINT_NETINFO

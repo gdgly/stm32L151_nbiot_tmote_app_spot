@@ -8,6 +8,7 @@
 #include "net_mqttsn_app.h"
 #include "net_mqttsn_pcp_app.h"
 #include "net_onenet_app.h"
+#include "net_ctwing_app.h"
 
 //#define	MVB_SUBSN						0x81011000						//设备号
 //#define	MVB_BRAND						"mvb"							//厂牌
@@ -40,6 +41,7 @@
 #define	NETCOAP						0								//COAP
 #define	NETMQTTSN						1								//MQTTSN
 #define	NETONENET						2								//ONENET
+#define	NETCTWING						3								//CTWING
 #define	NETPROTOCAL					NETCOAP							//网络模式
 
 #define	NETCARRIERCHINATELECOM			00								//中国电信
@@ -70,10 +72,15 @@
 #define	NETFIFO_MQTTSNPCPSENDPARKSIZE_MAX	512								//NetMqttSNPCP发送缓存大小
 #define	NETFIFO_MQTTSNPCPRECVPARKSIZE_MAX	2048								//NetMqttSNPCP接收缓存大小
 
-#define	NETFIFO_ONENETSENDPARKNUM_MAX		30								//NetOneNET发送缓存最大包数
-#define	NETFIFO_ONENETRECVPARKNUM_MAX		10								//NetOneNET接收缓存最大包数
-#define	NETFIFO_ONENETSENDPARKSIZE_MAX	2048								//NetOneNET发送缓存大小
-#define	NETFIFO_ONENETRECVPARKSIZE_MAX	1536								//NetOneNET接收缓存大小
+#define	NETFIFO_ONENETSENDPARKNUM_MAX		40								//NetOneNET发送缓存最大包数
+#define	NETFIFO_ONENETRECVPARKNUM_MAX		20								//NetOneNET接收缓存最大包数
+#define	NETFIFO_ONENETSENDPARKSIZE_MAX	3000								//NetOneNET发送缓存大小
+#define	NETFIFO_ONENETRECVPARKSIZE_MAX	2008								//NetOneNET接收缓存大小
+
+#define	NETFIFO_CTWINGSENDPARKNUM_MAX		40								//NetCTWing发送缓存最大包数
+#define	NETFIFO_CTWINGRECVPARKNUM_MAX		20								//NetCTWing接收缓存最大包数
+#define	NETFIFO_CTWINGSENDPARKSIZE_MAX	3096								//NetCTWing发送缓存大小
+#define	NETFIFO_CTWINGRECVPARKSIZE_MAX	2048								//NetCTWing接收缓存大小
 
 #define	NBCOAP_SENDMODE_NORMAL			SEND_DATA
 #define	NBCOAP_SENDMODE_RAIDLE			SEND_DATA_RA_NORMAL
@@ -99,6 +106,30 @@
 #define	NBCOAP_RATIME_NORMAL_4HOUR		4
 #define	NBCOAP_RATIME_NORMAL_TYPE		NBCOAP_RATIME_NORMAL_2HOUR			//Coap间隔时间发送普通数据包
 
+#define	CTWING_SENDMODE_NORMAL			SEND_DATA
+#define	CTWING_SENDMODE_RAIDLE			SEND_DATA_RA_NORMAL
+#define	CTWING_SENDMODE_TYPE			CTWING_SENDMODE_RAIDLE				//CTWING发送模式
+
+#define	CTWING_SENDMODE_NORMAL_MODE		0
+#define	CTWING_SENDMODE_RAIDLE_MODE		1
+#define	CTWING_SENDMODE_CONFIG_TYPE		CTWING_SENDMODE_RAIDLE_MODE			//CTWING发送模式
+
+#define	CTWING_RASENDMODE_NORMAL			0
+#define	CTWING_RASENDMODE_IDLE			1
+#define	CTWING_RASENDMODE_TYPE			CTWING_RASENDMODE_IDLE				//CTWING发送RA模式
+
+#define	CTWING_SENDDATA_NQMGSCHECK_DISABLE	0
+#define	CTWING_SENDDATA_NQMGSCHECK_ENABLE	1
+#define	CTWING_SENDDATA_NQMGSCHECK_TYPE	CTWING_SENDDATA_NQMGSCHECK_DISABLE		//CTWING发送数据NQMGS检查
+
+#define	CTWING_SEND_BEFORE_ATTACH_DISABLE	0
+#define	CTWING_SEND_BEFORE_ATTACH_ENABLE	1
+#define	CTWING_SEND_BEFORE_ATTACH_TYPE	CTWING_SEND_BEFORE_ATTACH_DISABLE		//CTWING发送数据之前检查注网
+
+#define	CTWING_RATIME_NORMAL_2HOUR		2
+#define	CTWING_RATIME_NORMAL_4HOUR		4
+#define	CTWING_RATIME_NORMAL_TYPE		CTWING_RATIME_NORMAL_2HOUR			//CTWING间隔时间发送普通数据包
+
 #define	NBCOAP_PCP_UPGRADE_LIMIT_RSSI		10								//PCP升级限制信号值
 #define	NBCOAP_PCP_UPGRADE_LIMIT_SNR		-80								//PCP升级限制信噪比
 
@@ -122,6 +153,9 @@
 #define	NBIOT_CLEAR_STORED_EARFCN_STAT	NBIOT_CLEAR_STORED_EARFCN_DISABLE		//NBIOT清除频点功能
 #endif
 #if NETPROTOCAL == NETONENET
+#define	NBIOT_CLEAR_STORED_EARFCN_STAT	NBIOT_CLEAR_STORED_EARFCN_ENABLE		//NBIOT清除频点功能
+#endif
+#if NETPROTOCAL == NETCTWING
 #define	NBIOT_CLEAR_STORED_EARFCN_STAT	NBIOT_CLEAR_STORED_EARFCN_ENABLE		//NBIOT清除频点功能
 #endif
 
@@ -214,7 +248,7 @@
 #define	BEEP_OFF_US					230								//无源蜂鸣器关时间
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					149								//从固件版本
+#define	SOFTWARESUB					150								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 
@@ -389,6 +423,63 @@
 #define	RADIO_PRINT_DEVINFO_RGAIN		1								//无线输出DeviceInfo RGAIN
 #define	RADIO_PRINT_DEVINFO_SMODE		1								//无线输出DeviceInfo SMODE
 #endif
+#if NETPROTOCAL == NETCTWING
+#define	NBIOT_PRINT_ERRORCODE_DISABLE		0
+#define	NBIOT_PRINT_ERRORCODE_ENABLE		1
+#define	NBIOT_PRINT_ERROR_CODE_TYPE		NBIOT_PRINT_ERRORCODE_ENABLE			//NBIOT输出错误码模式
+
+#define	RADIO_CMD_UPLOAD_WORKINFO		1								//无线命令主动上报WorkInfo
+#define	RADIO_CMD_UPLOAD_NETINFO			1								//无线命令主动上报NetInfo
+#define	RADIO_CMD_UPLOAD_DEVINFO			1								//无线命令主动上报DeviceInfo
+#define	RADIO_CMD_UPLOAD_UPGRADEINFO		1								//无线命令主动上报UpgradeInfo
+
+#define	RADIO_PRINT_WORKINFO			1								//无线输出Workinfo
+#define	RADIO_PRINT_NETINFO				1								//无线输出NetInfo
+#define	RADIO_PRINT_DEVINFO				1								//无线输出DeviceInfo
+#define	RADIO_PRINT_UPGRADEINFO			1								//无线输出UpgradeInfo
+
+#define	RADIO_PRINT_WORKINFO_SOFT		1								//无线输出Workinfo SOFT
+#define	RADIO_PRINT_WORKINFO_SENSE		0								//无线输出Workinfo SENSE
+#define	RADIO_PRINT_WORKINFO_MODE		0								//无线输出Workinfo MODE
+#define	RADIO_PRINT_WORKINFO_CHANNEL		0								//无线输出Workinfo CHANNEL
+#define	RADIO_PRINT_WORKINFO_RANGE		0								//无线输出Workinfo RANGE
+#define	RADIO_PRINT_WORKINFO_EARFCN		1								//无线输出Workinfo EARFCN
+#define	RADIO_PRINT_WORKINFO_TAC			1								//无线输出Workinfo TAC
+#define	RADIO_PRINT_WORKINFO_CI			1								//无线输出Workinfo CI
+#define	RADIO_PRINT_WORKINFO_CMDCNT		0								//无线输出Workinfo CMDCNT
+#define	RADIO_PRINT_WORKINFO_NBRUNTIME	0								//无线输出Workinfo NBRUNTIME
+#define	RADIO_PRINT_WORKINFO_APN			0								//无线输出Workinfo APN
+#define	RADIO_PRINT_WORKINFO_COEF		1								//无线输出Workinfo COEF
+
+#define	RADIO_PRINT_NETINFO_MUFTUR		1								//无线输出NetInfo MUFTUR
+#define	RADIO_PRINT_NETINFO_MUFTURMD		0								//无线输出NetInfo MUFTURMD
+#define	RADIO_PRINT_NETINFO_MDUVER		1								//无线输出NetInfo MDUVER
+#define	RADIO_PRINT_NETINFO_IMEI			1								//无线输出NetInfo IMEI
+#define	RADIO_PRINT_NETINFO_ICCID		1								//无线输出NetInfo ICCID
+#define	RADIO_PRINT_NETINFO_IMSI			1								//无线输出NetInfo IMSI
+#define	RADIO_PRINT_NETINFO_CGP			1								//无线输出NetInfo CGP
+#define	RADIO_PRINT_NETINFO_PDPTYPE		0								//无线输出NetInfo PDPTYPE
+#define	RADIO_PRINT_NETINFO_APN			0								//无线输出NetInfo APN
+#define	RADIO_PRINT_NETINFO_RSSI			1								//无线输出NetInfo RSSI
+#define	RADIO_PRINT_NETINFO_SNR			1								//无线输出NetInfo SNR
+#define	RADIO_PRINT_NETINFO_OTHER		1								//无线输出NetInfo OTHER
+
+#define	RADIO_PRINT_DEVINFO_RUNTIME		1								//无线输出DeviceInfo RUNTIME
+#define	RADIO_PRINT_DEVINFO_BATT			1								//无线输出DeviceInfo BATT
+#define	RADIO_PRINT_DEVINFO_RDLIB		0								//无线输出DeviceInfo RDLIB
+#define	RADIO_PRINT_DEVINFO_RDCNT		0								//无线输出DeviceInfo RDCNT
+#define	RADIO_PRINT_DEVINFO_MCUTEMP		0								//无线输出DeviceInfo MCUTEMP
+#define	RADIO_PRINT_DEVINFO_ALGOLIB		0								//无线输出DeviceInfo ALGOLIB
+#define	RADIO_PRINT_DEVINFO_QMCREBOOT		1								//无线输出DeviceInfo QMCREBOOT
+#define	RADIO_PRINT_DEVINFO_NBBOOT		1								//无线输出DeviceInfo NBBOOT
+#define	RADIO_PRINT_DEVINFO_NBSENT		0								//无线输出DeviceInfo NBSENT
+#define	RADIO_PRINT_DEVINFO_NBRECV		0								//无线输出DeviceInfo NBRECV
+#define	RADIO_PRINT_DEVINFO_INDELAY		0								//无线输出DeviceInfo INDELAY
+#define	RADIO_PRINT_DEVINFO_NBHEART		0								//无线输出DeviceInfo NBHEART
+#define	RADIO_PRINT_DEVINFO_CGAIN		1								//无线输出DeviceInfo CGAIN
+#define	RADIO_PRINT_DEVINFO_RGAIN		1								//无线输出DeviceInfo RGAIN
+#define	RADIO_PRINT_DEVINFO_SMODE		1								//无线输出DeviceInfo SMODE
+#endif
 
 #define	NBCOAP_SENDCODE_SHORT_STATUS		0								//NB上报信息使能CoapShortStatus
 #define	NBCOAP_SENDCODE_LONG_STATUS		1								//NB上报信息使能CoapLongStatus
@@ -410,6 +501,13 @@
 #define	NBONENET_SENDCODE_BASIC_INFO		1								//NB上报信息使能OneNETBasicInfo
 #define	NBONENET_SENDCODE_DYNAMIC_INFO	1								//NB上报信息使能OneNETDynamicInfo
 #define	NBONENET_SENDCODE_RESPONSE_INFO	1								//NB上报信息使能OneNETResponseInfo
+
+#define	NBCTWING_SENDCODE_SHORT_STATUS	0								//NB上报信息使能CTWingShortStatus
+#define	NBCTWING_SENDCODE_LONG_STATUS		1								//NB上报信息使能CTWingLongStatus
+#define	NBCTWING_SENDCODE_WORK_INFO		1								//NB上报信息使能CTWingWorkInfo
+#define	NBCTWING_SENDCODE_BASIC_INFO		1								//NB上报信息使能CTWingBasicInfo
+#define	NBCTWING_SENDCODE_DYNAMIC_INFO	1								//NB上报信息使能CTWingDynamicInfo
+#define	NBCTWING_SENDCODE_RESPONSE_INFO	1								//NB上报信息使能CTWingResponseInfo
 
 #if NETPROTOCAL == NETCOAP
 #define	RADIO_DOWNLOAD_CMD_REBOOT		1								//RADIO下行指令Reboot
@@ -462,6 +560,31 @@
 #define	RADIO_DOWNLOAD_CMD_RESTORE		0								//RADIO下行指令Restore
 #endif
 #if NETPROTOCAL == NETONENET
+#define	RADIO_DOWNLOAD_CMD_REBOOT		1								//RADIO下行指令Reboot
+#define	RADIO_DOWNLOAD_CMD_NEWSN			1								//RADIO下行指令NewSn
+#define	RADIO_DOWNLOAD_CMD_CDPIP			1								//RADIO下行指令CDPIP
+#define	RADIO_DOWNLOAD_CMD_ACTIVE		1								//RADIO下行指令Active
+#define	RADIO_DOWNLOAD_CMD_MAGMOD		1								//RADIO下行指令MagMod
+#define	RADIO_DOWNLOAD_CMD_NBHEART		1								//RADIO下行指令NbHeart
+#define	RADIO_DOWNLOAD_CMD_MAGINIT		1								//RADIO下行指令MagInit
+#define	RADIO_DOWNLOAD_CMD_DISRANGE		1								//RADIO下行指令DisRange
+#define	RADIO_DOWNLOAD_CMD_CARINDELAY		1								//RADIO下行指令CarInDelay
+#define	RADIO_DOWNLOAD_CMD_RATIME		1								//RADIO下行指令RATime
+#define	RADIO_DOWNLOAD_CMD_MAGTEMPCOEF	1								//RADIO下行指令MagTempCoef
+#define	RADIO_DOWNLOAD_CMD_SETQMCCOEF		1								//RADIO下行指令SetQmcCoef
+#define	RADIO_DOWNLOAD_CMD_BEEPOFF		1								//RADIO下行指令BeepOff
+#define	RADIO_DOWNLOAD_CMD_ROLLINIT		1								//RADIO下行指令RollInit
+#define	RADIO_DOWNLOAD_CMD_UPLIMIT		1								//RADIO下行指令UpLimit
+#define	RADIO_DOWNLOAD_CMD_NBLIMIT		1								//RADIO下行指令NBLimit
+#define	RADIO_DOWNLOAD_CMD_COVERGAIN		1								//RADIO下行指令CoverGain
+#define	RADIO_DOWNLOAD_CMD_RADARGAIN		1								//RADIO下行指令RadarGain
+#define	RADIO_DOWNLOAD_CMD_SENSORMODE		1								//RADIO下行指令SensorMode
+#define	RADIO_DOWNLOAD_CMD_INTERVAL		1								//RADIO下行指令RadarSampleInterval
+#define	RADIO_DOWNLOAD_CMD_HIGHPASS		1								//RADIO下行指令RadarHighPass
+#define	RADIO_DOWNLOAD_CMD_RFDPRINTLV		1								//RADIO下行指令RFDprintLv
+#define	RADIO_DOWNLOAD_CMD_RESTORE		1								//RADIO下行指令Restore
+#endif
+#if NETPROTOCAL == NETCTWING
 #define	RADIO_DOWNLOAD_CMD_REBOOT		1								//RADIO下行指令Reboot
 #define	RADIO_DOWNLOAD_CMD_NEWSN			1								//RADIO下行指令NewSn
 #define	RADIO_DOWNLOAD_CMD_CDPIP			1								//RADIO下行指令CDPIP
@@ -539,6 +662,33 @@
 #define	MQTTSN_DOWNLOAD_CMD_SETMAG		1								//MQTTSN下行指令SetMag
 #define	MQTTSN_DOWNLOAD_CMD_CFGRADAR		1								//MQTTSN下行指令ConfigRadar
 
+#define	CTWING_DOWNLOAD_CMD_WORKMODE		1								//CTWING下行指令Workmode
+#define	CTWING_DOWNLOAD_CMD_SENSE		1								//CTWING下行指令Sense
+#define	CTWING_DOWNLOAD_CMD_RFHEART		1								//CTWING下行指令RFHeart
+#define	CTWING_DOWNLOAD_CMD_BACKGROUND	1								//CTWING下行指令Background
+#define	CTWING_DOWNLOAD_CMD_REBOOT		1								//CTWING下行指令Reboot
+#define	CTWING_DOWNLOAD_CMD_NEWSN		1								//CTWING下行指令NewSn
+#define	CTWING_DOWNLOAD_CMD_CDPIP		1								//CTWING下行指令CDPIP
+#define	CTWING_DOWNLOAD_CMD_ACTIVE		1								//CTWING下行指令Active
+#define	CTWING_DOWNLOAD_CMD_MAGMOD		1								//CTWING下行指令MagMod
+#define	CTWING_DOWNLOAD_CMD_NBHEART		1								//CTWING下行指令NbHeart
+#define	CTWING_DOWNLOAD_CMD_INITRADAR		1								//CTWING下行指令InitRadar
+#define	CTWING_DOWNLOAD_CMD_INITMAG		1								//CTWING下行指令InitMag
+#define	CTWING_DOWNLOAD_CMD_DISRANGE		1								//CTWING下行指令DisRange
+#define	CTWING_DOWNLOAD_CMD_CARINDELAY	1								//CTWING下行指令CarInDelay
+#define	CTWING_DOWNLOAD_CMD_RATIME		1								//CTWING下行指令RATime
+#define	CTWING_DOWNLOAD_CMD_MAGTEMPCOEF	1								//CTWING下行指令MagTempCoef
+#define	CTWING_DOWNLOAD_CMD_SETQMCCOEF	1								//CTWING下行指令SetQmcCoef
+#define	CTWING_DOWNLOAD_CMD_BEEPOFF		1								//CTWING下行指令BeepOff
+#define	CTWING_DOWNLOAD_CMD_ROLLINIT		1								//CTWING下行指令RollInit
+#define	CTWING_DOWNLOAD_CMD_UPLIMIT		1								//CTWING下行指令UpLimit
+#define	CTWING_DOWNLOAD_CMD_NBLIMIT		1								//CTWING下行指令NBLimit
+#define	CTWING_DOWNLOAD_CMD_COVERGAIN		1								//CTWING下行指令CoverGain
+#define	CTWING_DOWNLOAD_CMD_RADARGAIN		1								//CTWING下行指令RadarGain
+#define	CTWING_DOWNLOAD_CMD_SENSORMODE	1								//CTWING下行指令SensorMode
+#define	CTWING_DOWNLOAD_CMD_SETMAG		1								//CTWING下行指令SetMag
+#define	CTWING_DOWNLOAD_CMD_CFGRADAR		1								//CTWING下行指令ConfigRadar
+
 #define	RF_DPRINT_LV_0					0								//调试信息不打印
 #define	RF_DPRINT_LV_1					1								//基本信息打印
 #define	RF_DPRINT_LV_2					2								//NB信息打印
@@ -583,8 +733,6 @@
 #define	NBIOT_HEART_DATA_HOURS			4								//NB心跳数据包时间( 4 * 60 * 60)S
 #define	NBIOT_HEART_DATA_TIMER			16								//NB心跳数据包时间(16 * 15 * 60)S
 
-#define	UPLOAD_QMCDATA_MAXPACK			16								//QMC一次上传最大包数
-
 #define	MQTTSN_DNS_SERVER_DISABLE		0
 #define	MQTTSN_DNS_SERVER_ENABLE			1
 #define	MQTTSN_DNS_SERVER_TYPE			MQTTSN_DNS_SERVER_ENABLE				//DNS服务状态
@@ -602,6 +750,7 @@
 #define	MQTTSN_SERVER_LOCAL_PORT			4000
 #define	MQTTSN_SERVER_TELE_PORT			1884
 
+/* CoAP */
 #define	COAPCDPADDR_CHINA_TELECOM_FORMAL	"117.60.157.137"					//电信生产 : "117.60.157.137"		ip753c9d89:5683
 #define	COAPCDPADDR_CHINA_TELECOM_TEST	"180.101.147.115"					//电信测试 : "180.101.147.115"	ipb4659373:5683
 #define	COAPCDPPORT_CHINA_TELECOM		5683
@@ -615,6 +764,20 @@
 #define	COAPCDPADDR_OTHER_UNICOM_TEST		"180.101.147.115"					//其他测试 : "180.101.147.115"	ipb4659373:5683
 #define	COAPCDPPORT_OTHER_UNICOM			5683
 
+/* CTWing */
+#define	CCTWINGADDR_CHINA_TELECOM_FORMAL	"221.229.214.202"					//电信生产 : "221.229.214.202"	ipdde5d6ca:5683
+#define	CCTWINGADDR_CHINA_TELECOM_TEST	"221.229.214.202"					//电信测试 : "221.229.214.202"	ipdde5d6ca:5683
+#define	CCTWINGPORT_CHINA_TELECOM		5683
+#define	CCTWINGADDR_CHINA_MOBILE_FORMAL	"221.229.214.202"					//移动生产 : "221.229.214.202"	ipdde5d6ca:5683
+#define	CCTWINGADDR_CHINA_MOBILE_TEST		"221.229.214.202"					//移动测试 : "221.229.214.202"	ipdde5d6ca:5683
+#define	CCTWINGPORT_CHINA_MOBILE			5683
+#define	CCTWINGADDR_CHINA_UNICOM_FORMAL	"221.229.214.202"					//联通生产 : "221.229.214.202"	ipdde5d6ca:5683
+#define	CCTWINGADDR_CHINA_UNICOM_TEST		"221.229.214.202"					//联通测试 : "221.229.214.202"	ipdde5d6ca:5683
+#define	CCTWINGPORT_CHINA_UNICOM			5683
+#define	CCTWINGADDR_OTHER_UNICOM_FORMAL	"221.229.214.202"					//其他生产 : "221.229.214.202"	ipdde5d6ca:5683
+#define	CCTWINGADDR_OTHER_UNICOM_TEST		"221.229.214.202"					//其他测试 : "221.229.214.202"	ipdde5d6ca:5683
+#define	CCTWINGPORT_OTHER_UNICOM			5683
+
 #define	NBNET_NBIOT_BAND1				NBand_2100MHz
 #define	NBNET_NBIOT_BAND3				NBand_1800MHz
 #define	NBNET_NBIOT_BAND5				NBand_850MHz
@@ -625,6 +788,9 @@
 #if NETCARRIERTYPE == NETCARRIERCHINATELECOM
 #define	COAPCDPADDR					COAPCDPADDR_CHINA_TELECOM_FORMAL
 #define	COAPCDPPORT					COAPCDPPORT_CHINA_TELECOM
+
+#define	CCTWINGADDR					CCTWINGADDR_CHINA_TELECOM_FORMAL
+#define	CCTWINGPORT					CCTWINGPORT_CHINA_TELECOM
 
 #define	COAP_NBIOT_BAND_NUM				1
 #define	COAP_NBIOT_BAND_VAL1			NBNET_NBIOT_BAND5
@@ -653,10 +819,20 @@
 #define	DNS_NBIOT_BAND_VAL3				NBNET_NBIOT_BAND5
 #define	DNS_NBIOT_BAND_TYPE				DNSNBIoTBandType
 #define	DNS_NBIOT_CGATT_TIME_S			2 * 60 + 60 * DNS_NBIOT_BAND_NUM
+
+#define	CTWING_NBIOT_BAND_NUM			1
+#define	CTWING_NBIOT_BAND_VAL1			NBNET_NBIOT_BAND5
+#define	CTWING_NBIOT_BAND_VAL2			NBNET_NBIOT_BAND5
+#define	CTWING_NBIOT_BAND_VAL3			NBNET_NBIOT_BAND5
+#define	CTWING_NBIOT_BAND_TYPE			CTWingNBIoTBandType
+#define	CTWING_NBIOT_CGATT_TIME_S		2 * 60 + 60 * CTWING_NBIOT_BAND_NUM
 #endif
 #if NETCARRIERTYPE == NETCARRIERCHINAMOBILE
 #define	COAPCDPADDR					COAPCDPADDR_CHINA_MOBILE_FORMAL
 #define	COAPCDPPORT					COAPCDPPORT_CHINA_MOBILE
+
+#define	CCTWINGADDR					CCTWINGADDR_CHINA_MOBILE_FORMAL
+#define	CCTWINGPORT					CCTWINGPORT_CHINA_MOBILE
 
 #define	COAP_NBIOT_BAND_NUM				1
 #define	COAP_NBIOT_BAND_VAL1			NBNET_NBIOT_BAND8
@@ -685,10 +861,20 @@
 #define	DNS_NBIOT_BAND_VAL3				NBNET_NBIOT_BAND8
 #define	DNS_NBIOT_BAND_TYPE				DNSNBIoTBandType
 #define	DNS_NBIOT_CGATT_TIME_S			2 * 60 + 60 * DNS_NBIOT_BAND_NUM
+
+#define	CTWING_NBIOT_BAND_NUM			1
+#define	CTWING_NBIOT_BAND_VAL1			NBNET_NBIOT_BAND8
+#define	CTWING_NBIOT_BAND_VAL2			NBNET_NBIOT_BAND8
+#define	CTWING_NBIOT_BAND_VAL3			NBNET_NBIOT_BAND8
+#define	CTWING_NBIOT_BAND_TYPE			CTWingNBIoTBandType
+#define	CTWING_NBIOT_CGATT_TIME_S		2 * 60 + 60 * CTWING_NBIOT_BAND_NUM
 #endif
 #if NETCARRIERTYPE == NETCARRIERCHINAUNICOM
 #define	COAPCDPADDR					COAPCDPADDR_CHINA_UNICOM_FORMAL
 #define	COAPCDPPORT					COAPCDPPORT_CHINA_UNICOM
+
+#define	CCTWINGADDR					CCTWINGADDR_CHINA_UNICOM_FORMAL
+#define	CCTWINGPORT					CCTWINGPORT_CHINA_UNICOM
 
 #define	COAP_NBIOT_BAND_NUM				2
 #define	COAP_NBIOT_BAND_VAL1			NBNET_NBIOT_BAND8
@@ -717,10 +903,20 @@
 #define	DNS_NBIOT_BAND_VAL3				NBNET_NBIOT_BAND5
 #define	DNS_NBIOT_BAND_TYPE				DNSNBIoTBandType
 #define	DNS_NBIOT_CGATT_TIME_S			3 * 60 + 60 * DNS_NBIOT_BAND_NUM
+
+#define	CTWING_NBIOT_BAND_NUM			2
+#define	CTWING_NBIOT_BAND_VAL1			NBNET_NBIOT_BAND8
+#define	CTWING_NBIOT_BAND_VAL2			NBNET_NBIOT_BAND3
+#define	CTWING_NBIOT_BAND_VAL3			NBNET_NBIOT_BAND5
+#define	CTWING_NBIOT_BAND_TYPE			CTWingNBIoTBandType
+#define	CTWING_NBIOT_CGATT_TIME_S		3 * 60 + 60 * CTWING_NBIOT_BAND_NUM
 #endif
 #if NETCARRIERTYPE == NETCARRIEROTHERUNICOM
 #define	COAPCDPADDR					COAPCDPADDR_OTHER_UNICOM_FORMAL
 #define	COAPCDPPORT					COAPCDPPORT_OTHER_UNICOM
+
+#define	CCTWINGADDR					CCTWINGADDR_OTHER_UNICOM_FORMAL
+#define	CCTWINGPORT					CCTWINGPORT_OTHER_UNICOM
 
 #define	COAP_NBIOT_BAND_NUM				3
 #define	COAP_NBIOT_BAND_VAL1			NBNET_NBIOT_BAND3
@@ -749,6 +945,13 @@
 #define	DNS_NBIOT_BAND_VAL3				NBNET_NBIOT_BAND20
 #define	DNS_NBIOT_BAND_TYPE				DNSNBIoTBandType
 #define	DNS_NBIOT_CGATT_TIME_S			2 * 60 + 60 * DNS_NBIOT_BAND_NUM
+
+#define	CTWING_NBIOT_BAND_NUM			3
+#define	CTWING_NBIOT_BAND_VAL1			NBNET_NBIOT_BAND3
+#define	CTWING_NBIOT_BAND_VAL2			NBNET_NBIOT_BAND5
+#define	CTWING_NBIOT_BAND_VAL3			NBNET_NBIOT_BAND20
+#define	CTWING_NBIOT_BAND_TYPE			CTWingNBIoTBandType
+#define	CTWING_NBIOT_CGATT_TIME_S		2 * 60 + 60 * CTWING_NBIOT_BAND_NUM
 #endif
 
 #if NETPROTOCAL == NETCOAP
@@ -759,6 +962,9 @@
 #endif
 #if NETPROTOCAL == NETONENET
 #define	NBIOT_MODULE_BAND_SUPPORT		ONENET_NBIOT_BAND_TYPE
+#endif
+#if NETPROTOCAL == NETCTWING
+#define	NBIOT_MODULE_BAND_SUPPORT		CTWING_NBIOT_BAND_TYPE
 #endif
 
 extern bool BootUp;														//BootUp
@@ -782,6 +988,13 @@ extern MQTTSN_PacketInfoTypeDef			MqttSNInfoStructure;				//MqttSN Info Packet
 extern ONENET_PacketShortTypeDef			OneNETShortStructure;				//ONENET Short Packet
 extern ONENET_PacketLongTypeDef			OneNETLongStructure;				//ONENET Long Packet
 extern ONENET_PacketInfoTypeDef			OneNETInfoStructure;				//ONENET Info Packet
+#endif
+
+#if NETPROTOCAL == NETCTWING
+/* CTWing Packet */
+extern CTWING_PacketShortTypeDef			CTWingShortStructure;				//CTWING Short Packet
+extern CTWING_PacketLongTypeDef			CTWingLongStructure;				//CTWING Long Packet
+extern CTWING_PacketInfoTypeDef			CTWingInfoStructure;				//CTWING Info Packet
 #endif
 
 extern NET_NBIOT_ClientsTypeDef			NetNbiotClientHandler;				//NET NBIOT Clinet Handler
@@ -809,10 +1022,16 @@ extern ONENET_LWM2MTransportTypeDef		OneNETLWM2MNetHandler;				//ONENET Net Hand
 extern ONENET_ClientsTypeDef				OneNETClientHandler;				//ONENET Clinet Handler
 #endif
 
+#if NETPROTOCAL == NETCTWING
+extern CTWING_LWM2MTransportTypeDef		CTWingLWM2MNetHandler;				//CTWing Net Handler
+extern CTWING_ClientsTypeDef				CTWingClientHandler;				//CTWing Clinet Handler
+#endif
+
 extern NBIOT_NBandTypeDef				CoAPNBIoTBandType;					//CoAP NBIoT Band
 extern NBIOT_NBandTypeDef				OneNETNBIoTBandType;				//OneNET NBIoT Band
 extern NBIOT_NBandTypeDef				MqttSNNBIoTBandType;				//MqttSN NBIoT Band
 extern NBIOT_NBandTypeDef				DNSNBIoTBandType;					//DNS NBIoT Band
+extern NBIOT_NBandTypeDef				CTWingNBIoTBandType;				//CTWing NBIoT Band
 
 void RadioPrintWorkinfo(void);											//Radio Print WorkInfo
 void RadioPrintNetinfo(void);												//Radio Print NetInfo

@@ -58,16 +58,19 @@
 #define NBIOT_ATCMD_GET_NCDP				1
 #define NBIOT_ATCMD_SET_DNSSERVERADDRESS	0
 #define NBIOT_ATCMD_GET_DNSSERVERADDRESS	0
-#define NBIOT_ATCMD_SET_LWM2MLIFETIME		0
-#define NBIOT_ATCMD_GET_LWM2MLIFETIME		0
+#define NBIOT_ATCMD_SET_LWM2MLIFETIME		1
+#define NBIOT_ATCMD_GET_LWM2MLIFETIME		1
 #define NBIOT_ATCMD_SET_NCONFIG			1
 #define NBIOT_ATCMD_GET_NCONFIG			1
 #define NBIOT_ATCMD_GET_NQMGS				1
 #define NBIOT_ATCMD_GET_NQMGR				1
 #define NBIOT_ATCMD_SET_COAPPAYLOAD		1
 #define NBIOT_ATCMD_GET_COAPPAYLOAD		1
+#define NBIOT_ATCMD_SET_CTWINGPAYLOAD		1
+#define NBIOT_ATCMD_GET_CTWINGPAYLOAD		1
 #define NBIOT_ATCMD_GET_CONDATA			1
 #define NBIOT_ATCMD_SET_CONDATA			1
+#define NBIOT_ATCMD_SET_CTWINGCONDATA		1
 #define NBIOT_ATCMD_CRT_UDPSOCKET			1
 #define NBIOT_ATCMD_CLS_UDPSOCKET			1
 #define NBIOT_ATCMD_SED_UDPPAYLOAD			1
@@ -461,6 +464,25 @@ struct NBIOT_NBandTypeDef
 	unsigned char						NBandNum;
 	NBIOT_BandTypeDef					NBandVal[NBIOT_NBAND_NUM];
 };
+
+/* NBIOT CTWING ByteStream Upload */
+typedef __packed struct NBIOT_ByteStreamUploadHeadTypeDef
+{
+	unsigned char						CMDType;
+	unsigned short						DatasetID;
+	unsigned short						StreamLen;
+	unsigned short						PayloadLen;
+}NBIOT_ByteStreamUploadHead;
+
+/* NBIOT CTWING ByteStream Dnload */
+typedef __packed struct NBIOT_ByteStreamDnloadHeadTypeDef
+{
+	unsigned char						CMDType;
+	unsigned short						DatasetID;
+	unsigned short						TaskID;
+	unsigned short						StreamLen;
+	unsigned short						PayloadLen;
+}NBIOT_ByteStreamDnloadHead;
 
 /* NBIOT Parameter */
 struct NBIOT_ParameterTypeDef

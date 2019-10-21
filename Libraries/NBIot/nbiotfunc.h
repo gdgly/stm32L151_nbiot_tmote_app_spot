@@ -148,11 +148,20 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCOAPPayload(NBIOT_ClientsTypeDef* pClien
 #if NBIOT_ATCMD_GET_COAPPAYLOAD
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_ReadCOAPPayload(NBIOT_ClientsTypeDef* pClient);																			//COAP读取负载数据
 #endif
+#if NBIOT_ATCMD_SET_CTWINGPAYLOAD
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCTWINGPayload(NBIOT_ClientsTypeDef* pClient, NBIOT_ByteStreamUploadHead* pHead);											//CTWING发送负载数据
+#endif
+#if NBIOT_ATCMD_GET_CTWINGPAYLOAD
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_ReadCTWINGPayload(NBIOT_ClientsTypeDef* pClient, NBIOT_ByteStreamDnloadHead* pHead);											//CTWING读取负载数据
+#endif
 #if NBIOT_ATCMD_GET_CONDATA
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCONDataStatus(NBIOT_ClientsTypeDef* pClient);																	//查询终端CON数据发送状态
 #endif
 #if NBIOT_ATCMD_SET_CONDATA
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCOAPPayloadFlag(NBIOT_ClientsTypeDef* pClient, const char *flag);														//COAP发送负载数据(FLAG)
+#endif
+#if NBIOT_ATCMD_SET_CTWINGCONDATA
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCTWINGPayloadFlag(NBIOT_ClientsTypeDef* pClient, NBIOT_ByteStreamUploadHead* pHead, const char *flag);							//CTWING发送负载数据(FLAG)
 #endif
 #if NBIOT_ATCMD_CRT_UDPSOCKET
 NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CreateUDPSocket(NBIOT_ClientsTypeDef* pClient, u16 localport, u8 receivectl, int *socket);										//创建UDP链接

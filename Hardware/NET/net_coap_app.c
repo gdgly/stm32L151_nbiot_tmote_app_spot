@@ -913,9 +913,9 @@ void NET_COAP_NBIOT_Event_ClearStoredEARFCN(NBIOT_ClientsTypeDef* pClient)
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		DNS_DEBUG_LOG_PRINTF("NB Clear EARFCN Fail Ecde %d", NBStatus);
+		COAP_DEBUG_LOG_PRINTF("NB Clear EARFCN Fail Ecde %d", NBStatus);
 	#else
-		DNS_DEBUG_LOG_PRINTF("NB Clear EARFCN Fail");
+		COAP_DEBUG_LOG_PRINTF("NB Clear EARFCN Fail");
 	#endif
 #endif
 		return;
@@ -2107,6 +2107,7 @@ void NET_COAP_NBIOT_Event_ExecutDownlinkData(NBIOT_ClientsTypeDef* pClient)
 							NETCoapNeedSendCode.DynamicInfo = 1;
 							#endif
 							NET_Coap_Message_RecvDataOffSet();
+							NETCoapNeedSendCode.ResponseInfoMsgId = pClient->Recvbuf[recvBufOffset + TCLOD_MSGTYPE_OFFSET];
 							NETCoapNeedSendCode.ResponseInfoErrcode = ret;
 							NETCoapNeedSendCode.ResponseInfo = 1;
 							NET_NBIOT_Initialization();

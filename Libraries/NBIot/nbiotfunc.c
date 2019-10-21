@@ -2106,6 +2106,113 @@ exit:
 }
 #endif
 
+#if NBIOT_ATCMD_SET_CTWINGPAYLOAD
+/**********************************************************************************************************
+ @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCTWINGPayload(NBIOT_ClientsTypeDef* pClient, NBIOT_ByteStreamUploadHead* pHead)
+ @Description			NBIOT_Neul_NBxx_SendCTWINGPayload			: CTWING发送一条负载数据
+ @Input				pClient								: NBIOT客户端实例
+					pHead								: CTWING上行头
+ @Return				NBIOT_StatusTypeDef						: NBIOT处理状态
+ @attention			必须注网成功才可发送负载数据
+					最大有效数据长度为512字节
+					每次只能缓存一条消息
+**********************************************************************************************************/
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCTWINGPayload(NBIOT_ClientsTypeDef* pClient, NBIOT_ByteStreamUploadHead* pHead)
+{
+	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	u16 length = 0;
+	
+	if ((pClient->Sendlen > pClient->Sendbuf_size) || (((2 * pClient->Sendlen) + 15) > pClient->DataProcessStack_size) || (((2 * pClient->Sendlen) + 15) > pClient->ATCmdStack->ATSendbuf_size)) {
+		NBStatus = NBIOT_ERROR;
+		goto exit;
+	}
+	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NMGS_MSEC);
+#else
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
+	
+	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
+	sprintf((char *)pClient->DataProcessStack, "AT+NMGS=%d,%02X%04X%04X%04X", pClient->Sendlen + sizeof(NBIOT_ByteStreamUploadHead), pHead->CMDType, pHead->DatasetID, pHead->StreamLen, pHead->PayloadLen);
+	length = strlen((const char*)pClient->DataProcessStack);
+	for (int i = 0; i < pClient->Sendlen; i++) {
+		sprintf((char *)(pClient->DataProcessStack + length + i * 2), "%02X", pClient->Sendbuf[i]);
+	}
+	length = length + pClient->Sendlen * 2;
+	sprintf((char *)(pClient->DataProcessStack + length), "%c", '\r');
+	
+	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, pClient->DataProcessStack, strlen((char *)pClient->DataProcessStack), "OK", "ERROR");
+	
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_ERROR) {
+		NBStatus = NBIOT_Neul_NBxx_DictateEvent_GetError(pClient);
+	}
+#else
+	NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack);
+#endif
+	
+exit:
+	return NBStatus;
+}
+#endif
+
+#if NBIOT_ATCMD_GET_CTWINGPAYLOAD
+/**********************************************************************************************************
+ @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_ReadCTWINGPayload(NBIOT_ClientsTypeDef* pClient, NBIOT_ByteStreamDnloadHead* pHead)
+ @Description			NBIOT_Neul_NBxx_ReadCTWINGPayload			: CTWING读取一条负载数据
+ @Input				pClient								: NBIOT客户端实例
+					pHead								: CTWING下行头
+ @Return				NBIOT_StatusTypeDef						: NBIOT处理状态
+**********************************************************************************************************/
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_ReadCTWINGPayload(NBIOT_ClientsTypeDef* pClient, NBIOT_ByteStreamDnloadHead* pHead)
+{
+	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	u32 utmp = 0;
+	u32 CMDType = 0, DatasetID = 0, TaskID = 0, StreamLen = 0, PayloadLen = 0;
+	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_NMGR_MSEC);
+#else
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
+	
+	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
+	
+	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+NMGR\r", strlen("AT+NMGR\r"), "OK", "ERROR");
+	
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "\r\n%hd,%s\r", &pClient->Recvlen, pClient->DataProcessStack) <= 0) {
+			NBStatus = NBIOT_ERROR;
+			goto exit;
+		}
+		if (sscanf((const char*)pClient->DataProcessStack, "%02X%04X%04X%04X%04X", &CMDType, &DatasetID, &TaskID, &StreamLen, &PayloadLen) <= 0) {
+			NBStatus = NBIOT_ERROR;
+			goto exit;
+		}
+		pHead->CMDType		= CMDType;
+		pHead->DatasetID	= DatasetID;
+		pHead->TaskID		= TaskID;
+		pHead->StreamLen	= StreamLen;
+		pHead->PayloadLen	= PayloadLen;
+		memset((void *)pClient->Recvbuf, 0x0, pClient->Recvbuf_size);
+		for (int i = sizeof(NBIOT_ByteStreamDnloadHead); i < pClient->Recvlen; i++) {
+			sscanf((const char*)(pClient->DataProcessStack + i * 2), "%02X", &utmp);
+			pClient->Recvbuf[i] = utmp;
+		}
+		pClient->Recvlen -= sizeof(NBIOT_ByteStreamDnloadHead);
+	}
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	else {
+		NBStatus = NBIOT_Neul_NBxx_DictateEvent_GetError(pClient);
+	}
+#endif
+	
+exit:
+	return NBStatus;
+}
+#endif
+
 #if NBIOT_ATCMD_GET_CONDATA
 /**********************************************************************************************************
  @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCONDataStatus(NBIOT_ClientsTypeDef* pClient)
@@ -2258,6 +2365,98 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCOAPPayloadFlag(NBIOT_ClientsTypeDef* pC
 		sprintf((char *)pClient->DataProcessStack, "AT+MLWULDATAEX=%d,", pClient->Sendlen);
 	#elif (NBIOT_MODEL_TYPE == NBIOT_MODEL_QUECTEL)
 		sprintf((char *)pClient->DataProcessStack, "AT+QLWULDATAEX=%d,", pClient->Sendlen);
+	#else
+		#error NBIOT MODEL Define Error
+	#endif
+#endif
+#else
+	#error NBIOT AUTO MODEL Define Error
+#endif
+	
+	length = strlen((const char*)pClient->DataProcessStack);
+	for (int i = 0; i < pClient->Sendlen; i++) {
+		sprintf((char *)(pClient->DataProcessStack + length + i * 2), "%02X", pClient->Sendbuf[i]);
+	}
+	length = length + pClient->Sendlen * 2;
+	sprintf((char *)(pClient->DataProcessStack + length), "%c", ',');
+	length = length + 1;
+	sprintf((char *)(pClient->DataProcessStack + length), "%s", flag);
+	length = length + strlen(flag);
+	sprintf((char *)(pClient->DataProcessStack + length), "%c", '\r');
+	
+	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, pClient->DataProcessStack, strlen((char *)pClient->DataProcessStack), "OK", "ERROR");
+	
+#if NBIOT_PRINT_ERROR_CODE_TYPE
+	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_ERROR) {
+		NBStatus = NBIOT_Neul_NBxx_DictateEvent_GetError(pClient);
+	}
+#else
+	NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack);
+#endif
+	
+exit:
+	return NBStatus;
+}
+#endif
+
+#if NBIOT_ATCMD_SET_CTWINGCONDATA
+/**********************************************************************************************************
+ @Function			NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCTWINGPayloadFlag(NBIOT_ClientsTypeDef* pClient, NBIOT_ByteStreamUploadHead* pHead, const char *flag)
+ @Description			NBIOT_Neul_NBxx_SendCTWINGPayloadFlag		: CTWING发送一条负载数据(FLAG)
+ @Input				pClient								: NBIOT客户端实例
+					pHead								: CTWING上行头
+					flag							0x0000	: NON 一般
+												0x0001	: NON 立马 IDLE
+												0x0100	: CON 一般
+												0x0101	: CON 立马 IDLE
+ @Return				NBIOT_StatusTypeDef						: NBIOT处理状态
+ @attention			必须注网成功才可发送负载数据
+					最大有效数据长度为512字节
+					每次只能缓存一条消息
+**********************************************************************************************************/
+NBIOT_StatusTypeDef NBIOT_Neul_NBxx_SendCTWINGPayloadFlag(NBIOT_ClientsTypeDef* pClient, NBIOT_ByteStreamUploadHead* pHead, const char *flag)
+{
+	NBIOT_StatusTypeDef NBStatus = NBIOT_OK;
+	u16 length = 0;
+#if (NBIOT_AUTO_MODEL_TYPE == NBIOT_AUTO_MODEL_ENABLE)
+	unsigned char* WulDataExCmdLierda = (unsigned char*)"AT+MLWULDATAEX=%d,%02X%04X%04X%04X";
+	unsigned char* WulDataExCmdQuectel = (unsigned char*)"AT+QLWULDATAEX=%d,%02X%04X%04X%04X";
+	unsigned char* WulDataExCmd = WulDataExCmdLierda;
+#endif
+	
+	if ((pClient->Sendlen > pClient->Sendbuf_size) || (((2 * pClient->Sendlen) + 29) > pClient->DataProcessStack_size) || (((2 * pClient->Sendlen) + 29) > pClient->ATCmdStack->ATSendbuf_size)) {
+		NBStatus = NBIOT_ERROR;
+		goto exit;
+	}
+	
+#if NBIOT_COMMAND_TIMEOUT_TYPE
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, NBIOT_COMMAND_DATAEX_MSEC);
+#else
+	NBIOT_Neul_NBxx_DictateEvent_SetTime(pClient, pClient->Command_Timeout_Msec);
+#endif
+	
+	memset((void *)pClient->DataProcessStack, 0x0, pClient->DataProcessStack_size);
+	
+#if (NBIOT_AUTO_MODEL_TYPE == NBIOT_AUTO_MODEL_ENABLE)
+	if (strcmp(pClient->Parameter.manufacturer, NBIOT_MANUFACTURER_LIERDA) == 0) {
+		WulDataExCmd = WulDataExCmdLierda;
+	}
+	else if (strcmp(pClient->Parameter.manufacturer, NBIOT_MANUFACTURER_QUECTEL) == 0) {
+		WulDataExCmd = WulDataExCmdQuectel;
+	}
+	else {
+		WulDataExCmd = WulDataExCmdLierda;
+	}
+	
+	sprintf((char *)pClient->DataProcessStack, (const char*)WulDataExCmd, pClient->Sendlen + sizeof(NBIOT_ByteStreamUploadHead), pHead->CMDType, pHead->DatasetID, pHead->StreamLen, pHead->PayloadLen);
+#elif (NBIOT_AUTO_MODEL_TYPE == NBIOT_AUTO_MODEL_DISABLE)
+#ifndef NBIOT_MODEL_TYPE
+	#error No Define NBIOT MODEL!
+#else
+	#if (NBIOT_MODEL_TYPE == NBIOT_MODEL_LIERDA)
+		sprintf((char *)pClient->DataProcessStack, "AT+MLWULDATAEX=%d,%02X%04X%04X%04X", pClient->Sendlen + sizeof(NBIOT_ByteStreamUploadHead), pHead->CMDType, pHead->DatasetID, pHead->StreamLen, pHead->PayloadLen);
+	#elif (NBIOT_MODEL_TYPE == NBIOT_MODEL_QUECTEL)
+		sprintf((char *)pClient->DataProcessStack, "AT+QLWULDATAEX=%d,%02X%04X%04X%04X", pClient->Sendlen + sizeof(NBIOT_ByteStreamUploadHead), pHead->CMDType, pHead->DatasetID, pHead->StreamLen, pHead->PayloadLen);
 	#else
 		#error NBIOT MODEL Define Error
 	#endif

@@ -20,6 +20,7 @@
 #include "net_mqttsn_app.h"
 #include "net_mqttsn_pcp_app.h"
 #include "net_onenet_app.h"
+#include "net_ctwing_app.h"
 #include "stm32l1xx_config.h"
 #include "platform_config.h"
 #include "platform_map.h"
@@ -31,6 +32,7 @@
 NETCoapNeedSendCodeTypeDef	NETCoapNeedSendCode = NETCoapNeedSendCode_initializer;
 NETMqttSNNeedSendCodeTypeDef	NETMqttSNNeedSendCode = NETMqttSNNeedSendCode_initializer;
 NETOneNETNeedSendCodeTypeDef	NETOneNETNeedSendCode = NETOneNETNeedSendCode_initializer;
+NETCTWingNeedSendCodeTypeDef	NETCTWingNeedSendCode = NETCTWingNeedSendCode_initializer;
 
 /**********************************************************************************************************
  @Function			void NET_NBIOT_FIFOMessage_Initialization(void)
@@ -71,6 +73,13 @@ void NET_NBIOT_FIFOMessage_Initialization(void)
 	NET_OneNET_FifoSendMessageInit();
 	/* ONENET接收数据FIFO初始化 */
 	NET_OneNET_FifoRecvMessageInit();
+	
+#elif (NETPROTOCAL == NETCTWING)
+	
+	/* CTWING发送数据FIFO初始化 */
+	NET_CTWing_FifoSendMessageInit();
+	/* CTWING接收数据FIFO初始化 */
+	NET_CTWing_FifoRecvMessageInit();
 	
 #else
 	#error NETPROTOCAL Define Error
@@ -132,6 +141,13 @@ void NET_NBIOT_Initialization(void)
 	/* ONENET客户端初始化 */
 	OneNET_Client_Init(&OneNETClientHandler, &OneNETLWM2MNetHandler, &NetNbiotClientHandler);
 	
+#elif (NETPROTOCAL == NETCTWING)
+	
+	/* CTWING数据传输接口初始化 */
+	CTWING_Transport_Init(&CTWingLWM2MNetHandler, &NbiotClientHandler);
+	/* CTWING客户端初始化 */
+	CTWing_Client_Init(&CTWingClientHandler, &CTWingLWM2MNetHandler, &NetNbiotClientHandler);
+	
 #else
 	#error NETPROTOCAL Define Error
 #endif
@@ -146,6 +162,9 @@ void NET_NBIOT_Initialization(void)
 **********************************************************************************************************/
 void NET_NBIOT_Client_Init(NET_NBIOT_ClientsTypeDef* pClient)
 {
+#ifndef NETPROTOCAL
+	#error No Define NETPROTOCAL!
+#else
 #if NETPROTOCAL == NETCOAP
 	
 	pClient->PollExecution								= NET_POLL_EXECUTION_COAP;
@@ -163,6 +182,13 @@ void NET_NBIOT_Client_Init(NET_NBIOT_ClientsTypeDef* pClient)
 	
 	pClient->PollExecution								= NET_POLL_EXECUTION_ONENET;
 	
+#elif NETPROTOCAL == NETCTWING
+	
+	pClient->PollExecution								= NET_POLL_EXECUTION_CTWING;
+	
+#else
+	#error NETPROTOCAL Define Error
+#endif
 #endif
 }
 
@@ -340,6 +366,64 @@ void NET_NBIOT_OneNETSentDataAfterExexution(void)
 }
 #endif
 
+#if NETPROTOCAL == NETCTWING
+void NET_NBIOT_CTWingShortStructureInit(void)
+{
+	CTWingShortStructure.HeadPacket.DeviceSN				= TCFG_EEPROM_Get_MAC_SN();
+	CTWingShortStructure.HeadPacket.DataLen					= 0x00;
+	CTWingShortStructure.HeadPacket.ProtocolType				= 0x00;
+	CTWingShortStructure.HeadPacket.Reserved1				= 0x00;
+	CTWingShortStructure.HeadPacket.ProtocolVersion			= 0x00;
+	CTWingShortStructure.HeadPacket.Reserved2				= 0x00;
+	CTWingShortStructure.HeadPacket.PacketType				= 0x05;
+	CTWingShortStructure.HeadPacket.PacketNumber				= 0x00;
+	CTWingShortStructure.MsgPacket.DestSN					= 0x00;
+	CTWingShortStructure.MsgPacket.Version					= 0x01;
+}
+
+void NET_NBIOT_CTWingLongStructureInit(void)
+{
+	CTWingLongStructure.HeadPacket.DeviceSN					= TCFG_EEPROM_Get_MAC_SN();
+	CTWingLongStructure.HeadPacket.DataLen					= 0x00;
+	CTWingLongStructure.HeadPacket.ProtocolType				= 0x00;
+	CTWingLongStructure.HeadPacket.Reserved1				= 0x00;
+	CTWingLongStructure.HeadPacket.ProtocolVersion			= 0x00;
+	CTWingLongStructure.HeadPacket.Reserved2				= 0x00;
+	CTWingLongStructure.HeadPacket.PacketType				= 0x05;
+	CTWingLongStructure.HeadPacket.PacketNumber				= 0x00;
+	CTWingLongStructure.MsgPacket.DestSN					= 0x00;
+#if CTWING_STATUS_MSG_VERSION_TYPE == CTWING_STATUS_MSG_VERSION_33BYTE_V1
+	CTWingLongStructure.MsgPacket.Version					= 0x01;
+#elif CTWING_STATUS_MSG_VERSION_TYPE == CTWING_STATUS_MSG_VERSION_77BYTE_V2
+	CTWingLongStructure.MsgPacket.Version					= 0x02;
+#endif
+}
+
+void NET_NBIOT_CTWingInfoStructureInit(void)
+{
+	memset((void*)&CTWingInfoStructure.InfoData, 0, sizeof(CTWingInfoStructure.InfoData));
+	CTWingInfoStructure.HeadPacket.DeviceSN					= TCFG_EEPROM_Get_MAC_SN();
+	CTWingInfoStructure.HeadPacket.DataLen					= 0x00;
+	CTWingInfoStructure.HeadPacket.ProtocolType				= 0x00;
+	CTWingInfoStructure.HeadPacket.Reserved1				= 0x00;
+	CTWingInfoStructure.HeadPacket.ProtocolVersion			= 0x00;
+	CTWingInfoStructure.HeadPacket.Reserved2				= 0x00;
+	CTWingInfoStructure.HeadPacket.PacketType				= 0x05;
+	CTWingInfoStructure.HeadPacket.PacketNumber				= 0x00;
+	CTWingInfoStructure.MsgPacket.DestSN					= 0x00;
+	CTWingInfoStructure.MsgPacket.Version					= 0x01;
+}
+
+void NET_NBIOT_CTWingSentDataAfterExexution(void)
+{
+	TCFG_Utility_Add_NBIot_SentCount();
+	TCFG_Utility_Add_NBIot_SentCountDay();
+#if NBCTWING_LISTEN_PARAMETER_TYPE == NBCTWING_LISTEN_PARAMETER_ENABLE
+	CTWingClientHandler.ListenRunCtl.ListenEnterParameter.listenEnable = true;
+#endif
+}
+#endif
+
 /**********************************************************************************************************
  @Function			void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
  @Description			NET_NBIOT_DataProcessing						: NET数据处理
@@ -348,6 +432,9 @@ void NET_NBIOT_OneNETSentDataAfterExexution(void)
 **********************************************************************************************************/
 void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 {
+#ifndef NETPROTOCAL
+	#error No Define NETPROTOCAL!
+#else
 #if NETPROTOCAL == NETCOAP
 	
 	u32 len = 0;
@@ -714,6 +801,131 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 #endif
 	}
 	
+#elif NETPROTOCAL == NETCTWING
+	
+	u32 len = 0;
+	SpotStatusTypedef SpotStatusData;
+	
+	/* 检查是否有数据需要发送 */
+	if (Inspect_Message_SpotStatusisEmpty() == false) {
+	#if NBCTWING_SENDCODE_LONG_STATUS
+		NETCTWingNeedSendCode.LongStatus = 1;
+	#endif
+	}
+	
+	/* CTWING SHORT STATUS DATA ENQUEUE */
+	if (NETCTWingNeedSendCode.ShortStatus) {
+#if NBCTWING_SENDCODE_SHORT_STATUS
+		Inspect_Message_SpotStatusDequeue(&SpotStatusData);
+		NET_NBIOT_CTWingShortStructureInit();
+		CTWingShortStructure.MsgPacket.Type				= CTWING_MSGTYPE_TYPE_SHORT_STATUS;
+		CTWingShortStructure.DateTime						= SpotStatusData.unixTime;
+		CTWingShortStructure.SpotStatus					= SpotStatusData.spot_status;
+		CTWingShortStructure.SpotCount					= SpotStatusData.spot_count;
+		NET_CTWing_Message_SendDataEnqueue((unsigned char *)&CTWingShortStructure, sizeof(CTWingShortStructure));
+		NETCTWingNeedSendCode.ShortStatus = 0;
+		Inspect_Message_SpotStatusOffSet();
+		NET_NBIOT_CTWingSentDataAfterExexution();
+#endif
+	}
+	/* CTWING LONG STATUS DATA ENQUEUE */
+	else if (NETCTWingNeedSendCode.LongStatus) {
+#if NBCTWING_SENDCODE_LONG_STATUS
+		Inspect_Message_SpotStatusDequeue(&SpotStatusData);
+		NET_NBIOT_CTWingLongStructureInit();
+		CTWingLongStructure.MsgPacket.Type					= CTWING_MSGTYPE_TYPE_LONG_STATUS;
+		CTWingLongStructure.DateTime						= SpotStatusData.unixTime;
+		CTWingLongStructure.SpotStatus					= SpotStatusData.spot_status;
+		CTWingLongStructure.SpotCount						= SpotStatusData.spot_count;
+		CTWingLongStructure.MagneticX						= SpotStatusData.qmc5883lData.X_Now;
+		CTWingLongStructure.MagneticY						= SpotStatusData.qmc5883lData.Y_Now;
+		CTWingLongStructure.MagneticZ						= SpotStatusData.qmc5883lData.Z_Now;
+		CTWingLongStructure.MagneticDiff					= SpotStatusData.qmc5883lDiff.BackVal_Diff > 65535 ? 65535 : SpotStatusData.qmc5883lDiff.BackVal_Diff;
+		CTWingLongStructure.RadarDistance					= SpotStatusData.radarData.DisVal;
+		CTWingLongStructure.RadarStrength					= SpotStatusData.radarData.MagVal;
+		CTWingLongStructure.RadarCoverCount				= SpotStatusData.radarData.Diff_v2;
+		CTWingLongStructure.RadarDiff						= SpotStatusData.radarData.Diff;
+#if CTWING_STATUS_MSG_VERSION_TYPE == CTWING_STATUS_MSG_VERSION_77BYTE_V2
+		CTWingLongStructure.NBRssi						= TCFG_Utility_Get_Nbiot_Rssi_IntVal();
+		CTWingLongStructure.NBSnr						= TCFG_Utility_Get_Nbiot_RadioSNR();
+		CTWingLongStructure.MCUTemp						= TCFG_Utility_Get_Device_Temperature();
+		CTWingLongStructure.QMCTemp						= Qmc5883lData.temp_now;
+		CTWingLongStructure.MagneticBackX					= Qmc5883lData.X_Back;
+		CTWingLongStructure.MagneticBackY					= Qmc5883lData.Y_Back;
+		CTWingLongStructure.MagneticBackZ					= Qmc5883lData.Z_Back;
+		CTWingLongStructure.Debugval						= SpotStatusData.radarData.timedomain_dif;
+		for (int i = 0; i < 16; i++) {
+			CTWingLongStructure.Radarval[i] = radar_targetinfo.pMagNow[i+2]>255?255:radar_targetinfo.pMagNow[i+2];
+			CTWingLongStructure.Radarback[i] = radar_targetinfo.pMagBG[i+2]>255?255:radar_targetinfo.pMagBG[i+2];
+		}
+#endif
+		NET_CTWing_Message_SendDataEnqueue((unsigned char *)&CTWingLongStructure, sizeof(CTWingLongStructure));
+		NETCTWingNeedSendCode.LongStatus = 0;
+		Inspect_Message_SpotStatusOffSet();
+		NET_NBIOT_CTWingSentDataAfterExexution();
+#endif
+	}
+	/* CTWING WORK INFO DATA ENQUEUE */
+	else if (NETCTWingNeedSendCode.WorkInfo) {
+#if NBCTWING_SENDCODE_WORK_INFO
+		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
+			return;
+		}
+		NET_NBIOT_CTWingInfoStructureInit();
+		CTWingInfoStructure.HeadPacket.PacketType			= 0x05;
+		CTWingInfoStructure.MsgPacket.Type					= CTWING_MSGTYPE_TYPE_WORK_INFO;
+		len = NET_CTWING_Message_Operate_Creat_Json_Work_Info((char *)&CTWingInfoStructure.InfoData);
+		NET_CTWing_Message_SendDataEnqueue((unsigned char *)&CTWingInfoStructure, sizeof(CTWingInfoStructure) - sizeof(CTWingInfoStructure.InfoData) + len);
+		NETCTWingNeedSendCode.WorkInfo = 0;
+		NET_NBIOT_CTWingSentDataAfterExexution();
+#endif
+	}
+	/* CTWING BASIC INFO DATA ENQUEUE */
+	else if (NETCTWingNeedSendCode.BasicInfo) {
+#if NBCTWING_SENDCODE_BASIC_INFO
+		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
+			return;
+		}
+		NET_NBIOT_CTWingInfoStructureInit();
+		CTWingInfoStructure.HeadPacket.PacketType			= 0x05;
+		CTWingInfoStructure.MsgPacket.Type					= CTWING_MSGTYPE_TYPE_BASIC_INFO;
+		len = NET_CTWING_Message_Operate_Creat_Json_Basic_Info((char *)&CTWingInfoStructure.InfoData);
+		NET_CTWing_Message_SendDataEnqueue((unsigned char *)&CTWingInfoStructure, sizeof(CTWingInfoStructure) - sizeof(CTWingInfoStructure.InfoData) + len);
+		NETCTWingNeedSendCode.BasicInfo = 0;
+		NET_NBIOT_CTWingSentDataAfterExexution();
+#endif
+	}
+	/* CTWING DYNAMIC INFO DATA ENQUEUE */
+	else if (NETCTWingNeedSendCode.DynamicInfo) {
+#if NBCTWING_SENDCODE_DYNAMIC_INFO
+		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
+			return;
+		}
+		NET_NBIOT_CTWingInfoStructureInit();
+		CTWingInfoStructure.HeadPacket.PacketType			= 0x05;
+		CTWingInfoStructure.MsgPacket.Type					= CTWING_MSGTYPE_TYPE_DYNAMIC_INFO;
+		len = NET_CTWING_Message_Operate_Creat_Json_Dynamic_Info((char *)&CTWingInfoStructure.InfoData);
+		NET_CTWing_Message_SendDataEnqueue((unsigned char *)&CTWingInfoStructure, sizeof(CTWingInfoStructure) - sizeof(CTWingInfoStructure.InfoData) + len);
+		NETCTWingNeedSendCode.DynamicInfo = 0;
+		NET_NBIOT_CTWingSentDataAfterExexution();
+#endif
+	}
+	/* CTWING RESPONSE INFO DATA ENQUEUE */
+	else if (NETCTWingNeedSendCode.ResponseInfo) {
+#if NBCTWING_SENDCODE_RESPONSE_INFO
+		NET_NBIOT_CTWingInfoStructureInit();
+		CTWingInfoStructure.HeadPacket.PacketType			= 0x05;
+		CTWingInfoStructure.MsgPacket.Type					= CTWING_MSGTYPE_TYPE_INFO;
+		len = NET_CTWING_Message_Operate_Creat_Json_Response_Info((char *)&CTWingInfoStructure.InfoData, NETCTWingNeedSendCode.ResponseInfoErrcode, NETCTWingNeedSendCode.ResponseInfoMsgId);
+		NET_CTWing_Message_SendDataEnqueue((unsigned char *)&CTWingInfoStructure, sizeof(CTWingInfoStructure) - sizeof(CTWingInfoStructure.InfoData) + len);
+		NETCTWingNeedSendCode.ResponseInfo = 0;
+		NET_NBIOT_CTWingSentDataAfterExexution();
+#endif
+	}
+	
+#else
+	#error NETPROTOCAL Define Error
+#endif
 #endif
 }
 
@@ -725,6 +937,9 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_NBIOT_TaskProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 {
+#ifndef NETPROTOCAL
+	#error No Define NETPROTOCAL!
+#else
 	/* NBIOT PollExecution */
 #if NETPROTOCAL == NETCOAP
 	
@@ -747,6 +962,10 @@ void NET_NBIOT_TaskProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		break;
 	
 	case NET_POLL_EXECUTION_ONENET:
+		pClient->PollExecution = NET_POLL_EXECUTION_COAP;
+		break;
+		
+	case NET_POLL_EXECUTION_CTWING:
 		pClient->PollExecution = NET_POLL_EXECUTION_COAP;
 		break;
 	}
@@ -789,6 +1008,15 @@ void NET_NBIOT_TaskProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		pClient->PollExecution = NET_POLL_EXECUTION_DNS;
 #endif
 		break;
+	
+	case NET_POLL_EXECUTION_CTWING:
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_DISABLE
+		pClient->PollExecution = NET_POLL_EXECUTION_MQTTSN;
+#endif
+#if MQTTSN_DNS_SERVER_TYPE == MQTTSN_DNS_SERVER_ENABLE
+		pClient->PollExecution = NET_POLL_EXECUTION_DNS;
+#endif
+		break;
 	}
 	
 #elif NETPROTOCAL == NETONENET
@@ -814,8 +1042,44 @@ void NET_NBIOT_TaskProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 	case NET_POLL_EXECUTION_ONENET:
 		NET_ONENET_APP_PollExecution(&OneNETClientHandler);
 		break;
+	
+	case NET_POLL_EXECUTION_CTWING:
+		pClient->PollExecution = NET_POLL_EXECUTION_ONENET;
+		break;
 	}
 	
+#elif NETPROTOCAL == NETCTWING
+	
+	switch (pClient->PollExecution)
+	{
+	case NET_POLL_EXECUTION_COAP:
+		pClient->PollExecution = NET_POLL_EXECUTION_CTWING;
+		break;
+	
+	case NET_POLL_EXECUTION_DNS:
+		pClient->PollExecution = NET_POLL_EXECUTION_CTWING;
+		break;
+	
+	case NET_POLL_EXECUTION_MQTTSN:
+		pClient->PollExecution = NET_POLL_EXECUTION_CTWING;
+		break;
+	
+	case NET_POLL_EXECUTION_PCP:
+		pClient->PollExecution = NET_POLL_EXECUTION_CTWING;
+		break;
+	
+	case NET_POLL_EXECUTION_ONENET:
+		pClient->PollExecution = NET_POLL_EXECUTION_CTWING;
+		break;
+	
+	case NET_POLL_EXECUTION_CTWING:
+		NET_CTWING_APP_PollExecution(&CTWingClientHandler);
+		break;
+	}
+	
+#else
+	#error NETPROTOCAL Define Error
+#endif
 #endif
 }
 
@@ -852,6 +1116,10 @@ void NET_NBIOT_BackupCurrentApp_Task(void)
 	MqttPCP_Upgrade_BackupCurrentAPP(&MqttSNPCPClientHandler);
 	
 #elif (NETPROTOCAL == NETONENET)
+	
+	//Todo
+	
+#elif (NETPROTOCAL == NETCTWING)
 	
 	//Todo
 	

@@ -149,6 +149,8 @@
 #define TCFG_NBIOT_SENTCNTDAY_LENGTH		2																//NBIoT Sent Count Day	NB一天发送包数
 #define TCFG_NBIOT_SENTCNTLMT_OFFSET		TCFG_NBIOT_SENTCNTDAY_OFFSET + TCFG_NBIOT_SENTCNTDAY_LENGTH					//0x080804EE
 #define TCFG_NBIOT_SENTCNTLMT_LENGTH		2																//NBIoT Sent Count Limit	NB一天限定包数
+#define TCFG_CTWING_SERVER_OFFSET			TCFG_NBIOT_SENTCNTLMT_OFFSET + TCFG_NBIOT_SENTCNTLMT_LENGTH					//0x080804F0
+#define TCFG_CTWING_SERVER_LENGTH			6																//Server CTWing		CTWing服务器地址
 
 /************************************** The environment parameters are used both by extend ***************************************/
 #define EEPROM_CONFIG_PAGE2_ADDRESS		0x08080E00														//配置页2起始地址 EEPROM_BASE_ADD + 0x0E00(3.5K)
@@ -300,6 +302,11 @@ typedef struct
 	unsigned char						NBMqttSNServerIP[16];												//MqttSN服务器IP地址
 	unsigned char						NBMqttSNServerPort[6];												//MqttSN服务器IP端口
 	NBIOT_ServerAddr					NBMqttSNServer;													//MqttSN服务器地址
+#if NETPROTOCAL == NETCTWING
+	unsigned char						CTWingCDPServerIP[16];												//CTWing核心网IP地址
+	unsigned char						CTWingCDPServerPort[6];												//CTWing核心网IP端口
+	NBIOT_ServerAddr					CTWingCDPServer;													//CTWing核心网地址
+#endif
 }TCFG_SystemDataTypeDef;
 
 extern TCFG_SystemDataTypeDef				TCFG_SystemData;
@@ -362,6 +369,15 @@ unsigned short	TCFG_EEPROM_GetServerPort(void);																//读取ServerPor
 
 char*		TCFG_EEPROM_Get_ServerIP_String(void);															//读取ServerIP字符串
 char*		TCFG_EEPROM_Get_ServerPort_String(void);														//读取ServerPort字符串
+
+void			TCFG_EEPROM_SetCTWingIP(unsigned int val);														//保存CTWingIP
+unsigned int	TCFG_EEPROM_GetCTWingIP(void);																//读取CTWingIP
+
+void			TCFG_EEPROM_SetCTWingPort(unsigned short val);													//保存CTWingPort
+unsigned short	TCFG_EEPROM_GetCTWingPort(void);																//读取CTWingPort
+
+char*		TCFG_EEPROM_Get_CTWingIP_String(void);															//读取CTWingIP字符串
+char*		TCFG_EEPROM_Get_CTWingPort_String(void);														//读取CTWingPort字符串
 
 void			TCFG_EEPROM_SetWorkMode(unsigned char val);														//保存WorkMode
 unsigned char	TCFG_EEPROM_GetWorkMode(void);																//读取WorkMode
@@ -486,6 +502,7 @@ unsigned char	TCFG_EEPROM_GetDeviceRbtMode(void);															//读取DeviceRb
 
 void			TCFG_EEPROM_SetMqttSNIP(unsigned int val);														//保存MqttSNIP
 unsigned int	TCFG_EEPROM_GetMqttSNIP(void);																//读取MqttSNIP
+
 void			TCFG_EEPROM_SetMqttSNPort(unsigned short val);													//保存MqttSNPort
 unsigned short	TCFG_EEPROM_GetMqttSNPort(void);																//读取MqttSNPort
 

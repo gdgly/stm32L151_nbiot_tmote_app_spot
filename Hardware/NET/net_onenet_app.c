@@ -564,6 +564,7 @@ void NET_ONENET_NBIOT_Event_StopMode(ONENET_ClientsTypeDef* pClient)
 		pClient->LWM2MStack->NBIotStack->ClearStoredEARFCN = NBIOT_CLEAR_STORED_EARFCN_TRUE;
 		/* Init Message Index */
 		OneNETSendMessageIndex = NET_OneNET_Message_SendDataRear();
+		
 		/* Get ConnectTime & IdleTime */
 		ONENET_NBIOT_GetConnectTime(pClient, false);
 		ONENET_NBIOT_GetIdleTime(pClient, false);
@@ -579,7 +580,7 @@ void NET_ONENET_NBIOT_Event_StopMode(ONENET_ClientsTypeDef* pClient)
 	else {
 		/* Dictate isn't TimeOut */
 		if (NET_OneNET_Message_SendDataRear() != OneNETSendMessageIndex) {
-			/* Have new coap message need to Send */
+			/* Have new onenet message need to Send */
 			pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEnable = false;
 			pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
 			pClient->ProcessState = ONENET_PROCESSSTATE_INIT;

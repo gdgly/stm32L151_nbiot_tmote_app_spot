@@ -40,6 +40,7 @@
 #include "net_mqttsn_app.h"
 #include "net_mqttsn_pcp_app.h"
 #include "net_onenet_app.h"
+#include "net_ctwing_app.h"
 #include "radar_api.h"
 #include "radio_hal_rf.h"
 #include "radio_rf_app.h"
@@ -285,6 +286,8 @@ void MainRollingEnteredUpWork(void)
 	NETMqttSNNeedSendCode.InfoWorkWait = 3;
 #elif NETPROTOCAL == NETONENET
 	NETOneNETNeedSendCode.WorkInfoWait = 3;
+#elif NETPROTOCAL == NETCTWING
+	NETCTWingNeedSendCode.WorkInfoWait = 3;
 #endif
 	
 	if (TCFG_SystemData.NBIotSentCountDay != 0) TCFG_SystemData.NBIotSentCountDay = 0;
@@ -317,7 +320,7 @@ void MainRollingUpwardsActived(void)
 	/* 日常处理 */
 	MainHandleRoutine();
 	
-	if (!((NETCoapNeedSendCode.WorkInfoWait > 0) || (NETMqttSNNeedSendCode.InfoWorkWait > 0) || (NETOneNETNeedSendCode.WorkInfoWait > 0))) {
+	if (!((NETCoapNeedSendCode.WorkInfoWait > 0) || (NETMqttSNNeedSendCode.InfoWorkWait > 0) || (NETOneNETNeedSendCode.WorkInfoWait > 0) || (NETCTWingNeedSendCode.WorkInfoWait > 0))) {
 #if PRODUCTTEST_READ_TYPE
 		if (ProductTest_Read() || (TCFG_Utility_Get_Device_BootCount() > PRODUCTTEST_OVER_BOOTCNT)) {
 		#if NBIOT_SNEDCOUNTDAY_LIMIT_TYPE
@@ -328,6 +331,8 @@ void MainRollingUpwardsActived(void)
 				NETMqttSNNeedSendCode.InfoDynamic = 1;
 			#elif NETPROTOCAL == NETONENET
 				NETOneNETNeedSendCode.DynamicInfo = 1;
+			#elif NETPROTOCAL == NETCTWING
+				NETCTWingNeedSendCode.DynamicInfo = 1;
 			#endif
 			}
 			if (TCFG_Utility_Get_NBIot_SentCountDay() > TCFG_EEPROM_GetNBIotSentCountLimit() + 1) {
@@ -370,6 +375,8 @@ void MainRollingUpwardsActived(void)
 			NETMqttSNNeedSendCode.InfoDynamic = 1;
 		#elif NETPROTOCAL == NETONENET
 			NETOneNETNeedSendCode.DynamicInfo = 1;
+		#elif NETPROTOCAL == NETCTWING
+			NETCTWingNeedSendCode.DynamicInfo = 1;
 		#endif
 		}
 		if (TCFG_Utility_Get_NBIot_SentCountDay() > TCFG_EEPROM_GetNBIotSentCountLimit() + 1) {
@@ -451,6 +458,8 @@ void MainRollingEnteredDownWork(void)
 	NETMqttSNNeedSendCode.InfoWorkWait = 3;
 #elif NETPROTOCAL == NETONENET
 	NETOneNETNeedSendCode.WorkInfoWait = 3;
+#elif NETPROTOCAL == NETCTWING
+	NETCTWingNeedSendCode.WorkInfoWait = 3;
 #endif
 }
 
@@ -465,7 +474,7 @@ void MainRollingEnteredDownSleepKeepActived(void)
 	/* 日常处理 */
 	MainHandleRoutine();
 	
-	if (!((NETCoapNeedSendCode.WorkInfoWait > 0) || (NETMqttSNNeedSendCode.InfoWorkWait > 0) || (NETOneNETNeedSendCode.WorkInfoWait > 0))) {
+	if (!((NETCoapNeedSendCode.WorkInfoWait > 0) || (NETMqttSNNeedSendCode.InfoWorkWait > 0) || (NETOneNETNeedSendCode.WorkInfoWait > 0) || (NETCTWingNeedSendCode.WorkInfoWait > 0))) {
 #if PRODUCTTEST_READ_TYPE
 		if (ProductTest_Read() || (TCFG_Utility_Get_Device_BootCount() > PRODUCTTEST_OVER_BOOTCNT)) {
 			/* NBIOT APP Task */
@@ -597,6 +606,21 @@ void MainHandleRoutine(void)
 			NETOneNETNeedSendCode.WorkInfoWait--;
 		}
 #endif
+#if NETPROTOCAL == NETCTWING
+		if (NETCTWingNeedSendCode.WorkInfoWait > 0) {
+			if (NETCTWingNeedSendCode.WorkInfoWait > 1) {
+				__NOP();
+			}
+			else if (NETCTWingNeedSendCode.WorkInfoWait > 0) {
+		#if ROLLINGOVER_WORKINFO_TYPE
+			#if NBCTWING_SENDCODE_WORK_INFO
+				NETCTWingNeedSendCode.WorkInfo = 1;
+			#endif
+		#endif
+			}
+			NETCTWingNeedSendCode.WorkInfoWait--;
+		}
+#endif
 		TCFG_Utility_Sub_Nbiot_IdleLifetime();
 	}
 	/* Every Minutes Running */
@@ -679,6 +703,13 @@ void MainHandleRoutine(void)
 	#if NBONENET_SENDCODE_DYNAMIC_INFO
 		NETOneNETNeedSendCode.DynamicInfo = 1;
 	#endif
+#elif NETPROTOCAL == NETCTWING
+	#if NBCTWING_SENDCODE_WORK_INFO
+		NETCTWingNeedSendCode.WorkInfo = 1;
+	#endif
+	#if NBCTWING_SENDCODE_DYNAMIC_INFO
+		NETCTWingNeedSendCode.DynamicInfo = 1;
+	#endif
 #endif
 		
 		TCFG_SystemData.CoapConnectTime = TCFG_Utility_GetCoapConnectTime();
@@ -711,6 +742,10 @@ void MainHandleRoutine(void)
 #elif NETPROTOCAL == NETONENET
 	#if NBONENET_SENDCODE_BASIC_INFO
 		NETOneNETNeedSendCode.BasicInfo = 1;
+	#endif
+#elif NETPROTOCAL == NETCTWING
+	#if NBCTWING_SENDCODE_BASIC_INFO
+		NETCTWingNeedSendCode.BasicInfo = 1;
 	#endif
 #endif
 	}

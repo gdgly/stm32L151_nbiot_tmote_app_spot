@@ -48,6 +48,13 @@ ONENET_PacketLongTypeDef			OneNETLongStructure;						//ONENET Long Packet
 ONENET_PacketInfoTypeDef			OneNETInfoStructure;						//ONENET Info Packet
 #endif
 
+#if NETPROTOCAL == NETCTWING
+/* CTWing Packet */
+CTWING_PacketShortTypeDef		CTWingShortStructure;						//CTWING Short Packet
+CTWING_PacketLongTypeDef			CTWingLongStructure;						//CTWING Long Packet
+CTWING_PacketInfoTypeDef			CTWingInfoStructure;						//CTWING Info Packet
+#endif
+
 /* NET Handler */
 NET_NBIOT_ClientsTypeDef			NetNbiotClientHandler;						//NET NBIOT Clinet Handler
 NBIOT_ATCmdTypeDef				NbiotATCmdHandler;							//NBIOT AT Cmd Handler
@@ -74,10 +81,16 @@ ONENET_LWM2MTransportTypeDef		OneNETLWM2MNetHandler;						//ONENET Net Handler
 ONENET_ClientsTypeDef			OneNETClientHandler;						//ONENET Clinet Handler
 #endif
 
+#if NETPROTOCAL == NETCTWING
+CTWING_LWM2MTransportTypeDef		CTWingLWM2MNetHandler;						//CTWing Net Handler
+CTWING_ClientsTypeDef			CTWingClientHandler;						//CTWing Clinet Handler
+#endif
+
 NBIOT_NBandTypeDef				CoAPNBIoTBandType	= {COAP_NBIOT_BAND_NUM,   COAP_NBIOT_BAND_VAL1,   COAP_NBIOT_BAND_VAL2,   COAP_NBIOT_BAND_VAL3};
 NBIOT_NBandTypeDef				OneNETNBIoTBandType	= {ONENET_NBIOT_BAND_NUM, ONENET_NBIOT_BAND_VAL1, ONENET_NBIOT_BAND_VAL2, ONENET_NBIOT_BAND_VAL3};
 NBIOT_NBandTypeDef				MqttSNNBIoTBandType	= {MQTTSN_NBIOT_BAND_NUM, MQTTSN_NBIOT_BAND_VAL1, MQTTSN_NBIOT_BAND_VAL2, MQTTSN_NBIOT_BAND_VAL3};
 NBIOT_NBandTypeDef				DNSNBIoTBandType	= {DNS_NBIOT_BAND_NUM,    DNS_NBIOT_BAND_VAL1,    DNS_NBIOT_BAND_VAL2,    DNS_NBIOT_BAND_VAL3};
+NBIOT_NBandTypeDef				CTWingNBIoTBandType	= {CTWING_NBIOT_BAND_NUM, CTWING_NBIOT_BAND_VAL1, CTWING_NBIOT_BAND_VAL2, CTWING_NBIOT_BAND_VAL3};
 
 /**********************************************************************************************************
  @Function			void RadioPrintWorkinfo(void)
@@ -170,6 +183,45 @@ void RadioPrintWorkinfo(void)
 #endif
 
 #elif NETPROTOCAL == NETONENET
+
+#if RADIO_PRINT_WORKINFO_SOFT
+	Radio_Trf_Printf("Soft:%d:%d.%d", TCFG_EEPROM_GetBootVersion(), TCFG_Utility_Get_Major_Softnumber(), TCFG_Utility_Get_Sub_Softnumber());
+#endif
+#if RADIO_PRINT_WORKINFO_SENSE
+	Radio_Trf_Printf("Sense:%d", TCFG_EEPROM_GetSavedSensitivity());
+#endif
+#if RADIO_PRINT_WORKINFO_MODE
+	Radio_Trf_Printf("Mode:%s", TCFG_EEPROM_Get_WorkMode_String());
+#endif
+#if RADIO_PRINT_WORKINFO_CHANNEL
+	Radio_Trf_Printf("Channel:%d", TCFG_EEPROM_GetRfChannel());
+#endif
+#if RADIO_PRINT_WORKINFO_RANGE
+	Radio_Trf_Printf("Range:%d", TCFG_Utility_Get_DistanceRange());
+#endif
+#if RADIO_PRINT_WORKINFO_EARFCN
+	Radio_Trf_Printf("Earfcn:%d", TCFG_Utility_Get_Nbiot_RadioEARFCN());
+#endif
+#if RADIO_PRINT_WORKINFO_TAC
+	Radio_Trf_Printf("Tac:%X", TCFG_Utility_Get_Nbiot_NetworkRegStatusTac());
+#endif
+#if RADIO_PRINT_WORKINFO_CI
+	Radio_Trf_Printf("Ci:%X", TCFG_Utility_Get_Nbiot_NetworkRegStatusCellID());
+#endif
+#if RADIO_PRINT_WORKINFO_CMDCNT
+	Radio_Trf_Printf("Cmdcnt:%d.%d", TCFG_EEPROM_GetRFCmdCnt(), TCFG_EEPROM_GetNBCmdCnt());
+#endif
+#if RADIO_PRINT_WORKINFO_NBRUNTIME
+	Radio_Trf_Printf("Nbruntime:%d.%d", TCFG_Utility_GetCoapConnectTime(), TCFG_Utility_GetCoapIdleTime());
+#endif
+#if RADIO_PRINT_WORKINFO_APN
+	Radio_Trf_Printf("APN:%s", TCFG_Utility_Get_Nbiot_PDPContext_APN());
+#endif
+#if RADIO_PRINT_WORKINFO_COEF
+	Radio_Trf_Printf("Coef:%d.%d.%d", TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
+#endif
+
+#elif NETPROTOCAL == NETCTWING
 
 #if RADIO_PRINT_WORKINFO_SOFT
 	Radio_Trf_Printf("Soft:%d:%d.%d", TCFG_EEPROM_GetBootVersion(), TCFG_Utility_Get_Major_Softnumber(), TCFG_Utility_Get_Sub_Softnumber());
@@ -335,6 +387,46 @@ void RadioPrintNetinfo(void)
 #endif
 #if RADIO_PRINT_NETINFO_SNR
 	Radio_Trf_Printf("SNR:%d", OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR);
+#endif
+
+#elif NETPROTOCAL == NETCTWING
+
+#if RADIO_PRINT_NETINFO_MUFTUR
+	Radio_Trf_Printf("Muftur:%s", CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.manufacturer);
+#endif
+#if RADIO_PRINT_NETINFO_MUFTURMD
+	Radio_Trf_Printf("MufturMd:%s", CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.manufacturermode);
+#endif
+#if RADIO_PRINT_NETINFO_MDUVER
+	Radio_Trf_Printf("MduVer:%s", CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.modelversion);
+#endif
+#if RADIO_PRINT_NETINFO_IMEI
+	Radio_Trf_Printf("IMEI:%s", CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.imei);
+#endif
+#if RADIO_PRINT_NETINFO_ICCID
+	Radio_Trf_Printf("ICCID:%s", CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.iccid);
+#endif
+#if RADIO_PRINT_NETINFO_IMSI
+	Radio_Trf_Printf("IMSI:%s", CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.imsi);
+#endif
+#if RADIO_PRINT_NETINFO_CGP
+	Radio_Trf_Printf("CGP:%s", CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.cgpaddr);
+#endif
+#if RADIO_PRINT_NETINFO_PDPTYPE
+	Radio_Trf_Printf("PDPType:%s", CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.cgdcontPDPType);
+#endif
+#if RADIO_PRINT_NETINFO_APN
+	Radio_Trf_Printf("APN:%s", CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.cgdcontAPN);
+#endif
+#if RADIO_PRINT_NETINFO_RSSI
+	Radio_Trf_Printf("RSSI:%d", CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.rssi);
+#endif
+#if RADIO_PRINT_NETINFO_SNR
+	Radio_Trf_Printf("SNR:%d", CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR);
+#endif
+#if RADIO_PRINT_NETINFO_OTHER
+	Radio_Trf_Printf("CDPHost:%s", CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.cdpserver.CDPServerHost);
+	Radio_Trf_Printf("CDPPort:%d", CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.cdpserver.CDPServerPort);
 #endif
 
 #endif
