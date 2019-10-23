@@ -1846,8 +1846,8 @@ void TCFG_EEPROM_SetNbiotHeart(uint8_t val)
 	if (val == 0) {
 		val = NBIOT_HEART_DATA_TIMER;
 	}
-	else if (val > 48) {
-		val = 48;
+	else if (val > 192) {
+		val = 192;
 	}
 	
 	FLASH_EEPROM_WriteByte(TCFG_NB_HEART_OFFSET, val);
@@ -1867,8 +1867,8 @@ unsigned char TCFG_EEPROM_GetNbiotHeart(void)
 	if (val == 0) {
 		val = NBIOT_HEART_DATA_TIMER;
 	}
-	else if (val > 48) {
-		val = 48;
+	else if (val > 192) {
+		val = 192;
 	}
 	
 	return val;
