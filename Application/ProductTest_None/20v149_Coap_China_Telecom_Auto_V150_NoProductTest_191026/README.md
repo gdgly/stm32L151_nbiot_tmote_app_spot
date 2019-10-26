@@ -1,55 +1,7 @@
 # stm32L151_nbiot_tmote_app_spot
-> ##### Copyright (C) 2019 Movebroad Version:20.150 Design by Movebroad
+> ##### Copyright (C) 2019 Movebroad Version:20.148 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
-* 2019-10-26 :
-	* 修复设备倒置休眠中小无线也会发送心跳包数据。
-* 2019-10-23 :
-	* nb心跳间隔配置由原先可配置最大9小时改为48小时。
-* 2019-10-21 :
-	* 集成CTWing协议。
-* 2019-10-21 :
-	* 版本号修改为150。
-* 2019-10-21 :
-	* 发布149固件。
-* 2019-10-18 :
-	* 关闭翻转设备发送workinfo包。
-	* 倒置休眠中与正放休眠中一样间隔24小时发送info数据。
-* 2019-10-10 :
-	* MqttSN协议中当消息长度大于100则默认发送成功。
-* 2019-10-09 :
-	* instpectconfig.c中, < if (status_pre != SpotStatusDataBackUp.spot_status) { > 改为 < if ((status_pre&0x01) != (SpotStatusDataBackUp.spot_status&0x01)) { >。
-	* 修复会导致无车心跳之后继续发送无车心跳count会加1。
-* 2019-09-27 :
-	* NBIOT 限定字符串类参数读取字节数。
-* 2019-09-26 :
-	* NBIOT 增加指令 QCFG="LWM2M/lifetime"。
-	* NBIOT 增加指令 QCHIPINFO。
-* 2019-09-25 :
-	* NBIOT 增加指令 QIDNSCFG。
-	* NBIOT 指令采用可配置型结构。
-* 2019-09-22 :
-	* 去除QMCData数据包的发送。
-* 2019-09-18 :
-	* QMCData包采用Info包结构体就好了，没必要创建一个一样的。
-	* MqttSN固件旧数据组包方式遗留的去除。
-* 2019-09-13 :
-	* OneNET监听器加入，监听信号检出。
-	* OneNET运行时间获取。
-* 2019-09-11 :
-	* OneNET发送数据ACKID采用自增方式，废弃原先255不变。
-	* OneNET发送数据携带raiMode标志0x400方式。
-	* OneNET生命周期更新包发送采用有应答方式。
-* 2019-09-09 :
-	* TMoteInfo上传IMSI号。
-	* Radio下发workinfo去掉打印nbruntime。
-	* Radio下发workinfo去掉打印apn。
-	* Radio下发netinfo打印imsi。
-	* mqttsn下发命令去掉:uplimit,nblimit。
-	* 联通band表改为b8，b3。
-	* OneNET修复bug，命令下行应答参数少一个。
-* 2019-09-09 :
-	* 版本号修改为149。
 * 2019-09-03 :
 	* 增加BM1422地磁驱动。
 * 2019-09-02 :

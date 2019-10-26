@@ -1,17 +1,7 @@
 # stm32L151_nbiot_tmote_app_spot
-> ##### Copyright (C) 2019 Movebroad Version:20.150 Design by Movebroad
+> ##### Copyright (C) 2019 Movebroad Version:20.149 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
-* 2019-10-26 :
-	* 修复设备倒置休眠中小无线也会发送心跳包数据。
-* 2019-10-23 :
-	* nb心跳间隔配置由原先可配置最大9小时改为48小时。
-* 2019-10-21 :
-	* 集成CTWing协议。
-* 2019-10-21 :
-	* 版本号修改为150。
-* 2019-10-21 :
-	* 发布149固件。
 * 2019-10-18 :
 	* 关闭翻转设备发送workinfo包。
 	* 倒置休眠中与正放休眠中一样间隔24小时发送info数据。

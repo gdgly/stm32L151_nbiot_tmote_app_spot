@@ -534,9 +534,6 @@ void MainRollingDownSleep(void)
 		}
 #if NBIOT_DNWARDSSLEEP_TYPE
 	}
-	
-	/* 小无线处理 */
-	Radio_Trf_App_Task();
 #endif
 }
 
