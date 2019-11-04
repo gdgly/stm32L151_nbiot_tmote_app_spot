@@ -124,6 +124,8 @@ struct CTWING_ClientsTypeDef
 	short							Recvlen;
 	unsigned char*						DataProcessStack;
 	size_t							DataProcessStack_size;
+	unsigned char*						AepMallocProcessStack;
+	size_t							AepMallocProcessStack_size;
 	unsigned short						Command_Timeout_Sec;
 	unsigned short						Command_Failure_Cnt;
 	

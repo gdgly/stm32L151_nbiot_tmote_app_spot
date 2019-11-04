@@ -2,6 +2,9 @@
 > ##### Copyright (C) 2019 Movebroad Version:20.150 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2019-11-04 :
+	* 修复CTWING的接受buf的选择。
+	* CTWING物联网模型创建。
 * 2019-10-26 :
 	* 修复设备倒置休眠中小无线也会发送心跳包数据。
 * 2019-10-23 :

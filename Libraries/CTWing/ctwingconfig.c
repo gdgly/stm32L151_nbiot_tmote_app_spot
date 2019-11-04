@@ -17,6 +17,7 @@
 #include "ctwingconfig.h"
 #include "ctwingfunc.h"
 #include "ctwingtransport.h"
+#include "ctwingaepcodes.h"
 #include "platform_config.h"
 #include "platform_map.h"
 #include "string.h"
@@ -24,6 +25,7 @@
 unsigned char CTWing_SendBuf[CTWING_BUFFER_SIZE];
 unsigned char CTWing_RecvBuf[CTWING_BUFFER_SIZE];
 unsigned char CTWing_DataStack[CTWING_DATASTACK_SIZE];
+unsigned char CTWing_AepMallocStack[CTWING_DATASTACK_SIZE];
 
 /**********************************************************************************************************
  @Function			void CTWing_Client_Init(CTWING_ClientsTypeDef* pClient, CTWING_LWM2MTransportTypeDef* NetSock, NET_NBIOT_ClientsTypeDef* NetNbiotStack)
@@ -43,6 +45,8 @@ void CTWing_Client_Init(CTWING_ClientsTypeDef* pClient, CTWING_LWM2MTransportTyp
 	pClient->Recvlen											= 0;
 	pClient->DataProcessStack									= CTWing_DataStack;
 	pClient->DataProcessStack_size								= sizeof(CTWing_DataStack);
+	pClient->AepMallocProcessStack								= CTWing_AepMallocStack;
+	pClient->AepMallocProcessStack_size							= sizeof(CTWing_AepMallocStack);
 	
 	pClient->Command_Timeout_Sec									= CTWING_COMMAND_TIMEOUT_SEC;
 	pClient->Command_Failure_Cnt									= CTWING_COMMAND_FAILURE_CNT;

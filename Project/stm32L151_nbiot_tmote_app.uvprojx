@@ -1177,6 +1177,11 @@
               <FileType>1</FileType>
               <FilePath>..\Libraries\CTWing\ctwingtransport.c</FilePath>
             </File>
+            <File>
+              <FileName>ctwingaepcodes.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\CTWing\ctwingaepcodes.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

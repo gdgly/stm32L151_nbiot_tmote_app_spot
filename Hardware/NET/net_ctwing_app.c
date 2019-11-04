@@ -1655,7 +1655,7 @@ void NET_CTWING_NBIOT_Event_RecvData(CTWING_ClientsTypeDef* pClient)
 				return;
 			}
 			
-			if (memcmp((const char*)pClient->Recvbuf, CTWINGFeedBackData, sizeof(CTWINGFeedBackData)) == 0) {
+			if (memcmp((const char*)pClient->LWM2MStack->NBIotStack->Recvbuf, CTWINGFeedBackData, sizeof(CTWINGFeedBackData)) == 0) {
 				/* Is Feedback */
 				pClient->LWM2MStack->NBIotStack->NetStateIdentification = true;
 				if (CTWINGFeedBackFlag == false) {
@@ -1680,7 +1680,7 @@ void NET_CTWING_NBIOT_Event_RecvData(CTWING_ClientsTypeDef* pClient)
 			}
 			else {
 				/* Not Feedback */
-				NET_CTWing_Message_RecvDataEnqueue(pClient->Recvbuf, pClient->Recvlen);
+				NET_CTWing_Message_RecvDataEnqueue(pClient->LWM2MStack->NBIotStack->Recvbuf, pClient->LWM2MStack->NBIotStack->Recvlen);
 #ifdef CTWING_DEBUG_LOG_RF_PRINT
 				CTWING_DEBUG_LOG_PRINTF("CTWing Recv Data TaskID: %d Ok", CTWingDnHead.TaskID);
 #endif
@@ -1925,7 +1925,7 @@ void NET_CTWING_NBIOT_Event_RecvDataRANormal(CTWING_ClientsTypeDef* pClient)
 					return;
 				}
 				
-				NET_CTWing_Message_RecvDataEnqueue(pClient->Recvbuf, pClient->Recvlen);
+				NET_CTWing_Message_RecvDataEnqueue(pClient->LWM2MStack->NBIotStack->Recvbuf, pClient->LWM2MStack->NBIotStack->Recvlen);
 #ifdef CTWING_DEBUG_LOG_RF_PRINT
 				CTWING_DEBUG_LOG_PRINTF("CTWing Recv Data TaskID: %d Ok", CTWingDnHead.TaskID);
 #endif

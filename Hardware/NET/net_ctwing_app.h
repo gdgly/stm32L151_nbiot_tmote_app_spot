@@ -5,6 +5,7 @@
 #include "ctwingconfig.h"
 #include "ctwingfunc.h"
 #include "ctwingtransport.h"
+#include "ctwingaepcodes.h"
 #include "nbiotconfig.h"
 #include "nbiotfunc.h"
 #include "nbiottransport.h"
