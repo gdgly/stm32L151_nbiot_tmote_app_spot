@@ -803,6 +803,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 	
 #elif NETPROTOCAL == NETCTWING
 	
+#if !CTWING_AEPMODULE_MODE
 	u32 len = 0;
 	SpotStatusTypedef SpotStatusData;
 	
@@ -922,6 +923,132 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NET_NBIOT_CTWingSentDataAfterExexution();
 #endif
 	}
+#endif
+	
+#if CTWING_AEPMODULE_MODE
+	SpotStatusTypedef SpotStatusData;
+	
+	/* 检查是否有数据需要发送 */
+	if (Inspect_Message_SpotStatusisEmpty() == false) {
+	#if NBCTWING_SENDCODE_LONG_STATUS
+		NETCTWingNeedSendCode.LongStatus = 1;
+	#endif
+	}
+	
+	/* CTWING SHORT STATUS DATA ENQUEUE */
+	if (NETCTWingNeedSendCode.ShortStatus) {
+#if NBCTWING_SENDCODE_SHORT_STATUS
+		NETCTWingNeedSendCode.ShortStatus = 0;
+#endif
+	}
+	/* CTWING LONG STATUS DATA ENQUEUE */
+	else if (NETCTWingNeedSendCode.LongStatus) {
+#if NBCTWING_SENDCODE_LONG_STATUS
+		AepBytes aepCodeResult;
+		int Radarvallen = 0;
+		int Radarbacklen = 0;
+		int i = 0;
+		Inspect_Message_SpotStatusDequeue(&SpotStatusData);
+		AepSpotStatusSrcdata.DateTime						= SpotStatusData.unixTime;
+		AepSpotStatusSrcdata.SpotCount					= SpotStatusData.spot_count;
+		AepSpotStatusSrcdata.SpotStatus					= SpotStatusData.spot_status;
+		AepSpotStatusSrcdata.MagneticX					= SpotStatusData.qmc5883lData.X_Now;
+		AepSpotStatusSrcdata.MagneticY					= SpotStatusData.qmc5883lData.Y_Now;
+		AepSpotStatusSrcdata.MagneticZ					= SpotStatusData.qmc5883lData.Z_Now;
+		AepSpotStatusSrcdata.MagneticDiff					= SpotStatusData.qmc5883lDiff.BackVal_Diff > 65535 ? 65535 : SpotStatusData.qmc5883lDiff.BackVal_Diff;
+		AepSpotStatusSrcdata.RadarDistance					= SpotStatusData.radarData.DisVal;
+		AepSpotStatusSrcdata.RadarStrength					= SpotStatusData.radarData.MagVal;
+		AepSpotStatusSrcdata.RadarCoverCount				= SpotStatusData.radarData.Diff_v2;
+		AepSpotStatusSrcdata.RadarDiff					= SpotStatusData.radarData.Diff;
+		AepSpotStatusSrcdata.NBRssi						= TCFG_Utility_Get_Nbiot_Rssi_IntVal();
+		AepSpotStatusSrcdata.NBSnr						= TCFG_Utility_Get_Nbiot_RadioSNR();
+		AepSpotStatusSrcdata.MCUTemp						= TCFG_Utility_Get_Device_Temperature();
+		AepSpotStatusSrcdata.QMCTemp						= Qmc5883lData.temp_now;
+		AepSpotStatusSrcdata.MagneticBackX					= Qmc5883lData.X_Back;
+		AepSpotStatusSrcdata.MagneticBackY					= Qmc5883lData.Y_Back;
+		AepSpotStatusSrcdata.MagneticBackZ					= Qmc5883lData.Z_Back;
+		AepSpotStatusSrcdata.Debugval						= SpotStatusData.radarData.timedomain_dif;
+		memset((void *)AepSpotStatusString.Radarval, 0x0, sizeof(AepSpotStatusString.Radarval));
+		memset((void *)AepSpotStatusString.Radarback, 0x0, sizeof(AepSpotStatusString.Radarback));
+		for (i = 0; i < 15; i++) {
+			sprintf(AepSpotStatusString.Radarval + Radarvallen, "%d,", radar_targetinfo.pMagNow[i+2]>255?255:radar_targetinfo.pMagNow[i+2]);
+			sprintf(AepSpotStatusString.Radarback + Radarbacklen, "%d,", radar_targetinfo.pMagBG[i+2]>255?255:radar_targetinfo.pMagBG[i+2]);
+			Radarvallen = strlen((const char*)AepSpotStatusString.Radarval);
+			Radarbacklen = strlen((const char*)AepSpotStatusString.Radarback);
+		}
+		i = 15;
+		sprintf(AepSpotStatusString.Radarval + Radarvallen, "%d", radar_targetinfo.pMagNow[i+2]>255?255:radar_targetinfo.pMagNow[i+2]);
+		sprintf(AepSpotStatusString.Radarback + Radarbacklen, "%d", radar_targetinfo.pMagBG[i+2]>255?255:radar_targetinfo.pMagBG[i+2]);
+		Radarvallen = strlen((const char*)AepSpotStatusString.Radarval);
+		Radarbacklen = strlen((const char*)AepSpotStatusString.Radarback);
+		AepSpotStatusSrcdata.Radarval.len					= Radarvallen;
+		AepSpotStatusSrcdata.Radarval.str					= AepSpotStatusString.Radarval;
+		AepSpotStatusSrcdata.Radarback.len					= Radarbacklen;
+		AepSpotStatusSrcdata.Radarback.str					= AepSpotStatusString.Radarback;
+		
+		aepCodeResult = CTWing_CodeDataReportByIdToBytes(&CTWingClientHandler, AEP_SERVICE_ID_SPOTSTATUSDATA, &AepSpotStatusSrcdata);
+		
+		NET_CTWing_Message_SendDataEnqueue((unsigned char *)aepCodeResult.str, aepCodeResult.len);
+		NETCTWingNeedSendCode.LongStatus = 0;
+		Inspect_Message_SpotStatusOffSet();
+		NET_NBIOT_CTWingSentDataAfterExexution();
+#endif
+	}
+	/* CTWING WORK INFO DATA ENQUEUE */
+	else if (NETCTWingNeedSendCode.WorkInfo) {
+#if NBCTWING_SENDCODE_WORK_INFO
+		AepBytes aepCodeResult;
+		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
+			return;
+		}
+		CTWing_Message_Operate_Creat_Work_Info(&CTWingClientHandler, &AepWorkInfoSrcdata);
+		
+		aepCodeResult = CTWing_CodeDataReportByIdToBytes(&CTWingClientHandler, AEP_SERVICE_ID_WORKINFO, &AepWorkInfoSrcdata);
+		
+		NET_CTWing_Message_SendDataEnqueue((unsigned char *)aepCodeResult.str, aepCodeResult.len);
+		NETCTWingNeedSendCode.WorkInfo = 0;
+		NET_NBIOT_CTWingSentDataAfterExexution();
+#endif
+	}
+	/* CTWING BASIC INFO DATA ENQUEUE */
+	else if (NETCTWingNeedSendCode.BasicInfo) {
+#if NBCTWING_SENDCODE_BASIC_INFO
+		AepBytes aepCodeResult;
+		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
+			return;
+		}
+		CTWing_Message_Operate_Creat_Basic_Info(&CTWingClientHandler, &AepBasicInfoSrcdata);
+		
+		aepCodeResult = CTWing_CodeDataReportByIdToBytes(&CTWingClientHandler, AEP_SERVICE_ID_BASICINFO, &AepBasicInfoSrcdata);
+		
+		NET_CTWing_Message_SendDataEnqueue((unsigned char *)aepCodeResult.str, aepCodeResult.len);
+		NETCTWingNeedSendCode.BasicInfo = 0;
+		NET_NBIOT_CTWingSentDataAfterExexution();
+#endif
+	}
+	/* CTWING DYNAMIC INFO DATA ENQUEUE */
+	else if (NETCTWingNeedSendCode.DynamicInfo) {
+#if NBCTWING_SENDCODE_DYNAMIC_INFO
+		AepBytes aepCodeResult;
+		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
+			return;
+		}
+		CTWing_Message_Operate_Creat_Dynamic_Info(&CTWingClientHandler, &AepDynamicInfoSrcdata);
+		
+		aepCodeResult = CTWing_CodeDataReportByIdToBytes(&CTWingClientHandler, AEP_SERVICE_ID_DYNAMICINFO, &AepDynamicInfoSrcdata);
+		
+		NET_CTWing_Message_SendDataEnqueue((unsigned char *)aepCodeResult.str, aepCodeResult.len);
+		NETCTWingNeedSendCode.DynamicInfo = 0;
+		NET_NBIOT_CTWingSentDataAfterExexution();
+#endif
+	}
+	/* CTWING RESPONSE INFO DATA ENQUEUE */
+	else if (NETCTWingNeedSendCode.ResponseInfo) {
+#if NBCTWING_SENDCODE_RESPONSE_INFO
+		NETCTWingNeedSendCode.ResponseInfo = 0;
+#endif
+	}
+#endif
 	
 #else
 	#error NETPROTOCAL Define Error

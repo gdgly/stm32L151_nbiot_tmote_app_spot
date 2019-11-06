@@ -17,11 +17,23 @@
 #include "platform_config.h"
 #include "platform_map.h"
 #include "stm32l1xx_config.h"
+#include "radar_api.h"
+#include "tmesh_algorithm.h"
 #include "delay.h"
 #include "usart.h"
 #include "string.h"
 #include "stdlib.h"
 #include "ctype.h"
+
+AepSpotStatusData				AepSpotStatusSrcdata;
+AepWorkInfo					AepWorkInfoSrcdata;
+AepBasicInfo					AepBasicInfoSrcdata;
+AepDynamicInfo					AepDynamicInfoSrcdata;
+
+AepSpotStatusDataString			AepSpotStatusString;
+AepWorkInfoDataString			AepWorkInfoString;
+AepBasicInfoDataString			AepBasicInfoString;
+AepDynamicInfoDataString			AepDynamicInfoString;
 
 uint16_t aep_htons(uint16_t source)
 {
@@ -124,6 +136,142 @@ void StrToHex(char *pbDest, char *pbSrc, int nLen)
 		
 		pbDest[i] = s1*16 + s2;
 	}
+}
+
+/**********************************************************************************************************
+ @Function			void CTWing_Message_Operate_Creat_Work_Info(CTWING_ClientsTypeDef* pClient, AepWorkInfo * srcStruct)
+ @Description			CTWing_Message_Operate_Creat_Work_Info		: 填写WorkInfo数据
+ @Input				pClient								: CTWing客户端实例
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+void CTWing_Message_Operate_Creat_Work_Info(CTWING_ClientsTypeDef* pClient, AepWorkInfo * srcStruct)
+{
+	sprintf(srcStruct->SN, "%08x", TCFG_EEPROM_Get_MAC_SN());
+	srcStruct->Sense			= TCFG_EEPROM_GetSavedSensitivity();
+	srcStruct->WorkMode.str		= TCFG_EEPROM_Get_WorkMode_String();
+	srcStruct->WorkMode.len		= strlen((const char*)srcStruct->WorkMode.str);
+	srcStruct->RfChannel		= TCFG_EEPROM_GetRfChannel();
+	srcStruct->Range			= TCFG_Utility_Get_DistanceRange();
+	srcStruct->Earfcn			= TCFG_Utility_Get_Nbiot_RadioEARFCN();
+	srcStruct->Tac				= TCFG_Utility_Get_Nbiot_NetworkRegStatusTac();
+	srcStruct->Ci				= TCFG_Utility_Get_Nbiot_NetworkRegStatusCellID();
+	memset((void *)AepWorkInfoString.Cmdcnt, 0x0, sizeof(AepWorkInfoString.Cmdcnt));
+	sprintf(AepWorkInfoString.Cmdcnt, "%d.%d", TCFG_EEPROM_GetRFCmdCnt(), TCFG_EEPROM_GetNBCmdCnt());
+	srcStruct->Cmdcnt.str		= AepWorkInfoString.Cmdcnt;
+	srcStruct->Cmdcnt.len		= strlen((const char*)srcStruct->Cmdcnt.str);
+	memset((void *)AepWorkInfoString.Nbruntime, 0x0, sizeof(AepWorkInfoString.Nbruntime));
+	sprintf(AepWorkInfoString.Nbruntime, "%d.%d", TCFG_Utility_GetCoapConnectTime(), TCFG_Utility_GetCoapIdleTime());
+	srcStruct->Nbruntime.str		= AepWorkInfoString.Nbruntime;
+	srcStruct->Nbruntime.len		= strlen((const char*)srcStruct->Nbruntime.str);
+	srcStruct->APN.str			= TCFG_Utility_Get_Nbiot_PDPContext_APN();
+	srcStruct->APN.len			= strlen((const char*)srcStruct->APN.str);
+	memset((void *)AepWorkInfoString.Coef, 0x0, sizeof(AepWorkInfoString.Coef));
+	sprintf(AepWorkInfoString.Coef, "%d.%d.%d", TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
+	srcStruct->Coef.str			= AepWorkInfoString.Coef;
+	srcStruct->Coef.len			= strlen((const char*)srcStruct->Coef.str);
+	srcStruct->Rollinit			= TCFG_EEPROM_GetRollingOverInitSensor();
+	srcStruct->RadioRv			= TCFG_Utility_Get_RadioGatewayNearby();
+}
+
+/**********************************************************************************************************
+ @Function			void CTWing_Message_Operate_Creat_Basic_Info(CTWING_ClientsTypeDef* pClient, AepBasicInfo * srcStruct)
+ @Description			CTWing_Message_Operate_Creat_Basic_Info		: 填写BasicInfo数据
+ @Input				pClient								: CTWing客户端实例
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+void CTWing_Message_Operate_Creat_Basic_Info(CTWING_ClientsTypeDef* pClient, AepBasicInfo * srcStruct)
+{
+	sprintf(srcStruct->SN, "%08x", TCFG_EEPROM_Get_MAC_SN());
+	memset((void *)AepBasicInfoString.ModelType, 0x0, sizeof(AepBasicInfoString.ModelType));
+	sprintf(AepBasicInfoString.ModelType, "%d.1", TCFG_Utility_Get_Mvb_ModelType());
+	srcStruct->ModelType.str		= AepBasicInfoString.ModelType;
+	srcStruct->ModelType.len		= strlen((const char*)srcStruct->ModelType.str);
+	srcStruct->Vender.str		= TCFG_EEPROM_Get_Vender_String();
+	srcStruct->Vender.len		= strlen((const char*)srcStruct->Vender.str);
+	srcStruct->Hard.str			= TCFG_Utility_Get_Hardwear_Version_String();
+	srcStruct->Hard.len			= strlen((const char*)srcStruct->Hard.str);
+	memset((void *)AepBasicInfoString.Soft, 0x0, sizeof(AepBasicInfoString.Soft));
+	sprintf(AepBasicInfoString.Soft, "%d:%d.%d", TCFG_EEPROM_GetBootVersion(), TCFG_Utility_Get_Major_Softnumber(), TCFG_Utility_Get_Sub_Softnumber());
+	srcStruct->Soft.str			= AepBasicInfoString.Soft;
+	srcStruct->Soft.len			= strlen((const char*)srcStruct->Soft.str);
+	srcStruct->Sim.str			= TCFG_Utility_Get_Nbiot_Iccid_String();
+	srcStruct->Sim.len			= strlen((const char*)srcStruct->Sim.str);
+	srcStruct->Imei.str			= TCFG_Utility_Get_Nbiot_Imei_String();
+	srcStruct->Imei.len			= strlen((const char*)srcStruct->Imei.str);
+	srcStruct->Imsi.str			= TCFG_Utility_Get_Nbiot_Imsi_String();
+	srcStruct->Imsi.len			= strlen((const char*)srcStruct->Imsi.str);
+	srcStruct->Nbvender.str		= TCFG_Utility_Get_Nbiot_Manufacturer();
+	srcStruct->Nbvender.len		= strlen((const char*)srcStruct->Nbvender.str);
+	srcStruct->Nbmode.str		= TCFG_Utility_Get_Nbiot_Manufacturermode();
+	srcStruct->Nbmode.len		= strlen((const char*)srcStruct->Nbmode.str);
+	memset((void *)AepBasicInfoString.Boot, 0x0, sizeof(AepBasicInfoString.Boot));
+	sprintf(AepBasicInfoString.Boot, "%d.%d.%d", TCFG_Utility_Get_SoftResetFlag(), TCFG_Utility_Get_Device_BootCount(), TCFG_EEPROM_GetDeviceRbtMode());
+	srcStruct->Boot.str			= AepBasicInfoString.Boot;
+	srcStruct->Boot.len			= strlen((const char*)srcStruct->Boot.str);
+	srcStruct->Ver.str			= TCFG_Utility_Get_Nbiot_ModelVersion();
+	srcStruct->Ver.len			= strlen((const char*)srcStruct->Ver.str);
+	srcStruct->Rmold			= Radar_GetModel();
+	srcStruct->Rvcc			= Radar_Get_RadarVcc();
+}
+
+/**********************************************************************************************************
+ @Function			void CTWing_Message_Operate_Creat_Dynamic_Info(CTWING_ClientsTypeDef* pClient, AepDynamicInfo * srcStruct)
+ @Description			CTWing_Message_Operate_Creat_Dynamic_Info	: 填写DynamicInfo数据
+ @Input				pClient								: CTWing客户端实例
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+void CTWing_Message_Operate_Creat_Dynamic_Info(CTWING_ClientsTypeDef* pClient, AepDynamicInfo * srcStruct)
+{
+	sprintf(srcStruct->SN, "%08x", TCFG_EEPROM_Get_MAC_SN());
+	srcStruct->RT				= TCFG_Utility_Get_Run_Time() / 60 / 60;
+	srcStruct->Batt			= TCFG_Utility_Get_Device_Batt_ShortVal();
+	memset((void *)AepDynamicInfoString.RAlib, 0x0, sizeof(AepDynamicInfoString.RAlib));
+	sprintf(AepDynamicInfoString.RAlib, "[%d,%d]", TCFG_Utility_Get_RadarLibNum(), TCFG_Utility_Get_AlgoLibNum());
+	srcStruct->RAlib.str		= AepDynamicInfoString.RAlib;
+	srcStruct->RAlib.len		= strlen((const char*)srcStruct->RAlib.str);
+	srcStruct->Rcnt			= TCFG_GetRadarCount();
+	srcStruct->Temp			= TCFG_Utility_Get_Device_Temperature();
+	srcStruct->Qmcrbt			= TCFG_Utility_Get_ReInitModuleCount();
+	memset((void *)AepDynamicInfoString.Nbrun, 0x0, sizeof(AepDynamicInfoString.Nbrun));
+	sprintf(AepDynamicInfoString.Nbrun, "[%d,%d,%d,%d,%d]", TCFG_Utility_Get_Nbiot_BootCount(), TCFG_Utility_Get_Nbiot_SentCount(), TCFG_Utility_Get_Nbiot_RecvCount(), TCFG_Utility_Get_NBIot_SentCountLimit(), (TCFG_EEPROM_GetNbiotHeart() * 15));
+	srcStruct->Nbrun.str		= AepDynamicInfoString.Nbrun;
+	srcStruct->Nbrun.len		= strlen((const char*)srcStruct->Nbrun.str);
+	srcStruct->Indelay			= TCFG_EEPROM_GetCarInDelay();
+	memset((void *)AepDynamicInfoString.Gain, 0x0, sizeof(AepDynamicInfoString.Gain));
+	sprintf(AepDynamicInfoString.Gain, "[%d,%d]", TCFG_Utility_Get_GainCover(), TCFG_EEPROM_GetRadarGain());
+	srcStruct->Gain.str			= AepDynamicInfoString.Gain;
+	srcStruct->Gain.len			= strlen((const char*)srcStruct->Gain.str);
+	srcStruct->Smode			= TCFG_EEPROM_GetSenseMode();
+	srcStruct->Sinter			= Radar_Get_SampleInterval();
+	srcStruct->hpass			= tradar_get_highpass();
+	memset((void *)AepDynamicInfoString.x, 0x0, sizeof(AepDynamicInfoString.x));
+	sprintf(AepDynamicInfoString.x, "[%d,%d,%d,%d,%d]", TCFG_EEPROM_GetMagManualBack(0, TCFG_X_AXIS),
+											  TCFG_EEPROM_GetMagManualBack(1, TCFG_X_AXIS),
+											  TCFG_EEPROM_GetMagManualBack(2, TCFG_X_AXIS),
+											  TCFG_EEPROM_GetMagManualBack(3, TCFG_X_AXIS),
+											  TCFG_EEPROM_GetMagManualBack(4, TCFG_X_AXIS));
+	srcStruct->x.str			= AepDynamicInfoString.x;
+	srcStruct->x.len			= strlen((const char*)srcStruct->x.str);
+	memset((void *)AepDynamicInfoString.y, 0x0, sizeof(AepDynamicInfoString.y));
+	sprintf(AepDynamicInfoString.y, "[%d,%d,%d,%d,%d]", TCFG_EEPROM_GetMagManualBack(0, TCFG_Y_AXIS),
+											  TCFG_EEPROM_GetMagManualBack(1, TCFG_Y_AXIS),
+											  TCFG_EEPROM_GetMagManualBack(2, TCFG_Y_AXIS),
+											  TCFG_EEPROM_GetMagManualBack(3, TCFG_Y_AXIS),
+											  TCFG_EEPROM_GetMagManualBack(4, TCFG_Y_AXIS));
+	srcStruct->y.str			= AepDynamicInfoString.y;
+	srcStruct->y.len			= strlen((const char*)srcStruct->y.str);
+	
+	memset((void *)AepDynamicInfoString.z, 0x0, sizeof(AepDynamicInfoString.z));
+	sprintf(AepDynamicInfoString.z, "[%d,%d,%d,%d,%d]", Qmc5883lHistoryBack.Z_Back[0],
+											  Qmc5883lHistoryBack.Z_Back[1],
+											  Qmc5883lHistoryBack.Z_Back[2],
+											  Qmc5883lHistoryBack.Z_Back[3],
+											  Qmc5883lHistoryBack.Z_Back[4]);
+	srcStruct->z.str			= AepDynamicInfoString.z;
+	srcStruct->z.len			= strlen((const char*)srcStruct->z.str);
 }
 
 /**********************************************************************************************************
@@ -569,61 +717,104 @@ AepString CTWing_DynamicInfo_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepD
 	return resultStruct;
 }
 
+/**********************************************************************************************************
+ @Function			AepString CTWing_CodeDataReportByIdToStr(CTWING_ClientsTypeDef* pClient, int serviceId, void * srcStruct)
+ @Description			CTWing_CodeDataReportByIdToStr			: 序列化数据包
+ @Input				pClient								: CTWing客户端实例
+					serviceId
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+AepString CTWing_CodeDataReportByIdToStr(CTWING_ClientsTypeDef* pClient, int serviceId, void * srcStruct)
+{
+	if (serviceId == AEP_SERVICE_ID_SPOTSTATUSDATA) {
+		return CTWing_SpotStatusData_CodeDataReport(pClient, *(AepSpotStatusData*)srcStruct);
+	}
+	else if (serviceId == AEP_SERVICE_ID_WORKINFO) {
+		return CTWing_WorkInfo_CodeDataReport(pClient, *(AepWorkInfo*)srcStruct);
+	}
+	else if (serviceId == AEP_SERVICE_ID_BASICINFO) {
+		return CTWing_BasicInfo_CodeDataReport(pClient, *(AepBasicInfo*)srcStruct);
+	}
+	else if (serviceId == AEP_SERVICE_ID_DYNAMICINFO) {
+		return CTWing_DynamicInfo_CodeDataReport(pClient, *(AepDynamicInfo*)srcStruct);
+	}
+	else {
+		AepString result = {0};
+		return result;
+	}
+}
 
+/**********************************************************************************************************
+ @Function			AepBytes CTWing_CodeDataReportByIdToBytes(CTWING_ClientsTypeDef* pClient, int serviceId, void * srcStruct)
+ @Description			CTWing_CodeDataReportByIdToBytes			: 序列化数据包
+ @Input				pClient								: CTWing客户端实例
+					serviceId
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+AepBytes CTWing_CodeDataReportByIdToBytes(CTWING_ClientsTypeDef* pClient, int serviceId, void * srcStruct)
+{
+	AepString tempStr = CTWing_CodeDataReportByIdToStr(pClient, serviceId, srcStruct);
+	AepBytes result = {0};
+	result.len = tempStr.len / 2;
+	if (result.len > 0) {
+		memset((void *)pClient->DataProcessStack, 0x0, sizeof(pClient->DataProcessStack));
+		result.str = (char *)pClient->DataProcessStack;
+		StrToHex(result.str, tempStr.str, result.len);
+	}
+	
+	return result;
+}
 
+/**********************************************************************************************************
+ @Function			AepString CTWing_CodeDataReportByIdentifierToStr(CTWING_ClientsTypeDef* pClient, char* serviceIdentifier, void * srcStruct)
+ @Description			CTWing_CodeDataReportByIdentifierToStr		: 序列化数据包
+ @Input				pClient								: CTWing客户端实例
+					serviceIdentifier
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+AepString CTWing_CodeDataReportByIdentifierToStr(CTWING_ClientsTypeDef* pClient, char* serviceIdentifier, void * srcStruct)
+{
+	if (strcmp(serviceIdentifier, AEP_SERVICE_ENTIFIER_SPOTSTATUSDATA) == 0) {
+		return CTWing_SpotStatusData_CodeDataReport(pClient, *(AepSpotStatusData*)srcStruct);
+	}
+	else if (strcmp(serviceIdentifier, AEP_SERVICE_ENTIFIER_WORKINFO) == 0) {
+		return CTWing_WorkInfo_CodeDataReport(pClient, *(AepWorkInfo*)srcStruct);
+	}
+	else if (strcmp(serviceIdentifier, AEP_SERVICE_ENTIFIER_BASICINFO) == 0) {
+		return CTWing_BasicInfo_CodeDataReport(pClient, *(AepBasicInfo*)srcStruct);
+	}
+	else if (strcmp(serviceIdentifier, AEP_SERVICE_ENTIFIER_DYNAMICINFO) == 0) {
+		return CTWing_DynamicInfo_CodeDataReport(pClient, *(AepDynamicInfo*)srcStruct);
+	}
+	else {
+		AepString result = {0};
+		return result;
+	}
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/**********************************************************************************************************
+ @Function			AepBytes CTWing_CodeDataReportByIdentifierToBytes(CTWING_ClientsTypeDef* pClient, char* serviceIdentifier, void * srcStruct)
+ @Description			CTWing_CodeDataReportByIdentifierToBytes	: 序列化数据包
+ @Input				pClient								: CTWing客户端实例
+					serviceIdentifier
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+AepBytes CTWing_CodeDataReportByIdentifierToBytes(CTWING_ClientsTypeDef* pClient, char* serviceIdentifier, void * srcStruct)
+{
+	AepString tempStr = CTWing_CodeDataReportByIdentifierToStr(pClient, serviceIdentifier, srcStruct);
+	AepBytes result = {0};
+	result.len = tempStr.len / 2;
+	if (result.len > 0) {
+		memset((void *)pClient->DataProcessStack, 0x0, sizeof(pClient->DataProcessStack));
+		result.str = (char *)pClient->DataProcessStack;
+		StrToHex(result.str, tempStr.str, result.len);
+	}
+	
+	return result;
+}
 
 /********************************************** END OF FLEE **********************************************/

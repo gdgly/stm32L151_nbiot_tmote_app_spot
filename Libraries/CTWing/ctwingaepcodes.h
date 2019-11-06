@@ -31,26 +31,13 @@ typedef struct AepStrStruct
 
 typedef AepString AepBytes;
 
+typedef struct AepSpotStatusDataStringStruct
+{
+	char				Radarval[64];
+	char				Radarback[64];
+} AepSpotStatusDataString;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+extern AepSpotStatusDataString	AepSpotStatusString;
 
 typedef struct AepSpotStatusDataStruct
 {
@@ -77,7 +64,18 @@ typedef struct AepSpotStatusDataStruct
 	AepString			Radarback;
 } AepSpotStatusData;
 
+extern AepSpotStatusData			AepSpotStatusSrcdata;
+
 AepString CTWing_SpotStatusData_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepSpotStatusData srcStruct);
+
+typedef struct AepWorkInfoDataStringStruct
+{
+	char				Cmdcnt[12];
+	char				Nbruntime[22];
+	char				Coef[18];
+} AepWorkInfoDataString;
+
+extern AepWorkInfoDataString		AepWorkInfoString;
 
 typedef struct AepWorkInfoStruct
 {
@@ -97,7 +95,18 @@ typedef struct AepWorkInfoStruct
 	unsigned char		RadioRv;
 } AepWorkInfo;
 
+extern AepWorkInfo				AepWorkInfoSrcdata;
+
 AepString CTWing_WorkInfo_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepWorkInfo srcStruct);
+
+typedef struct AepBasicInfoDataStringStruct
+{
+	char				ModelType[8];
+	char				Soft[12];
+	char				Boot[18];
+} AepBasicInfoDataString;
+
+extern AepBasicInfoDataString		AepBasicInfoString;
 
 typedef struct AepBasicInfoStruct
 {
@@ -117,7 +126,21 @@ typedef struct AepBasicInfoStruct
 	unsigned char		Rvcc;
 } AepBasicInfo;
 
+extern AepBasicInfo				AepBasicInfoSrcdata;
+
 AepString CTWing_BasicInfo_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepBasicInfo srcStruct);
+
+typedef struct AepDynamicInfoDataStringStruct
+{
+	char				RAlib[14];
+	char				Nbrun[32];
+	char				Gain[14];
+	char				x[37];
+	char				y[37];
+	char				z[37];
+} AepDynamicInfoDataString;
+
+extern AepDynamicInfoDataString	AepDynamicInfoString;
 
 typedef struct AepDynamicInfoStruct
 {
@@ -139,40 +162,18 @@ typedef struct AepDynamicInfoStruct
 	AepString			z;
 } AepDynamicInfo;
 
-AepString CTWing_DynamicInfo_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepDynamicInfo srcStruct);
+extern AepDynamicInfo			AepDynamicInfoSrcdata;
 
+AepString CTWing_CodeDataReportByIdToStr(CTWING_ClientsTypeDef* pClient, int serviceId, void * srcStruct);
 
+AepBytes CTWing_CodeDataReportByIdToBytes(CTWING_ClientsTypeDef* pClient, int serviceId, void * srcStruct);
 
+AepString CTWing_CodeDataReportByIdentifierToStr(CTWING_ClientsTypeDef* pClient, char* serviceIdentifier, void * srcStruct);
 
+AepBytes CTWing_CodeDataReportByIdentifierToBytes(CTWING_ClientsTypeDef* pClient, char* serviceIdentifier, void * srcStruct);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+void CTWing_Message_Operate_Creat_Work_Info(CTWING_ClientsTypeDef* pClient, AepWorkInfo * srcStruct);
+void CTWing_Message_Operate_Creat_Basic_Info(CTWING_ClientsTypeDef* pClient, AepBasicInfo * srcStruct);
+void CTWing_Message_Operate_Creat_Dynamic_Info(CTWING_ClientsTypeDef* pClient, AepDynamicInfo * srcStruct);
 
 #endif /* __CTWING_AEPCODES_H */

@@ -1473,7 +1473,9 @@ void NET_CTWING_NBIOT_Event_ParameterCheckOut(CTWING_ClientsTypeDef* pClient)
 void NET_CTWING_NBIOT_Event_SendData(CTWING_ClientsTypeDef* pClient)
 {
 	NBIOT_StatusTypeDef NBStatus = NBStatus;
+#if !CTWING_AEPMODULE_MODE
 	NBIOT_ByteStreamUploadHead CTWingUpHead;
+#endif
 #if CTWING_SENDDATA_NQMGSCHECK_TYPE
 	int SendSentNum = 0;
 #endif
@@ -1540,6 +1542,7 @@ void NET_CTWING_NBIOT_Event_SendData(CTWING_ClientsTypeDef* pClient)
 		SendSentNum = pClient->LWM2MStack->NBIotStack->Parameter.coapSendMessage.sent;
 #endif
 		
+#if !CTWING_AEPMODULE_MODE
 		CTWingUpHead.CMDType		= CTWING_BYTESTREAM_UPLOAD_CMDTYPE;
 		CTWingUpHead.DatasetID		= CTWING_BYTESTREAM_UPLOAD_DATASETID;
 		CTWingUpHead.StreamLen		= pClient->LWM2MStack->NBIotStack->Sendlen + sizeof(CTWingUpHead.PayloadLen);
@@ -1566,6 +1569,31 @@ void NET_CTWING_NBIOT_Event_SendData(CTWING_ClientsTypeDef* pClient)
 #endif
 			return;
 		}
+#endif
+		
+#if CTWING_AEPMODULE_MODE
+		/* 发送负载数据 */
+		if ((NBStatus = NBIOT_Neul_NBxx_SendCOAPPayload(pClient->LWM2MStack->NBIotStack)) == NBIOT_OK) {
+			/* Dictate execute is Success */
+			pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent = SEND_DATA;
+#ifdef CTWING_DEBUG_LOG_RF_PRINT
+			CTWING_DEBUG_LOG_PRINTF("CTWing Send Payload Ok");
+#endif
+		}
+		else {
+			/* Dictate execute is Fail */
+			CTWING_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, SEND_DATA);
+			
+#ifdef CTWING_DEBUG_LOG_RF_PRINT
+		#if NBIOT_PRINT_ERROR_CODE_TYPE
+			CTWING_DEBUG_LOG_PRINTF("CTWing Send Payload Fail ECde %d", NBStatus);
+		#else
+			CTWING_DEBUG_LOG_PRINTF("CTWing Send Payload Fail");
+		#endif
+#endif
+			return;
+		}
+#endif
 		
 #if CTWING_SENDDATA_NQMGSCHECK_TYPE
 		if (NBIOT_Neul_NBxx_QuerySendMessageCOAPPayload(pClient->LWM2MStack->NBIotStack) == NBIOT_OK) {
@@ -1721,7 +1749,9 @@ void NET_CTWING_NBIOT_Event_SendDataRANormal(CTWING_ClientsTypeDef* pClient)
 	char* RANormal	= "0x0100";
 	char* RAIdle	= "0x0101";
 	char* RAState	= RAIdle;
+#if !CTWING_AEPMODULE_MODE
 	NBIOT_ByteStreamUploadHead CTWingUpHead;
+#endif
 	
 #if CTWING_SENDDATA_NQMGSCHECK_TYPE
 	int SendSentNum = 0;
@@ -1799,6 +1829,8 @@ void NET_CTWING_NBIOT_Event_SendDataRANormal(CTWING_ClientsTypeDef* pClient)
 			RAState = RAIdle;
 		}
 #endif
+		
+#if !CTWING_AEPMODULE_MODE
 		CTWingUpHead.CMDType		= CTWING_BYTESTREAM_UPLOAD_CMDTYPE;
 		CTWingUpHead.DatasetID		= CTWING_BYTESTREAM_UPLOAD_DATASETID;
 		CTWingUpHead.StreamLen		= pClient->LWM2MStack->NBIotStack->Sendlen + sizeof(CTWingUpHead.PayloadLen);
@@ -1826,6 +1858,32 @@ void NET_CTWING_NBIOT_Event_SendDataRANormal(CTWING_ClientsTypeDef* pClient)
 #endif
 			return;
 		}
+#endif
+		
+#if CTWING_AEPMODULE_MODE
+		/* 发送负载数据 */
+		if ((NBStatus = NBIOT_Neul_NBxx_SendCOAPPayloadFlag(pClient->LWM2MStack->NBIotStack, RAState)) == NBIOT_OK) {
+			/* Dictate execute is Success */
+			pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent = SEND_DATA_RA_NORMAL;
+			NBIOT_COAP_RA_NORMAL_SET_STATE(pClient->LWM2MStack->NBIotStack, false);
+#ifdef CTWING_DEBUG_LOG_RF_PRINT
+			CTWING_DEBUG_LOG_PRINTF("CTWing Send Payload Ok");
+#endif
+		}
+		else {
+			/* Dictate execute is Fail */
+			CTWING_NBIOT_DictateEvent_FailExecute(pClient, HARDWARE_REBOOT, STOP_MODE, SEND_DATA_RA_NORMAL);
+			
+#ifdef CTWING_DEBUG_LOG_RF_PRINT
+		#if NBIOT_PRINT_ERROR_CODE_TYPE
+			CTWING_DEBUG_LOG_PRINTF("CTWing Send Payload Fail ECde %d", NBStatus);
+		#else
+			CTWING_DEBUG_LOG_PRINTF("CTWing Send Payload Fail");
+		#endif
+#endif
+			return;
+		}
+#endif
 		
 #if CTWING_SENDDATA_NQMGSCHECK_TYPE
 		if (NBIOT_Neul_NBxx_QuerySendMessageCOAPPayload(pClient->LWM2MStack->NBIotStack) == NBIOT_OK) {
