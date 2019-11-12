@@ -41,6 +41,7 @@ extern AepSpotStatusDataString	AepSpotStatusString;
 
 typedef struct AepSpotStatusDataStruct
 {
+	char				SN[8];
 	unsigned int		DateTime;
 	unsigned short		SpotCount;
 	unsigned char		SpotStatus;

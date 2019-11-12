@@ -287,7 +287,7 @@ AepString CTWing_SpotStatusData_CodeDataReport(CTWING_ClientsTypeDef* pClient, A
 	AepString resultStruct;
 	
 	unsigned short tempLen;
-	unsigned short payloadLen = 31 + (srcStruct.Radarval.len + 2) + (srcStruct.Radarback.len + 2);
+	unsigned short payloadLen = 39 + (srcStruct.Radarval.len + 2) + (srcStruct.Radarback.len + 2);
 	
 	memset((void *)pClient->AepMallocProcessStack, 0x0, sizeof(pClient->AepMallocProcessStack));
 	
@@ -317,6 +317,9 @@ AepString CTWing_SpotStatusData_CodeDataReport(CTWING_ClientsTypeDef* pClient, A
 	tempLen = aep_htons(payloadLen);
 	HexToStr(index, (char *)&tempLen, 2);
 	index += 2 * 2;
+	
+	HexToStr(index, (char *)srcStruct.SN, 8);
+	index += 8 * 2;
 	
 	HexToStr(index, (char *)&srcStruct.DateTime, 4);
 	index += 4 * 2;

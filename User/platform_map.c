@@ -2879,20 +2879,37 @@ int TCFG_Utility_Get_Nbiot_RadioECL(void)
 int TCFG_Utility_Get_Nbiot_RadioSNR(void)
 {
 	int nbRadioSnr = 0;
+	int lastval = 0;
 	
 #if NETPROTOCAL == NETCOAP
-	nbRadioSnr = NbiotClientHandler.Parameter.statisticsRADIO.SNR >  127 ?  127 : NbiotClientHandler.Parameter.statisticsRADIO.SNR;
-	nbRadioSnr = NbiotClientHandler.Parameter.statisticsRADIO.SNR < -127 ? -127 : NbiotClientHandler.Parameter.statisticsRADIO.SNR;
+	lastval = NbiotClientHandler.Parameter.statisticsRADIO.SNR % 10;
+	nbRadioSnr = (NbiotClientHandler.Parameter.statisticsRADIO.SNR >=  127) ?  127 : NbiotClientHandler.Parameter.statisticsRADIO.SNR;
+	NbiotClientHandler.Parameter.statisticsRADIO.SNR = nbRadioSnr;
+	nbRadioSnr = (NbiotClientHandler.Parameter.statisticsRADIO.SNR <= -128) ? -128 : NbiotClientHandler.Parameter.statisticsRADIO.SNR;
+	NbiotClientHandler.Parameter.statisticsRADIO.SNR = nbRadioSnr;
 #elif NETPROTOCAL == NETMQTTSN
-	nbRadioSnr = MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR >  127 ?  127 : MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR;
-	nbRadioSnr = MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR < -127 ? -127 : MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR;
+	lastval = MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR % 10;
+	nbRadioSnr = (MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR >=  127) ?  127 : MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR;
+	MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR = nbRadioSnr;
+	nbRadioSnr = (MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR <= -128) ? -128 : MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR;
+	MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsRADIO.SNR = nbRadioSnr;
 #elif NETPROTOCAL == NETONENET
-	nbRadioSnr = OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR >  127 ?  127 : OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR;
-	nbRadioSnr = OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR < -127 ? -127 : OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR;
+	lastval = OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR % 10;
+	nbRadioSnr = (OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR >=  127) ?  127 : OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR;
+	OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR = nbRadioSnr;
+	nbRadioSnr = (OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR <= -128) ? -128 : OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR;
+	OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR = nbRadioSnr;
 #elif NETPROTOCAL == NETCTWING
-	nbRadioSnr = CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR >  127 ?  127 : CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR;
-	nbRadioSnr = CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR < -127 ? -127 : CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR;
+	lastval = CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR % 10;
+	nbRadioSnr = (CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR >=  127) ?  127 : CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR;
+	CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR = nbRadioSnr;
+	nbRadioSnr = (CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR <= -128) ? -128 : CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR;
+	CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsRADIO.SNR = nbRadioSnr;
 #endif
+	
+	if (lastval < 0) lastval = -lastval;
+	if (nbRadioSnr ==  127) nbRadioSnr -= lastval;
+	if (nbRadioSnr == -128) nbRadioSnr += lastval;
 	
 	return nbRadioSnr;
 }

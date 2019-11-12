@@ -2,6 +2,8 @@
 > ##### Copyright (C) 2019 Movebroad Version:20.150 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2019-11-12 :
+	* 修复SNR数据范围超出进行取值优化。
 * 2019-11-06 :
 	* CTWING物模型完成。
 * 2019-11-04 :

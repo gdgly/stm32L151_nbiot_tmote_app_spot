@@ -949,6 +949,7 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		int Radarbacklen = 0;
 		int i = 0;
 		Inspect_Message_SpotStatusDequeue(&SpotStatusData);
+		sprintf(AepSpotStatusSrcdata.SN, "%08x", TCFG_EEPROM_Get_MAC_SN());
 		AepSpotStatusSrcdata.DateTime						= SpotStatusData.unixTime;
 		AepSpotStatusSrcdata.SpotCount					= SpotStatusData.spot_count;
 		AepSpotStatusSrcdata.SpotStatus					= SpotStatusData.spot_status;
