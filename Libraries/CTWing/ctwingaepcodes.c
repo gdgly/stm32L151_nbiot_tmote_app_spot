@@ -30,6 +30,11 @@ AepWorkInfo					AepWorkInfoSrcdata;
 AepBasicInfo					AepBasicInfoSrcdata;
 AepDynamicInfo					AepDynamicInfoSrcdata;
 
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_2
+AepDataReportData				AepDataReportSrcdata;
+AepSignalReportData				AepSignalReportSrcdata;
+#endif
+
 AepSpotStatusDataString			AepSpotStatusString;
 AepWorkInfoDataString			AepWorkInfoString;
 AepBasicInfoDataString			AepBasicInfoString;
@@ -273,6 +278,24 @@ void CTWing_Message_Operate_Creat_Dynamic_Info(CTWING_ClientsTypeDef* pClient, A
 	srcStruct->z.str			= AepDynamicInfoString.z;
 	srcStruct->z.len			= strlen((const char*)srcStruct->z.str);
 }
+
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_2
+/**********************************************************************************************************
+ @Function			void CTWing_Message_Operate_Creat_Signal_Report(CTWING_ClientsTypeDef* pClient, AepSignalReportData * srcStruct)
+ @Description			CTWing_Message_Operate_Creat_Signal_Report	: 填写Signal数据
+ @Input				pClient								: CTWing客户端实例
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+void CTWing_Message_Operate_Creat_Signal_Report(CTWING_ClientsTypeDef* pClient, AepSignalReportData * srcStruct)
+{
+	srcStruct->rsrp			= TCFG_Utility_Get_Nbiot_CellRsrp();
+	srcStruct->sinr			= TCFG_Utility_Get_Nbiot_CellSnr();
+	srcStruct->pci				= TCFG_Utility_Get_Nbiot_RadioPCI();
+	srcStruct->ecl				= TCFG_Utility_Get_Nbiot_RadioECL();
+	srcStruct->cell_id			= TCFG_Utility_Get_Nbiot_RadioCellID();
+}
+#endif
 
 /**********************************************************************************************************
  @Function			AepString CTWing_SpotStatusData_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepSpotStatusData srcStruct)
@@ -720,6 +743,104 @@ AepString CTWing_DynamicInfo_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepD
 	return resultStruct;
 }
 
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_2
+/**********************************************************************************************************
+ @Function			AepString CTWing_DataReportData_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepDataReportData srcStruct)
+ @Description			CTWing_DataReportData_CodeDataReport		: 序列化DataReportData
+ @Input				pClient								: CTWing客户端实例
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+AepString CTWing_DataReportData_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepDataReportData srcStruct)
+{
+	char* index;
+	AepString resultStruct;
+	
+	unsigned short tempLen;
+	unsigned short payloadLen = 1;
+	
+	memset((void *)pClient->AepMallocProcessStack, 0x0, sizeof(pClient->AepMallocProcessStack));
+	
+	resultStruct.len = (1 + 2 + 2 + payloadLen) * 2;
+	resultStruct.str = (char *)pClient->AepMallocProcessStack;
+	
+	index = resultStruct.str;
+	
+	memcpy(index, "02", 2);
+	index += 1 * 2;
+	
+	tempLen = aep_htons(AEP_SERVICE_ID_DATA_REPORT);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	tempLen = aep_htons(payloadLen);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.parking_state, 1);
+	index += 1 * 2;
+	
+	return resultStruct;
+}
+
+/**********************************************************************************************************
+ @Function			AepString CTWing_SignalReportData_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepSignalReportData srcStruct)
+ @Description			CTWing_SignalReportData_CodeDataReport		: 序列化SignalReportData
+ @Input				pClient								: CTWing客户端实例
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+AepString CTWing_SignalReportData_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepSignalReportData srcStruct)
+{
+	char* index;
+	AepString resultStruct;
+	
+	unsigned short tempLen;
+	unsigned short payloadLen = 20;
+	
+	memset((void *)pClient->AepMallocProcessStack, 0x0, sizeof(pClient->AepMallocProcessStack));
+	
+	resultStruct.len = (1 + 2 + 2 + payloadLen) * 2;
+	resultStruct.str = (char *)pClient->AepMallocProcessStack;
+	
+	srcStruct.rsrp						= aep_htoni(srcStruct.rsrp);
+	srcStruct.sinr						= aep_htoni(srcStruct.sinr);
+	srcStruct.pci						= aep_htoni(srcStruct.pci);
+	srcStruct.ecl						= aep_htoni(srcStruct.ecl);
+	srcStruct.cell_id					= aep_htoni(srcStruct.cell_id);
+	
+	index = resultStruct.str;
+	
+	memcpy(index, "02", 2);
+	index += 1 * 2;
+	
+	tempLen = aep_htons(AEP_SERVICE_ID_SIGNAL_REPORT);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	tempLen = aep_htons(payloadLen);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.rsrp, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.sinr, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.pci, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.ecl, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.cell_id, 4);
+	index += 4 * 2;
+	
+	return resultStruct;
+}
+#endif
+
 /**********************************************************************************************************
  @Function			AepString CTWing_CodeDataReportByIdToStr(CTWING_ClientsTypeDef* pClient, int serviceId, void * srcStruct)
  @Description			CTWing_CodeDataReportByIdToStr			: 序列化数据包
@@ -742,6 +863,14 @@ AepString CTWing_CodeDataReportByIdToStr(CTWING_ClientsTypeDef* pClient, int ser
 	else if (serviceId == AEP_SERVICE_ID_DYNAMICINFO) {
 		return CTWing_DynamicInfo_CodeDataReport(pClient, *(AepDynamicInfo*)srcStruct);
 	}
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_2
+	else if (serviceId == AEP_SERVICE_ID_DATA_REPORT) {
+		return CTWing_DataReportData_CodeDataReport(pClient, *(AepDataReportData*)srcStruct);
+	}
+	else if (serviceId == AEP_SERVICE_ID_SIGNAL_REPORT) {
+		return CTWing_SignalReportData_CodeDataReport(pClient, *(AepSignalReportData*)srcStruct);
+	}
+#endif
 	else {
 		AepString result = {0};
 		return result;
@@ -792,6 +921,14 @@ AepString CTWing_CodeDataReportByIdentifierToStr(CTWING_ClientsTypeDef* pClient,
 	else if (strcmp(serviceIdentifier, AEP_SERVICE_ENTIFIER_DYNAMICINFO) == 0) {
 		return CTWing_DynamicInfo_CodeDataReport(pClient, *(AepDynamicInfo*)srcStruct);
 	}
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_2
+	else if (strcmp(serviceIdentifier, AEP_SERVICE_ENTIFIER_DATA_REPORT) == 0) {
+		return CTWing_DataReportData_CodeDataReport(pClient, *(AepDataReportData*)srcStruct);
+	}
+	else if (strcmp(serviceIdentifier, AEP_SERVICE_ENTIFIER_SIGNAL_REPORT) == 0) {
+		return CTWing_SignalReportData_CodeDataReport(pClient, *(AepSignalReportData*)srcStruct);
+	}
+#endif
 	else {
 		AepString result = {0};
 		return result;

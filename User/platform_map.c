@@ -3097,6 +3097,7 @@ int TCFG_Utility_Get_Nbiot_CellSnr(void)
 {
 	int nbRadioSnr = 0;
 	
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_1
 #if NETPROTOCAL == NETCOAP
 	nbRadioSnr = NbiotClientHandler.Parameter.statisticsCELL.snr >  127 ?  127 : NbiotClientHandler.Parameter.statisticsCELL.snr;
 	nbRadioSnr = NbiotClientHandler.Parameter.statisticsCELL.snr < -127 ? -127 : NbiotClientHandler.Parameter.statisticsCELL.snr;
@@ -3109,6 +3110,18 @@ int TCFG_Utility_Get_Nbiot_CellSnr(void)
 #elif NETPROTOCAL == NETCTWING
 	nbRadioSnr = CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsCELL.snr >  127 ?  127 : CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsCELL.snr;
 	nbRadioSnr = CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsCELL.snr < -127 ? -127 : CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsCELL.snr;
+#endif
+#endif
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_2
+#if NETPROTOCAL == NETCOAP
+	nbRadioSnr = NbiotClientHandler.Parameter.statisticsCELL.snr;
+#elif NETPROTOCAL == NETMQTTSN
+	nbRadioSnr = MqttSNClientHandler.SocketStack->NBIotStack->Parameter.statisticsCELL.snr;
+#elif NETPROTOCAL == NETONENET
+	nbRadioSnr = OneNETClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsCELL.snr;
+#elif NETPROTOCAL == NETCTWING
+	nbRadioSnr = CTWingClientHandler.LWM2MStack->NBIotStack->Parameter.statisticsCELL.snr;
+#endif
 #endif
 	
 	return nbRadioSnr;

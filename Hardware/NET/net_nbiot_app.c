@@ -990,6 +990,15 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		aepCodeResult = CTWing_CodeDataReportByIdToBytes(&CTWingClientHandler, AEP_SERVICE_ID_SPOTSTATUSDATA, &AepSpotStatusSrcdata);
 		
 		NET_CTWing_Message_SendDataEnqueue((unsigned char *)aepCodeResult.str, aepCodeResult.len);
+		
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_2
+		AepDataReportSrcdata.parking_state					= (SpotStatusData.spot_status == 2) ? 0 : (SpotStatusData.spot_status == 3) ? 1 : SpotStatusData.spot_status;
+		
+		aepCodeResult = CTWing_CodeDataReportByIdToBytes(&CTWingClientHandler, AEP_SERVICE_ID_DATA_REPORT, &AepDataReportSrcdata);
+		
+		NET_CTWing_Message_SendDataEnqueue((unsigned char *)aepCodeResult.str, aepCodeResult.len);
+#endif
+		
 		NETCTWingNeedSendCode.LongStatus = 0;
 		Inspect_Message_SpotStatusOffSet();
 		NET_NBIOT_CTWingSentDataAfterExexution();
@@ -1039,6 +1048,15 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		aepCodeResult = CTWing_CodeDataReportByIdToBytes(&CTWingClientHandler, AEP_SERVICE_ID_DYNAMICINFO, &AepDynamicInfoSrcdata);
 		
 		NET_CTWing_Message_SendDataEnqueue((unsigned char *)aepCodeResult.str, aepCodeResult.len);
+		
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_2
+		CTWing_Message_Operate_Creat_Signal_Report(&CTWingClientHandler, &AepSignalReportSrcdata);
+		
+		aepCodeResult = CTWing_CodeDataReportByIdToBytes(&CTWingClientHandler, AEP_SERVICE_ID_SIGNAL_REPORT, &AepSignalReportSrcdata);
+		
+		NET_CTWing_Message_SendDataEnqueue((unsigned char *)aepCodeResult.str, aepCodeResult.len);
+#endif
+		
 		NETCTWingNeedSendCode.DynamicInfo = 0;
 		NET_NBIOT_CTWingSentDataAfterExexution();
 #endif

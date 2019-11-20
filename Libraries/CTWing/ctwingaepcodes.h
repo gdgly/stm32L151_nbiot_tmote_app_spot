@@ -11,6 +11,7 @@ static union { char c[4]; unsigned long mylong; } endian_test = {{ 'l', '?', '?'
 
 #define AEP_ENDIANNESS					((char)endian_test.mylong)
 
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_1
 #define AEP_SERVICE_ID_SPOTSTATUSDATA		2
 #define AEP_SERVICE_ENTIFIER_SPOTSTATUSDATA	"SpotStatusData"
 
@@ -22,6 +23,26 @@ static union { char c[4]; unsigned long mylong; } endian_test = {{ 'l', '?', '?'
 
 #define AEP_SERVICE_ID_DYNAMICINFO			5
 #define AEP_SERVICE_ENTIFIER_DYNAMICINFO	"DynamicInfo"
+#endif
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_2
+#define AEP_SERVICE_ID_DATA_REPORT			1
+#define AEP_SERVICE_ENTIFIER_DATA_REPORT	"data_report"
+
+#define AEP_SERVICE_ID_SIGNAL_REPORT		2
+#define AEP_SERVICE_ENTIFIER_SIGNAL_REPORT	"signal_report"
+
+#define AEP_SERVICE_ID_SPOTSTATUSDATA		4
+#define AEP_SERVICE_ENTIFIER_SPOTSTATUSDATA	"SpotStatusData"
+
+#define AEP_SERVICE_ID_WORKINFO			5
+#define AEP_SERVICE_ENTIFIER_WORKINFO		"WorkInfo"
+
+#define AEP_SERVICE_ID_BASICINFO			6
+#define AEP_SERVICE_ENTIFIER_BASICINFO		"BasicInfo"
+
+#define AEP_SERVICE_ID_DYNAMICINFO			7
+#define AEP_SERVICE_ENTIFIER_DYNAMICINFO	"DynamicInfo"
+#endif
 
 typedef struct AepStrStruct
 {
@@ -165,6 +186,32 @@ typedef struct AepDynamicInfoStruct
 
 extern AepDynamicInfo			AepDynamicInfoSrcdata;
 
+AepString CTWing_DynamicInfo_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepDynamicInfo srcStruct);
+
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_2
+typedef struct AepDataReportStruct
+{
+	char				parking_state;
+} AepDataReportData;
+
+extern AepDataReportData			AepDataReportSrcdata;
+
+AepString CTWing_DataReportData_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepDataReportData srcStruct);
+
+typedef struct AepSignalReportStruct
+{
+	int				rsrp;
+	int				sinr;
+	int				pci;
+	int				ecl;
+	int				cell_id;
+} AepSignalReportData;
+
+extern AepSignalReportData		AepSignalReportSrcdata;
+
+AepString CTWing_SignalReportData_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepSignalReportData srcStruct);
+#endif
+
 AepString CTWing_CodeDataReportByIdToStr(CTWING_ClientsTypeDef* pClient, int serviceId, void * srcStruct);
 
 AepBytes CTWing_CodeDataReportByIdToBytes(CTWING_ClientsTypeDef* pClient, int serviceId, void * srcStruct);
@@ -176,5 +223,9 @@ AepBytes CTWing_CodeDataReportByIdentifierToBytes(CTWING_ClientsTypeDef* pClient
 void CTWing_Message_Operate_Creat_Work_Info(CTWING_ClientsTypeDef* pClient, AepWorkInfo * srcStruct);
 void CTWing_Message_Operate_Creat_Basic_Info(CTWING_ClientsTypeDef* pClient, AepBasicInfo * srcStruct);
 void CTWing_Message_Operate_Creat_Dynamic_Info(CTWING_ClientsTypeDef* pClient, AepDynamicInfo * srcStruct);
+
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_2
+void CTWing_Message_Operate_Creat_Signal_Report(CTWING_ClientsTypeDef* pClient, AepSignalReportData * srcStruct);
+#endif
 
 #endif /* __CTWING_AEPCODES_H */

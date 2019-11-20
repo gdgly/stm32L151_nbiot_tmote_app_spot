@@ -1421,6 +1421,9 @@ void NET_CTWING_NBIOT_Event_ParameterCheckOut(CTWING_ClientsTypeDef* pClient)
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadRSSI(pClient->LWM2MStack->NBIotStack)) == NBIOT_OK) && 
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadStatisticsRADIO(pClient->LWM2MStack->NBIotStack)) == NBIOT_OK) && 
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadAreaCode(pClient->LWM2MStack->NBIotStack)) == NBIOT_OK) && 
+	#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_2
+	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadStatisticsCELL(pClient->LWM2MStack->NBIotStack)) == NBIOT_OK) && 
+	#endif
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadDateTime(pClient->LWM2MStack->NBIotStack)) == NBIOT_OK)) {
 		/* Dictate execute is Success */
 		CTWING_NBIOT_DictateEvent_SuccessExecute(pClient, CTWING_SENDMODE_TYPE, PARAMETER_CHECKOUT);
