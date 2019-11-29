@@ -25,6 +25,7 @@
 #include "stdlib.h"
 #include "ctype.h"
 
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_1
 AepSpotStatusData				AepSpotStatusSrcdata;
 AepWorkInfo					AepWorkInfoSrcdata;
 AepBasicInfo					AepBasicInfoSrcdata;
@@ -34,6 +35,28 @@ AepSpotStatusDataString			AepSpotStatusString;
 AepWorkInfoDataString			AepWorkInfoString;
 AepBasicInfoDataString			AepBasicInfoString;
 AepDynamicInfoDataString			AepDynamicInfoString;
+#endif
+
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_2
+AepDataReportData				AepDataReportSrcdata;
+AepSignalReportData				AepSignalReportSrcdata;
+AepHeartBeatData				AepHeartBeatSrcdata;
+AepParkingChangeInfoData			AepParkingChangeInfoSrcdata;
+AepErrorCodeReportData			AepErrorCodeReportSrcdata;
+AepLowVoltageAlarmData			AepLowVoltageAlarmSrcdata;
+AepMagneticDisturbData			AepMagneticDisturbSrcdata;
+#endif
+
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_3
+AepDataReportData				AepDataReportSrcdata;
+AepSignalReportData				AepSignalReportSrcdata;
+AepExtraReportData				AepExtraReportSrcdata;
+AepHeartBeatData				AepHeartBeatSrcdata;
+AepParkingChangeInfoData			AepParkingChangeInfoSrcdata;
+AepErrorCodeReportData			AepErrorCodeReportSrcdata;
+AepLowVoltageAlarmData			AepLowVoltageAlarmSrcdata;
+AepMagneticDisturbData			AepMagneticDisturbSrcdata;
+#endif
 
 uint16_t aep_htons(uint16_t source)
 {
@@ -138,6 +161,7 @@ void StrToHex(char *pbDest, char *pbSrc, int nLen)
 	}
 }
 
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_1
 /**********************************************************************************************************
  @Function			void CTWing_Message_Operate_Creat_Work_Info(CTWING_ClientsTypeDef* pClient, AepWorkInfo * srcStruct)
  @Description			CTWing_Message_Operate_Creat_Work_Info		: 填写WorkInfo数据
@@ -273,7 +297,9 @@ void CTWing_Message_Operate_Creat_Dynamic_Info(CTWING_ClientsTypeDef* pClient, A
 	srcStruct->z.str			= AepDynamicInfoString.z;
 	srcStruct->z.len			= strlen((const char*)srcStruct->z.str);
 }
+#endif
 
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_1
 /**********************************************************************************************************
  @Function			AepString CTWing_SpotStatusData_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepSpotStatusData srcStruct)
  @Description			CTWing_SpotStatusData_CodeDataReport		: 序列化SpotStatusData
@@ -719,6 +745,1029 @@ AepString CTWing_DynamicInfo_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepD
 	
 	return resultStruct;
 }
+#endif
+
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_2
+/**********************************************************************************************************
+ @Function			void CTWing_Message_Operate_Creat_Data_Report(CTWING_ClientsTypeDef* pClient, AepDataReportData * srcStruct)
+ @Description			CTWing_Message_Operate_Creat_Data_Report	: 填写DataReport数据
+ @Input				pClient								: CTWing客户端实例
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+void CTWing_Message_Operate_Creat_Data_Report(CTWING_ClientsTypeDef* pClient, AepDataReportData * srcStruct)
+{
+	srcStruct->battery_voltage	= ((float)TCFG_Utility_Get_Device_Batt_ShortVal() / 100.0);
+	srcStruct->battery_value		= (100 - (int)(TCFG_Utility_Get_Run_Time() / 946080)) < 0 ? 0 : (100 - (int)(TCFG_Utility_Get_Run_Time() / 946080));
+	srcStruct->error_code		= 0;
+}
+
+/**********************************************************************************************************
+ @Function			void CTWing_Message_Operate_Creat_Signal_Report(CTWING_ClientsTypeDef* pClient, AepSignalReportData * srcStruct)
+ @Description			CTWing_Message_Operate_Creat_Signal_Report	: 填写SignalReport数据
+ @Input				pClient								: CTWing客户端实例
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+void CTWing_Message_Operate_Creat_Signal_Report(CTWING_ClientsTypeDef* pClient, AepSignalReportData * srcStruct)
+{
+	srcStruct->rsrp			= TCFG_Utility_Get_Nbiot_CellRsrp();
+	srcStruct->sinr			= TCFG_Utility_Get_Nbiot_CellSnr();
+	srcStruct->pci				= TCFG_Utility_Get_Nbiot_RadioPCI();
+	srcStruct->ecl				= TCFG_Utility_Get_Nbiot_RadioECL();
+	srcStruct->cell_id			= TCFG_Utility_Get_Nbiot_RadioCellID();
+}
+
+/**********************************************************************************************************
+ @Function			void CTWing_Message_Operate_Creat_Heart_Beat(CTWING_ClientsTypeDef* pClient, AepHeartBeatData * srcStruct)
+ @Description			CTWing_Message_Operate_Creat_Heart_Beat		: 填写HeartBeat数据
+ @Input				pClient								: CTWing客户端实例
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+void CTWing_Message_Operate_Creat_Heart_Beat(CTWING_ClientsTypeDef* pClient, AepHeartBeatData * srcStruct)
+{
+	memset((void *)srcStruct->ICCID, 0x0, sizeof(srcStruct->ICCID));
+	memcpy((void *)srcStruct->ICCID, (void *)TCFG_Utility_Get_Nbiot_Iccid_String(), sizeof(srcStruct->ICCID));
+	srcStruct->heartbeat_time	= (float)(TCFG_EEPROM_GetNbiotHeart() * 900) / (float)(60 * 60);
+	srcStruct->protect_time		= (float)(CTWING_LWM2M_LIFETIME) / (float)(60 * 60);
+	memset((void *)srcStruct->saas_version, 0x0, sizeof(srcStruct->saas_version));
+	memcpy((void *)srcStruct->saas_version, (void *)"0.0.01", sizeof(srcStruct->saas_version));
+	memset((void *)srcStruct->manufacturer_id, 0x0, sizeof(srcStruct->manufacturer_id));
+	memcpy((void *)srcStruct->manufacturer_id, (void *)"91330104563048753R", sizeof(srcStruct->manufacturer_id));
+	memset((void *)srcStruct->IMSI, 0x0, sizeof(srcStruct->IMSI));
+	memcpy((void *)srcStruct->IMSI, (void *)TCFG_Utility_Get_Nbiot_Imsi_String(), sizeof(srcStruct->IMSI));
+	memset((void *)srcStruct->IMEI, 0x0, sizeof(srcStruct->IMEI));
+	memcpy((void *)srcStruct->IMEI, (void *)TCFG_Utility_Get_Nbiot_Imei_String(), sizeof(srcStruct->IMEI));
+	
+	srcStruct->nb_firmware.str		= TCFG_Utility_Get_Nbiot_ModelVersion();
+	srcStruct->nb_firmware.len		= strlen((const char*)srcStruct->nb_firmware.str);
+	srcStruct->nb_module.str			= TCFG_Utility_Get_Nbiot_Manufacturermode();
+	srcStruct->nb_module.len			= strlen((const char*)srcStruct->nb_module.str);
+	srcStruct->mcu_firmware.str		= TCFG_Utility_Get_Softwear_Version_String();
+	srcStruct->mcu_firmware.len		= strlen((const char*)srcStruct->mcu_firmware.str);
+	srcStruct->terminal_type.str		= TCFG_Utility_Get_Hardwear_Version_String();
+	srcStruct->terminal_type.len		= strlen((const char*)srcStruct->terminal_type.str);
+	srcStruct->manufacturer_name.str	= TCFG_EEPROM_Get_Vender_String();
+	srcStruct->manufacturer_name.len	= strlen((const char*)srcStruct->manufacturer_name.str);
+	
+	srcStruct->rsrp			= TCFG_Utility_Get_Nbiot_CellRsrp();
+	srcStruct->sinr			= TCFG_Utility_Get_Nbiot_CellSnr();
+	srcStruct->pci				= TCFG_Utility_Get_Nbiot_RadioPCI();
+	srcStruct->ecl				= TCFG_Utility_Get_Nbiot_RadioECL();
+	srcStruct->cell_id			= TCFG_Utility_Get_Nbiot_RadioCellID();
+	
+	srcStruct->battery_voltage	= ((float)TCFG_Utility_Get_Device_Batt_ShortVal() / 100.0);
+	srcStruct->battery_value		= (100 - (int)(TCFG_Utility_Get_Run_Time() / 946080)) < 0 ? 0 : (100 - (int)(TCFG_Utility_Get_Run_Time() / 946080));
+	srcStruct->error_code		= 0;
+	
+	srcStruct->signal_power		= TCFG_Utility_Get_Nbiot_RadioSignalpower();
+	srcStruct->snr				= TCFG_Utility_Get_Nbiot_RadioSNR();
+	srcStruct->tx_power			= TCFG_Utility_Get_Nbiot_RadioTXpower();
+}
+#endif
+
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_2
+/**********************************************************************************************************
+ @Function			AepString CTWing_DataReport_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepDataReportData srcStruct)
+ @Description			CTWing_DataReport_CodeDataReport			: 序列化DataReport
+ @Input				pClient								: CTWing客户端实例
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+AepString CTWing_DataReport_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepDataReportData srcStruct)
+{
+	char* index;
+	AepString resultStruct;
+	
+	unsigned short tempLen;
+	unsigned short payloadLen = 23;
+	
+	memset((void *)pClient->AepMallocProcessStack, 0x0, sizeof(pClient->AepMallocProcessStack));
+	
+	resultStruct.len = (1 + 2 + 2 + payloadLen) * 2;
+	resultStruct.str = (char *)pClient->AepMallocProcessStack;
+	
+	srcStruct.battery_voltage			= aep_htonf(srcStruct.battery_voltage);
+	srcStruct.battery_value				= aep_htoni(srcStruct.battery_value);
+	srcStruct.ptime					= aep_htonl(srcStruct.ptime);
+	srcStruct.magnetic_value				= aep_htoni(srcStruct.magnetic_value);
+	
+	index = resultStruct.str;
+	
+	memcpy(index, "02", 2);
+	index += 1 * 2;
+	
+	tempLen = aep_htons(AEP_SERVICE_ID_DATAREPORT);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	tempLen = aep_htons(payloadLen);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.battery_voltage, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.battery_value, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.ptime, 8);
+	index += 8 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.parking_state, 1);
+	index += 1 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.error_code, 1);
+	index += 1 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.parking_change, 1);
+	index += 1 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.magnetic_value, 4);
+	index += 4 * 2;
+	
+	return resultStruct;
+}
+
+/**********************************************************************************************************
+ @Function			AepString CTWing_SignalReport_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepSignalReportData srcStruct)
+ @Description			CTWing_SignalReport_CodeDataReport			: 序列化SignalReport
+ @Input				pClient								: CTWing客户端实例
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+AepString CTWing_SignalReport_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepSignalReportData srcStruct)
+{
+	char* index;
+	AepString resultStruct;
+	
+	unsigned short tempLen;
+	unsigned short payloadLen = 20;
+	
+	memset((void *)pClient->AepMallocProcessStack, 0x0, sizeof(pClient->AepMallocProcessStack));
+	
+	resultStruct.len = (1 + 2 + 2 + payloadLen) * 2;
+	resultStruct.str = (char *)pClient->AepMallocProcessStack;
+	
+	srcStruct.rsrp						= aep_htoni(srcStruct.rsrp);
+	srcStruct.sinr						= aep_htoni(srcStruct.sinr);
+	srcStruct.pci						= aep_htoni(srcStruct.pci);
+	srcStruct.ecl						= aep_htoni(srcStruct.ecl);
+	srcStruct.cell_id					= aep_htoni(srcStruct.cell_id);
+	
+	index = resultStruct.str;
+	
+	memcpy(index, "02", 2);
+	index += 1 * 2;
+	
+	tempLen = aep_htons(AEP_SERVICE_ID_SIGNALREPORT);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	tempLen = aep_htons(payloadLen);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.rsrp, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.sinr, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.pci, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.ecl, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.cell_id, 4);
+	index += 4 * 2;
+	
+	return resultStruct;
+}
+
+/**********************************************************************************************************
+ @Function			AepString CTWing_HeartBeat_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepHeartBeatData srcStruct)
+ @Description			CTWing_HeartBeat_CodeDataReport			: 序列化HeartBeat
+ @Input				pClient								: CTWing客户端实例
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+AepString CTWing_HeartBeat_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepHeartBeatData srcStruct)
+{
+	char* index;
+	AepString resultStruct;
+	
+	unsigned short tempLen;
+	unsigned short payloadLen = 123 + (srcStruct.nb_firmware.len + 2) + (srcStruct.nb_module.len + 2) + (srcStruct.mcu_firmware.len + 2) + (srcStruct.terminal_type.len + 2) + (srcStruct.manufacturer_name.len + 2);
+	
+	memset((void *)pClient->AepMallocProcessStack, 0x0, sizeof(pClient->AepMallocProcessStack));
+	
+	resultStruct.len = (1 + 2 + 2 + payloadLen) * 2;
+	resultStruct.str = (char *)pClient->AepMallocProcessStack;
+	
+	srcStruct.heartbeat_time				= aep_htonf(srcStruct.heartbeat_time);
+	srcStruct.protect_time				= aep_htonf(srcStruct.protect_time);
+	srcStruct.rsrp						= aep_htoni(srcStruct.rsrp);
+	srcStruct.sinr						= aep_htoni(srcStruct.sinr);
+	srcStruct.pci						= aep_htoni(srcStruct.pci);
+	srcStruct.ecl						= aep_htoni(srcStruct.ecl);
+	srcStruct.cell_id					= aep_htoni(srcStruct.cell_id);
+	srcStruct.battery_voltage			= aep_htonf(srcStruct.battery_voltage);
+	srcStruct.battery_value				= aep_htoni(srcStruct.battery_value);
+	srcStruct.signal_power				= aep_htons(srcStruct.signal_power);
+	srcStruct.snr						= aep_htons(srcStruct.snr);
+	srcStruct.tx_power					= aep_htons(srcStruct.tx_power);
+	srcStruct.magnetic_value				= aep_htoni(srcStruct.magnetic_value);
+	
+	index = resultStruct.str;
+	
+	memcpy(index, "02", 2);
+	index += 1 * 2;
+	
+	tempLen = aep_htons(AEP_SERVICE_ID_HEARTBEAT);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	tempLen = aep_htons(payloadLen);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	HexToStr(index, (char *)srcStruct.ICCID, 20);
+	index += 20 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.heartbeat_time, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.protect_time, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)srcStruct.saas_version, 6);
+	index += 6 * 2;
+	
+	HexToStr(index, (char *)srcStruct.manufacturer_id, 18);
+	index += 18 * 2;
+	
+	HexToStr(index, (char *)srcStruct.IMSI, 15);
+	index += 15 * 2;
+	
+	HexToStr(index, (char *)srcStruct.IMEI, 15);
+	index += 15 * 2;
+	
+	tempLen = aep_htons(srcStruct.nb_firmware.len);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	HexToStr(index, (char *)srcStruct.nb_firmware.str, srcStruct.nb_firmware.len);
+	index += srcStruct.nb_firmware.len * 2;
+	
+	tempLen = aep_htons(srcStruct.nb_module.len);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	HexToStr(index, (char *)srcStruct.nb_module.str, srcStruct.nb_module.len);
+	index += srcStruct.nb_module.len * 2;
+	
+	tempLen = aep_htons(srcStruct.mcu_firmware.len);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	HexToStr(index, (char *)srcStruct.mcu_firmware.str, srcStruct.mcu_firmware.len);
+	index += srcStruct.mcu_firmware.len * 2;
+	
+	tempLen = aep_htons(srcStruct.terminal_type.len);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	HexToStr(index, (char *)srcStruct.terminal_type.str, srcStruct.terminal_type.len);
+	index += srcStruct.terminal_type.len * 2;
+	
+	tempLen = aep_htons(srcStruct.manufacturer_name.len);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	HexToStr(index, (char *)srcStruct.manufacturer_name.str, srcStruct.manufacturer_name.len);
+	index += srcStruct.manufacturer_name.len * 2;
+	
+	HexToStr(index, (char *)&srcStruct.rsrp, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.sinr, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.pci, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.ecl, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.cell_id, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.battery_voltage, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.battery_value, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.signal_power, 2);
+	index += 2 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.snr, 2);
+	index += 2 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.tx_power, 2);
+	index += 2 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.parking_state, 1);
+	index += 1 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.error_code, 1);
+	index += 1 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.parking_change, 1);
+	index += 1 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.magnetic_value, 4);
+	index += 4 * 2;
+	
+	return resultStruct;
+}
+
+/**********************************************************************************************************
+ @Function			AepString CTWing_ParkingChangeInfo_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepParkingChangeInfoData srcStruct)
+ @Description			CTWing_ParkingChangeInfo_CodeDataReport		: 序列化ParkingChangeInfo
+ @Input				pClient								: CTWing客户端实例
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+AepString CTWing_ParkingChangeInfo_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepParkingChangeInfoData srcStruct)
+{
+	char* index;
+	AepString resultStruct;
+	
+	unsigned short tempLen;
+	unsigned short payloadLen = 1;
+	
+	memset((void *)pClient->AepMallocProcessStack, 0x0, sizeof(pClient->AepMallocProcessStack));
+	
+	resultStruct.len = (1 + 2 + 2 + payloadLen) * 2;
+	resultStruct.str = (char *)pClient->AepMallocProcessStack;
+	
+	index = resultStruct.str;
+	
+	memcpy(index, "07", 2);
+	index += 1 * 2;
+	
+	tempLen = aep_htons(AEP_SERVICE_ID_PARKINGCHANGE);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	tempLen = aep_htons(payloadLen);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.parking_change, 1);
+	index += 1 * 2;
+	
+	return resultStruct;
+}
+
+/**********************************************************************************************************
+ @Function			AepString CTWing_ErrorCodeReport_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepErrorCodeReportData srcStruct)
+ @Description			CTWing_ErrorCodeReport_CodeDataReport		: 序列化ErrorCodeReport
+ @Input				pClient								: CTWing客户端实例
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+AepString CTWing_ErrorCodeReport_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepErrorCodeReportData srcStruct)
+{
+	char* index;
+	AepString resultStruct;
+	
+	unsigned short tempLen;
+	unsigned short payloadLen = 1;
+	
+	memset((void *)pClient->AepMallocProcessStack, 0x0, sizeof(pClient->AepMallocProcessStack));
+	
+	resultStruct.len = (1 + 2 + 2 + payloadLen) * 2;
+	resultStruct.str = (char *)pClient->AepMallocProcessStack;
+	
+	index = resultStruct.str;
+	
+	memcpy(index, "07", 2);
+	index += 1 * 2;
+	
+	tempLen = aep_htons(AEP_SERVICE_ID_ERRORCODE);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	tempLen = aep_htons(payloadLen);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.error_code, 1);
+	index += 1 * 2;
+	
+	return resultStruct;
+}
+
+/**********************************************************************************************************
+ @Function			AepString CTWing_LowVoltageAlarm_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepLowVoltageAlarmData srcStruct)
+ @Description			CTWing_LowVoltageAlarm_CodeDataReport		: 序列化LowVoltageAlarm
+ @Input				pClient								: CTWing客户端实例
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+AepString CTWing_LowVoltageAlarm_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepLowVoltageAlarmData srcStruct)
+{
+	char* index;
+	AepString resultStruct;
+	
+	unsigned short tempLen;
+	unsigned short payloadLen = 4;
+	
+	memset((void *)pClient->AepMallocProcessStack, 0x0, sizeof(pClient->AepMallocProcessStack));
+	
+	resultStruct.len = (1 + 2 + 2 + payloadLen) * 2;
+	resultStruct.str = (char *)pClient->AepMallocProcessStack;
+	
+	index = resultStruct.str;
+	
+	memcpy(index, "07", 2);
+	index += 1 * 2;
+	
+	tempLen = aep_htons(AEP_SERVICE_ID_LOWVOLTAGE);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	tempLen = aep_htons(payloadLen);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.battery_voltage, 4);
+	index += 4 * 2;
+	
+	return resultStruct;
+}
+
+/**********************************************************************************************************
+ @Function			AepString CTWing_MagneticDisturb_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepMagneticDisturbData srcStruct)
+ @Description			CTWing_MagneticDisturb_CodeDataReport		: 序列化MagneticDisturb
+ @Input				pClient								: CTWing客户端实例
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+AepString CTWing_MagneticDisturb_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepMagneticDisturbData srcStruct)
+{
+	char* index;
+	AepString resultStruct;
+	
+	unsigned short tempLen;
+	unsigned short payloadLen = 4;
+	
+	memset((void *)pClient->AepMallocProcessStack, 0x0, sizeof(pClient->AepMallocProcessStack));
+	
+	resultStruct.len = (1 + 2 + 2 + payloadLen) * 2;
+	resultStruct.str = (char *)pClient->AepMallocProcessStack;
+	
+	index = resultStruct.str;
+	
+	memcpy(index, "07", 2);
+	index += 1 * 2;
+	
+	tempLen = aep_htons(AEP_SERVICE_ID_MAGNETICDISTURB);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	tempLen = aep_htons(payloadLen);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.magnetic_value, 4);
+	index += 4 * 2;
+	
+	return resultStruct;
+}
+#endif
+
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_3
+/**********************************************************************************************************
+ @Function			void CTWing_Message_Operate_Creat_Extra_Report(CTWING_ClientsTypeDef* pClient, AepExtraReportData * srcStruct)
+ @Description			CTWing_Message_Operate_Creat_Extra_Report	: 填写ExtraReport数据
+ @Input				pClient								: CTWing客户端实例
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+void CTWing_Message_Operate_Creat_Extra_Report(CTWING_ClientsTypeDef* pClient, AepExtraReportData * srcStruct)
+{
+	srcStruct->battery_voltage				= 3.6;
+	srcStruct->battery_value					= 100;
+	srcStruct->error_code					= 0;
+}
+
+/**********************************************************************************************************
+ @Function			void CTWing_Message_Operate_Creat_Heart_Beat(CTWING_ClientsTypeDef* pClient, AepHeartBeatData * srcStruct)
+ @Description			CTWing_Message_Operate_Creat_Heart_Beat		: 填写HeartBeat数据
+ @Input				pClient								: CTWing客户端实例
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+void CTWing_Message_Operate_Creat_Heart_Beat(CTWING_ClientsTypeDef* pClient, AepHeartBeatData * srcStruct)
+{
+	srcStruct->battery_voltage				= 3.6;
+	srcStruct->battery_value					= 100;
+	srcStruct->error_code					= 0;
+	
+	memset((void *)srcStruct->ICCID,			0x0,								sizeof(srcStruct->ICCID));
+	memcpy((void *)srcStruct->ICCID,			(void *)AEP_MODULE_NB_ICCID,			sizeof(srcStruct->ICCID));
+	memset((void *)srcStruct->saas_version,		0x0,								sizeof(srcStruct->saas_version));
+	memcpy((void *)srcStruct->saas_version, 	(void *)AEP_MODULE_SAAS_VERSION,		sizeof(srcStruct->saas_version));
+	memset((void *)srcStruct->manufacturer_id,	0x0,								sizeof(srcStruct->manufacturer_id));
+	memcpy((void *)srcStruct->manufacturer_id,	(void *)AEP_MODULE_MANUFACTURER_ID,	sizeof(srcStruct->manufacturer_id));
+	memset((void *)srcStruct->IMSI,			0x0,								sizeof(srcStruct->IMSI));
+	memcpy((void *)srcStruct->IMSI,			(void *)AEP_MODULE_NB_IMSI,			sizeof(srcStruct->IMSI));
+	memset((void *)srcStruct->IMEI,			0x0,								sizeof(srcStruct->IMEI));
+	memcpy((void *)srcStruct->IMEI,			(void *)AEP_MODULE_NB_IMEI,			sizeof(srcStruct->IMEI));
+	
+	srcStruct->nb_firmware.str				= AEP_MODULE_NB_FIRMWARE;
+	srcStruct->nb_firmware.len				= strlen((const char*)srcStruct->nb_firmware.str);
+	srcStruct->nb_module.str					= AEP_MODULE_NB_MODULE;
+	srcStruct->nb_module.len					= strlen((const char*)srcStruct->nb_module.str);
+	srcStruct->mcu_firmware.str				= AEP_MODULE_MCU_FIRMWARE;
+	srcStruct->mcu_firmware.len				= strlen((const char*)srcStruct->mcu_firmware.str);
+	srcStruct->terminal_type.str				= AEP_MODULE_TERMINAL_TYPE;
+	srcStruct->terminal_type.len				= strlen((const char*)srcStruct->terminal_type.str);
+	srcStruct->manufacturer_name.str			= AEP_MODULE_MANUFACTURER_NAME;
+	srcStruct->manufacturer_name.len			= strlen((const char*)srcStruct->manufacturer_name.str);
+	
+	srcStruct->rsrp						= AEP_MODULE_NB_RSRP;
+	srcStruct->sinr						= AEP_MODULE_NB_SINR;
+	srcStruct->pci							= AEP_MODULE_NB_PCI;
+	srcStruct->ecl							= AEP_MODULE_NB_ECL;
+	srcStruct->cell_id						= AEP_MODULE_NB_CELLID;
+	
+	srcStruct->signal_power					= AEP_MODULE_NB_SIGNALPOWER;
+	srcStruct->snr							= AEP_MODULE_NB_SNR;
+	srcStruct->tx_power						= AEP_MODULE_NB_TXPOWER;
+}
+
+#endif
+
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_3
+/**********************************************************************************************************
+ @Function			AepString CTWing_DataReport_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepDataReportData srcStruct)
+ @Description			CTWing_DataReport_CodeDataReport			: 序列化DataReport
+ @Input				pClient								: CTWing客户端实例
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+AepString CTWing_DataReport_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepDataReportData srcStruct)
+{
+	char* index;
+	AepString resultStruct;
+	
+	unsigned short tempLen;
+	unsigned short payloadLen = 1;
+	
+	memset((void *)pClient->AepMallocProcessStack, 0x0, sizeof(pClient->AepMallocProcessStack));
+	
+	resultStruct.len = (1 + 2 + 2 + payloadLen) * 2;
+	resultStruct.str = (char *)pClient->AepMallocProcessStack;
+	
+	index = resultStruct.str;
+	
+	memcpy(index, "02", 2);
+	index += 1 * 2;
+	
+	tempLen = aep_htons(AEP_SERVICE_ID_DATAREPORT);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	tempLen = aep_htons(payloadLen);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.parking_state, 1);
+	index += 1 * 2;
+	
+	return resultStruct;
+}
+
+/**********************************************************************************************************
+ @Function			AepString CTWing_SignalReport_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepSignalReportData srcStruct)
+ @Description			CTWing_SignalReport_CodeDataReport			: 序列化SignalReport
+ @Input				pClient								: CTWing客户端实例
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+AepString CTWing_SignalReport_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepSignalReportData srcStruct)
+{
+	char* index;
+	AepString resultStruct;
+	
+	unsigned short tempLen;
+	unsigned short payloadLen = 20;
+	
+	memset((void *)pClient->AepMallocProcessStack, 0x0, sizeof(pClient->AepMallocProcessStack));
+	
+	resultStruct.len = (1 + 2 + 2 + payloadLen) * 2;
+	resultStruct.str = (char *)pClient->AepMallocProcessStack;
+	
+	srcStruct.rsrp						= aep_htoni(srcStruct.rsrp);
+	srcStruct.sinr						= aep_htoni(srcStruct.sinr);
+	srcStruct.pci						= aep_htoni(srcStruct.pci);
+	srcStruct.ecl						= aep_htoni(srcStruct.ecl);
+	srcStruct.cell_id					= aep_htoni(srcStruct.cell_id);
+	
+	index = resultStruct.str;
+	
+	memcpy(index, "02", 2);
+	index += 1 * 2;
+	
+	tempLen = aep_htons(AEP_SERVICE_ID_SIGNALREPORT);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	tempLen = aep_htons(payloadLen);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.rsrp, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.sinr, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.pci, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.ecl, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.cell_id, 4);
+	index += 4 * 2;
+	
+	return resultStruct;
+}
+
+/**********************************************************************************************************
+ @Function			AepString CTWing_ExtraReport_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepExtraReportData srcStruct)
+ @Description			CTWing_ExtraReport_CodeDataReport			: 序列化ExtraReport
+ @Input				pClient								: CTWing客户端实例
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+AepString CTWing_ExtraReport_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepExtraReportData srcStruct)
+{
+	char* index;
+	AepString resultStruct;
+	
+	unsigned short tempLen;
+	unsigned short payloadLen = 23;
+	
+	memset((void *)pClient->AepMallocProcessStack, 0x0, sizeof(pClient->AepMallocProcessStack));
+	
+	resultStruct.len = (1 + 2 + 2 + payloadLen) * 2;
+	resultStruct.str = (char *)pClient->AepMallocProcessStack;
+	
+	srcStruct.battery_voltage			= aep_htonf(srcStruct.battery_voltage);
+	srcStruct.battery_value				= aep_htoni(srcStruct.battery_value);
+	srcStruct.ptime					= aep_htonl(srcStruct.ptime);
+	srcStruct.magnetic_value				= aep_htoni(srcStruct.magnetic_value);
+	
+	index = resultStruct.str;
+	
+	memcpy(index, "02", 2);
+	index += 1 * 2;
+	
+	tempLen = aep_htons(AEP_SERVICE_ID_EXTRAREPORT);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	tempLen = aep_htons(payloadLen);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.battery_voltage, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.battery_value, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.ptime, 8);
+	index += 8 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.parking_state, 1);
+	index += 1 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.error_code, 1);
+	index += 1 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.parking_change, 1);
+	index += 1 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.magnetic_value, 4);
+	index += 4 * 2;
+	
+	return resultStruct;
+}
+
+/**********************************************************************************************************
+ @Function			AepString CTWing_HeartBeat_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepHeartBeatData srcStruct)
+ @Description			CTWing_HeartBeat_CodeDataReport			: 序列化HeartBeat
+ @Input				pClient								: CTWing客户端实例
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+AepString CTWing_HeartBeat_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepHeartBeatData srcStruct)
+{
+	char* index;
+	AepString resultStruct;
+	
+	unsigned short tempLen;
+	unsigned short payloadLen = 123 + (srcStruct.nb_firmware.len + 2) + (srcStruct.nb_module.len + 2) + (srcStruct.mcu_firmware.len + 2) + (srcStruct.terminal_type.len + 2) + (srcStruct.manufacturer_name.len + 2);
+	
+	memset((void *)pClient->AepMallocProcessStack, 0x0, sizeof(pClient->AepMallocProcessStack));
+	
+	resultStruct.len = (1 + 2 + 2 + payloadLen) * 2;
+	resultStruct.str = (char *)pClient->AepMallocProcessStack;
+	
+	srcStruct.heartbeat_time				= aep_htonf(srcStruct.heartbeat_time);
+	srcStruct.protect_time				= aep_htonf(srcStruct.protect_time);
+	srcStruct.rsrp						= aep_htoni(srcStruct.rsrp);
+	srcStruct.sinr						= aep_htoni(srcStruct.sinr);
+	srcStruct.pci						= aep_htoni(srcStruct.pci);
+	srcStruct.ecl						= aep_htoni(srcStruct.ecl);
+	srcStruct.cell_id					= aep_htoni(srcStruct.cell_id);
+	srcStruct.battery_voltage			= aep_htonf(srcStruct.battery_voltage);
+	srcStruct.battery_value				= aep_htoni(srcStruct.battery_value);
+	srcStruct.signal_power				= aep_htons(srcStruct.signal_power);
+	srcStruct.snr						= aep_htons(srcStruct.snr);
+	srcStruct.tx_power					= aep_htons(srcStruct.tx_power);
+	srcStruct.magnetic_value				= aep_htoni(srcStruct.magnetic_value);
+	
+	index = resultStruct.str;
+	
+	memcpy(index, "02", 2);
+	index += 1 * 2;
+	
+	tempLen = aep_htons(AEP_SERVICE_ID_HEARTBEAT);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	tempLen = aep_htons(payloadLen);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	HexToStr(index, (char *)srcStruct.ICCID, 20);
+	index += 20 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.heartbeat_time, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.protect_time, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)srcStruct.saas_version, 6);
+	index += 6 * 2;
+	
+	HexToStr(index, (char *)srcStruct.manufacturer_id, 18);
+	index += 18 * 2;
+	
+	HexToStr(index, (char *)srcStruct.IMSI, 15);
+	index += 15 * 2;
+	
+	HexToStr(index, (char *)srcStruct.IMEI, 15);
+	index += 15 * 2;
+	
+	tempLen = aep_htons(srcStruct.nb_firmware.len);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	HexToStr(index, (char *)srcStruct.nb_firmware.str, srcStruct.nb_firmware.len);
+	index += srcStruct.nb_firmware.len * 2;
+	
+	tempLen = aep_htons(srcStruct.nb_module.len);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	HexToStr(index, (char *)srcStruct.nb_module.str, srcStruct.nb_module.len);
+	index += srcStruct.nb_module.len * 2;
+	
+	tempLen = aep_htons(srcStruct.mcu_firmware.len);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	HexToStr(index, (char *)srcStruct.mcu_firmware.str, srcStruct.mcu_firmware.len);
+	index += srcStruct.mcu_firmware.len * 2;
+	
+	tempLen = aep_htons(srcStruct.terminal_type.len);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	HexToStr(index, (char *)srcStruct.terminal_type.str, srcStruct.terminal_type.len);
+	index += srcStruct.terminal_type.len * 2;
+	
+	tempLen = aep_htons(srcStruct.manufacturer_name.len);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	HexToStr(index, (char *)srcStruct.manufacturer_name.str, srcStruct.manufacturer_name.len);
+	index += srcStruct.manufacturer_name.len * 2;
+	
+	HexToStr(index, (char *)&srcStruct.rsrp, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.sinr, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.pci, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.ecl, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.cell_id, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.battery_voltage, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.battery_value, 4);
+	index += 4 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.signal_power, 2);
+	index += 2 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.snr, 2);
+	index += 2 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.tx_power, 2);
+	index += 2 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.parking_state, 1);
+	index += 1 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.error_code, 1);
+	index += 1 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.parking_change, 1);
+	index += 1 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.magnetic_value, 4);
+	index += 4 * 2;
+	
+	return resultStruct;
+}
+
+/**********************************************************************************************************
+ @Function			AepString CTWing_ParkingChangeInfo_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepParkingChangeInfoData srcStruct)
+ @Description			CTWing_ParkingChangeInfo_CodeDataReport		: 序列化ParkingChangeInfo
+ @Input				pClient								: CTWing客户端实例
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+AepString CTWing_ParkingChangeInfo_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepParkingChangeInfoData srcStruct)
+{
+	char* index;
+	AepString resultStruct;
+	
+	unsigned short tempLen;
+	unsigned short payloadLen = 1;
+	
+	memset((void *)pClient->AepMallocProcessStack, 0x0, sizeof(pClient->AepMallocProcessStack));
+	
+	resultStruct.len = (1 + 2 + 2 + payloadLen) * 2;
+	resultStruct.str = (char *)pClient->AepMallocProcessStack;
+	
+	index = resultStruct.str;
+	
+	memcpy(index, "07", 2);
+	index += 1 * 2;
+	
+	tempLen = aep_htons(AEP_SERVICE_ID_PARKINGCHANGE);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	tempLen = aep_htons(payloadLen);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.parking_change, 1);
+	index += 1 * 2;
+	
+	return resultStruct;
+}
+
+/**********************************************************************************************************
+ @Function			AepString CTWing_ErrorCodeReport_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepErrorCodeReportData srcStruct)
+ @Description			CTWing_ErrorCodeReport_CodeDataReport		: 序列化ErrorCodeReport
+ @Input				pClient								: CTWing客户端实例
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+AepString CTWing_ErrorCodeReport_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepErrorCodeReportData srcStruct)
+{
+	char* index;
+	AepString resultStruct;
+	
+	unsigned short tempLen;
+	unsigned short payloadLen = 1;
+	
+	memset((void *)pClient->AepMallocProcessStack, 0x0, sizeof(pClient->AepMallocProcessStack));
+	
+	resultStruct.len = (1 + 2 + 2 + payloadLen) * 2;
+	resultStruct.str = (char *)pClient->AepMallocProcessStack;
+	
+	index = resultStruct.str;
+	
+	memcpy(index, "07", 2);
+	index += 1 * 2;
+	
+	tempLen = aep_htons(AEP_SERVICE_ID_ERRORCODE);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	tempLen = aep_htons(payloadLen);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.error_code, 1);
+	index += 1 * 2;
+	
+	return resultStruct;
+}
+
+/**********************************************************************************************************
+ @Function			AepString CTWing_LowVoltageAlarm_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepLowVoltageAlarmData srcStruct)
+ @Description			CTWing_LowVoltageAlarm_CodeDataReport		: 序列化LowVoltageAlarm
+ @Input				pClient								: CTWing客户端实例
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+AepString CTWing_LowVoltageAlarm_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepLowVoltageAlarmData srcStruct)
+{
+	char* index;
+	AepString resultStruct;
+	
+	unsigned short tempLen;
+	unsigned short payloadLen = 4;
+	
+	memset((void *)pClient->AepMallocProcessStack, 0x0, sizeof(pClient->AepMallocProcessStack));
+	
+	resultStruct.len = (1 + 2 + 2 + payloadLen) * 2;
+	resultStruct.str = (char *)pClient->AepMallocProcessStack;
+	
+	index = resultStruct.str;
+	
+	memcpy(index, "07", 2);
+	index += 1 * 2;
+	
+	tempLen = aep_htons(AEP_SERVICE_ID_LOWVOLTAGE);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	tempLen = aep_htons(payloadLen);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.battery_voltage, 4);
+	index += 4 * 2;
+	
+	return resultStruct;
+}
+
+/**********************************************************************************************************
+ @Function			AepString CTWing_MagneticDisturb_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepMagneticDisturbData srcStruct)
+ @Description			CTWing_MagneticDisturb_CodeDataReport		: 序列化MagneticDisturb
+ @Input				pClient								: CTWing客户端实例
+					srcStruct
+ @Return				void
+**********************************************************************************************************/
+AepString CTWing_MagneticDisturb_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepMagneticDisturbData srcStruct)
+{
+	char* index;
+	AepString resultStruct;
+	
+	unsigned short tempLen;
+	unsigned short payloadLen = 4;
+	
+	memset((void *)pClient->AepMallocProcessStack, 0x0, sizeof(pClient->AepMallocProcessStack));
+	
+	resultStruct.len = (1 + 2 + 2 + payloadLen) * 2;
+	resultStruct.str = (char *)pClient->AepMallocProcessStack;
+	
+	index = resultStruct.str;
+	
+	memcpy(index, "07", 2);
+	index += 1 * 2;
+	
+	tempLen = aep_htons(AEP_SERVICE_ID_MAGNETICDISTURB);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	tempLen = aep_htons(payloadLen);
+	HexToStr(index, (char *)&tempLen, 2);
+	index += 2 * 2;
+	
+	HexToStr(index, (char *)&srcStruct.magnetic_value, 4);
+	index += 4 * 2;
+	
+	return resultStruct;
+}
+#endif
 
 /**********************************************************************************************************
  @Function			AepString CTWing_CodeDataReportByIdToStr(CTWING_ClientsTypeDef* pClient, int serviceId, void * srcStruct)
@@ -730,6 +1779,7 @@ AepString CTWing_DynamicInfo_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepD
 **********************************************************************************************************/
 AepString CTWing_CodeDataReportByIdToStr(CTWING_ClientsTypeDef* pClient, int serviceId, void * srcStruct)
 {
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_1
 	if (serviceId == AEP_SERVICE_ID_SPOTSTATUSDATA) {
 		return CTWing_SpotStatusData_CodeDataReport(pClient, *(AepSpotStatusData*)srcStruct);
 	}
@@ -746,6 +1796,66 @@ AepString CTWing_CodeDataReportByIdToStr(CTWING_ClientsTypeDef* pClient, int ser
 		AepString result = {0};
 		return result;
 	}
+#endif
+	
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_2
+	if (serviceId == AEP_SERVICE_ID_DATAREPORT) {
+		return CTWing_DataReport_CodeDataReport(pClient, *(AepDataReportData*)srcStruct);
+	}
+	else if (serviceId == AEP_SERVICE_ID_SIGNALREPORT) {
+		return CTWing_SignalReport_CodeDataReport(pClient, *(AepSignalReportData*)srcStruct);
+	}
+	else if (serviceId == AEP_SERVICE_ID_HEARTBEAT) {
+		return CTWing_HeartBeat_CodeDataReport(pClient, *(AepHeartBeatData*)srcStruct);
+	}
+	else if (serviceId == AEP_SERVICE_ID_PARKINGCHANGE) {
+		return CTWing_ParkingChangeInfo_CodeDataReport(pClient, *(AepParkingChangeInfoData*)srcStruct);
+	}
+	else if (serviceId == AEP_SERVICE_ID_ERRORCODE) {
+		return CTWing_ErrorCodeReport_CodeDataReport(pClient, *(AepErrorCodeReportData*)srcStruct);
+	}
+	else if (serviceId == AEP_SERVICE_ID_LOWVOLTAGE) {
+		return CTWing_LowVoltageAlarm_CodeDataReport(pClient, *(AepLowVoltageAlarmData*)srcStruct);
+	}
+	else if (serviceId == AEP_SERVICE_ID_MAGNETICDISTURB) {
+		return CTWing_MagneticDisturb_CodeDataReport(pClient, *(AepMagneticDisturbData*)srcStruct);
+	}
+	else {
+		AepString result = {0};
+		return result;
+	}
+#endif
+	
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_3
+	if (serviceId == AEP_SERVICE_ID_DATAREPORT) {
+		return CTWing_DataReport_CodeDataReport(pClient, *(AepDataReportData*)srcStruct);
+	}
+	else if (serviceId == AEP_SERVICE_ID_SIGNALREPORT) {
+		return CTWing_SignalReport_CodeDataReport(pClient, *(AepSignalReportData*)srcStruct);
+	}
+	else if (serviceId == AEP_SERVICE_ID_EXTRAREPORT) {
+		return CTWing_ExtraReport_CodeDataReport(pClient, *(AepExtraReportData*)srcStruct);
+	}
+	else if (serviceId == AEP_SERVICE_ID_HEARTBEAT) {
+		return CTWing_HeartBeat_CodeDataReport(pClient, *(AepHeartBeatData*)srcStruct);
+	}
+	else if (serviceId == AEP_SERVICE_ID_PARKINGCHANGE) {
+		return CTWing_ParkingChangeInfo_CodeDataReport(pClient, *(AepParkingChangeInfoData*)srcStruct);
+	}
+	else if (serviceId == AEP_SERVICE_ID_ERRORCODE) {
+		return CTWing_ErrorCodeReport_CodeDataReport(pClient, *(AepErrorCodeReportData*)srcStruct);
+	}
+	else if (serviceId == AEP_SERVICE_ID_LOWVOLTAGE) {
+		return CTWing_LowVoltageAlarm_CodeDataReport(pClient, *(AepLowVoltageAlarmData*)srcStruct);
+	}
+	else if (serviceId == AEP_SERVICE_ID_MAGNETICDISTURB) {
+		return CTWing_MagneticDisturb_CodeDataReport(pClient, *(AepMagneticDisturbData*)srcStruct);
+	}
+	else {
+		AepString result = {0};
+		return result;
+	}
+#endif
 }
 
 /**********************************************************************************************************
@@ -780,6 +1890,7 @@ AepBytes CTWing_CodeDataReportByIdToBytes(CTWING_ClientsTypeDef* pClient, int se
 **********************************************************************************************************/
 AepString CTWing_CodeDataReportByIdentifierToStr(CTWING_ClientsTypeDef* pClient, char* serviceIdentifier, void * srcStruct)
 {
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_1
 	if (strcmp(serviceIdentifier, AEP_SERVICE_ENTIFIER_SPOTSTATUSDATA) == 0) {
 		return CTWing_SpotStatusData_CodeDataReport(pClient, *(AepSpotStatusData*)srcStruct);
 	}
@@ -796,6 +1907,66 @@ AepString CTWing_CodeDataReportByIdentifierToStr(CTWING_ClientsTypeDef* pClient,
 		AepString result = {0};
 		return result;
 	}
+#endif
+	
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_2
+	if (strcmp(serviceIdentifier, AEP_SERVICE_ENTIFIER_DATAREPORT) == 0) {
+		return CTWing_DataReport_CodeDataReport(pClient, *(AepDataReportData*)srcStruct);
+	}
+	else if (strcmp(serviceIdentifier, AEP_SERVICE_ENTIFIER_SIGNALREPORT) == 0) {
+		return CTWing_SignalReport_CodeDataReport(pClient, *(AepSignalReportData*)srcStruct);
+	}
+	else if (strcmp(serviceIdentifier, AEP_SERVICE_ENTIFIER_HEARTBEAT) == 0) {
+		return CTWing_HeartBeat_CodeDataReport(pClient, *(AepHeartBeatData*)srcStruct);
+	}
+	else if (strcmp(serviceIdentifier, AEP_SERVICE_ENTIFIER_PARKINGCHANGE) == 0) {
+		return CTWing_ParkingChangeInfo_CodeDataReport(pClient, *(AepParkingChangeInfoData*)srcStruct);
+	}
+	else if (strcmp(serviceIdentifier, AEP_SERVICE_ENTIFIER_ERRORCODE) == 0) {
+		return CTWing_ErrorCodeReport_CodeDataReport(pClient, *(AepErrorCodeReportData*)srcStruct);
+	}
+	else if (strcmp(serviceIdentifier, AEP_SERVICE_ENTIFIER_LOWVOLTAGE) == 0) {
+		return CTWing_LowVoltageAlarm_CodeDataReport(pClient, *(AepLowVoltageAlarmData*)srcStruct);
+	}
+	else if (strcmp(serviceIdentifier, AEP_SERVICE_ENTIFIER_MAGNETICDISTURB) == 0) {
+		return CTWing_MagneticDisturb_CodeDataReport(pClient, *(AepMagneticDisturbData*)srcStruct);
+	}
+	else {
+		AepString result = {0};
+		return result;
+	}
+#endif
+	
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_3
+	if (strcmp(serviceIdentifier, AEP_SERVICE_ENTIFIER_DATAREPORT) == 0) {
+		return CTWing_DataReport_CodeDataReport(pClient, *(AepDataReportData*)srcStruct);
+	}
+	else if (strcmp(serviceIdentifier, AEP_SERVICE_ENTIFIER_SIGNALREPORT) == 0) {
+		return CTWing_SignalReport_CodeDataReport(pClient, *(AepSignalReportData*)srcStruct);
+	}
+	else if (strcmp(serviceIdentifier, AEP_SERVICE_ENTIFIER_EXTRAREPORT) == 0) {
+		return CTWing_ExtraReport_CodeDataReport(pClient, *(AepExtraReportData*)srcStruct);
+	}
+	else if (strcmp(serviceIdentifier, AEP_SERVICE_ENTIFIER_HEARTBEAT) == 0) {
+		return CTWing_HeartBeat_CodeDataReport(pClient, *(AepHeartBeatData*)srcStruct);
+	}
+	else if (strcmp(serviceIdentifier, AEP_SERVICE_ENTIFIER_PARKINGCHANGE) == 0) {
+		return CTWing_ParkingChangeInfo_CodeDataReport(pClient, *(AepParkingChangeInfoData*)srcStruct);
+	}
+	else if (strcmp(serviceIdentifier, AEP_SERVICE_ENTIFIER_ERRORCODE) == 0) {
+		return CTWing_ErrorCodeReport_CodeDataReport(pClient, *(AepErrorCodeReportData*)srcStruct);
+	}
+	else if (strcmp(serviceIdentifier, AEP_SERVICE_ENTIFIER_LOWVOLTAGE) == 0) {
+		return CTWing_LowVoltageAlarm_CodeDataReport(pClient, *(AepLowVoltageAlarmData*)srcStruct);
+	}
+	else if (strcmp(serviceIdentifier, AEP_SERVICE_ENTIFIER_MAGNETICDISTURB) == 0) {
+		return CTWing_MagneticDisturb_CodeDataReport(pClient, *(AepMagneticDisturbData*)srcStruct);
+	}
+	else {
+		AepString result = {0};
+		return result;
+	}
+#endif
 }
 
 /**********************************************************************************************************

@@ -926,6 +926,8 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 #endif
 	
 #if CTWING_AEPMODULE_MODE
+
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_1
 	SpotStatusTypedef SpotStatusData;
 	
 	/* 检查是否有数据需要发送 */
@@ -1049,6 +1051,132 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		NETCTWingNeedSendCode.ResponseInfo = 0;
 #endif
 	}
+#endif
+
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_2
+	SpotStatusTypedef SpotStatusData;
+	
+	/* 检查是否有数据需要发送 */
+	if (Inspect_Message_SpotStatusisEmpty() == false) {
+	#if NBCTWING_SENDCODE_LONG_STATUS
+		NETCTWingNeedSendCode.LongStatus = 1;
+	#endif
+	}
+	
+	/* CTWING SHORT STATUS DATA ENQUEUE */
+	if (NETCTWingNeedSendCode.ShortStatus) {
+#if NBCTWING_SENDCODE_SHORT_STATUS
+		NETCTWingNeedSendCode.ShortStatus = 0;
+#endif
+	}
+	/* CTWING LONG STATUS DATA ENQUEUE */
+	else if (NETCTWingNeedSendCode.LongStatus) {
+#if NBCTWING_SENDCODE_LONG_STATUS
+		AepBytes aepCodeResult;
+		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
+			return;
+		}
+		Inspect_Message_SpotStatusDequeue(&SpotStatusData);
+		if (!(SpotStatusData.spot_status & 0x02)) {
+			CTWing_Message_Operate_Creat_Data_Report(&CTWingClientHandler, &AepDataReportSrcdata);
+			AepDataReportSrcdata.ptime						= (long long)SpotStatusData.unixTime * 1000;
+			AepDataReportSrcdata.parking_state					= (SpotStatusData.spot_status & 0x01);
+			AepDataReportSrcdata.parking_change				= (SpotStatusData.spot_status & 0x01);
+			AepDataReportSrcdata.magnetic_value				= (SpotStatusData.qmc5883lData.X_Now + SpotStatusData.qmc5883lData.Y_Now + SpotStatusData.qmc5883lData.Z_Now) & 1000;
+			
+			aepCodeResult = CTWing_CodeDataReportByIdToBytes(&CTWingClientHandler, AEP_SERVICE_ID_DATAREPORT, &AepDataReportSrcdata);
+		}
+		else {
+			CTWing_Message_Operate_Creat_Heart_Beat(&CTWingClientHandler, &AepHeartBeatSrcdata);
+			AepHeartBeatSrcdata.parking_state					= (SpotStatusData.spot_status & 0x01);
+			AepHeartBeatSrcdata.parking_change					= (SpotStatusData.spot_status & 0x01);
+			AepHeartBeatSrcdata.magnetic_value					= (SpotStatusData.qmc5883lData.X_Now + SpotStatusData.qmc5883lData.Y_Now + SpotStatusData.qmc5883lData.Z_Now) & 1000;
+			
+			aepCodeResult = CTWing_CodeDataReportByIdToBytes(&CTWingClientHandler, AEP_SERVICE_ID_HEARTBEAT, &AepHeartBeatSrcdata);
+		}
+		
+		NET_CTWing_Message_SendDataEnqueue((unsigned char *)aepCodeResult.str, aepCodeResult.len);
+		NETCTWingNeedSendCode.LongStatus = 0;
+		Inspect_Message_SpotStatusOffSet();
+		NET_NBIOT_CTWingSentDataAfterExexution();
+#endif
+	}
+	/* CTWING WORK INFO DATA ENQUEUE */
+	else if (NETCTWingNeedSendCode.WorkInfo) {
+#if NBCTWING_SENDCODE_WORK_INFO
+		AepBytes aepCodeResult;
+		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
+			return;
+		}
+		CTWing_Message_Operate_Creat_Signal_Report(&CTWingClientHandler, &AepSignalReportSrcdata);
+		
+		aepCodeResult = CTWing_CodeDataReportByIdToBytes(&CTWingClientHandler, AEP_SERVICE_ID_SIGNALREPORT, &AepSignalReportSrcdata);
+		
+		NET_CTWing_Message_SendDataEnqueue((unsigned char *)aepCodeResult.str, aepCodeResult.len);
+		NETCTWingNeedSendCode.WorkInfo = 0;
+		NET_NBIOT_CTWingSentDataAfterExexution();
+#endif
+	}
+#endif
+
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_3
+	SpotStatusTypedef SpotStatusData;
+	
+	/* 检查是否有数据需要发送 */
+	if (Inspect_Message_SpotStatusisEmpty() == false) {
+	#if NBCTWING_SENDCODE_LONG_STATUS
+		NETCTWingNeedSendCode.LongStatus = 1;
+	#endif
+	}
+	/* CTWING LONG STATUS DATA ENQUEUE */
+	if (NETCTWingNeedSendCode.LongStatus) {
+#if NBCTWING_SENDCODE_LONG_STATUS
+		AepBytes aepCodeResult;
+		if (TCFG_Utility_Get_Nbiot_Registered() != true) {
+			return;
+		}
+		Inspect_Message_SpotStatusDequeue(&SpotStatusData);
+		if (!(SpotStatusData.spot_status & 0x02)) {
+			CTWing_Message_Operate_Creat_Extra_Report(&CTWingClientHandler, &AepExtraReportSrcdata);
+			AepExtraReportSrcdata.ptime						= (long long)SpotStatusData.unixTime * 1000;
+			AepExtraReportSrcdata.parking_state				= (SpotStatusData.spot_status & 0x01);
+			AepExtraReportSrcdata.parking_change				= (SpotStatusData.spot_status & 0x01);
+			AepExtraReportSrcdata.magnetic_value				= (SpotStatusData.qmc5883lData.Z_Now & 1000);
+			
+			aepCodeResult = CTWing_CodeDataReportByIdToBytes(&CTWingClientHandler, AEP_SERVICE_ID_EXTRAREPORT, &AepExtraReportSrcdata);
+			
+			NET_CTWing_Message_SendDataEnqueue((unsigned char *)aepCodeResult.str, aepCodeResult.len);
+		}
+		else {
+			CTWing_Message_Operate_Creat_Heart_Beat(&CTWingClientHandler, &AepHeartBeatSrcdata);
+			AepHeartBeatSrcdata.parking_state					= (SpotStatusData.spot_status & 0x01);
+			AepHeartBeatSrcdata.parking_change					= (SpotStatusData.spot_status & 0x01);
+			AepHeartBeatSrcdata.magnetic_value					= (SpotStatusData.qmc5883lData.Z_Now & 1000);
+			
+			aepCodeResult = CTWing_CodeDataReportByIdToBytes(&CTWingClientHandler, AEP_SERVICE_ID_HEARTBEAT, &AepHeartBeatSrcdata);
+			
+			NET_CTWing_Message_SendDataEnqueue((unsigned char *)aepCodeResult.str, aepCodeResult.len);
+		}
+		
+		AepDataReportSrcdata.parking_state						= (SpotStatusData.spot_status & 0x01);
+		aepCodeResult = CTWing_CodeDataReportByIdToBytes(&CTWingClientHandler, AEP_SERVICE_ID_DATAREPORT, &AepDataReportSrcdata);
+		NET_CTWing_Message_SendDataEnqueue((unsigned char *)aepCodeResult.str, aepCodeResult.len);
+		
+		AepSignalReportSrcdata.rsrp							= AEP_MODULE_NB_RSRP;
+		AepSignalReportSrcdata.sinr							= AEP_MODULE_NB_SINR;
+		AepSignalReportSrcdata.pci							= AEP_MODULE_NB_PCI;
+		AepSignalReportSrcdata.ecl							= AEP_MODULE_NB_ECL;
+		AepSignalReportSrcdata.cell_id						= AEP_MODULE_NB_CELLID;
+		aepCodeResult = CTWing_CodeDataReportByIdToBytes(&CTWingClientHandler, AEP_SERVICE_ID_SIGNALREPORT, &AepSignalReportSrcdata);
+		NET_CTWing_Message_SendDataEnqueue((unsigned char *)aepCodeResult.str, aepCodeResult.len);
+		
+		NETCTWingNeedSendCode.LongStatus = 0;
+		Inspect_Message_SpotStatusOffSet();
+		NET_NBIOT_CTWingSentDataAfterExexution();
+#endif
+	}
+#endif
+
 #endif
 	
 #else
