@@ -1642,7 +1642,9 @@ void NET_CTWING_NBIOT_Event_RecvData(CTWING_ClientsTypeDef* pClient)
 {
 	u8 CTWINGFeedBackData[] = {0xAA, 0xBB};									//CTWING反馈包数据
 	bool CTWINGFeedBackFlag = false;										//CTWING反馈包接收标志位
+#if !CTWING_AEPMODULE_MODE
 	NBIOT_ByteStreamDnloadHead CTWingDnHead;
+#endif
 	
 	CTWING_NBIOT_DictateEvent_SetTime(pClient, 60);
 	
@@ -1660,6 +1662,7 @@ void NET_CTWING_NBIOT_Event_RecvData(CTWING_ClientsTypeDef* pClient)
 		/* Has Data Need Receive */
 		for (int index = 0; index < pClient->LWM2MStack->NBIotStack->Parameter.coapReadMessage.buffered; index++) {
 			
+#if !CTWING_AEPMODULE_MODE
 			/* 读取负载数据 */
 			if (NBIOT_Neul_NBxx_ReadCTWINGPayload(pClient->LWM2MStack->NBIotStack, &CTWingDnHead) == NBIOT_OK) {
 				/* Dictate execute is Success */
@@ -1683,6 +1686,33 @@ void NET_CTWING_NBIOT_Event_RecvData(CTWING_ClientsTypeDef* pClient)
 				}
 				return;
 			}
+#endif
+			
+#if CTWING_AEPMODULE_MODE
+			/* 读取负载数据 */
+			if (NBIOT_Neul_NBxx_ReadCOAPPayload(pClient->LWM2MStack->NBIotStack) == NBIOT_OK) {
+				/* Dictate execute is Success */
+				pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent = pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent;
+			}
+			else {
+				/* Dictate execute is Fail */
+				if (Stm32_Calculagraph_IsExpiredSec(&pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateRunTime) == true) {
+					/* Dictate TimeOut */
+					pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEnable = false;
+					pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+					pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateRecvDataFailureCnt++;
+					if (pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateRecvDataFailureCnt > 3) {
+						pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateRecvDataFailureCnt = 0;
+						pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent = STOP_MODE;
+					}
+				}
+				else {
+					/* Dictate isn't TimeOut */
+					pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent = pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent;
+				}
+				return;
+			}
+#endif
 			
 			if (memcmp((const char*)pClient->LWM2MStack->NBIotStack->Recvbuf, CTWINGFeedBackData, sizeof(CTWINGFeedBackData)) == 0) {
 				/* Is Feedback */
@@ -1711,7 +1741,12 @@ void NET_CTWING_NBIOT_Event_RecvData(CTWING_ClientsTypeDef* pClient)
 				/* Not Feedback */
 				NET_CTWing_Message_RecvDataEnqueue(pClient->LWM2MStack->NBIotStack->Recvbuf, pClient->LWM2MStack->NBIotStack->Recvlen);
 #ifdef CTWING_DEBUG_LOG_RF_PRINT
+#if !CTWING_AEPMODULE_MODE
 				CTWING_DEBUG_LOG_PRINTF("CTWing Recv Data TaskID: %d Ok", CTWingDnHead.TaskID);
+#endif
+#if CTWING_AEPMODULE_MODE
+				CTWING_DEBUG_LOG_PRINTF("CTWing Recv Data Ok");
+#endif
 #endif
 			}
 		}
@@ -1930,7 +1965,9 @@ void NET_CTWING_NBIOT_Event_SendDataRANormal(CTWING_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_CTWING_NBIOT_Event_RecvDataRANormal(CTWING_ClientsTypeDef* pClient)
 {
+#if !CTWING_AEPMODULE_MODE
 	NBIOT_ByteStreamDnloadHead CTWingDnHead;
+#endif
 	
 	CTWING_NBIOT_DictateEvent_SetTime(pClient, 60);
 	
@@ -1960,6 +1997,7 @@ void NET_CTWING_NBIOT_Event_RecvDataRANormal(CTWING_ClientsTypeDef* pClient)
 		if (pClient->LWM2MStack->NBIotStack->Parameter.coapReadMessage.buffered != 0) {
 			/* Has Data Need Receive */
 			for (int index = 0; index < pClient->LWM2MStack->NBIotStack->Parameter.coapReadMessage.buffered; index++) {
+#if !CTWING_AEPMODULE_MODE
 				/* 读取负载数据 */
 				if (NBIOT_Neul_NBxx_ReadCTWINGPayload(pClient->LWM2MStack->NBIotStack, &CTWingDnHead) == NBIOT_OK) {
 					/* Dictate execute is Success */
@@ -1983,10 +2021,42 @@ void NET_CTWING_NBIOT_Event_RecvDataRANormal(CTWING_ClientsTypeDef* pClient)
 					}
 					return;
 				}
+#endif
+				
+#if CTWING_AEPMODULE_MODE
+				/* 读取负载数据 */
+				if (NBIOT_Neul_NBxx_ReadCOAPPayload(pClient->LWM2MStack->NBIotStack) == NBIOT_OK) {
+					/* Dictate execute is Success */
+					pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent = pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent;
+				}
+				else {
+					/* Dictate execute is Fail */
+					if (Stm32_Calculagraph_IsExpiredSec(&pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateRunTime) == true) {
+						/* Dictate TimeOut */
+						pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEnable = false;
+						pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent = HARDWARE_REBOOT;
+						pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateRecvDataRANormalFailureCnt++;
+						if (pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateRecvDataRANormalFailureCnt > 3) {
+							pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateRecvDataRANormalFailureCnt = 0;
+							pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent = STOP_MODE;
+						}
+					}
+					else {
+						/* Dictate isn't TimeOut */
+						pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent = pClient->LWM2MStack->NBIotStack->DictateRunCtl.dictateEvent;
+					}
+					return;
+				}
+#endif
 				
 				NET_CTWing_Message_RecvDataEnqueue(pClient->LWM2MStack->NBIotStack->Recvbuf, pClient->LWM2MStack->NBIotStack->Recvlen);
 #ifdef CTWING_DEBUG_LOG_RF_PRINT
+#if !CTWING_AEPMODULE_MODE
 				CTWING_DEBUG_LOG_PRINTF("CTWing Recv Data TaskID: %d Ok", CTWingDnHead.TaskID);
+#endif
+#if CTWING_AEPMODULE_MODE
+				CTWING_DEBUG_LOG_PRINTF("CTWing Recv Data Ok");
+#endif
 #endif
 			}
 		}
@@ -2039,531 +2109,65 @@ void NET_CTWING_NBIOT_Event_RecvDataRANormal(CTWING_ClientsTypeDef* pClient)
 **********************************************************************************************************/
 void NET_CTWING_NBIOT_Event_ExecutDownlinkData(CTWING_ClientsTypeDef* pClient)
 {
-	u16 recvBufOffset = 0;
-	u16 recvMagicNum = 0;
-	u8 ret = NETIP_OK;
+	AepCmdData aepCmdResult;
+	AepBytes   aepCodeResult;
 	
 	if (NET_CTWing_Message_RecvDataDequeue(pClient->Recvbuf, (unsigned short*)&pClient->Recvlen) == true) {
 		pClient->Recvbuf[pClient->Recvlen] = '\0';
 		
-		/* 私有普通下行数据 */
-		for (int i = 0; i < pClient->Recvlen; i++) {
-			if ((pClient->Recvbuf[i] == 'T') && (pClient->Recvbuf[i+1] == 'C') && (pClient->Recvbuf[i+2] == 'L') && (pClient->Recvbuf[i+3] == 'D')) {
-				recvBufOffset = i;
-				break;
-			}
-		}
+		BEEP_CtrlRepeat_Extend(4, 75, 25);
 		
-		if (recvBufOffset != 0) {
-			/* Find "TCLD" */
-			if (pClient->Recvbuf[recvBufOffset + TCLOD_MSGVERSION_OFFSET] == TCLOD_MSGVERSION) {
-				if (pClient->Recvbuf[recvBufOffset + TCLOD_MSGID_OFFSET] == TCLOD_CONFIG_SET) {
-					BEEP_CtrlRepeat_Extend(1, 300, 0);
-					TCFG_EEPROM_SetNBCmdCnt(1 + TCFG_EEPROM_GetNBCmdCnt());
-					TCFG_Utility_Add_NBIot_RecvCount();
-					
-					/* 工作模式配置指令 */
-				#if CTWING_DOWNLOAD_CMD_WORKMODE
-					if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Workmode") != NULL) {
-						u16 mode;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
-							"{(Workmode):{(val):%hu,(Magic):%hu}}", &mode, &recvMagicNum);
-						if (recvMagicNum == TCLOD_MAGIC_NUM) {
-							TCFG_SystemData.WorkMode = mode;
-							if ((TCFG_SystemData.WorkMode != DEBUG_WORK) && (TCFG_SystemData.WorkMode != NORMAL_WORK)) {
-								TCFG_SystemData.WorkMode = NORMAL_WORK;
-								TCFG_EEPROM_SetWorkMode(TCFG_SystemData.WorkMode);
-								ret = NETIP_ERRORPARAM;
-							}
-							else {
-								TCFG_EEPROM_SetWorkMode(TCFG_SystemData.WorkMode);
-							}
-						}
-						else {
-							ret = NETIP_UNKNOWNERROR;
-						}
-					}
-				#endif
-					/* 传感器灵敏度配置指令 */
-				#if CTWING_DOWNLOAD_CMD_SENSE
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Sense") != NULL) {
-						u16 sense;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
-							"{(Sense):{(val):%hu,(Magic):%hu}}", &sense, &recvMagicNum);
-						if (recvMagicNum == TCLOD_MAGIC_NUM) {
-							TCFG_SystemData.Sensitivity = sense;
-							if ((TCFG_SystemData.Sensitivity > SENSE_LOWEST) || (TCFG_SystemData.Sensitivity < SENSE_HIGHEST)) {
-								TCFG_SystemData.Sensitivity = SENSE_MIDDLE;
-								TCFG_EEPROM_SetSavedSensitivity(TCFG_SystemData.Sensitivity);
-								ret = NETIP_ERRORPARAM;
-							}
-							else {
-								TCFG_EEPROM_SetSavedSensitivity(TCFG_SystemData.Sensitivity);
-							}
-						}
-						else {
-							ret = NETIP_UNKNOWNERROR;
-						}
-					}
-				#endif
-					/* 无线心跳间隔时间配置指令 */
-				#if CTWING_DOWNLOAD_CMD_RFHEART
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "RFHeart") != NULL) {
-						u16 rfheart;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
-							"{(RFHeart):{(val):%hu,(Magic):%hu}}", &rfheart, &recvMagicNum);
-						if (recvMagicNum == TCLOD_MAGIC_NUM) {
-							TCFG_SystemData.Heartinterval = rfheart;
-							if ((TCFG_SystemData.Heartinterval > 120) || (TCFG_SystemData.Heartinterval < 1)) {
-								TCFG_SystemData.Heartinterval = HEART_INTERVAL;
-								TCFG_EEPROM_SetHeartinterval(TCFG_SystemData.Heartinterval);
-								ret = NETIP_ERRORPARAM;
-							}
-							else {
-								TCFG_EEPROM_SetHeartinterval(TCFG_SystemData.Heartinterval);
-							}
-						}
-						else {
-							ret = NETIP_UNKNOWNERROR;
-						}
-					}
-				#endif
-					/* 初始化传感器指令 */
-				#if CTWING_DOWNLOAD_CMD_BACKGROUND
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Background") != NULL) {
-						u16 backgroundval;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
-							"{(Background):{(val):%hu,(Magic):%hu}}", &backgroundval, &recvMagicNum);
-						if (recvMagicNum == TCLOD_MAGIC_NUM) {
-							if (((radar_targetinfo.strenth_total_diff > (backgroundval-5)) && (radar_targetinfo.strenth_total_diff < (backgroundval+5))) || (backgroundval == 0)) {
-								Radar_InitBackground(TO_SAVE_RADAR_BACKGROUND);
-								QMC5883L_InitBackgroud();
-							}
-							else {
-								ret = NETIP_ERRORPARAM;
-							}
-						}
-						else {
-							ret = NETIP_UNKNOWNERROR;
-						}
-					}
-				#endif
-					/* Reboot */
-				#if CTWING_DOWNLOAD_CMD_REBOOT
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Reboot") != NULL) {
-						BEEP_CtrlRepeat_Extend(2, 500, 250);
-						Stm32_System_Software_Reboot(RBTMODE_COAP_COMMAND);
-					}
-				#endif
-					/* NewSn */
-				#if CTWING_DOWNLOAD_CMD_NEWSN
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Newsn") != NULL) {
-						u32 newsnval;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
-							"{(Newsn):{(val):%08x,(Magic):%hu}}", &newsnval, &recvMagicNum);
-						if (recvMagicNum == TCLOD_MAGIC_NUM) {
-							TCFG_EEPROM_Set_MAC_SN(newsnval);
-						}
-						else {
-							ret = NETIP_UNKNOWNERROR;
-						}
-					}
-				#endif
-					/* CDP Server */
-				#if CTWING_DOWNLOAD_CMD_CDPIP
-					#if NETPROTOCAL == NETCTWING
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Server") != NULL) {
-						u16 cdpip[4];
-						u16 cdpport;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
-							"{(Server):{(IP):(%hu.%hu.%hu.%hu),(Port):%hu,(Magic):%hu}}", &cdpip[3], &cdpip[2], &cdpip[1], &cdpip[0], &cdpport, &recvMagicNum);
-						if (recvMagicNum == TCLOD_MAGIC_NUM) {
-							TCFG_SystemData.CTWingCDPServer.ip.ip8[3] = cdpip[3];
-							TCFG_SystemData.CTWingCDPServer.ip.ip8[2] = cdpip[2];
-							TCFG_SystemData.CTWingCDPServer.ip.ip8[1] = cdpip[1];
-							TCFG_SystemData.CTWingCDPServer.ip.ip8[0] = cdpip[0];
-							TCFG_SystemData.CTWingCDPServer.port = cdpport;
-							TCFG_EEPROM_SetCTWingIP(TCFG_SystemData.CTWingCDPServer.ip.ip32);
-							TCFG_EEPROM_SetCTWingPort(TCFG_SystemData.CTWingCDPServer.port);
-							#if NBCTWING_SENDCODE_DYNAMIC_INFO
-							NETCTWingNeedSendCode.DynamicInfo = 1;
-							#endif
-							NET_CTWing_Message_RecvDataOffSet();
-							NETCTWingNeedSendCode.ResponseInfoMsgId = pClient->Recvbuf[recvBufOffset + TCLOD_MSGTYPE_OFFSET];
-							NETCTWingNeedSendCode.ResponseInfoErrcode = ret;
-							NETCTWingNeedSendCode.ResponseInfo = 1;
-							NET_NBIOT_Initialization();
-							return;
-						}
-						else {
-							ret = NETIP_UNKNOWNERROR;
-						}
-					}
-					#endif
-				#endif
-					/* Active */
-				#if CTWING_DOWNLOAD_CMD_ACTIVE
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "Active") != NULL) {
-						u16 activeval;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
-							"{(Active):{(val):%hu,(Magic):%hu}}", &activeval, &recvMagicNum);
-						if (recvMagicNum == TCLOD_MAGIC_NUM) {
-							DeviceIdleMode = true;
-							TCFG_EEPROM_SetActiveDevice(activeval);
-							if (activeval) {
-								DeviceActivedMode = true;
-								BEEP_CtrlRepeat_Extend(5,30,70);
-							#if NBCTWING_SENDCODE_WORK_INFO
-								NETCTWingNeedSendCode.WorkInfo = 1;
-							#endif
-							}
-							else {
-								DeviceActivedMode = false;
-								BEEP_CtrlRepeat_Extend(1,500,0);
-							}
-						}
-						else {
-							ret = NETIP_UNKNOWNERROR;
-						}
-					}
-				#endif
-					/* MagMod */
-				#if CTWING_DOWNLOAD_CMD_MAGMOD
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "MagMod") != NULL) {
-						u16 magmodval;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
-							"{(MagMod):{(val):%hu,(Magic):%hu}}", &magmodval, &recvMagicNum);
-						if (recvMagicNum == TCLOD_MAGIC_NUM) {
-							TCFG_EEPROM_SetMagMode(magmodval);
-							talgo_set_magmod(magmodval);
-						}
-						else {
-							ret = NETIP_UNKNOWNERROR;
-						}
-					}
-				#endif
-					/* NbHeart */
-				#if CTWING_DOWNLOAD_CMD_NBHEART
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "NbHeart") != NULL) {
-						u16 nbheartval;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
-							"{(NbHeart):{(val):%hu,(Magic):%hu}}", &nbheartval, &recvMagicNum);
-						if (recvMagicNum == TCLOD_MAGIC_NUM) {
-							TCFG_EEPROM_SetNbiotHeart(TCFG_EEPROM_ChangeNbiotHeart(nbheartval));
-							TCFG_SystemData.NBIotHeart = TCFG_EEPROM_GetNbiotHeart();
-						}
-						else {
-							ret = NETIP_UNKNOWNERROR;
-						}
-					}
-				#endif
-					/* InitRadar */
-				#if CTWING_DOWNLOAD_CMD_INITRADAR
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "InitRadar") != NULL) {
-						u32 i32, j32, k32, m32;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
-							"{(InitRadar):{(v23456):%u,(v7890a):%u,(vbcdef):%u,(vg):%u,(Magic):%hu}}", &i32, &j32, &k32, &m32, &recvMagicNum);
-						if (recvMagicNum == TCLOD_MAGIC_NUM) {
-							Radar_InitBG_Cmd(i32, j32, k32, m32);
-						}
-						else {
-							ret = NETIP_UNKNOWNERROR;
-						}
-					}
-				#endif
-					/* InitMag */
-				#if CTWING_DOWNLOAD_CMD_INITMAG
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "InitMag") != NULL) {
-						s16 x, y, z;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
-							"{(InitMag):{(x):%hd,(y):%hd,(z):%hd,(Magic):%hu}}", &x, &y, &z, &recvMagicNum);
-						if (recvMagicNum == TCLOD_MAGIC_NUM) {
-							QMC5883L_InitBackgroud_cmd(x, y, z);
-						}
-						else {
-							ret = NETIP_UNKNOWNERROR;
-						}
-					}
-				#endif
-					/* DisRange */
-				#if CTWING_DOWNLOAD_CMD_DISRANGE
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "DisRange") != NULL) {
-						u16 disrangeval;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
-							"{(DisRange):{(val):%hu,(Magic):%hu}}", &disrangeval, &recvMagicNum);
-						if (recvMagicNum == TCLOD_MAGIC_NUM) {
-							tradar_set_distance_range(disrangeval + 4);
-							TCFG_EEPROM_SetRadarRange(disrangeval);
-							TCFG_SystemData.RadarRange = TCFG_EEPROM_GetRadarRange();
-						}
-						else {
-							ret = NETIP_UNKNOWNERROR;
-						}
-					}
-				#endif
-					/* CarInDelay */
-				#if CTWING_DOWNLOAD_CMD_CARINDELAY
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "InDelay") != NULL) {
-						u16 indelayval;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
-							"{(InDelay):{(val):%hu,(Magic):%hu}}", &indelayval, &recvMagicNum);
-						if (recvMagicNum == TCLOD_MAGIC_NUM) {
-							TCFG_EEPROM_SetCarInDelay(indelayval);
-							TCFG_SystemData.CarInDelay = TCFG_EEPROM_GetCarInDelay();
-						}
-						else {
-							ret = NETIP_UNKNOWNERROR;
-						}
-					}
-				#endif
-					/* RATime */
-				#if CTWING_DOWNLOAD_CMD_RATIME
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "RATime") != NULL) {
-						u16 ratime;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
-							"{(RATime):{(val):%hu,(Magic):%hu}}", &ratime, &recvMagicNum);
-						if (recvMagicNum == TCLOD_MAGIC_NUM) {
-							TCFG_EEPROM_SetCoapRATimeHour(ratime);
-							TCFG_SystemData.CoapRATimeHour = TCFG_EEPROM_GetCoapRATimeHour();
-						}
-						else {
-							ret = NETIP_UNKNOWNERROR;
-						}
-					}
-				#endif
-					/* MagTempCoef */
-				#if CTWING_DOWNLOAD_CMD_MAGTEMPCOEF
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "MagCoef") != NULL) {
-						short magTempCoefX, magTempCoefY, magTempCoefZ;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
-							"{(MagCoef):{(x):%hd,(y):%hd,(z):%hd,(Magic):%hu}}", &magTempCoefX, &magTempCoefY, &magTempCoefZ, &recvMagicNum);
-						if (recvMagicNum == TCLOD_MAGIC_NUM) {
-							TCFG_SystemData.MagCoefX = magTempCoefX;
-							TCFG_SystemData.MagCoefY = magTempCoefY;
-							TCFG_SystemData.MagCoefZ = magTempCoefZ;
-							TCFG_EEPROM_SetMagTempCoef(TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
-						}
-						else {
-							ret = NETIP_UNKNOWNERROR;
-						}
-					}
-				#endif
-					/* SetQmcCoef */
-				#if CTWING_DOWNLOAD_CMD_SETQMCCOEF
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "SetQmcCoef") != NULL) {
-						short magTempCoefX, magTempCoefY, magTempCoefZ;
-						QMC5883L_measure_qmc_coef((signed char*)&magTempCoefX, (signed char*)&magTempCoefY, (signed char*)&magTempCoefZ);
-						TCFG_SystemData.MagCoefX = magTempCoefX;
-						TCFG_SystemData.MagCoefY = magTempCoefY;
-						TCFG_SystemData.MagCoefZ = magTempCoefZ;
-						TCFG_EEPROM_SetMagTempCoef(TCFG_SystemData.MagCoefX, TCFG_SystemData.MagCoefY, TCFG_SystemData.MagCoefZ);
-					}
-				#endif
-					/* BeepOff */
-				#if CTWING_DOWNLOAD_CMD_BEEPOFF
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "BeepOff") != NULL) {
-						u16 beepoff;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
-							"{(BeepOff):{(val):%hu,(Magic):%hu}}", &beepoff, &recvMagicNum);
-						if (recvMagicNum == TCLOD_MAGIC_NUM) {
-							TCFG_SystemData.BeepCtrlOff = beepoff;
-							TCFG_EEPROM_SetBeepOff(TCFG_SystemData.BeepCtrlOff);
-						}
-						else {
-							ret = NETIP_UNKNOWNERROR;
-						}
-					}
-				#endif
-					/* Rollinit */
-				#if CTWING_DOWNLOAD_CMD_ROLLINIT
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "RollInit") != NULL) {
-						u16 rollinit;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
-							"{(RollInit):{(val):%hu,(Magic):%hu}}", &rollinit, &recvMagicNum);
-						if (recvMagicNum == TCLOD_MAGIC_NUM) {
-							TCFG_SystemData.RollingOverInitSensor = rollinit;
-							TCFG_EEPROM_SetRollingOverInitSensor(TCFG_SystemData.RollingOverInitSensor);
-						}
-						else {
-							ret = NETIP_UNKNOWNERROR;
-						}
-					}
-				#endif
-					/* UpLimit */
-				#if CTWING_DOWNLOAD_CMD_UPLIMIT
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "UpLimit") != NULL) {
-						short limitRssi, limitSnr;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
-							"{(UpLimit):{(rssi):%hd,(snr):%hd,(Magic):%hu}}", &limitRssi, &limitSnr, &recvMagicNum);
-						if (recvMagicNum == TCLOD_MAGIC_NUM) {
-							TCFG_SystemData.UpgradeLimitRssi = limitRssi;
-							TCFG_SystemData.UpgradeLimitSnr = limitSnr;
-							TCFG_EEPROM_SetUpgradeLimitRssi(TCFG_SystemData.UpgradeLimitRssi);
-							TCFG_EEPROM_SetUpgradeLimitSnr(TCFG_SystemData.UpgradeLimitSnr);
-						}
-						else {
-							ret = NETIP_UNKNOWNERROR;
-						}
-					}
-				#endif
-					/* NBLimit */
-				#if CTWING_DOWNLOAD_CMD_NBLIMIT
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "NBLimit") != NULL) {
-						short nblimit;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
-							"{(NBLimit):{(val):%hd,(Magic):%hu}}", &nblimit, &recvMagicNum);
-						if (recvMagicNum == TCLOD_MAGIC_NUM) {
-							TCFG_EEPROM_SetNBIotSentCountLimit(nblimit);
-						}
-						else {
-							ret = NETIP_UNKNOWNERROR;
-						}
-					}
-				#endif
-					/* CoverGain */
-				#if CTWING_DOWNLOAD_CMD_COVERGAIN
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "CoverGain") != NULL) {
-						uint16_t CoverGain;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
-							"{(CoverGain):{(val):%hu,(Magic):%hu}}", &CoverGain, &recvMagicNum);
-						if (recvMagicNum == TCLOD_MAGIC_NUM) {
-							if ((CoverGain < RADAR_COVERGAIN_LOW) || (CoverGain > RADAR_COVERGAIN_HIGH)) {
-								CoverGain = RADAR_COVERGAIN_DEFAULT;
-							}
-							if (TCFG_SystemData.CoverGain != CoverGain) {
-								Radar_UpdateBG_Cmd(TCFG_SystemData.CoverGain, CoverGain);
-								TCFG_SystemData.CoverGain = CoverGain;
-								TCFG_EEPROM_SetCoverGain(TCFG_SystemData.CoverGain);
-							}
-						}
-						else {
-							ret = NETIP_UNKNOWNERROR;
-						}
-					}
-				#endif
-					/* RadarGain */
-				#if CTWING_DOWNLOAD_CMD_RADARGAIN
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "RadarGain") != NULL) {
-						uint16_t RadarGain;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
-							"{(RadarGain):{(val):%hu,(Magic):%hu}}", &RadarGain, &recvMagicNum);
-						if (recvMagicNum == TCLOD_MAGIC_NUM) {
-							if ((RadarGain < TRADAR_GAIN_LOWEST) || (RadarGain > TRADAR_GAIN_HIGHEST)) {
-								RadarGain = TRADAR_GAIN_DEFAULT;
-							}
-							if (TCFG_SystemData.RadarGain != RadarGain) {
-								TCFG_SystemData.RadarGain = RadarGain;
-								TCFG_EEPROM_SetRadarGain(TCFG_SystemData.RadarGain);
-							}
-						}
-						else {
-							ret = NETIP_UNKNOWNERROR;
-						}
-					}
-				#endif
-					/* SensorMode */
-				#if CTWING_DOWNLOAD_CMD_SENSORMODE
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "SensorMode") != NULL) {
-						uint16_t SenseMode;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
-							"{(SensorMode):{(val):%hu,(Magic):%hu}}", &SenseMode, &recvMagicNum);
-						if (recvMagicNum == TCLOD_MAGIC_NUM) {
-							if (TCFG_SystemData.SenseMode != SenseMode) {
-								TCFG_SystemData.SenseMode = SenseMode;
-								TCFG_EEPROM_SetSenseMode(TCFG_SystemData.SenseMode);
-							}
-						}
-						else {
-							ret = NETIP_UNKNOWNERROR;
-						}
-					}
-				#endif
-					/* SetMag */
-				#if CTWING_DOWNLOAD_CMD_SETMAG
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "SetMag") != NULL) {
-						short x[5], y[5], z[5];
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
-							"{(SetMag):{(x):[%hd,%hd,%hd,%hd,%hd],(y):[%hd,%hd,%hd,%hd,%hd],(z):[%hd,%hd,%hd,%hd,%hd],(Magic):%hu}}", \
-							&x[0],&x[1],&x[2],&x[3],&x[4],&y[0],&y[1],&y[2],&y[3],&y[4],&z[0],&z[1],&z[2],&z[3],&z[4], &recvMagicNum);
-						if (recvMagicNum == TCLOD_MAGIC_NUM) {
-							for (unsigned char i = 0; i < 5; i++) {
-								TCFG_SystemData.MagBackManualX[i] = x[i];
-								TCFG_SystemData.MagBackManualY[i] = y[i];
-								TCFG_SystemData.MagBackManualZ[i] = z[i];
-								TCFG_EEPROM_SetMagManualBack(i, x[i], y[i], z[i]);
-								if (x[i] != 0) talgo_set_manual_back(i, x[i], y[i], z[i]);
-							}
-						}
-						else {
-							ret = NETIP_UNKNOWNERROR;
-						}
-					}
-				#endif
-					/* ConfigRadar */
-				#if CTWING_DOWNLOAD_CMD_CFGRADAR
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "CfgRadar") != NULL) {
-						unsigned short interval, highpass, vtune;
-						sscanf((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, \
-							"{(CfgRadar):{(interval):%hu,(hpass):%hu,(tune):%hu,(Magic):%hu}}", &interval, &highpass, &vtune, &recvMagicNum);
-						if (recvMagicNum == TCLOD_MAGIC_NUM) {
-							TCFG_SystemData.RadarSampleInterval = interval;
-							Radar_Set_SampleInterval(interval);
-							TCFG_EEPROM_SetSampleInterval(interval);
-							TCFG_SystemData.RadarHighPass = highpass;
-							TCFG_EEPROM_SetHighPass(highpass);
-							TCFG_SystemData.RadarGain = vtune;
-							TCFG_EEPROM_SetRadarGain(TCFG_SystemData.RadarGain);
-						}
-						else {
-							ret = NETIP_UNKNOWNERROR;
-						}
-					}
-				#endif
-					else {
-						ret = NETIP_NOTSUPPORT;
-					}
-					/* ...... */
-				}
-				else if (pClient->Recvbuf[recvBufOffset + TCLOD_MSGID_OFFSET] == TCLOD_CONFIG_GET) {
-					BEEP_CtrlRepeat_Extend(2, 50, 50);
-					/* Workinfo */
-					if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "WorkInfo") != NULL) {
-				#if NBCTWING_SENDCODE_WORK_INFO
-						NETCTWingNeedSendCode.WorkInfo = 1;
-				#endif
-					}
-					/* BasicInfo */
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "BasicInfo") != NULL) {
-				#if NBCTWING_SENDCODE_BASIC_INFO
-						NETCTWingNeedSendCode.BasicInfo = 1;
-				#endif
-					}
-					/* DynamicInfo */
-					else if (strstr((char *)pClient->Recvbuf + recvBufOffset + TCLOD_DATA_OFFSET, "DynamicInfo") != NULL) {
-				#if NBCTWING_SENDCODE_DYNAMIC_INFO
-						NETCTWingNeedSendCode.DynamicInfo = 1;
-				#endif
-					}
-					else {
-						ret = NETIP_NOTSUPPORT;
-					}
-					/* ...... */
-				}
-				else {
-					ret = NETIP_NOTSUPPORT;
-				}
+#ifdef CTWING_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Printf("recvLen: %d", pClient->Recvlen);
+#endif
+		
+		aepCmdResult = CTWing_DecodeCmdDownFromBytes(pClient, (char*)pClient->Recvbuf, pClient->Recvlen);
+		
+#ifdef CTWING_DEBUG_LOG_RF_PRINT
+		Radio_Trf_Printf("code: %d", aepCmdResult.code);
+		Radio_Trf_Printf("taskId: %d", aepCmdResult.taskId);
+		Radio_Trf_Printf("serviceId: %d", aepCmdResult.serviceId);
+#endif
+		
+		if (aepCmdResult.code == AEP_CMD_SUCCESS) {
+			
+			if (aepCmdResult.serviceId == AEP_SERVICE_ID_DEVICECTRL_CMD) {
+				AepDeviceControlCmdData* data = (AepDeviceControlCmdData*)aepCmdResult.data;
+#ifdef CTWING_DEBUG_LOG_RF_PRINT
+				Radio_Trf_Printf("command_type: %d", data->command_type);
+#endif
+				AepDeviceControlRespSrcdata.taskId				= aepCmdResult.taskId;
+				AepDeviceControlRespSrcdata.command_type		= data->command_type;
+				
+				aepCodeResult = CTWing_CodeDataReportByIdToBytes(pClient, AEP_SERVICE_ID_DEVICECTRL_RESP, &AepDeviceControlRespSrcdata);
+				
+				NET_CTWing_Message_SendDataEnqueue((unsigned char *)aepCodeResult.str, aepCodeResult.len);
 			}
-			else {
-				ret = NETIP_NOTSUPPORT;
+			else if (aepCmdResult.serviceId == AEP_SERVICE_ID_HEARTBEAT_CMD) {
+				AepHeartbeatTimeCmdData* data = (AepHeartbeatTimeCmdData*)aepCmdResult.data;
+#ifdef CTWING_DEBUG_LOG_RF_PRINT
+				Radio_Trf_Printf("heartbeat_time: %f", data->heartbeat_time);
+#endif
+				AepHeartbeatTimeRespSrcdata.taskId				= aepCmdResult.taskId;
+				AepHeartbeatTimeRespSrcdata.heartbeat_time		= data->heartbeat_time;
+				
+				aepCodeResult = CTWing_CodeDataReportByIdToBytes(pClient, AEP_SERVICE_ID_HEARTBEAT_RESP, &AepHeartbeatTimeRespSrcdata);
+				
+				NET_CTWing_Message_SendDataEnqueue((unsigned char *)aepCodeResult.str, aepCodeResult.len);
+			}
+			else if (aepCmdResult.serviceId == AEP_SERVICE_ID_PROTECT_CMD) {
+				AepProtectTimeCmdData* data = (AepProtectTimeCmdData*)aepCmdResult.data;
+#ifdef CTWING_DEBUG_LOG_RF_PRINT
+				Radio_Trf_Printf("protect_time: %f", data->protect_time);
+#endif
+				AepProtectTimeRespSrcdata.taskId				= aepCmdResult.taskId;
+				AepProtectTimeRespSrcdata.protect_time			= data->protect_time;
+				
+				aepCodeResult = CTWing_CodeDataReportByIdToBytes(pClient, AEP_SERVICE_ID_PROTECT_RESP, &AepProtectTimeRespSrcdata);
+				
+				NET_CTWing_Message_SendDataEnqueue((unsigned char *)aepCodeResult.str, aepCodeResult.len);
 			}
 			
-			NETCTWingNeedSendCode.ResponseInfoMsgId = pClient->Recvbuf[recvBufOffset + TCLOD_MSGTYPE_OFFSET];
-			NETCTWingNeedSendCode.ResponseInfoErrcode = ret;
-			NETCTWingNeedSendCode.ResponseInfo = 1;
-		}
-		else {
-			/* Not Valid */
-			ret = NETIP_NOTVALID;
 		}
 		
 		NET_CTWing_Message_RecvDataOffSet();

@@ -11,6 +11,12 @@ static union { char c[4]; unsigned long mylong; } endian_test = {{ 'l', '?', '?'
 
 #define AEP_ENDIANNESS					((char)endian_test.mylong)
 
+#define AEP_CMD_SUCCESS					0
+#define AEP_CMD_FAILED					1
+#define AEP_CMD_INVALID_DATASET_TYPE		2
+#define AEP_CMD_INVALID_DATASET_IDENTIFIER	3
+#define AEP_CMD_PAYLOAD_PARSING_FAILED		4
+
 #if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_1
 #define AEP_SERVICE_ID_SPOTSTATUSDATA		2
 #define AEP_SERVICE_ENTIFIER_SPOTSTATUSDATA	"SpotStatusData"
@@ -72,6 +78,24 @@ static union { char c[4]; unsigned long mylong; } endian_test = {{ 'l', '?', '?'
 
 #define AEP_SERVICE_ID_MAGNETICDISTURB		1004
 #define AEP_SERVICE_ENTIFIER_MAGNETICDISTURB	"MagneticDisturb"
+
+#define AEP_SERVICE_ID_DEVICECTRL_CMD		8001
+#define AEP_SERVICE_ENTIFIER_DEVICECTRL_CMD	"DeviceControlCmd"
+
+#define AEP_SERVICE_ID_HEARTBEAT_CMD		8101
+#define AEP_SERVICE_ENTIFIER_HEARTBEAT_CMD	"HeartbeatTimeCmd"
+
+#define AEP_SERVICE_ID_PROTECT_CMD			8102
+#define AEP_SERVICE_ENTIFIER_PROTECT_CMD	"ProtectTimeCmd"
+
+#define AEP_SERVICE_ID_DEVICECTRL_RESP		9001
+#define AEP_SERVICE_ENTIFIER_DEVICECTRL_RESP	"DeviceControlResp"
+
+#define AEP_SERVICE_ID_HEARTBEAT_RESP		9101
+#define AEP_SERVICE_ENTIFIER_HEARTBEAT_RESP	"HeartbeatTimeResp"
+
+#define AEP_SERVICE_ID_PROTECT_RESP		9102
+#define AEP_SERVICE_ENTIFIER_PROTECT_RESP	"ProtectTimeResp"
 #endif
 
 #define AEP_MODULE_SAAS_VERSION			"JS_1.0"
@@ -95,6 +119,12 @@ static union { char c[4]; unsigned long mylong; } endian_test = {{ 'l', '?', '?'
 #define AEP_MODULE_NB_SNR				TCFG_Utility_Get_Nbiot_RadioSNR()
 #define AEP_MODULE_NB_TXPOWER				TCFG_Utility_Get_Nbiot_RadioTXpower()
 
+#if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_3
+extern unsigned char aep_ErrorCode_Event;
+extern unsigned char aep_LowVoltage_Event;
+extern unsigned char aep_MagDisturb_Event;
+#endif
+
 typedef struct AepStrStruct
 {
 	unsigned short		len;
@@ -102,6 +132,15 @@ typedef struct AepStrStruct
 } AepString;
 
 typedef AepString AepBytes;
+
+typedef struct AepCmdStruct
+{
+	char*			serviceIdentifier;
+	unsigned short		serviceId;
+	unsigned short		taskId;
+	void*			data;
+	int				code;
+} AepCmdData;
 
 #if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_1
 typedef struct AepSpotStatusDataStringStruct
@@ -373,6 +412,9 @@ typedef struct AepExtraReportStruct
 	char				error_code;
 	char				parking_change;
 	int				magnetic_value;
+	unsigned short		magnetic_value_x;
+	unsigned short		magnetic_value_y;
+	unsigned short		magnetic_value_z;
 } AepExtraReportData;
 
 extern AepExtraReportData		AepExtraReportSrcdata;
@@ -407,6 +449,9 @@ typedef struct AepHeartBeatStruct
 	char				error_code;
 	char				parking_change;
 	int				magnetic_value;
+	unsigned short		magnetic_value_x;
+	unsigned short		magnetic_value_y;
+	unsigned short		magnetic_value_z;
 } AepHeartBeatData;
 
 extern AepHeartBeatData			AepHeartBeatSrcdata;
@@ -448,6 +493,57 @@ typedef struct AepMagneticDisturbStruct
 extern AepMagneticDisturbData		AepMagneticDisturbSrcdata;
 
 AepString CTWing_MagneticDisturb_CodeDataReport(CTWING_ClientsTypeDef* pClient, AepMagneticDisturbData srcStruct);
+
+typedef struct AepDeviceControlRespStruct
+{
+	unsigned short		taskId;
+	char				command_type;
+} AepDeviceControlRespData;
+
+extern AepDeviceControlRespData	AepDeviceControlRespSrcdata;
+
+AepString CTWing_DeviceControl_Resp_CodeDataResponse(CTWING_ClientsTypeDef* pClient, AepDeviceControlRespData srcStruct);
+
+typedef struct AepHeartbeatTimeRespStruct
+{
+	unsigned short		taskId;
+	float			heartbeat_time;
+} AepHeartbeatTimeRespData;
+
+extern AepHeartbeatTimeRespData	AepHeartbeatTimeRespSrcdata;
+
+AepString CTWing_HeartbeatTime_Resp_CodeDataResponse(CTWING_ClientsTypeDef* pClient, AepHeartbeatTimeRespData srcStruct);
+
+typedef struct AepProtectTimeRespStruct
+{
+	unsigned short		taskId;
+	float			protect_time;
+} AepProtectTimeRespData;
+
+extern AepProtectTimeRespData		AepProtectTimeRespSrcdata;
+
+AepString CTWing_ProtectTime_Resp_CodeDataResponse(CTWING_ClientsTypeDef* pClient, AepProtectTimeRespData srcStruct);
+
+typedef struct AepDeviceControlCmdStruct
+{
+	char				command_type;
+} AepDeviceControlCmdData;
+
+int CTWing_DeviceControl_DecodeCmdDown(CTWING_ClientsTypeDef* pClient, char* source, AepDeviceControlCmdData* dest);
+
+typedef struct AepHeartbeatTimeCmdStruct
+{
+	float			heartbeat_time;
+} AepHeartbeatTimeCmdData;
+
+int CTWing_HeartbeatTime_DecodeCmdDown(CTWING_ClientsTypeDef* pClient, char* source, AepHeartbeatTimeCmdData* dest);
+
+typedef struct AepProtectTimeCmdStruct
+{
+	float			protect_time;
+} AepProtectTimeCmdData;
+
+int CTWing_ProtectTime_DecodeCmdDown(CTWING_ClientsTypeDef* pClient, char* source, AepProtectTimeCmdData* dest);
 #endif
 
 AepString CTWing_CodeDataReportByIdToStr(CTWING_ClientsTypeDef* pClient, int serviceId, void * srcStruct);
@@ -457,6 +553,10 @@ AepBytes CTWing_CodeDataReportByIdToBytes(CTWING_ClientsTypeDef* pClient, int se
 AepString CTWing_CodeDataReportByIdentifierToStr(CTWING_ClientsTypeDef* pClient, char* serviceIdentifier, void * srcStruct);
 
 AepBytes CTWing_CodeDataReportByIdentifierToBytes(CTWING_ClientsTypeDef* pClient, char* serviceIdentifier, void * srcStruct);
+
+AepCmdData CTWing_DecodeCmdDownFromStr(CTWING_ClientsTypeDef* pClient, char* source);
+
+AepCmdData CTWing_DecodeCmdDownFromBytes(CTWING_ClientsTypeDef* pClient, char* source, int len);
 
 #if CTWING_AEPMODULE_TYPE == CTWING_AEPMODULE_MVB_VD33D_P2_1
 void CTWing_Message_Operate_Creat_Work_Info(CTWING_ClientsTypeDef* pClient, AepWorkInfo * srcStruct);

@@ -28,6 +28,7 @@
 #include "hal_rtc.h"
 #include "radar_api.h"
 #include "string.h"
+#include <stdlib.h>
 
 NETCoapNeedSendCodeTypeDef	NETCoapNeedSendCode = NETCoapNeedSendCode_initializer;
 NETMqttSNNeedSendCodeTypeDef	NETMqttSNNeedSendCode = NETMqttSNNeedSendCode_initializer;
@@ -1141,9 +1142,18 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 			AepExtraReportSrcdata.ptime						= (long long)SpotStatusData.unixTime * 1000;
 			AepExtraReportSrcdata.parking_state				= (SpotStatusData.spot_status & 0x01);
 			AepExtraReportSrcdata.parking_change				= (SpotStatusData.spot_status & 0x01);
-			AepExtraReportSrcdata.magnetic_value				= (SpotStatusData.qmc5883lData.Z_Now & 1000);
+			AepExtraReportSrcdata.magnetic_value				= (SpotStatusData.qmc5883lDiff.BackVal_Diff % 1000);
+			AepExtraReportSrcdata.magnetic_value_x				= (abs(SpotStatusData.qmc5883lData.X_Now) % 1000);
+			AepExtraReportSrcdata.magnetic_value_y				= (abs(SpotStatusData.qmc5883lData.Y_Now) % 1000);
+			AepExtraReportSrcdata.magnetic_value_z				= (abs(SpotStatusData.qmc5883lData.Z_Now) % 1000);
 			
 			aepCodeResult = CTWing_CodeDataReportByIdToBytes(&CTWingClientHandler, AEP_SERVICE_ID_EXTRAREPORT, &AepExtraReportSrcdata);
+			
+			NET_CTWing_Message_SendDataEnqueue((unsigned char *)aepCodeResult.str, aepCodeResult.len);
+			
+			AepParkingChangeInfoSrcdata.parking_change			= (SpotStatusData.spot_status & 0x01);
+			
+			aepCodeResult = CTWing_CodeDataReportByIdToBytes(&CTWingClientHandler, AEP_SERVICE_ID_PARKINGCHANGE, &AepParkingChangeInfoSrcdata);
 			
 			NET_CTWing_Message_SendDataEnqueue((unsigned char *)aepCodeResult.str, aepCodeResult.len);
 		}
@@ -1151,7 +1161,10 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 			CTWing_Message_Operate_Creat_Heart_Beat(&CTWingClientHandler, &AepHeartBeatSrcdata);
 			AepHeartBeatSrcdata.parking_state					= (SpotStatusData.spot_status & 0x01);
 			AepHeartBeatSrcdata.parking_change					= (SpotStatusData.spot_status & 0x01);
-			AepHeartBeatSrcdata.magnetic_value					= (SpotStatusData.qmc5883lData.Z_Now & 1000);
+			AepHeartBeatSrcdata.magnetic_value					= (SpotStatusData.qmc5883lDiff.BackVal_Diff % 1000);
+			AepHeartBeatSrcdata.magnetic_value_x				= (abs(SpotStatusData.qmc5883lData.X_Now) % 1000);
+			AepHeartBeatSrcdata.magnetic_value_y				= (abs(SpotStatusData.qmc5883lData.Y_Now) % 1000);
+			AepHeartBeatSrcdata.magnetic_value_z				= (abs(SpotStatusData.qmc5883lData.Z_Now) % 1000);
 			
 			aepCodeResult = CTWing_CodeDataReportByIdToBytes(&CTWingClientHandler, AEP_SERVICE_ID_HEARTBEAT, &AepHeartBeatSrcdata);
 			
@@ -1174,6 +1187,33 @@ void NET_NBIOT_DataProcessing(NET_NBIOT_ClientsTypeDef* pClient)
 		Inspect_Message_SpotStatusOffSet();
 		NET_NBIOT_CTWingSentDataAfterExexution();
 #endif
+	}
+	else if (aep_ErrorCode_Event == 1) {
+		AepBytes aepCodeResult;
+		
+		AepErrorCodeReportSrcdata.error_code					= 0;
+		aepCodeResult = CTWing_CodeDataReportByIdToBytes(&CTWingClientHandler, AEP_SERVICE_ID_ERRORCODE, &AepErrorCodeReportSrcdata);
+		NET_CTWing_Message_SendDataEnqueue((unsigned char *)aepCodeResult.str, aepCodeResult.len);
+		
+		aep_ErrorCode_Event = 0;
+	}
+	else if (aep_LowVoltage_Event == 1) {
+		AepBytes aepCodeResult;
+		
+		AepLowVoltageAlarmSrcdata.battery_voltage				= ((float)TCFG_Utility_Get_Device_Batt_ShortVal() / 100.0);
+		aepCodeResult = CTWing_CodeDataReportByIdToBytes(&CTWingClientHandler, AEP_SERVICE_ID_LOWVOLTAGE, &AepLowVoltageAlarmSrcdata);
+		NET_CTWing_Message_SendDataEnqueue((unsigned char *)aepCodeResult.str, aepCodeResult.len);
+		
+		aep_LowVoltage_Event = 0;
+	}
+	else if (aep_MagDisturb_Event == 1) {
+		AepBytes aepCodeResult;
+		
+		AepMagneticDisturbSrcdata.magnetic_value				= (abs(Qmc5883lData.Z_Now) % 1000);
+		aepCodeResult = CTWing_CodeDataReportByIdToBytes(&CTWingClientHandler, AEP_SERVICE_ID_MAGNETICDISTURB, &AepMagneticDisturbSrcdata);
+		NET_CTWing_Message_SendDataEnqueue((unsigned char *)aepCodeResult.str, aepCodeResult.len);
+		
+		aep_MagDisturb_Event = 0;
 	}
 #endif
 
