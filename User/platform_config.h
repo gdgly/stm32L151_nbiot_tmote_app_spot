@@ -50,6 +50,14 @@
 #define	NETCARRIEROTHERUNICOM			30								//其他网段
 #define	NETCARRIERTYPE					NETCARRIERCHINATELECOM				//运营商
 
+#define	NETDATACONNECT_TIMEOUT_DISABLE	0
+#define	NETDATACONNECT_TIMEOUT_ENABLE		1
+#define	NETDATACONNECT_TIMEOUT_TYPE		NETDATACONNECT_TIMEOUT_ENABLE			//网络通信超时处理模式
+
+#define	NETDATACONNECT_TIMEOUT_26HOURS	(26 * 60)							//单位: 分
+#define	NETDATACONNECT_TIMEOUT_24HOURS	(24 * 60)							//单位: 分
+#define	NETDATACONNECT_TIMEOUT_TIME		NETDATACONNECT_TIMEOUT_26HOURS		//网络通信超时处理时间
+
 #define	NETFIFOMESSAGEDISABLE			0
 #define	NETFIFOMESSAGEENABLE			1
 #define	NETFIFOMESSAGETYPE				NETFIFOMESSAGEENABLE				//Net使能FifoMessage
@@ -208,7 +216,7 @@
 
 #define	TESTBENCH_DISABLE				0
 #define	TESTBENCH_ENABLE				1
-#define	TESTBENCH_TYPE					TESTBENCH_ENABLE					//测试架测试
+#define	TESTBENCH_TYPE					TESTBENCH_DISABLE					//测试架测试
 
 #define	ROLLINGOVER_INITSENSOR_CLOSE		0
 #define	ROLLINGOVER_INITSENSOR_OPEN		1
@@ -252,7 +260,7 @@
 #define	BEEP_OFF_US					230								//无源蜂鸣器关时间
 
 #define	SOFTWAREMAJOR					20								//主固件版本
-#define	SOFTWARESUB					150								//从固件版本
+#define	SOFTWARESUB					151								//从固件版本
 #define	HARDWAREMAJOR_V1				2								//主硬件版本
 #define	HARDWAREMAJOR_V2				12								//主硬件版本
 
@@ -975,6 +983,10 @@ extern bool BootUp;														//BootUp
 extern bool BackUp;														//BackUp
 extern bool DeviceIdleMode;												//IDLE MODE
 extern bool DeviceActivedMode;											//ACTIVED MODE
+
+#if NETDATACONNECT_TIMEOUT_TYPE
+extern __IO unsigned int NetDataConnectTimeout;								//NET CONNECT TIMEOUT
+#endif
 
 #if NETPROTOCAL == NETCOAP
 extern COAP_PacketShortTypeDef			CoapShortStructure;					//Coap Short Packet

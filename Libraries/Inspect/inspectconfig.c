@@ -201,6 +201,10 @@ void Inspect_Spot_ExistenceDetect(void)
 	/* 数据存于缓存 */
 	if (SpotStatusDataBackUp.timeCounter != 0) {
 		
+		/* bug:最近8秒磁场确实没有波动,然后立刻报告了有车,紧接着下一秒变成了无车,也就是会出现停车时长只有1秒的情况. */
+		/* debug:有车的时候,必须要过8秒再上报,无车的时候,可以立刻上报. */
+		if ((SpotStatusDataBackUp.spot_status == 0x01) && ((SpotStatusDataBackUp.timeCounter + 8) > Stm32_GetSecondTick())) return;
+		
 		if (((MAG_NO_CHANGE == Inspect_Mag_Stable()) && ((time2send_spot+8) < Stm32_GetSecondTick())) || ((SpotStatusDataBackUp.timeCounter+24) < Stm32_GetSecondTick())) {
 			if ((status_pre&0x01) != (SpotStatusDataBackUp.spot_status&0x01)) {
 				/* -把此刻的雷达数据报告到服务器- */

@@ -3,6 +3,9 @@
 
 #include "sys.h"
 
+//#define FIFO_DBUG
+#define FIFO_DBUG_PRINTF					Radio_Trf_Debug_Printf_Level2
+
 struct DataFIFO
 {
 	unsigned char* buf;
@@ -17,6 +20,10 @@ typedef struct
 	unsigned char						ParkNum;
 	unsigned char						ParkFree;
 }MessageFifoTypeDef;
+
+#ifdef FIFO_DBUG
+void netMessageFifoPrint(char* options, MessageFifoTypeDef *pMessageFifo);
+#endif
 
 void Fifo_init(struct DataFIFO *fifo, int size, unsigned char *buf);										//初始化Fifo
 int  Fifo_putPut(struct DataFIFO *fifo, unsigned char data);											//向Fifo中写入1个字节

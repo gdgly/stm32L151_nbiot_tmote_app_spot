@@ -27,6 +27,11 @@ bool BackUp					= true;									//BackUp
 bool DeviceIdleMode				= false;									//IDLE MODE
 bool DeviceActivedMode			= true;									//ACTIVED MODE
 
+#if NETDATACONNECT_TIMEOUT_TYPE
+/* Net Connect Time Out */
+__IO unsigned int NetDataConnectTimeout = 0;									//NET CONNECT TIMEOUT
+#endif
+
 #if NETPROTOCAL == NETCOAP
 /* Coap Packet */
 COAP_PacketShortTypeDef			CoapShortStructure;							//Coap Short Packet

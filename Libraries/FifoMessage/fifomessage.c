@@ -15,6 +15,31 @@
 
 #include "fifomessage.h"
 
+#ifdef FIFO_DBUG
+#include "radio_hal_rf.h"
+#include "radio_rf_app.h"
+#endif
+
+#ifdef FIFO_DBUG
+/**********************************************************************************************************
+ @Function			void netMessageFifoPrint(char* options, MessageFifoTypeDef *pMessageFifo)
+ @Description			options						: 操作信息
+					netMessageFifoPrint				: 消息队列调试信息
+ @Input				pMessageFifo					: FiFo队列地址
+ @Return				void
+**********************************************************************************************************/
+void netMessageFifoPrint(char* options, MessageFifoTypeDef *pMessageFifo)
+{
+	FIFO_DBUG_PRINTF("%s", options);
+	FIFO_DBUG_PRINTF("Front    : %d", pMessageFifo->Front);
+	FIFO_DBUG_PRINTF("Rear     : %d", pMessageFifo->Rear);
+	FIFO_DBUG_PRINTF("ParkNum  : %d", pMessageFifo->ParkNum);
+	FIFO_DBUG_PRINTF("ParkFree : %d", pMessageFifo->ParkFree);
+	FIFO_DBUG_PRINTF("Fifo Sta : %d", Fifo_status(&pMessageFifo->dataFifo));
+	FIFO_DBUG_PRINTF("Fifo Fre : %d", Fifo_free(&pMessageFifo->dataFifo));
+}
+#endif
+
 /**********************************************************************************************************
  @Function			void Fifo_init(struct DataFIFO *fifo, int size, unsigned char *buf)
  @Description			Fifo_init					: 初始化Fifo

@@ -624,6 +624,17 @@ void MainHandleRoutine(void)
 	if ((Stm32_GetSecondTick() / 60) != SystemRunningTime.minutes) {
 		SystemRunningTime.minutes = Stm32_GetSecondTick() / 60;
 		
+#if NETDATACONNECT_TIMEOUT_TYPE
+		if ((DeviceIdleMode == false) && (DeviceActivedMode == true)) {
+			NetDataConnectTimeout++;
+			if (NetDataConnectTimeout >= NETDATACONNECT_TIMEOUT_TIME) {
+				Stm32_System_Software_Reboot(RBTMODE_NETCONNECT_OVERTIME);
+			}
+		}
+		else {
+			NetDataConnectTimeout = 0;
+		}
+#endif
 	}
 	/* Every FifteenMinutes Running */
 	if ((Stm32_GetSecondTick() / 900) != SystemRunningTime.fifteenMinutes) {

@@ -133,6 +133,10 @@ void TCFG_EEPROM_WriteConfigData(void)
 	TCFG_SystemData.CoverGain = RADAR_COVERGAIN_DEFAULT;
 	TCFG_EEPROM_SetCoverGain(TCFG_SystemData.CoverGain);
 	
+	/* 高通滤波器截止频率 */
+	TCFG_SystemData.RadarHighPass = TRADAR_HIGHPASS_DEFAULT;
+	TCFG_EEPROM_SetHighPass(TCFG_SystemData.RadarHighPass);
+	
 	/* 雷达整体增益 */
 	TCFG_SystemData.RadarGain = TRADAR_GAIN_DEFAULT;
 	TCFG_EEPROM_SetRadarGain(TCFG_SystemData.RadarGain);
@@ -1787,6 +1791,7 @@ void TCFG_EEPROM_GetVender(char* vender)
 char* TCFG_EEPROM_Get_Vender_String(void)
 {
 	TCFG_EEPROM_GetVender((char *)&TCFG_SystemData.SubVender);
+	TCFG_SystemData.SubVender[3] = '\0';
 	
 	return (char*)TCFG_SystemData.SubVender;
 }

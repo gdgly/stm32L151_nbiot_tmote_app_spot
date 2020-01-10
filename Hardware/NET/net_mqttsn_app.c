@@ -1364,6 +1364,9 @@ void NET_MQTTSN_NBIOT_Event_AttachInquire(MQTTSN_ClientsTypeDef* pClient)
 		/* 关闭频点清除 */
 		pClient->SocketStack->NBIotStack->ClearStoredEARFCN = NBIOT_CLEAR_STORED_EARFCN_FALSE;
 		
+		/* 标记注网成功 */
+		pClient->SocketStack->NBIotStack->Registered = true;
+		
 		/* Get ConnectTime */
 		MQTTSN_NBIOT_GetConnectTime(pClient, true);
 	}
@@ -1401,8 +1404,6 @@ void NET_MQTTSN_NBIOT_Event_ParameterCheckOut(MQTTSN_ClientsTypeDef* pClient)
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadDateTime(pClient->SocketStack->NBIotStack)) == NBIOT_OK)) {
 		/* Dictate execute is Success */
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, MQTTSN_PROCESS_STACK, PARAMETER_CHECKOUT);
-		
-		pClient->SocketStack->NBIotStack->Registered = true;
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 		MQTTSN_DEBUG_LOG_PRINTF("PR-C-K");
@@ -1569,6 +1570,10 @@ void NET_MQTTSN_Event_Active(MQTTSN_ClientsTypeDef* pClient)
 		#endif
 			/* NB 继续活跃注入时间 */
 			TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
+#if NETDATACONNECT_TIMEOUT_TYPE
+			/* Net Data Connect Time Clear 0 */
+			NetDataConnectTimeout = 0;
+#endif
 			/* Get ConnectTime */
 			MQTTSN_NBIOT_GetConnectTime(pClient, true);
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT

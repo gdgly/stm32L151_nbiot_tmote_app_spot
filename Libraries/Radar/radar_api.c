@@ -103,7 +103,7 @@ void Radar_Init(void)
 	__HAL_TIM_DISABLE(&RADAR_TIM2_Handler);															//先关闭TIM2,等待使用雷达时开启
 	
 	radar_vcc = Radar_MeasureRadarVCC();
-	if (radar_vcc <= 27) {
+	if (radar_vcc <= 26) {
 		RADAR_COVERGAIN_DEFAULT	= 7;
 		TRADAR_GAIN_DEFAULT 	= 13;
 		TRADAR_HIGHPASS_DEFAULT	= RADAR_HIGHPASS_800;

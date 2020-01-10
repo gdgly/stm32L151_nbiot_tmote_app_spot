@@ -1362,6 +1362,9 @@ void NET_COAP_NBIOT_Event_AttachInquire(NBIOT_ClientsTypeDef* pClient)
 		/* 关闭频点清除 */
 		pClient->ClearStoredEARFCN = NBIOT_CLEAR_STORED_EARFCN_FALSE;
 		
+		/* 标记注网成功 */
+		pClient->Registered = true;
+		
 		/* Get ConnectTime */
 		COAP_NBIOT_GetConnectTime(pClient, true);
 	}
@@ -1399,8 +1402,6 @@ void NET_COAP_NBIOT_Event_ParameterCheckOut(NBIOT_ClientsTypeDef* pClient)
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadDateTime(pClient)) == NBIOT_OK)) {
 		/* Dictate execute is Success */
 		COAP_NBIOT_DictateEvent_SuccessExecute(pClient, NBCOAP_SENDMODE_TYPE, PARAMETER_CHECKOUT);
-		
-		pClient->Registered = true;
 		
 #ifdef COAP_DEBUG_LOG_RF_PRINT
 		COAP_DEBUG_LOG_PRINTF("CoAP Para Check Ok");
@@ -1646,6 +1647,11 @@ void NET_COAP_NBIOT_Event_RecvData(NBIOT_ClientsTypeDef* pClient)
 				
 				/* NB 继续活跃注入时间 */
 				TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
+				
+#if NETDATACONNECT_TIMEOUT_TYPE
+				/* Net Data Connect Time Clear 0 */
+				NetDataConnectTimeout = 0;
+#endif
 				
 				/* Get ConnectTime */
 				COAP_NBIOT_GetConnectTime(pClient, true);
@@ -1919,6 +1925,11 @@ void NET_COAP_NBIOT_Event_RecvDataRANormal(NBIOT_ClientsTypeDef* pClient)
 		
 		/* NB 继续活跃注入时间 */
 		TCFG_Utility_Set_Nbiot_IdleLifetime(NBIOT_CONTINUE_LIFETIME);
+		
+#if NETDATACONNECT_TIMEOUT_TYPE
+		/* Net Data Connect Time Clear 0 */
+		NetDataConnectTimeout = 0;
+#endif
 		
 		/* Get ConnectTime */
 		COAP_NBIOT_GetConnectTime(pClient, true);
