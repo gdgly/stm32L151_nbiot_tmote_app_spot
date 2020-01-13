@@ -1,9 +1,7 @@
 # stm32L151_nbiot_tmote_app_spot
-> ##### Copyright (C) 2020 Movebroad Version:20.151 Design by Movebroad
+> ##### Copyright (C) 2019 Movebroad Version:20.151 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
-* 2020-01-13 :
-	* 发布151固件。
 * 2020-01-10 :
 	* 同步代码:
 	* 算法更新到41,雷达库更新到55,这会让真实车辆的雷达灵敏度更高了。
