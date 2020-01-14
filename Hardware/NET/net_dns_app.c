@@ -1314,9 +1314,6 @@ void NET_DNS_NBIOT_Event_AttachInquire(DNS_ClientsTypeDef* pClient)
 		/* 关闭频点清除 */
 		pClient->SocketStack->NBIotStack->ClearStoredEARFCN = NBIOT_CLEAR_STORED_EARFCN_FALSE;
 		
-		/* 标记注网成功 */
-		pClient->SocketStack->NBIotStack->Registered = true;
-		
 		/* Get ConnectTime */
 		DNS_NBIOT_GetConnectTime(pClient, true);
 	}
@@ -1354,6 +1351,9 @@ void NET_DNS_NBIOT_Event_ParameterCheckOut(DNS_ClientsTypeDef* pClient)
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadDateTime(pClient->SocketStack->NBIotStack)) == NBIOT_OK)) {
 		/* Dictate execute is Success */
 		DNS_NBIOT_DictateEvent_SuccessExecute(pClient, DNS_PROCESS_STACK, PARAMETER_CHECKOUT);
+		
+		/* 标记注网成功 */
+		pClient->SocketStack->NBIotStack->Registered = true;
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 		DNS_DEBUG_LOG_PRINTF("PR-C-K");

@@ -1387,9 +1387,6 @@ void NET_CTWING_NBIOT_Event_AttachInquire(CTWING_ClientsTypeDef* pClient)
 		/* 关闭频点清除 */
 		pClient->LWM2MStack->NBIotStack->ClearStoredEARFCN = NBIOT_CLEAR_STORED_EARFCN_FALSE;
 		
-		/* 标记注网成功 */
-		pClient->LWM2MStack->NBIotStack->Registered = true;
-		
 		/* Get ConnectTime */
 		CTWING_NBIOT_GetConnectTime(pClient, true);
 	}
@@ -1428,6 +1425,9 @@ void NET_CTWING_NBIOT_Event_ParameterCheckOut(CTWING_ClientsTypeDef* pClient)
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadDateTime(pClient->LWM2MStack->NBIotStack)) == NBIOT_OK)) {
 		/* Dictate execute is Success */
 		CTWING_NBIOT_DictateEvent_SuccessExecute(pClient, CTWING_SENDMODE_TYPE, PARAMETER_CHECKOUT);
+		
+		/* 标记注网成功 */
+		pClient->LWM2MStack->NBIotStack->Registered = true;
 		
 #ifdef CTWING_DEBUG_LOG_RF_PRINT
 		CTWING_DEBUG_LOG_PRINTF("CTWing Para Check Ok");

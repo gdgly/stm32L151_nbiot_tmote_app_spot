@@ -1330,9 +1330,6 @@ void NET_ONENET_NBIOT_Event_AttachInquire(ONENET_ClientsTypeDef* pClient)
 		/* 关闭频点清除 */
 		pClient->LWM2MStack->NBIotStack->ClearStoredEARFCN = NBIOT_CLEAR_STORED_EARFCN_FALSE;
 		
-		/* 标记注网成功 */
-		pClient->LWM2MStack->NBIotStack->Registered = true;
-		
 		/* Get ConnectTime */
 		ONENET_NBIOT_GetConnectTime(pClient, true);
 	}
@@ -1370,6 +1367,9 @@ void NET_ONENET_NBIOT_Event_ParameterCheckOut(ONENET_ClientsTypeDef* pClient)
 	    ((NBStatus = NBIOT_Neul_NBxx_CheckReadDateTime(pClient->LWM2MStack->NBIotStack)) == NBIOT_OK)) {
 		/* Dictate execute is Success */
 		ONENET_NBIOT_DictateEvent_SuccessExecute(pClient, ONENET_PROCESS_STACK, PARAMETER_CHECKOUT);
+		
+		/* 标记注网成功 */
+		pClient->LWM2MStack->NBIotStack->Registered = true;
 		
 #ifdef ONENET_DEBUG_LOG_RF_PRINT
 		ONENET_DEBUG_LOG_PRINTF("NB Para Check Ok");
