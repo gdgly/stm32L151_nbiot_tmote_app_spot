@@ -734,6 +734,9 @@
 #define	DEBUG_WORK					1								//调试工作模式
 #define	NORMAL_WORK					0								//正常工作模式
 
+#define	RUNNING_SUCCESS_BOOT_COUNT_SEC	(90)								//运行正常BootCount时间
+#define	RUNNING_SUCCESS_BACKUP_APP_SEC	(24 * 3600)						//运行正常BackupApp时间
+
 #define	RADIO_GATWAY_NEARBY_HEART_SEC		5								//无线接收网关数据心跳包间隔时间
 #define	RADIO_GATCMD_NEARBY_HEART_SEC		3								//无线接收网关数据命令包间隔时间
 
