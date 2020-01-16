@@ -718,9 +718,9 @@ void NET_MQTTSN_NBIOT_Event_ModuleCheck(MQTTSN_ClientsTypeDef* pClient)
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB Module Check Fail ECde %d", NBStatus);
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB Module Fail ECde %d", NBStatus);
 	#else
-		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB Module Check Fail");
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB Module Fail");
 	#endif
 #endif
 	}
@@ -743,7 +743,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, ICCID_CHECK, PARAMETER_CONFIG);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB Para Config Read Ok");
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB Parameter Config Ok");
 #endif
 	}
 	else {
@@ -752,9 +752,9 @@ void NET_MQTTSN_NBIOT_Event_ParameterConfig(MQTTSN_ClientsTypeDef* pClient)
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB Para Config Read Fail ECde %d", NBStatus);
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB Parameter Config Fail ECde %d", NBStatus);
 	#else
-		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB Para Config Read Fail");
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB Parameter Config Fail");
 	#endif
 #endif
 		return;
@@ -943,7 +943,7 @@ void NET_MQTTSN_NBIOT_Event_FullFunctionality(MQTTSN_ClientsTypeDef* pClient)
 #endif
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB FullFunc Check Ok");
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB FullFunc Ok");
 #endif
 	}
 	else {
@@ -952,9 +952,9 @@ void NET_MQTTSN_NBIOT_Event_FullFunctionality(MQTTSN_ClientsTypeDef* pClient)
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB FullFunc Check Fail ECde %d", NBStatus);
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB FullFunc Fail ECde %d", NBStatus);
 	#else
-		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB FullFunc Check Fail");
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB FullFunc Fail");
 	#endif
 #endif
 		return;
@@ -1024,7 +1024,7 @@ void NET_MQTTSN_NBIOT_Event_MinimumFunctionality(MQTTSN_ClientsTypeDef* pClient)
 #endif
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB MinFunc Check Ok");
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB MinFunc Ok");
 #endif
 	}
 	else {
@@ -1033,9 +1033,9 @@ void NET_MQTTSN_NBIOT_Event_MinimumFunctionality(MQTTSN_ClientsTypeDef* pClient)
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB MinFunc Check Fail ECde %d", NBStatus);
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB MinFunc Fail ECde %d", NBStatus);
 	#else
-		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB MinFunc Check Fail");
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB MinFunc Fail");
 	#endif
 #endif
 		return;
@@ -1105,9 +1105,9 @@ void NET_MQTTSN_NBIOT_Event_ClearStoredEARFCN(MQTTSN_ClientsTypeDef* pClient)
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB Clear Stored EARFCN Fail Ecde %d", NBStatus);
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB Clear EARFCN Fail Ecde %d", NBStatus);
 	#else
-		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB Clear Stored EARFCN Fail");
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB Clear EARFCN Fail");
 	#endif
 #endif
 		return;
@@ -1146,10 +1146,10 @@ void NET_MQTTSN_NBIOT_Event_NbandModeCheck(MQTTSN_ClientsTypeDef* pClient)
 		MQTTSN_NBIOT_DictateEvent_SuccessExecute(pClient, NBAND_MODE_CHECK, NBAND_MODE_CHECK);
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
-		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB BAND Read %d:%d.%d.%d Ok", pClient->SocketStack->NBIotStack->Parameter.band.NBandNum, \
-														 pClient->SocketStack->NBIotStack->Parameter.band.NBandVal[0], \
-														 pClient->SocketStack->NBIotStack->Parameter.band.NBandVal[1], \
-														 pClient->SocketStack->NBIotStack->Parameter.band.NBandVal[2]);
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB BAND %d:%d.%d.%d Ok", pClient->SocketStack->NBIotStack->Parameter.band.NBandNum, \
+													  pClient->SocketStack->NBIotStack->Parameter.band.NBandVal[0], \
+													  pClient->SocketStack->NBIotStack->Parameter.band.NBandVal[1], \
+													  pClient->SocketStack->NBIotStack->Parameter.band.NBandVal[2]);
 #endif
 	}
 	else {
@@ -1158,9 +1158,9 @@ void NET_MQTTSN_NBIOT_Event_NbandModeCheck(MQTTSN_ClientsTypeDef* pClient)
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB BAND Read Fail ECde %d", NBStatus);
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB BAND Fail ECde %d", NBStatus);
 	#else
-		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB BAND Read Fail");
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB BAND Fail");
 	#endif
 #endif
 	}
@@ -1201,9 +1201,9 @@ void NET_MQTTSN_NBIOT_Event_NbandModeConfig(MQTTSN_ClientsTypeDef* pClient)
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB BAND Read Fail ECde %d", NBStatus);
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB BAND Fail ECde %d", NBStatus);
 	#else
-		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB BAND Read Fail");
+		MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB BAND Fail");
 	#endif
 #endif
 	}
@@ -1216,9 +1216,9 @@ void NET_MQTTSN_NBIOT_Event_NbandModeConfig(MQTTSN_ClientsTypeDef* pClient)
 			
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT_BEFORE
 			MQTTSN_DEBUG_LOG_PRINTF_BEFORE("NB BAND Set %d:%d.%d.%d Ok", MQTTSN_NBIOT_BAND_TYPE.NBandNum, \
-															MQTTSN_NBIOT_BAND_TYPE.NBandVal[0], \
-															MQTTSN_NBIOT_BAND_TYPE.NBandVal[1], \
-															MQTTSN_NBIOT_BAND_TYPE.NBandVal[2]);
+															 MQTTSN_NBIOT_BAND_TYPE.NBandVal[0], \
+															 MQTTSN_NBIOT_BAND_TYPE.NBandVal[1], \
+															 MQTTSN_NBIOT_BAND_TYPE.NBandVal[2]);
 #endif
 		}
 		else {
@@ -1415,7 +1415,7 @@ void NET_MQTTSN_NBIOT_Event_ParameterCheckOut(MQTTSN_ClientsTypeDef* pClient)
 		
 #ifdef MQTTSN_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		MQTTSN_DEBUG_LOG_PRINTF("NB Para Check Fail ECde %d", NBStatus);
+		MQTTSN_DEBUG_LOG_PRINTF("PR-C-F-E %d", NBStatus);
 	#else
 		MQTTSN_DEBUG_LOG_PRINTF("PR-C-F");
 	#endif

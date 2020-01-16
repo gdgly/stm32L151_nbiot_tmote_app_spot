@@ -668,7 +668,7 @@ void NET_DNS_NBIOT_Event_ModuleCheck(DNS_ClientsTypeDef* pClient)
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		DNS_DEBUG_LOG_PRINTF("NB Module Fail ECde %d", NBStatus);
+		DNS_DEBUG_LOG_PRINTF("MDU-F-E %d", NBStatus);
 	#else
 		DNS_DEBUG_LOG_PRINTF("MDU-F");
 	#endif
@@ -702,7 +702,7 @@ void NET_DNS_NBIOT_Event_ParameterConfig(DNS_ClientsTypeDef* pClient)
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		DNS_DEBUG_LOG_PRINTF("NB Para Cfg Fail ECde %d", NBStatus);
+		DNS_DEBUG_LOG_PRINTF("PCfg-F-E %d", NBStatus);
 	#else
 		DNS_DEBUG_LOG_PRINTF("PCfg-F");
 	#endif
@@ -857,7 +857,7 @@ void NET_DNS_NBIOT_Event_SimICCIDCheck(DNS_ClientsTypeDef* pClient)
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		DNS_DEBUG_LOG_PRINTF("NB ICCID Fail ECde %d", NBStatus);
+		DNS_DEBUG_LOG_PRINTF("ID-F-E %d", NBStatus);
 	#else
 		DNS_DEBUG_LOG_PRINTF("ID-F");
 	#endif
@@ -902,7 +902,7 @@ void NET_DNS_NBIOT_Event_FullFunctionality(DNS_ClientsTypeDef* pClient)
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 		#if NBIOT_PRINT_ERROR_CODE_TYPE
-		DNS_DEBUG_LOG_PRINTF("NB FullFunc Fail ECde %d", NBStatus);
+		DNS_DEBUG_LOG_PRINTF("FF-F-E %d", NBStatus);
 	#else
 		DNS_DEBUG_LOG_PRINTF("FF-F");
 	#endif
@@ -936,7 +936,7 @@ void NET_DNS_NBIOT_Event_FullFunctionality(DNS_ClientsTypeDef* pClient)
 			
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 		#if NBIOT_PRINT_ERROR_CODE_TYPE
-			DNS_DEBUG_LOG_PRINTF("NB FullFunc Fail ECde %d", NBStatus);
+			DNS_DEBUG_LOG_PRINTF("FF-S-F-E %d", NBStatus);
 		#else
 			DNS_DEBUG_LOG_PRINTF("FF-S-F");
 		#endif
@@ -983,7 +983,7 @@ void NET_DNS_NBIOT_Event_MinimumFunctionality(DNS_ClientsTypeDef* pClient)
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		DNS_DEBUG_LOG_PRINTF("NB MinFunc Fail ECde %d", NBStatus);
+		DNS_DEBUG_LOG_PRINTF("MF-F-E %d", NBStatus);
 	#else
 		DNS_DEBUG_LOG_PRINTF("MF-F");
 	#endif
@@ -1017,7 +1017,7 @@ void NET_DNS_NBIOT_Event_MinimumFunctionality(DNS_ClientsTypeDef* pClient)
 			
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 		#if NBIOT_PRINT_ERROR_CODE_TYPE
-			DNS_DEBUG_LOG_PRINTF("NB MinFunc Fail ECde %d", NBStatus);
+			DNS_DEBUG_LOG_PRINTF("MF-S-F-E %d", NBStatus);
 		#else
 			DNS_DEBUG_LOG_PRINTF("MF-S-F");
 		#endif
@@ -1055,7 +1055,7 @@ void NET_DNS_NBIOT_Event_ClearStoredEARFCN(DNS_ClientsTypeDef* pClient)
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		DNS_DEBUG_LOG_PRINTF("NB Clear Stored EARFCN Fail Ecde %d", NBStatus);
+		DNS_DEBUG_LOG_PRINTF("Clr-ER-F-E %d", NBStatus);
 	#else
 		DNS_DEBUG_LOG_PRINTF("Clr-ER-F");
 	#endif
@@ -1108,7 +1108,7 @@ void NET_DNS_NBIOT_Event_NbandModeCheck(DNS_ClientsTypeDef* pClient)
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		DNS_DEBUG_LOG_PRINTF("NB BAND Fail ECde %d", NBStatus);
+		DNS_DEBUG_LOG_PRINTF("BD-F-E %d", NBStatus);
 	#else
 		DNS_DEBUG_LOG_PRINTF("BD-F");
 	#endif
@@ -1151,7 +1151,7 @@ void NET_DNS_NBIOT_Event_NbandModeConfig(DNS_ClientsTypeDef* pClient)
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		DNS_DEBUG_LOG_PRINTF("NB BAND Fail ECde %d", NBStatus);
+		DNS_DEBUG_LOG_PRINTF("BD-F-E %d", NBStatus);
 	#else
 		DNS_DEBUG_LOG_PRINTF("BD-F");
 	#endif
@@ -1177,7 +1177,7 @@ void NET_DNS_NBIOT_Event_NbandModeConfig(DNS_ClientsTypeDef* pClient)
 			
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 		#if NBIOT_PRINT_ERROR_CODE_TYPE
-			DNS_DEBUG_LOG_PRINTF("NB BAND Fail ECde %d", NBStatus);
+			DNS_DEBUG_LOG_PRINTF("BD-S-F-E %d", NBStatus);
 		#else
 			DNS_DEBUG_LOG_PRINTF("BD-S-F");
 		#endif
@@ -1217,9 +1217,9 @@ void NET_DNS_NBIOT_Event_AttachCheck(DNS_ClientsTypeDef* pClient)
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		DNS_DEBUG_LOG_PRINTF("NB CGATT %d Fail ECde %d", pClient->SocketStack->NBIotStack->Parameter.netstate, NBStatus);
+		DNS_DEBUG_LOG_PRINTF("CGATT-F-E %d", NBStatus);
 	#else
-		DNS_DEBUG_LOG_PRINTF("CGATT-F", pClient->SocketStack->NBIotStack->Parameter.netstate);
+		DNS_DEBUG_LOG_PRINTF("CGATT-F");
 	#endif
 #endif
 		return;
@@ -1259,9 +1259,9 @@ void NET_DNS_NBIOT_Event_AttachExecute(DNS_ClientsTypeDef* pClient)
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		DNS_DEBUG_LOG_PRINTF("NB Set CGATT %d Fail ECde %d", Attach, NBStatus);
+		DNS_DEBUG_LOG_PRINTF("S-CGATT-F-E %d", NBStatus);
 	#else
-		DNS_DEBUG_LOG_PRINTF("S-CGATT-F", Attach);
+		DNS_DEBUG_LOG_PRINTF("S-CGATT-F");
 	#endif
 #endif
 	}
@@ -1292,9 +1292,9 @@ void NET_DNS_NBIOT_Event_AttachInquire(DNS_ClientsTypeDef* pClient)
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		DNS_DEBUG_LOG_PRINTF("NB CGATT %d Fail ECde %d", pClient->SocketStack->NBIotStack->Parameter.netstate, NBStatus);
+		DNS_DEBUG_LOG_PRINTF("CGATT-F-E %d", NBStatus);
 	#else
-		DNS_DEBUG_LOG_PRINTF("CGATT-F", pClient->SocketStack->NBIotStack->Parameter.netstate);
+		DNS_DEBUG_LOG_PRINTF("CGATT-F");
 	#endif
 #endif
 		return;
@@ -1365,7 +1365,7 @@ void NET_DNS_NBIOT_Event_ParameterCheckOut(DNS_ClientsTypeDef* pClient)
 		
 #ifdef DNS_DEBUG_LOG_RF_PRINT
 	#if NBIOT_PRINT_ERROR_CODE_TYPE
-		DNS_DEBUG_LOG_PRINTF("NB Para Check Fail ECde %d", NBStatus);
+		DNS_DEBUG_LOG_PRINTF("PR-C-F-E %d", NBStatus);
 	#else
 		DNS_DEBUG_LOG_PRINTF("PR-C-F");
 	#endif
