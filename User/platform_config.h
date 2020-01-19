@@ -578,8 +578,8 @@
 #define	RADIO_DOWNLOAD_CMD_SENSORMODE		1								//RADIO下行指令SensorMode
 #define	RADIO_DOWNLOAD_CMD_INTERVAL		1								//RADIO下行指令RadarSampleInterval
 #define	RADIO_DOWNLOAD_CMD_HIGHPASS		1								//RADIO下行指令RadarHighPass
-#define	RADIO_DOWNLOAD_CMD_RFDPRINTLV		1								//RADIO下行指令RFDprintLv
-#define	RADIO_DOWNLOAD_CMD_RESTORE		0								//RADIO下行指令Restore
+#define	RADIO_DOWNLOAD_CMD_RFDPRINTLV		0								//RADIO下行指令RFDprintLv
+#define	RADIO_DOWNLOAD_CMD_RESTORE		1								//RADIO下行指令Restore
 #endif
 #if NETPROTOCAL == NETONENET
 #define	RADIO_DOWNLOAD_CMD_REBOOT		1								//RADIO下行指令Reboot

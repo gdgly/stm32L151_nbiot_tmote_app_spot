@@ -351,7 +351,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadIMEI(NBIOT_ClientsTypeDef* pClient)
 	
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
 		memset((void *)pClient->Parameter.imei, 0x0, sizeof(pClient->Parameter.imei));
-		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+CGSN]%*[^:]:%[^\r]", pClient->Parameter.imei) <= 0) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^CGSN]%*[^:]:%[^\r]", pClient->Parameter.imei) <= 0) {
 			NBStatus = NBIOT_ERROR;
 		}
 		pClient->Parameter.imei[15] = 0x00;
@@ -387,7 +387,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadIMEISV(NBIOT_ClientsTypeDef* pClien
 	
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
 		memset((void *)pClient->Parameter.imeisv, 0x0, sizeof(pClient->Parameter.imeisv));
-		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+CGSN]%*[^:]:%[^\r]", pClient->Parameter.imeisv) <= 0) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^CGSN]%*[^:]:%[^\r]", pClient->Parameter.imeisv) <= 0) {
 			NBStatus = NBIOT_ERROR;
 		}
 		pClient->Parameter.imeisv[19] = 0x00;
@@ -422,7 +422,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadRSSI(NBIOT_ClientsTypeDef* pClient)
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+CSQ\r", strlen("AT+CSQ\r"), "OK", "ERROR");
 	
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
-		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+CSQ]%*[^:]:%d,%*d", &pClient->Parameter.rssi) <= 0) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^CSQ]%*[^:]:%d,%*d", &pClient->Parameter.rssi) <= 0) {
 			NBStatus = NBIOT_ERROR;
 		}
 	}
@@ -550,7 +550,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadAreaCode(NBIOT_ClientsTypeDef* pCli
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+CEREG?\r", strlen("AT+CEREG?\r"), "OK", "ERROR");
 	
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
-		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+CEREG]%*[^:]:%*d,%*d,%hx,%x,%*d", &pClient->Parameter.networkRegStatus.tac, &pClient->Parameter.networkRegStatus.cellID) <= 0) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^CEREG]%*[^:]:%*d,%*d,%hx,%x,%*d", &pClient->Parameter.networkRegStatus.tac, &pClient->Parameter.networkRegStatus.cellID) <= 0) {
 			NBStatus = NBIOT_ERROR;
 			goto exit;
 		}
@@ -588,7 +588,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadICCID(NBIOT_ClientsTypeDef* pClient
 	
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
 		memset((void *)pClient->Parameter.iccid, 0x0, sizeof(pClient->Parameter.iccid));
-		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+NCCID]%*[^:]:%[^\r]", pClient->Parameter.iccid) <= 0) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^NCCID]%*[^:]:%[^\r]", pClient->Parameter.iccid) <= 0) {
 			NBStatus = NBIOT_ERROR;
 		}
 		pClient->Parameter.iccid[20] = 0x00;
@@ -660,7 +660,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCGPADDR(NBIOT_ClientsTypeDef* pClie
 	
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
 		memset((void *)pClient->Parameter.cgpaddr, 0x0, sizeof(pClient->Parameter.cgpaddr));
-		sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+CGPADDR]%*[^,],%[^\r]", pClient->Parameter.cgpaddr);
+		sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^CGPADDR]%*[^,],%[^\r]", pClient->Parameter.cgpaddr);
 	}
 #if NBIOT_PRINT_ERROR_CODE_TYPE
 	else {
@@ -694,7 +694,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCGDCONT(NBIOT_ClientsTypeDef* pClie
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
 		memset((void *)pClient->Parameter.cgdcontPDPType, 0x0, sizeof(pClient->Parameter.cgdcontPDPType));
 		memset((void *)pClient->Parameter.cgdcontAPN, 0x0, sizeof(pClient->Parameter.cgdcontAPN));
-		sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+CGDCONT]%*[^,],\"%[^\"]\",\"%[^\"]", pClient->Parameter.cgdcontPDPType, pClient->Parameter.cgdcontAPN);
+		sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^CGDCONT]%*[^,],\"%[^\"]\",\"%[^\"]", pClient->Parameter.cgdcontPDPType, pClient->Parameter.cgdcontAPN);
 	}
 #if NBIOT_PRINT_ERROR_CODE_TYPE
 	else {
@@ -728,7 +728,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadPDPContext(NBIOT_ClientsTypeDef* pC
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
 		int cid = 0;
 		memset((void *)pClient->Parameter.cgcontrdpAPN, 0x0, sizeof(pClient->Parameter.cgcontrdpAPN));
-		sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+CGCONTRDP]%*[^:]:%d,,\"%[^\"]\"", &cid, pClient->Parameter.cgcontrdpAPN);
+		sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^CGCONTRDP]%*[^:]:%d,,\"%[^\"]\"", &cid, pClient->Parameter.cgcontrdpAPN);
 	}
 #if NBIOT_PRINT_ERROR_CODE_TYPE
 	else {
@@ -763,7 +763,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadDateTime(NBIOT_ClientsTypeDef* pCli
 	
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
 		if ( sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, 
-			"%*[^+CCLK]%*[^:]:%d/%d/%d,%d:%d:%d+%d", 
+			"%*[^CCLK]%*[^:]:%d/%d/%d,%d:%d:%d+%d", 
 			&pClient->Parameter.dataTime.year, 
 			&pClient->Parameter.dataTime.month, 
 			&pClient->Parameter.dataTime.day, 
@@ -826,7 +826,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSystemInformation(NBIOT_ClientsType
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+QCHIPINFO=ALL\r", strlen("AT+QCHIPINFO=ALL\r"), "OK", "ERROR");
 	
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
-		sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+QCHIPINFO:TEMP]%*[^,],%d%*[^+QCHIPINFO:VBAT]%*[^,],%d", &pClient->Parameter.qchipinfo.temp, &pClient->Parameter.qchipinfo.vbat);
+		sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^QCHIPINFO:TEMP]%*[^,],%d%*[^QCHIPINFO:VBAT]%*[^,],%d", &pClient->Parameter.qchipinfo.temp, &pClient->Parameter.qchipinfo.vbat);
 	}
 #if NBIOT_PRINT_ERROR_CODE_TYPE
 	else {
@@ -865,7 +865,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadPowerSavingModeStatus(NBIOT_Clients
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+NPSMR?\r", strlen("AT+NPSMR?\r"), "OK", "ERROR");
 	
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
-		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+NPSMR]%*[^:]:%*d,%d", &modeval) <= 0) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^NPSMR]%*[^:]:%*d,%d", &modeval) <= 0) {
 			NBStatus = NBIOT_ERROR;
 			goto exit;
 		}
@@ -912,7 +912,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSignalConnectionStatus(NBIOT_Client
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+CSCON?\r", strlen("AT+CSCON?\r"), "OK", "ERROR");
 	
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
-		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+CSCON]%*[^:]:%*d,%d", &modeval) <= 0) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^CSCON]%*[^:]:%*d,%d", &modeval) <= 0) {
 			NBStatus = NBIOT_ERROR;
 		}
 		else {
@@ -1088,7 +1088,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadAttachOrDetach(NBIOT_ClientsTypeDef
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+CGATT?\r", strlen("AT+CGATT?\r"), "OK", "ERROR");
 	
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
-		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+CGATT]%*[^:]:%d", &netval) <= 0) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^CGATT]%*[^:]:%d", &netval) <= 0) {
 			NBStatus = NBIOT_ERROR;
 		}
 		else {
@@ -1166,7 +1166,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadMinOrFullFunc(NBIOT_ClientsTypeDef*
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+CFUN?\r", strlen("AT+CFUN?\r"), "OK", "ERROR");
 	
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
-		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+CFUN]%*[^:]:%d", &cfunval) <= 0) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^CFUN]%*[^:]:%d", &cfunval) <= 0) {
 			NBStatus = NBIOT_ERROR;
 		}
 		else {
@@ -1244,7 +1244,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadNewMessageIndications(NBIOT_Clients
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+NNMI?\r", strlen("AT+NNMI?\r"), "OK", "ERROR");
 	
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
-		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+NNMI]%*[^:]:%d", &nnmival) <= 0) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^NNMI]%*[^:]:%d", &nnmival) <= 0) {
 			NBStatus = NBIOT_ERROR;
 		}
 		else {
@@ -1322,7 +1322,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSentMessageIndications(NBIOT_Client
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+NSMI?\r", strlen("AT+NSMI?\r"), "OK", "ERROR");
 	
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
-		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+NSMI]%*[^:]:%d", &nsmival) <= 0) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^NSMI]%*[^:]:%d", &nsmival) <= 0) {
 			NBStatus = NBIOT_ERROR;
 		}
 		else {
@@ -1408,7 +1408,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadSupportedBands(NBIOT_ClientsTypeDef
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+NBAND?\r", strlen("AT+NBAND?\r"), "OK", "ERROR");
 	
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
-		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+NBAND]%*[^:]:%d,%d,%d", &bands[0], &bands[1], &bands[2]) <= 0) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^NBAND]%*[^:]:%d,%d,%d", &bands[0], &bands[1], &bands[2]) <= 0) {
 			NBStatus = NBIOT_ERROR;
 		}
 		else {
@@ -1475,7 +1475,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_TestSupportedBands(NBIOT_ClientsTypeDef* pCl
 		int SupportBandNum = 0;
 		int UserBands[NBTEST_BAND_MAX] = {0};
 		int UserBandNum = 0;
-		if (sscanf(pRecv, "%*[^+NBAND]%*[^:]:(%d,%n", &v, &n) == 1) {
+		if (sscanf(pRecv, "%*[^NBAND]%*[^:]:(%d,%n", &v, &n) == 1) {
 			SupportBands[0] = v;
 			SupportBandNum++;
 			pRecv += n;
@@ -1569,7 +1569,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadReportTerminationError(NBIOT_Client
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+CMEE?\r", strlen("AT+CMEE?\r"), "OK", "ERROR");
 	
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
-		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+CMEE]%*[^:]:%d", &cmeeval) <= 0) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^CMEE]%*[^:]:%d", &cmeeval) <= 0) {
 			NBStatus = NBIOT_ERROR;
 		}
 		else {
@@ -1644,7 +1644,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadCDPServer(NBIOT_ClientsTypeDef* pCl
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+NCDP?\r", strlen("AT+NCDP?\r"), "OK", "ERROR");
 	
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
-		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+NCDP]%*[^:]:%[^,],%hu", (char *)&pClient->Parameter.cdpserver.CDPServerHost, &pClient->Parameter.cdpserver.CDPServerPort) <= 0) {
+		if (sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^NCDP]%*[^:]:%[^,],%hu", (char *)&pClient->Parameter.cdpserver.CDPServerHost, &pClient->Parameter.cdpserver.CDPServerPort) <= 0) {
 			NBStatus = NBIOT_ERROR;
 		}
 	}
@@ -1795,7 +1795,7 @@ NBIOT_StatusTypeDef NBIOT_Neul_NBxx_CheckReadLWM2MLifetime(NBIOT_ClientsTypeDef*
 	NBIOT_Neul_NBxx_ATCmd_SetCmdStack(pClient, (unsigned char*)"AT+QCFG=\"LWM2M/lifetime\"\r", strlen("AT+QCFG=\"LWM2M/lifetime\"\r"), "OK", "ERROR");
 	
 	if ((NBStatus = pClient->ATCmdStack->Write(pClient->ATCmdStack)) == NBIOT_OK) {
-		sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^+QCFG]%*[^:]:%*[^,],%d", &pClient->Parameter.lwm2mlifetime);
+		sscanf((const char*)pClient->ATCmdStack->ATRecvbuf, "%*[^QCFG]%*[^:]:%*[^,],%d", &pClient->Parameter.lwm2mlifetime);
 	}
 #if NBIOT_PRINT_ERROR_CODE_TYPE
 	else {

@@ -2,6 +2,9 @@
 > ##### Copyright (C) 2020 Movebroad Version:20.152 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2020-01-19 :
+	* MqttSN协议中小无线下行命令恢复restore, 去除rfdplv。
+	* NBIOT指令修改, 命令读取解析指令中一些[+XXX]指令去掉+。
 * 2020-01-16 :
 	* 版本号修改为152。
 * 2020-01-13 :
