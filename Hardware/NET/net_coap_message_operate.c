@@ -23,6 +23,11 @@
 #include "tmesh_algorithm.h"
 #include "string.h"
 
+#ifdef COAP_MSG_DBUG
+#include "radio_hal_rf.h"
+#include "radio_rf_app.h"
+#endif
+
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 COAP_SwapSendDataTypeDef		NETCoapMessageSendPark;
 COAP_SwapRecvDataTypeDef		NETCoapMessageRecvPark;
@@ -39,6 +44,22 @@ MessageFifoTypeDef			NETCoapFifoMessageRecvPark;
 
 unsigned char				FifoMessageSendBuf[MESSAGEFIFO_SENDPARKSIZE_MAX];
 unsigned char				FifoMessageRecvBuf[MESSAGEFIFO_RECVPARKSIZE_MAX];
+#endif
+
+#ifdef COAP_MSG_DBUG
+/**********************************************************************************************************
+ @Function			static void NET_Coap_Message_Debug(char* name, char* obj, char* fun, int len)
+ @Description			NET_Coap_Message_Debug			: 消息队列调试信息
+ @Input				name
+					obj
+					fun
+					len
+ @Return				void
+**********************************************************************************************************/
+static void NET_Coap_Message_Debug(char* name, char* obj, char* fun, int len)
+{
+	COAP_MSG_DBUG_PRINTF("DB: %s %s %s %d", name, obj, fun, len);
+}
 #endif
 
 /**********************************************************************************************************
@@ -341,6 +362,10 @@ void NET_Coap_FifoSendMessageInit(void)
 {
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
 	netMessageFifoInit(&NETCoapFifoMessageSendPark, FifoMessageSendBuf, sizeof(FifoMessageSendBuf), MESSAGEFIFO_SENDPARKNUM_MAX);
+	
+#ifdef COAP_MSG_DBUG
+	NET_Coap_Message_Debug("CoAP", "SP", "Init", sizeof(FifoMessageSendBuf));
+#endif
 #endif
 }
 
@@ -354,6 +379,10 @@ void NET_Coap_FifoRecvMessageInit(void)
 {
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
 	netMessageFifoInit(&NETCoapFifoMessageRecvPark, FifoMessageRecvBuf, sizeof(FifoMessageRecvBuf), MESSAGEFIFO_RECVPARKNUM_MAX);
+	
+#ifdef COAP_MSG_DBUG
+	NET_Coap_Message_Debug("CoAP", "RP", "Init", sizeof(FifoMessageRecvBuf));
+#endif
 #endif
 }
 
@@ -383,6 +412,10 @@ void NET_Coap_Message_SendDataEnqueue(unsigned char* dataBuf, unsigned short dat
 	
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
 	netMessageFifoEnqueue(&NETCoapFifoMessageSendPark, dataBuf, dataLength);
+	
+#ifdef COAP_MSG_DBUG
+	NET_Coap_Message_Debug("CoAP", "SP", "In", dataLength);
+#endif
 #endif
 }
 
@@ -412,6 +445,10 @@ void NET_Coap_Message_RecvDataEnqueue(unsigned char* dataBuf, unsigned short dat
 	
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
 	netMessageFifoEnqueue(&NETCoapFifoMessageRecvPark, dataBuf, dataLength);
+	
+#ifdef COAP_MSG_DBUG
+	NET_Coap_Message_Debug("CoAP", "RP", "In", dataLength);
+#endif
 #endif
 }
 
@@ -425,6 +462,10 @@ void NET_Coap_Message_RecvDataEnqueue(unsigned char* dataBuf, unsigned short dat
 **********************************************************************************************************/
 bool NET_Coap_Message_SendDataDequeue(unsigned char* dataBuf, unsigned short* dataLength)
 {
+#ifdef COAP_MSG_DBUG
+	bool MessageState;
+#endif
+	
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 	bool MessageState;
 	unsigned char front;
@@ -443,7 +484,13 @@ bool NET_Coap_Message_SendDataDequeue(unsigned char* dataBuf, unsigned short* da
 #endif
 	
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+#ifdef COAP_MSG_DBUG
+	MessageState = netMessageFifoDequeue(&NETCoapFifoMessageSendPark, dataBuf, dataLength);
+	if (MessageState) NET_Coap_Message_Debug("CoAP", "SP", "Out", *dataLength);
+	return MessageState;
+#else
 	return netMessageFifoDequeue(&NETCoapFifoMessageSendPark, dataBuf, dataLength);
+#endif
 #endif
 }
 
@@ -457,6 +504,10 @@ bool NET_Coap_Message_SendDataDequeue(unsigned char* dataBuf, unsigned short* da
 **********************************************************************************************************/
 bool NET_Coap_Message_RecvDataDequeue(unsigned char* dataBuf, unsigned short* dataLength)
 {
+#ifdef COAP_MSG_DBUG
+	bool MessageState;
+#endif
+	
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 	bool MessageState;
 	unsigned char front;
@@ -475,7 +526,13 @@ bool NET_Coap_Message_RecvDataDequeue(unsigned char* dataBuf, unsigned short* da
 #endif
 	
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+#ifdef COAP_MSG_DBUG
+	MessageState = netMessageFifoDequeue(&NETCoapFifoMessageRecvPark, dataBuf, dataLength);
+	if (MessageState) NET_Coap_Message_Debug("CoAP", "RP", "Out", *dataLength);
+	return MessageState;
+#else
 	return netMessageFifoDequeue(&NETCoapFifoMessageRecvPark, dataBuf, dataLength);
+#endif
 #endif
 }
 

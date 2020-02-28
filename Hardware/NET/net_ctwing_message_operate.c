@@ -23,6 +23,11 @@
 #include "tmesh_algorithm.h"
 #include "string.h"
 
+#ifdef CTWING_MSG_DBUG
+#include "radio_hal_rf.h"
+#include "radio_rf_app.h"
+#endif
+
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 CTWING_SwapSendDataTypeDef	NETCTWingMessageSendPark;
 CTWING_SwapRecvDataTypeDef	NETCTWingMessageRecvPark;
@@ -39,6 +44,22 @@ MessageFifoTypeDef			NETCTWingFifoMessageRecvPark;
 
 unsigned char				CTWingFifoMessageSendBuf[MESSAGECTWINGFIFO_SENDPARKSIZE_MAX];
 unsigned char				CTWingFifoMessageRecvBuf[MESSAGECTWINGFIFO_RECVPARKSIZE_MAX];
+#endif
+
+#ifdef CTWING_MSG_DBUG
+/**********************************************************************************************************
+ @Function			static void NET_CTWing_Message_Debug(char* name, char* obj, char* fun, int len)
+ @Description			NET_CTWing_Message_Debug			: 消息队列调试信息
+ @Input				name
+					obj
+					fun
+					len
+ @Return				void
+**********************************************************************************************************/
+static void NET_CTWing_Message_Debug(char* name, char* obj, char* fun, int len)
+{
+	CTWING_MSG_DBUG_PRINTF("DB: %s %s %s %d", name, obj, fun, len);
+}
 #endif
 
 /**********************************************************************************************************
@@ -252,6 +273,10 @@ void NET_CTWing_FifoSendMessageInit(void)
 {
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
 	netMessageFifoInit(&NETCTWingFifoMessageSendPark, CTWingFifoMessageSendBuf, sizeof(CTWingFifoMessageSendBuf), MESSAGECTWINGFIFO_SENDPARKNUM_MAX);
+	
+#ifdef CTWING_MSG_DBUG
+	NET_CTWing_Message_Debug("CTWing", "SP", "Init", sizeof(CTWingFifoMessageSendBuf));
+#endif
 #endif
 }
 
@@ -265,6 +290,10 @@ void NET_CTWing_FifoRecvMessageInit(void)
 {
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
 	netMessageFifoInit(&NETCTWingFifoMessageRecvPark, CTWingFifoMessageRecvBuf, sizeof(CTWingFifoMessageRecvBuf), MESSAGECTWINGFIFO_RECVPARKNUM_MAX);
+	
+#ifdef CTWING_MSG_DBUG
+	NET_CTWing_Message_Debug("CTWing", "RP", "Init", sizeof(CTWingFifoMessageRecvBuf));
+#endif
 #endif
 }
 
@@ -392,6 +421,10 @@ void NET_CTWing_Message_SendDataEnqueue(unsigned char* dataBuf, unsigned short d
 	
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
 	netMessageFifoEnqueue(&NETCTWingFifoMessageSendPark, dataBuf, dataLength);
+	
+#ifdef CTWING_MSG_DBUG
+	NET_CTWing_Message_Debug("CTWing", "SP", "In", dataLength);
+#endif
 #endif
 }
 
@@ -421,6 +454,10 @@ void NET_CTWing_Message_RecvDataEnqueue(unsigned char* dataBuf, unsigned short d
 	
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
 	netMessageFifoEnqueue(&NETCTWingFifoMessageRecvPark, dataBuf, dataLength);
+	
+#ifdef CTWING_MSG_DBUG
+	NET_CTWing_Message_Debug("CTWing", "RP", "In", dataLength);
+#endif
 #endif
 }
 
@@ -434,6 +471,10 @@ void NET_CTWing_Message_RecvDataEnqueue(unsigned char* dataBuf, unsigned short d
 **********************************************************************************************************/
 bool NET_CTWing_Message_SendDataDequeue(unsigned char* dataBuf, unsigned short* dataLength)
 {
+#ifdef CTWING_MSG_DBUG
+	bool MessageState;
+#endif
+	
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 	bool MessageState;
 	unsigned char front;
@@ -452,7 +493,13 @@ bool NET_CTWing_Message_SendDataDequeue(unsigned char* dataBuf, unsigned short* 
 #endif
 	
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+#ifdef CTWING_MSG_DBUG
+	MessageState = netMessageFifoDequeue(&NETCTWingFifoMessageSendPark, dataBuf, dataLength);
+	if (MessageState) NET_CTWing_Message_Debug("CTWing", "SP", "Out", *dataLength);
+	return MessageState;
+#else
 	return netMessageFifoDequeue(&NETCTWingFifoMessageSendPark, dataBuf, dataLength);
+#endif
 #endif
 }
 
@@ -466,6 +513,10 @@ bool NET_CTWing_Message_SendDataDequeue(unsigned char* dataBuf, unsigned short* 
 **********************************************************************************************************/
 bool NET_CTWing_Message_RecvDataDequeue(unsigned char* dataBuf, unsigned short* dataLength)
 {
+#ifdef CTWING_MSG_DBUG
+	bool MessageState;
+#endif
+	
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 	bool MessageState;
 	unsigned char front;
@@ -484,7 +535,13 @@ bool NET_CTWing_Message_RecvDataDequeue(unsigned char* dataBuf, unsigned short* 
 #endif
 	
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+#ifdef CTWING_MSG_DBUG
+	MessageState = netMessageFifoDequeue(&NETCTWingFifoMessageRecvPark, dataBuf, dataLength);
+	if (MessageState) NET_CTWing_Message_Debug("CTWing", "RP", "Out", *dataLength);
+	return MessageState;
+#else
 	return netMessageFifoDequeue(&NETCTWingFifoMessageRecvPark, dataBuf, dataLength);
+#endif
 #endif
 }
 

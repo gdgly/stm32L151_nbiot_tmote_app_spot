@@ -23,6 +23,11 @@
 #include "tmesh_algorithm.h"
 #include "string.h"
 
+#ifdef ONENET_MSG_DBUG
+#include "radio_hal_rf.h"
+#include "radio_rf_app.h"
+#endif
+
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 ONENET_SwapSendDataTypeDef	NETOneNETMessageSendPark;
 ONENET_SwapRecvDataTypeDef	NETOneNETMessageRecvPark;
@@ -39,6 +44,22 @@ MessageFifoTypeDef			NETOneNETFifoMessageRecvPark;
 
 unsigned char				OneNETFifoMessageSendBuf[MESSAGEONENETFIFO_SENDPARKSIZE_MAX];
 unsigned char				OneNETFifoMessageRecvBuf[MESSAGEONENETFIFO_RECVPARKSIZE_MAX];
+#endif
+
+#ifdef ONENET_MSG_DBUG
+/**********************************************************************************************************
+ @Function			static void NET_OneNET_Message_Debug(char* name, char* obj, char* fun, int len)
+ @Description			NET_OneNET_Message_Debug			: 消息队列调试信息
+ @Input				name
+					obj
+					fun
+					len
+ @Return				void
+**********************************************************************************************************/
+static void NET_OneNET_Message_Debug(char* name, char* obj, char* fun, int len)
+{
+	ONENET_MSG_DBUG_PRINTF("DB: %s %s %s %d", name, obj, fun, len);
+}
 #endif
 
 /**********************************************************************************************************
@@ -252,6 +273,10 @@ void NET_OneNET_FifoSendMessageInit(void)
 {
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
 	netMessageFifoInit(&NETOneNETFifoMessageSendPark, OneNETFifoMessageSendBuf, sizeof(OneNETFifoMessageSendBuf), MESSAGEONENETFIFO_SENDPARKNUM_MAX);
+	
+#ifdef ONENET_MSG_DBUG
+	NET_OneNET_Message_Debug("OneNET", "SP", "Init", sizeof(OneNETFifoMessageSendBuf));
+#endif
 #endif
 }
 
@@ -265,6 +290,10 @@ void NET_OneNET_FifoRecvMessageInit(void)
 {
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
 	netMessageFifoInit(&NETOneNETFifoMessageRecvPark, OneNETFifoMessageRecvBuf, sizeof(OneNETFifoMessageRecvBuf), MESSAGEONENETFIFO_RECVPARKNUM_MAX);
+	
+#ifdef ONENET_MSG_DBUG
+	NET_OneNET_Message_Debug("OneNET", "RP", "Init", sizeof(OneNETFifoMessageRecvBuf));
+#endif
 #endif
 }
 
@@ -392,6 +421,10 @@ void NET_OneNET_Message_SendDataEnqueue(unsigned char* dataBuf, unsigned short d
 	
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
 	netMessageFifoEnqueue(&NETOneNETFifoMessageSendPark, dataBuf, dataLength);
+	
+#ifdef ONENET_MSG_DBUG
+	NET_OneNET_Message_Debug("OneNET", "SP", "In", dataLength);
+#endif
 #endif
 }
 
@@ -421,6 +454,10 @@ void NET_OneNET_Message_RecvDataEnqueue(unsigned char* dataBuf, unsigned short d
 	
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
 	netMessageFifoEnqueue(&NETOneNETFifoMessageRecvPark, dataBuf, dataLength);
+	
+#ifdef ONENET_MSG_DBUG
+	NET_OneNET_Message_Debug("OneNET", "RP", "In", dataLength);
+#endif
 #endif
 }
 
@@ -434,6 +471,10 @@ void NET_OneNET_Message_RecvDataEnqueue(unsigned char* dataBuf, unsigned short d
 **********************************************************************************************************/
 bool NET_OneNET_Message_SendDataDequeue(unsigned char* dataBuf, unsigned short* dataLength)
 {
+#ifdef ONENET_MSG_DBUG
+	bool MessageState;
+#endif
+	
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 	bool MessageState;
 	unsigned char front;
@@ -452,7 +493,13 @@ bool NET_OneNET_Message_SendDataDequeue(unsigned char* dataBuf, unsigned short* 
 #endif
 	
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+#ifdef ONENET_MSG_DBUG
+	MessageState = netMessageFifoDequeue(&NETOneNETFifoMessageSendPark, dataBuf, dataLength);
+	if (MessageState) NET_OneNET_Message_Debug("OneNET", "SP", "Out", *dataLength);
+	return MessageState;
+#else
 	return netMessageFifoDequeue(&NETOneNETFifoMessageSendPark, dataBuf, dataLength);
+#endif
 #endif
 }
 
@@ -466,6 +513,10 @@ bool NET_OneNET_Message_SendDataDequeue(unsigned char* dataBuf, unsigned short* 
 **********************************************************************************************************/
 bool NET_OneNET_Message_RecvDataDequeue(unsigned char* dataBuf, unsigned short* dataLength)
 {
+#ifdef ONENET_MSG_DBUG
+	bool MessageState;
+#endif
+	
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEDISABLE
 	bool MessageState;
 	unsigned char front;
@@ -484,7 +535,13 @@ bool NET_OneNET_Message_RecvDataDequeue(unsigned char* dataBuf, unsigned short* 
 #endif
 	
 #if NETFIFOMESSAGETYPE == NETFIFOMESSAGEENABLE
+#ifdef ONENET_MSG_DBUG
+	MessageState = netMessageFifoDequeue(&NETOneNETFifoMessageRecvPark, dataBuf, dataLength);
+	if (MessageState) NET_OneNET_Message_Debug("OneNET", "RP", "Out", *dataLength);
+	return MessageState;
+#else
 	return netMessageFifoDequeue(&NETOneNETFifoMessageRecvPark, dataBuf, dataLength);
+#endif
 #endif
 }
 
