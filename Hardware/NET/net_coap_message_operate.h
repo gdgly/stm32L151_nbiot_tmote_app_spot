@@ -3,7 +3,7 @@
 
 #include "sys.h"
 
-//#define COAP_MSG_DBUG
+#define COAP_MSG_DBUG
 #define COAP_MSG_DBUG_PRINTF				Radio_Trf_Debug_Printf_Level2
 
 #define NBIOT_STATUS_MSG_VERSION_33BYTE_V1	0
