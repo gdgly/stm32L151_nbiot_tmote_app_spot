@@ -110,7 +110,7 @@ void Inspect_Spot_ExistenceDetect(void)
 	SpotStatus = (TALGO_SPOTSTATUS)talgro_vechile_judge(&SpotStatusData);
 	
 	/* 车位状态改变(实时) */
-	if ((SpotStatus == SPOT_OCCUPY2FREE) || (SpotStatus == SPOT_FREE2OCCUPY)) {
+	if (((SpotStatus == SPOT_OCCUPY2FREE) || (SpotStatus == SPOT_FREE2OCCUPY)) && !noStatusSent) {
 		/* -先记录状态数据, 等连续5~10秒磁场无波动, 那么进行数据发送- */
 		SpotStatusDataBackUp = SpotStatusData;
 		noStatusSent = 0;
