@@ -194,6 +194,7 @@ void RollingOverMercuryClose(void)
 		
 		/* 15Min 后进入休眠 */
 		if ((TimeBeforeIdle + ROLLINGOVER_ENTER_SLEEP_TIME) < Stm32_GetSecondTick()) {
+			gateway_nearby = 0;
 			DeviceActivedMode = false;
 			TCFG_EEPROM_SetActiveDevice(0);
 			MainRollingEnteredDownSleep();												//已进入倒放休眠状态
@@ -208,8 +209,9 @@ void RollingOverMercuryClose(void)
 			//ROLLINGOVER_LOG_PRINTF("Sleep Before TBI:%d, SYS:%d, EEPROM:%d", TimeBeforeIdle, Stm32_GetSecondTick(), TCFG_EEPROM_GetActiveDevice());
 #endif
 		}
-		/* 15Sec ~ 15Min */
+		/* 45Sec ~ 15Min */
 		else {
+			gateway_nearby = 0;
 			MainRollingEnteringDownSleep();												//将进入倒放休眠
 #ifdef ROLLINGOVER_LOG_RF_PRINT
 			//ROLLINGOVER_LOG_PRINTF("Sleep Right TBI:%d, SYS:%d, EEPROM:%d", TimeBeforeIdle, Stm32_GetSecondTick(), TCFG_EEPROM_GetActiveDevice());

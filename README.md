@@ -1,7 +1,11 @@
 # stm32L151_nbiot_tmote_app_spot
-> ##### Copyright (C) 2020 Movebroad Version:20.153 Design by Movebroad
+> ##### Copyright (C) 2020 Movebroad Version:20.154 Design by Movebroad
 > ##### movebroad Kangkang ps: 版本号以下为此版本修改、增加、去除等内容记录！
 
+* 2020-03-28 :
+	* 修复倒置休眠时没对gatway_nearby变量清0, 导致休眠唤醒之后可立即进行初始化, 使设备在运输过程中有概率被初始化, 导致背景异常。
+* 2020-03-28 :
+	* 版本号修改为154。
 * 2020-03-06 :
 	* 发布153固件。
 * 2020-03-06 :
