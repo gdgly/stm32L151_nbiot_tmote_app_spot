@@ -133,7 +133,11 @@ int main(void)
 	
 #ifdef RADIO_SI4438
 	tmesh_securityInit();																//XTEA加密初始化
-	Radio_Rf_Init();																	//SI4438初始化
+	if (TRF_ERROR == Radio_Rf_Init()) {													//SI4438初始化
+		if (SoftResetFlag == RCC_RESET_FLAG_PORRST) {
+			Stm32_System_Software_Reboot(RBTMODE_MODE_NONE);
+		}
+	}
 	Radio_Trf_Xmit_Heartbeat();															//SI4438发送心跳包
 #endif
 	
